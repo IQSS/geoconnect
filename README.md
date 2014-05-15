@@ -20,3 +20,7 @@ miniverse
 geoconnect
 
 	python manage.py runserver
+	
+![geoconnect screenshot](dv_geoconnect/dv_geoconnect/static/images/screenshot_inspect_shapefile.png?raw=true "Inspect Shapefile")
+	
+	
