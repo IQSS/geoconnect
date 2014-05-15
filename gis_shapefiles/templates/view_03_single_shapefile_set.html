@@ -1,0 +1,92 @@
+{% extends "shp_base.html" %}
+{% load humanize %}
+{% block main_container %}
+<div class="row">
+	  <div class="col-md-6">
+		<!--div class="pull-left" style="padding:20px;"-->
+			{% if Err_Found %}
+			<div class="bg-danger" style="padding:10px;">
+				Sorry!
+				{% if Err_SingleShapefileSet_Not_Found %}
+					The shapefile record was not found.
+				{% endif %}
+				{% if Err_Msg %}
+					{{ Err_Msg }}
+				{% endif %}
+			</div>
+			{% endif %}
+			
+			{% if single_shapefile_set %}
+			{% if single_shapefile_set.shapefile_group.num_shapefiles > 1 %}
+			Return to <a href="{% url 'view_choose_shapefile' single_shapefile_set.shapefile_group.md5 %}">{{ single_shapefile_set.shapefile_group.name }}</a>
+			{% else %}
+				Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
+			{% endif %}
+			<table class="table table-bordered">
+				<tr>
+					<th colspan="2" class="text-center">{{ single_shapefile_set.shapefile_group.name }}</th>
+				</tr>
+				<tr>
+					<th>Shapefile Name</th>
+					<td>{{ single_shapefile_set.get_basename }}</td>
+				</tr>
+				<tr>
+					<th>Dataverse User</th>
+					<td>{{ single_shapefile_set.shapefile_group.dv_username }}</td>
+				</tr>
+				<tr>
+					<th># Features</th>
+					<td>{{ single_shapefile_set.number_of_features|intcomma }}</td>
+				</tr>
+				<tr>
+					<th>Files</th>
+					<td>	<ul class="list-unstyled">
+						{% for fn in single_shapefile_set.get_file_info %}
+							<li>{{ fn }}</li>
+						{% endfor %}
+							</ul>
+						</td>
+				</tr>
+				<tr>
+					<th># Fields</th>
+					<td>{{ single_shapefile_set.get_column_count|intcomma }}
+						
+						&nbsp; &nbsp;<button type="button" class="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</button>
+							<div id="column_name_list" class="collapse" class="panel-body">
+								 <table class="table table-bordered table-striped table-condensed">
+									{% for fn in single_shapefile_set.get_column_names %}
+										<tr>
+											<td>{{ forloop.counter }}</td>
+											<td>{{ fn }}</td>
+										</tr>
+									{% empty %}
+										<tr><td>Sorry!  There are no column names.</td></tr>
+									{% endfor %}
+								</table>					     
+					    </div>
+						</td>
+				</tr>
+				<tr>
+					<th>Bounding Box</th>
+					<td>{{ single_shapefile_set.get_bounding_box }}</td>
+				</tr>
+			</table>
+			
+			{% endif %}
+		</div>
+	  <div class="col-md-6">
+			<div id="map-canvas"></div>
+		</div>
+	<script>
+	$('#column_name_list').on('shown.bs.collapse', function () {
+	  	$('#btn_show_cols').html('hide fields');
+		
+	
+	})
+	$('#column_name_list').on('hidden.bs.collapse', function () {
+	  	$('#btn_show_cols').html('show fields');
+	})
+	</script>
+    	<!--div class="pull-left" style="border:1px solid #006699;width:400px; height:400px; margin:20px;">
+		</div-->
+{% endblock %}
