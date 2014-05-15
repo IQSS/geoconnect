@@ -3,7 +3,7 @@ dv_geoconnect/dv_geoconnect/media*
 dv_geoconnect/dv_geoconnect/static/test_geojson*
 dv_geoconnect/dv_geoconnect/static_root/*
 dv_geoconnect/testdb/*
-
+scripts/worldmap_api/test_shps/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
