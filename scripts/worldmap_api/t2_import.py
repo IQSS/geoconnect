@@ -73,14 +73,13 @@ class MultiPartForm(object):
 
 if __name__ == '__main__':
     # Create the form with simple fields
-    DVN_TOKEN = "JdPGVSga9yM8gt74ZpLp"
+    DVN_TOKEN = "xxxxx"
     
     params = {'title' : 'Boston Income'\
             , 'abstract' : '[test] Shapefile containing Boston, MA income levels from 19xx'\
             , 'email' : 'raman_prasad@harvard.edu'\
             , 'shapefile_name' : 'income_in_boston_gui.zip'\
             , 'geoconnect_token' : DVN_TOKEN\
-            #, 'keywords'
             }
             
     form = MultiPartForm()
@@ -90,8 +89,10 @@ if __name__ == '__main__':
     
     # Add a file
     #fcontent = open('test_shps/income_in_boston_gui.zip', 'r').read()
-    fcontent = open('test_shps/TheFinger.zip', 'r').read()
-    form.add_file('content', 'income_in_boston_gui.zip', 
+    #fcontent = open('test_shps/TheFinger.zip', 'r').read()
+    fcontent = open('china_gas_pipelines_qvc.zip', 'r').read()
+    
+    form.add_file('content', 'china_gas_pipelines_qvc.zip', 
                   fileHandle=StringIO(fcontent))
 
     # Build the request
