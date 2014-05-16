@@ -1,6 +1,6 @@
 # geoconnect
 
-Note: This is "proof of concept" code.  The design will change substantially--as will the logging, error checking, etc.
+Note: This is "proof of concept" code.  The design will change substantially.
 
 #### Purpose
 
@@ -8,8 +8,8 @@ Note: This is "proof of concept" code.  The design will change substantially--as
 
 #### Use Cases
 
-* Add a GIS dataset to the Dataverse and send it to the WorldMap 
-* On the WorldMap, search for datasets in a given geographic area for a specific time period
+* Add a GIS dataset to the Dataverse and visualize it on the WorldMap 
+* From the WorldMap, search for Dataverse datasets in a given geographic area for a specific time period
 
 #### May be used in conjunction with [miniverse](https://github.com/IQSS/miniverse)
 
