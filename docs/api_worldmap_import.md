@@ -4,8 +4,9 @@
 + GeoConnect POSTs shapefile and metadata to WorldMap
 + On success, WorldMap (WM) returns metadata including a layer name and link
 + On fail, WM provides an error message
-+ WorldMap proof of concept: [Django view, "dvn_import" function](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/views.py),
-[Django url](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/urls.py)
++ WorldMap proof of concept:
+  + [Django view](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/views.py), see [dvn_import](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/views.py#L17)
+  + [Django url](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/urls.py)
 
 ###  Input:  POST to WorldMap
 
