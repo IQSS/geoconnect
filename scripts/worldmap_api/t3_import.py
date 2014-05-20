@@ -8,7 +8,10 @@ import urllib
 import urllib2
 import json
 
+import os
 import timeit
+
+from test_token import DVN_TOKEN
 
 class MultiPartForm(object):
     """Accumulate the data to be used when posting a form."""
@@ -73,23 +76,7 @@ class MultiPartForm(object):
         flattened.append('')
         return '\r\n'.join(flattened)
 
-if __name__ == '__main__':
-    # Create the form with simple fields
-    DVN_TOKEN = "xxxxx"
-    
-    params = {'title' : 'Boston Income'\
-            , 'abstract' : '[test] Shapefile containing Boston, MA income levels from 19xx'\
-            , 'email' : 'raman_prasad@harvard.edu'\
-            , 'shapefile_name' : 'income_in_boston_gui.zip'\
-            , 'geoconnect_token' : DVN_TOKEN\
-            }
-    
-    params = {'title' : 'Boston Geo Infrastructure Addresses'\
-            , 'abstract' : '[test] Shapefile .dbf is 435mb when unzipped'\
-            , 'email' : 'raman_prasad@harvard.edu'\
-            , 'shapefile_name' : 'income_in_boston_gui.zip'\
-            , 'geoconnect_token' : DVN_TOKEN\
-            }        
+def load_test_file(params): 
     form = MultiPartForm()
     for k, v in params.iteritems():
         form.add_field(k, v)
@@ -98,7 +85,7 @@ if __name__ == '__main__':
     # Add a file
     #fcontent = open('test_shps/income_in_boston_gui.zip', 'r').read()
     #fcontent = open('test_shps/TheFinger.zip', 'r').read()
-    fcontent = open(params['shapefile_name'], 'r').read()
+    fcontent = open(os.path.join('test_shps', params['shapefile_name']), 'r').read()
     
     form.add_file('content', params['shapefile_name'], fileHandle=StringIO(fcontent))
 
@@ -117,12 +104,57 @@ if __name__ == '__main__':
 
     print
     print 'SERVER RESPONSE:'
-    print urllib2.urlopen(request).read()
+    content = urllib2.urlopen(request).read()
+    print 'content [%s]' % content
+
+params1 = {'title' : 'Boston Income'\
+        , 'abstract' : '[test] Shapefile containing Boston, MA income levels from 19xx'\
+        , 'email' : 'raman_prasad@harvard.edu'\
+        , 'shapefile_name' : 'income_in_boston_gui.zip'\
+        , 'geoconnect_token' : DVN_TOKEN\
+        }
+
+params2 = {'title' : 'Boston Geo Infrastructure Addresses'\
+        , 'abstract' : '[test] Shapefile .dbf is 435mb when unzipped'\
+        , 'email' : 'raman_prasad@harvard.edu'\
+        , 'shapefile_name' : 'Addresses.zip'\
+        , 'geoconnect_token' : DVN_TOKEN\
+        }
+
+params3 = {'title' : 'Social Disorder in Boston'\
+        , 'abstract' : '[test] Shapefile .dbf is 2.6mb when unzipped'\
+        , 'email' : 'raman_prasad@harvard.edu'\
+        , 'shapefile_name' : 'social_disorder_in_boston.zip'\
+        , 'geoconnect_token' : DVN_TOKEN\
+        }
+        
+if __name__=='__main__':
+
+    #load_test_file(params1)
     
-    
+    print(timeit.timeit("load_test_file(params1)", setup="from __main__ import load_test_file, params1", number=1))
+
+"""
+-------------------------------------
+SERVER RESPONSE for params1
+-------------------------------------
+^[[?1;2c^[[?1;2c^[[?1;2c^[[?1;2c{"layer_link": "http://107.22.231.227/data/geonode:income_in_boston_gui_zip_xq3", "worldmap_username": "raman_prasad", "layer_name": "geonode:income_in_boston_gui_zip_xq3", "success": true, "embed_map_link": "http://107.22.231.227/maps/embed?layers=geonode:income_in_boston_gui_zip_xq3"}
+-------------------------------------
+s: 2.47385692596
+
+-------------------------------------
+SERVER RESPONSE for params3
+-------------------------------------
+{"layer_link": "http://107.22.231.227/data/geonode:social_disorder_in_boston_zip_i87", "worldmap_username": "raman_prasad", "layer_name": "geonode:social_disorder_in_boston_zip_i87", "success": true, "embed_map_link": "http://107.22.231.227/maps/embed/?layers=geonode:social_disorder_in_boston_zip_i87"}
+-------------------------------------
+s: 3.23020100594
+
+"""
+
+
 """{"layer_link": "http://107.22.231.227/data/geonode:income_in_boston_gui_zip_10e"
 , "worldmap_username": "raman_prasad"
 , "layer_name": "geonode:income_in_boston_gui_zip_10e"
 , "success": true
 , "embed_map_link": "http://107.22.231.227/maps/embed?layers=geonode:income_in_boston_gui_zip_10e"}
-"""    
+"""

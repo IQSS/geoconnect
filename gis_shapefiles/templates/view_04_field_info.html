@@ -1,0 +1,19 @@
+{% extends "shp_base.html" %}
+{% load humanize %}
+{% block main_container %}
+<div class="row">
+	<div class="col-md-6">
+		<ul>
+			<!--li>{{ shapefile_set.shapefile_group }}</li-->
+			<li>Shapefile: {{ shapefile_set.get_basename }}</li>
+			<li>Field: {{ field_name }}</li>
+			<li># Rows: {{ data_array|length }}</li>
+			<li>{{ field_name }} Data: {{ data_array }}</li>
+			<li>{{ MEDIA_URL }}{{ plot_url }}</li>
+		</ul>
+	</div>
+	<div class="col-md-6">
+		<img width="450" src="{{ MEDIA_URL }}{{ plot_url }}" alt="no image" />
+	</div>
+</div>
+{% endblock %}

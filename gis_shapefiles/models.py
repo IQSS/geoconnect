@@ -70,6 +70,7 @@ class SingleShapefileSet(models.Model):
     number_of_features = models.IntegerField(default=0)
     bounding_box = models.CharField(max_length=255, blank=True)
     column_names = models.TextField(blank=True, help_text='Saved as a json list')
+    column_info = models.TextField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
     
     #has_required_files
@@ -94,20 +95,51 @@ class SingleShapefileSet(models.Model):
         cols = self.get_column_names()
         if cols:
             return len(cols)
-            
+    
+    def add_column_names_using_fields(self, shp_reader_fields):
+        if shp_reader_fields is None:
+            return 
+
+        try:
+            fields = shp_reader_fields[1:]
+            field_names = [field[0] for field in fields]
+            self.add_column_names(field_names)
+        except:
+            return 
+
     def add_column_names(self, l=[]):
         self.column_names = JSONFieldReader.get_python_val_as_json_string(l)
 
     def get_column_names(self):
         return JSONFieldReader.get_json_string_as_python_val(self.column_names)
+
+    def add_column_info(self, l=[]):
+        # Character, Numbers, Longs, Dates, or Memo. 
+        self.column_info = JSONFieldReader.get_python_val_as_json_string(l)
+
+    def get_column_info(self):
+        return JSONFieldReader.get_json_string_as_python_val(self.column_info)
+    
+    def get_shp_fileinfo_obj(self):
+        l = SingleFileInfo.objects.filter(shapefile_set=self, extension='.shp')
+        cnt = l.count()
+        if cnt == 0:
+            return None
+        elif cnt == 1:
+            return l[0]
+        # cnt > 1
+        selected_info = l[0]
+        SingleFileInfo.objects.exclude(id=l[0].id).filter(shapefile_set=self, extension='.shp').delete()  # delete others
+        
+        return selected_info
         
     def get_basename(self):
         return os.path.basename(self.name)
         
-    def __save__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if not self.id:
             super(SingleShapefileSet, self).save(*args, **kwargs)
-        self.md5 = md5('%s%s' % (self.id, self.shapefile)).hexdigest()
+        self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
 
         super(SingleShapefileSet, self).save(*args, **kwargs)
     
@@ -116,7 +148,7 @@ class SingleShapefileSet(models.Model):
 
     class Meta:
         ordering = ('-update_time', 'name')
-        unique_together = ('name', 'shapefile_group')
+        #unique_together = ('name', 'shapefile_group')
 
 
 class SingleFileInfo(models.Model):
@@ -146,7 +178,7 @@ class SingleFileInfo(models.Model):
         return self.get_human_readable_filesize()
     filesize_text.allow_tags=True
 
-    def __save__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # Set file extension
         fparts = self.name.split('.')
         if len(fparts) > 1:

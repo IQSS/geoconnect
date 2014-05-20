@@ -20,7 +20,7 @@
 			{% if single_shapefile_set.shapefile_group.num_shapefiles > 1 %}
 			Return to <a href="{% url 'view_choose_shapefile' single_shapefile_set.shapefile_group.md5 %}">{{ single_shapefile_set.shapefile_group.name }}</a>
 			{% else %}
-				Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
+				Return to <a href="{% url 'view_examine_dataset' %}">Home</a> &nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_singleshapefileset_change' single_shapefile_set.id %}">Edit</a>
 			{% endif %}
 			<table class="table table-bordered">
 				<tr>
@@ -41,8 +41,8 @@
 				<tr>
 					<th>Files</th>
 					<td>	<ul class="list-unstyled">
-						{% for fn in single_shapefile_set.get_file_info %}
-							<li>{{ fn }}</li>
+						{% for file_info in single_shapefile_set.get_file_info %}
+							<li>{{ file_info }}</li>
 						{% endfor %}
 							</ul>
 						</td>
@@ -54,10 +54,27 @@
 						&nbsp; &nbsp;<button type="button" class="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</button>
 							<div id="column_name_list" class="collapse" class="panel-body">
 								 <table class="table table-bordered table-striped table-condensed">
-									{% for fn in single_shapefile_set.get_column_names %}
+									{% for fn in single_shapefile_set.get_column_info %}
 										<tr>
 											<td>{{ forloop.counter }}</td>
-											<td>{{ fn }}</td>
+											{% if fn.1 == 'C' %}
+												{#<td>{{ fn.0 }}</td>#}
+												<td><a href="{% url 'view_field_stats' single_shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>												
+												<td>Character</td>
+											{% else %}{% if fn.1 == 'N' %}
+												<td><a href="{% url 'view_field_stats' single_shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+												<td>Number</td>
+											{% else %}{% if fn.1 == 'L' %}
+												<td><a href="{% url 'view_field_stats' single_shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+												<td>Long</td>
+											{% else %}{% if fn.1 == 'D' %}
+												<td><a href="{% url 'view_field_stats' single_shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+												<td>Date</td>
+											{% else %}{% if fn.1 == 'M' %}
+												<td>{{ fn.0 }}</td><td>Memo</td>
+											{% else %}
+												<td>{{ fn.0 }}</td><td>{{ fn.1 }}<i>(Not recognized)</i></td>
+											{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
 										</tr>
 									{% empty %}
 										<tr><td>Sorry!  There are no column names.</td></tr>
@@ -77,6 +94,7 @@
 	  <div class="col-md-6">
 			<div id="map-canvas"></div>
 		</div>
+</div>
 	<script>
 	$('#column_name_list').on('shown.bs.collapse', function () {
 	  	$('#btn_show_cols').html('hide fields');

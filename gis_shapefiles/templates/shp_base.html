@@ -82,7 +82,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <div class="dataverseHeaderBlock">
                 <div class="dataverseHeaderCell dataverseHeaderName">	
                     {#<a href="/dataverse.xhtml?id=1" style="font-size: 1.3em; color:inheret;">{{ page_title }}</a>#}
-					<span style="font-size: 1.3em; color:inheret;">{{ page_title }}</span>
+					<span style="font-size: 1.3em; color:inheret;">{{ page_title|safe }}</span>
                 </div>
         </div>
     </div>

@@ -31,7 +31,7 @@ SECRET_KEY = '-*!l6ue971ie=t=+=)jq=&gcr=6ceo3f90z7e1z-_$3olv5(6k'
 GISFILE_SCRATCH_WORK_DIRECTORY = os.path.join(PROJECT_DIR, 'gis_scratch_work')
 
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media_root' )
-MEDIA_URL = '/static/media/'
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = (os.path.join(PROJECT_DIR, "static") ,)  # original file source
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static_root') # where files gathered and served from

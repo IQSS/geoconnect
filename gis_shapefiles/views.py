@@ -175,6 +175,8 @@ def view_03_single_shapefile_set(request, shp_md5, shapefile_base_name, shp_grou
                                       shapefile_group=shp_group_obj\
                                     , name=shapefile_base_name)
         d['single_shapefile_set'] = single_shapefile_set
+        print 'md5: ', single_shapefile_set.md5
+        
         return render_to_response('view_03_single_shapefile_set.html', d\
                                 , context_instance=RequestContext(request))
     except:
@@ -196,6 +198,7 @@ def view_03_single_shapefile_set(request, shp_md5, shapefile_base_name, shp_grou
                                 , context_instance=RequestContext(request))
                                 
     d['single_shapefile_set'] = err_msg_or_single_shapefile_set
+    print 'md5: ', err_msg_or_single_shapefile_set.md5
     print 'not bad'
     return render_to_response('view_03_single_shapefile_set.html', d\
                             , context_instance=RequestContext(request))

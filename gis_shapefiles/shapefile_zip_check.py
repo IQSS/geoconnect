@@ -178,9 +178,8 @@ class ShapefileZipCheck:
         single_shapefile_set.number_of_features = len(shp_reader.shapes())
         
         # add column names
-        fields = shp_reader.fields[1:]
-        field_names = [field[0] for field in fields]        
-        single_shapefile_set.add_column_names(field_names)
+        single_shapefile_set.add_column_info(shp_reader.fields[1:])   
+        single_shapefile_set.add_column_names_using_fields(shp_reader.fields)
 
         # add bounding box
         print 'add bounding box', shp_reader.bbox
