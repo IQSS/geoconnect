@@ -1,1 +1,0 @@
-DVN_TOKEN = 'JdPGVSga9yM8gt74ZpLp'

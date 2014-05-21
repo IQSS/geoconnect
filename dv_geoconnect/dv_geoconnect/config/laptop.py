@@ -51,4 +51,5 @@ INSTALLED_APPS = (
     'style_layer_information',
     'gis_basic_file',
     'gis_shapefiles',
+    'worldmap_import',
 )

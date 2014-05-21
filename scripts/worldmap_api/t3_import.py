@@ -11,7 +11,7 @@ import json
 import os
 import timeit
 
-from test_token import DVN_TOKEN
+from test_token2 import DVN_TOKEN
 
 class MultiPartForm(object):
     """Accumulate the data to be used when posting a form."""

@@ -4,6 +4,9 @@ dv_geoconnect/dv_geoconnect/static/test_geojson*
 dv_geoconnect/dv_geoconnect/static_root/*
 dv_geoconnect/testdb/*
 scripts/worldmap_api/test_shps/*
+scripts/worldmap_api/test_token*
+worldmap_import/test_token*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
