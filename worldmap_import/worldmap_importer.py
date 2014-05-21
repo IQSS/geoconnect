@@ -1,22 +1,15 @@
 from __future__ import print_function
-"""import itertools
-import mimetypes
-import mimetools
 
-from cStringIO import StringIO
-import urllib
-import urllib2
-import json
-"""
 import os
-import requests
-import timeit
-import json
+import requests     # http://docs.python-requests.org
+#import timeit
+#import json
+
 try:
     from test_token import DVN_TOKEN, WORLDMAP_SERVER_URL
 except:
     DVN_TOKEN = 'fake-key'
-    WORLDMAP_SERVER_URL = 'tserver.need-name.edu'
+    WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
 def get_json_str_msg(success=False, msg=''):
     return { 'success': success\
@@ -30,13 +23,21 @@ class WorldMapImporter:
     Uses the WorldMap API described here: 
         https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
 
-   
+    This is meant to be run asynchronously, thus the 4 minute timeout
     """
     IMPORT_API_PATH = 'dvn/import'
     REQUIRED_PARAM_KEYS = ['title', 'abstract', 'email', 'shapefile_name', 'geoconnect_token']
-    def __init__(self):
-        self.import_url = os.path.join(WORLDMAP_SERVER_URL, self.IMPORT_API_PATH)
-
+    
+    def __init__(self, worldmap_server_url, timeout_seconds=240):
+        """
+        :param worldmap_server_url: base server url, including http or https. e.g. http://worldmap.harvard.edu
+        :type worldmap_server_url: str or unicode
+        :param timeout_seconds: Optional. Number of seconds request is given until an exception is raised
+        :type timeout_seconds: int or float
+        """
+        self.import_url = os.path.join(worldmap_server_url, self.IMPORT_API_PATH)
+        self.timeout_seconds = timeout_seconds
+        
     def send_shapefile_to_worldmap(self, layer_params, fullpath_to_file):
         """
         :param layer_params: Data to send in the POST. Example:
@@ -54,24 +55,34 @@ class WorldMapImporter:
                 see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
         :rtype: python dict
         """
+        if layer_params is None:
+            return get_json_str_msg(False, 'The shapefile metadata (title, abstract, etc.) was not found')
+
+        if fullpath_to_file is None:
+            return get_json_str_msg(False, 'The path to the shapfiles was not found')
         
-        if not all(pkey in layer_params for pkey in REQUIRED_PARAM_KEYS):
-            missing_keys = [not pkey in layer_params for pkey in REQUIRED_PARAM_KEYS]
+        if layer_params.__class__.__name__ == 'dict':
+            layer_params['geoconnect_token'] = DVN_TOKEN
+        
+        if not all([pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]):
+            missing_keys = filter(lambda x: not x in layer_params, self.REQUIRED_PARAM_KEYS )# [not pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]
             missing_keys = [str(k) for k in missing_keys]
             key_str = ', '.join(missing_keys)
             return get_json_str_msg(False, 'These parameters are missing from "layer_params": %s' % key_str)
+
         if not os.path.isfile(fullpath_to_file):
             return get_json_str_msg(False, 'This file does not exist: %s' % fullpath_to_file)
+
                 
         print(self.import_url)
         #return
         #params = { 'key1' : 'ha' }
         #payload = {'key1': 'value1', 'key2': 'value2'}
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
-        req = requests.post(self.import_url, data=layer_params, files=shp_file_param)
+        req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
         print (req.text)
     
-    def send_shapefile_to_worldmap2(self, title, abstract, fullpath_to_file, email='raman_prasad@harvard.edu'):
+    def send_shapefile_to_worldmap2(self, title, abstract, fullpath_to_file, email):
         """Alternative function for "send_shapefile_to_worldmap"
         Prepares the python dictionary of layer_params and calls usual function for "send_shapefile_to_worldmap"
         
@@ -110,8 +121,8 @@ class WorldMapImporter:
         
 if __name__ == '__main__':
     f1 = '../scripts/worldmap_api/test_shps/blah.zip'
-    wmi = WorldMapImporter()
-    print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1))
+    wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
+    print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1, 'raman_prasad@harvard.edu'))
     
     #f2 = '../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
     #wmi = WorldMapImporter()
@@ -123,7 +134,6 @@ if __name__ == '__main__':
             , 'abstract' : '[test] Shapefile containing Boston, MA income levels from 19xx'\
             , 'email' : 'raman_prasad@harvard.edu'\
             , 'shapefile_name' : 'income_in_boston_gui.zip'\
-            , 'geoconnect_token' : DVN_TOKEN\
             }
              income data from 1990 census 
     wmi = WorldMapImporter()
