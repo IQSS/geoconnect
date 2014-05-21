@@ -27,7 +27,7 @@ Send a POST that includes a shapefile for WorldMap to import.
 
 ### Output: JSON response
 
-The JSON response depends on the outcome of the POST.  Roughly follow the JSend response guidelines for “success”, “fail”, and “error.”  (Note, probably won't use "error", just "fail")
+The JSON response depends on the outcome of the POST.  Roughly follow the [JSend](http://labs.omniti.com/labs/jsend) response guidelines for “success”, “fail”, and “error.”  (Note, probably won't use "error", just "fail")
 
 #### On Success: New Layer and/or Map Created in WorldMap
 
