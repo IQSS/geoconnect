@@ -74,14 +74,23 @@ class WorldMapImporter:
             return get_json_str_msg(False, 'This file does not exist: %s' % fullpath_to_file)
 
                 
-        print(self.import_url)
+        #print(self.import_url)
         #return
         #params = { 'key1' : 'ha' }
         #payload = {'key1': 'value1', 'key2': 'value2'}
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
-        req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
-        print (req.text)
-    
+
+        #req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
+
+        try:
+            req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
+            return req.json()
+        except requests.exceptions.Timeout:
+            return get_json_str_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
+            
+        return get_json_str_msg(False, 'The request failed to reespond, for an unknown reason')
+        
+         
     def send_shapefile_to_worldmap2(self, title, abstract, fullpath_to_file, email):
         """Alternative function for "send_shapefile_to_worldmap"
         Prepares the python dictionary of layer_params and calls usual function for "send_shapefile_to_worldmap"
