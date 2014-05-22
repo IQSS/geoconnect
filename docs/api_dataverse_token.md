@@ -73,19 +73,17 @@ class DataverseToken(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     create_time = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
-        return '%s (%s)' % (self.dataverse_user, self.single_file)
 
     def __unicode__(self):
         return '%s (%s)' % (self.dataverse_user, self.single_file)
-
 
     def has_token_expired(self, current_time=None):
         """Check if the token has expired.
         Find the difference between the current time and the token's "last_refresh_time"
         Compare it to the ApplicationInfo "time_limit_seconds" attribute
 
-        :current_time   datetime object that is timezone aware or None
+        :param current_time: datetime object that is timezone aware or None
+		:returns True/False
         """
         if current_time is None:
             current_time = datetime.utcnow().replace(tzinfo=utc)
@@ -103,6 +101,8 @@ class DataverseToken(models.Model):
         return False
 
     def refresh_token(self):
+		"""Refresh the token.  Called each time the API is used"""
+
         current_time = datetime.utcnow().replace(tzinfo=utc)
         if self.has_token_expired(current_time):
             return False            
@@ -111,9 +111,11 @@ class DataverseToken(models.Model):
         return True
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            super(DataverseToken, self).save(*args, **kwargs)
+        """On save, generate a unique token using sha224"
 
+		if not self.id:
+            super(DataverseToken, self).save(*args, **kwargs)
+		
         if not self.token:
             self.token = sha224('[id:%s][sf:%s]' % (self.id, self.single_file.md5)).hexdigest()
 
