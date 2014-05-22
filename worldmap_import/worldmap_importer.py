@@ -87,8 +87,11 @@ class WorldMapImporter:
             return req.json()
         except requests.exceptions.Timeout:
             return get_json_str_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
+        except:
+            return get_json_str_msg(False, 'Sorry! The request failed')
             
-        return get_json_str_msg(False, 'The request failed to reespond, for an unknown reason')
+            
+        return get_json_str_msg(False, 'The import failed for an unknown reason')
         
          
     def send_shapefile_to_worldmap2(self, title, abstract, fullpath_to_file, email):
