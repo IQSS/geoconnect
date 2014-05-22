@@ -1,16 +1,16 @@
 ## Dataverse Session Token
 
 The idea of a dataverse session token is that a GeoConnect user may have access to a particular Dataverse Dataset for a limited time period.
-A use case is a user trying to data an Excel file, which would involve the following process
+A use case is a user trying to data an Excel file, which would involve the following process:
 
-	+ In Dataverse: User has specified that an uploaded Excel data has GIS data
-	+ Dataverse presents user with a "Map It" button  
-	+ Clicking "Map It" generates a token used by GeoConnect
-		+ Token specifies API access for a specific file and user (e.g. only a user with edit permissions can update the DV metadata)
-	+ User taken to GeoConnect where asked to specify lat, long columns 
-	+ GeoConnect creates shapefile which is sent to the WorldMap
-	+ WorldMap metadata sent back to Dataverse
-	+ User can go back to Dataverse or go to the WorldMap
++ In Dataverse: User has specified that an uploaded Excel data has GIS data
++ Dataverse presents user with a "Map It" button  
++ Clicking "Map It" generates a token used by GeoConnect
+	+ Token specifies API access for a specific file and user (e.g. only a user with edit permissions can update the DV metadata)
++ User taken to GeoConnect where asked to specify lat, long columns 
++ GeoConnect creates shapefile which is sent to the WorldMap
++ WorldMap metadata sent back to Dataverse
++ User can go back to Dataverse or go to the WorldMap
 
 ### Tables to support the Dataverse Session Token
 
