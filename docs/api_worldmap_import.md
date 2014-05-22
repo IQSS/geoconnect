@@ -49,10 +49,17 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 ### On Fail:  Invalid data or call conditions
 
 1. **status** - "fail"
-2. **data** - hash with user readable messages
+2. **data** - hash with user readable messages related to API keys
   +   Example: {   "status" : "fail",  
         "data" : { "title" : "A title is required" }  
     }
 
+### On Error:  Server Error
+
+1. **status** - "fail"
+2. **data** - hash with user readable messages
+  +   Example: {   "status" : "fail",  
+        	"message" : "WorldMap was not available.  Please try again." }  
+    }
 Full Specifications originally from a [google doc](https://docs.google.com/a/g.harvard.edu/document/d/1ASSQUaZoW_R1VqsMC5qZBCw1naEWw4yUOBLr_ACo3IM/)
 

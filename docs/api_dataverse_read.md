@@ -50,3 +50,18 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 
 1. **dv_session_token** - Token to use for additional API calls in this session
 
+### On Fail:  Invalid data or call conditions
+
+1. **status** - "fail"
+2. **message** - User readable message
+  +   Example: {   "status" : "fail",  
+        "data" : "dv_session_token" : "Your session has expired.  Please log into dataverse to continue.  http://link-to-dataverse"  
+    }
+
+### On Error:  Server Error
+
+1. **status** - "error"
+2. **message** - User readable message
+  +   Example: {   "status" : "fail",  
+	        "message" : "Sorry!  The dataverse is currently not available."  
+    }
