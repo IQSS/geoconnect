@@ -111,7 +111,7 @@ class DataverseToken(models.Model):
         return True
 
     def save(self, *args, **kwargs):
-        """On save, generate a unique token using sha224"
+        """On save, generate a unique token using sha224"""
 
 		if not self.id:
             super(DataverseToken, self).save(*args, **kwargs)
