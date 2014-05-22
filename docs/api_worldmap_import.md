@@ -20,14 +20,14 @@ Send a POST that includes a shapefile for WorldMap to import.
   + 1st round: skip any confirmation steps in this process
 1. **shapefile_name** - name of shapefile to import.  This is a .zip containing 1 shapefile
 1. **content** - filestream of a .zip containing 1 shapefile
-1. **geoconnect_token**  - “secret” string token to identify client. 
+1. **geoconnect_token**  - "secret" string token to identify client. 
   + Used for proof of concept
-  + This will be “upgraded” to oauth or similar protocol    
+  + This will be "upgraded" to oauth or similar protocol    
 1. **worldmap_username** - optional.  2nd step, if it is available
 
 ### Output: JSON response
 
-The JSON response depends on the outcome of the POST.  Roughly follow the [JSend](http://labs.omniti.com/labs/jsend) response guidelines for “success”, “fail”, and “error.”  (Note, probably won't use "error", just "fail")
+The JSON response depends on the outcome of the POST.  Roughly follow the [JSend](http://labs.omniti.com/labs/jsend) response guidelines for "success", "fail", and "error."  (Note, probably won't use "error", just "fail")
 
 ### On Success: New Layer and/or Map Created in WorldMap
 
