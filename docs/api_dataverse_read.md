@@ -26,18 +26,18 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 
 1. **status** - "success"
 
-   -- _Dataverse Information_ --
+   _Dataverse Information_:
 
 1. **dv_id** - owning dataverse primary key
 1. **dv_name** - owning dataverse name for display
 
-   -- _Dataset Information_ --
+   _Dataset Information_:
 
 1. **dataset_id** - dataset primary key
 1. **dataset_name** - dataset name for display
 1. **dataset_citation** - dataset citation for display
 
-   -- _Datafile Information_ --
+   -- _Datafile Information_:
 
 1. **datafile_id** - id number
 1. **datafile_version** - version number
@@ -46,7 +46,7 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 1. **datafile_type** - dvobject.contenttype
 1. **datafile_expected_md5_checksum** - MD5 to verify file if it is retrieved
 
-   -- _User Session Information_ --
+   -- _User Session Information_:
 
 1. **dv_session_token** - Token to use for additional API calls in this session
 
