@@ -15,21 +15,21 @@ A use case is a user trying to data an Excel file, which would involve the follo
 
 Conceptually/Informally the support for database tokens may resemble:
 
-- Authorized Applications
-	1. IP Address	
-	1. Hostname
-	1. Application key
-	1. Time Limit (seconds)
-	1. Max Existence (seconds)	# How long token may exist from create time
++ Authorized Applications
+	+ IP Address	
+	+ Hostname
+	+ Application key
+	+ Time Limit (seconds)
+	+ Max Existence (seconds)	# How long token may exist from create time
 	
-- GeoConnect Token Table
-	1. token
-	1. authorized application (FK)
-	1. create time
-	1. refresh time
-	1. dataset id
-	1. DVN user id
-	1. may_update_metadata 
++ GeoConnect Token Table
+	+ token
+	+ authorized application (FK)
+	+ create time
+	+ refresh time
+	+ dataset id
+	+ DVN user id
+	+ may_update_metadata 
 		- (Based on user permissions. example, True if the person is the dataset owner or an editor?)
 
 ```python
