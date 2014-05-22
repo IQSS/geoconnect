@@ -33,9 +33,31 @@ Conceptually/Informally the support for database tokens may resemble:
 		- (Based on user permissions. example, True if the person is the dataset owner or an editor?)
 
 ```python
+
+# From some working proof of concept code 
+
+class ApplicationInfo(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(help_text='contact info, etc')
+    contact_email = models.EmailField()
+    
+    hostname = models.CharField(max_length=255, blank=True)
+    ip_address = models.CharField(max_length=15, blank=True)
+    
+    mapit_link = models.URLField(help_text='http://geoconnect.harvard.edu')	# append token to this link
+    #api_permissions = models.ManyToManyField(APIPermission, blank=True, null=True)
+    
+    time_limit_minutes = models.IntegerField(default=30, help_text='in minutes')
+    time_limit_seconds = models.IntegerField(default=0, help_text='autofilled on save')
+    
+    md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
+    
+    update_time = models.DateTimeField(auto_now=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+
+
 class DataverseToken(models.Model):
-    """Superclass for a GIS File "Helper"
-    - Examples of GIS files: shapefiles, GeoTiffs, spreadsheets or delimited text files with lat/lng, GeoJSON etc
+    """Example of a "mock token"
     """
     token = models.CharField(max_length=255, blank=True, help_text = 'auto-filled on save', db_index=True)
     application = models.ForeignKey(ApplicationInfo)
@@ -55,4 +77,3 @@ class DataverseToken(models.Model):
         return '%s (%s)' % (self.dataverse_user, self.single_file)
 
 ```
-`
