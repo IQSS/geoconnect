@@ -8,7 +8,7 @@
   + [Django view](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/views.py), see [dvn_import](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/views.py#L17)
   + [Django url](https://github.com/mbertrand/cga-worldmap/blob/dvn/geonode/dvn/urls.py)
 
-###  Input:  POST to WorldMap
+##  Input:  POST to WorldMap
 
 Send a POST that includes a shapefile for WorldMap to import.
 
@@ -25,7 +25,7 @@ Send a POST that includes a shapefile for WorldMap to import.
   + This will be “upgraded” to oauth or similar protocol    
 1. **worldmap_username** - optional.  2nd step, if it is available
 
-### Output: JSON response
+## Output: JSON response
 
 The JSON response depends on the outcome of the POST.  Roughly follow the [JSend](http://labs.omniti.com/labs/jsend) response guidelines for “success”, “fail”, and “error.”  (Note, probably won't use "error", just "fail")
 
