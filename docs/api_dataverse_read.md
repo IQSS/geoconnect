@@ -4,7 +4,7 @@
 ### Basic Flow
 + Dataverse passes a token to GeoConnect
 	+ This token allows Dataverse to request information for a particular DV user and file
-	+ Token is described in (api_dataverse_token.md)
+	+ Token is described in [api_dataverse_token.md](api_dataverse_token.md)
 + GeoConnect uses token to read file metadata
 	+ In the case of .zip(s) containing multiple files, may offer user choice of a particular file or shapefile set
 + GeoConnect uses token to read file itself
