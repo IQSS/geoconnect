@@ -23,7 +23,10 @@ Send a POST that includes a shapefile for WorldMap to import.
 1. **geoconnect_token**  - "secret" string token to identify client. 
   + Used for proof of concept
   + This will be "upgraded" to oauth or similar protocol    
-1. **worldmap_username** - optional.  2nd step, if it is available
+1. **worldmap_username** - For proof of concept, use email address to link or create account
+  + If email connect to an existing WorldMap user, create layer with that user
+  + Email not connect to existing WorldMap user, make a WorldMap user with that email
+  + After proof of concept, need user permission to do this
 
 ### Output: JSON response
 
