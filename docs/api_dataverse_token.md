@@ -76,4 +76,56 @@ class DataverseToken(models.Model):
     def __unicode__(self):
         return '%s (%s)' % (self.dataverse_user, self.single_file)
 
+    def __unicode__(self):
+        return '%s (%s)' % (self.dataverse_user, self.single_file)
+
+
+    def has_token_expired(self, current_time=None):
+        """Check if the token has expired.
+        Find the difference between the current time and the token's "last_refresh_time"
+        Compare it to the ApplicationInfo "time_limit_seconds" attribute
+
+        :current_time   datetime object that is timezone aware or None
+        """
+        if current_time is None:
+            current_time = datetime.utcnow().replace(tzinfo=utc)
+
+        try:
+            mod_time = current_time - self.last_refresh_time
+        except:
+            return True
+
+        if mod_time.seconds > self.application.time_limit_seconds:
+            self.has_expired = True
+            self.save()
+            return True
+
+        return False
+
+    def refresh_token(self):
+        current_time = datetime.utcnow().replace(tzinfo=utc)
+        if self.has_token_expired(current_time):
+            return False            
+        self.last_refresh_time = current_time
+        self.save()
+        return True
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            super(DataverseToken, self).save(*args, **kwargs)
+
+        if not self.token:
+            self.token = sha224('[id:%s][sf:%s]' % (self.id, self.single_file.md5)).hexdigest()
+
+        super(DataverseToken, self).save(*args, **kwargs)
+
+    def get_mapit_link_with_token(self, request):
+        #metadata_url = reverse('view_single_file_metadata', kwargs={'dv_token' : self.token})
+
+        d = {}
+        metadata_url = reverse('view_single_file_metadata_base_url', kwargs={})
+        d['cb'] = request.build_absolute_uri(metadata_url) #request.get_host()
+        callback_url = urllib.urlencode(d)
+        return self.application.mapit_link + '%s/?%s' % (self.token, callback_url)
+
 ```
