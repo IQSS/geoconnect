@@ -2,6 +2,7 @@
 
 The idea of a dataverse session token is that a GeoConnect user may have access to a particular Dataverse Dataset for a limited time period.
 A use case is a user trying to data an Excel file, which would involve the following process
+
 	+ In Dataverse: User has specified that an uploaded Excel data has GIS data
 	+ Dataverse presents user with a "Map It" button  
 	+ Clicking "Map It" generates a token used by GeoConnect
@@ -34,7 +35,7 @@ Conceptually/Informally the support for database tokens may resemble:
 
 ```python
 
-# From some working proof of concept code 
+# From some working proof of concept code.  Note: This will be implemented in Java
 
 class ApplicationInfo(models.Model):
     name = models.CharField(max_length=255, unique=True)
