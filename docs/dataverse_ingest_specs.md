@@ -65,17 +65,6 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 + mimetype: "shapefile"; isType("shapefile") -> true
 + metadata block: `[{ "filename" : "bicycles.shp", "filesize" : 48596 }, { "filename" : "bicycles.shx", "filesize" :  13956 } ... etc ... ]`
 
-```javascript[{ 
-	"filename" : "bicycles.shp",
-	"filesize" : 48596,
-},
-	{ 
-	"filename" : "bicycles.shx",
-	"filesize" : 13956,
-}, ... etc ... ]
-```
-
-
 ```
 - bicycles.txt  (separate, not part of a shapefile set)
 - the_bikes.md  (separate, not part of a shapefile set)
