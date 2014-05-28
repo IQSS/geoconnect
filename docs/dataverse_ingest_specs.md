@@ -63,7 +63,7 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 ```			
 
 + mimetype: "shapefile"; isType("shapefile") -> true
-+ metadata block: 
++ metadata block: `[{ "filename" : "bicycles.shp", "filesize" : 48596 }, { "filename" : "bicycles.shx", "filesize" :  13956 } ... etc ... ]`
 
 ```javascript[{ 
 	"filename" : "bicycles.shp",
@@ -84,17 +84,8 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 ```
 
 + mimetype: "shapefile"; isType("shapefile") -> true	
-+ metadata block: 
++ metadata block: `[{ "filename" : "subway_line.shp", "filesize" : 78526 }, { "filename" : "subway_line.shx", "filesize" :  956 } ... etc ... ]`
 
-```javascript
-[{ 
-	"filename" : "subway_line.shp",
-	"filesize" : 78526,
-},
-	{ 
-	"filename" : "subway_line.shx",
-	"filesize" :  956,
-}, ... etc ... ]```
 
 
 
