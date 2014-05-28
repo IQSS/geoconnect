@@ -12,9 +12,9 @@ For ingest and connecting to WorldMap 4 files are the minimum required:
 
 ## DV Ingest Specifics
 
-1. .zip is unpacked (same as all .zip files)
-2. shapefile sets are recognized by the same base name and specific extensions.
-3. Example.  These individual files constitute a shapefile set.  The first four are the minimum required (.shp, .shx, .dbf, .prj)
++  .zip is unpacked (same as all .zip files)
++  shapefile sets are recognized by the same base name and specific extensions.
++  Example.  These individual files constitute a shapefile set.  The first four are the minimum required (.shp, .shx, .dbf, .prj)
 ```
 - bicycles.shp    (required extension)
 - bicycles.shx    (required extension)
@@ -23,13 +23,13 @@ For ingest and connecting to WorldMap 4 files are the minimum required:
 - bicycles.sbx	(NOT required extension)
 - bicycles.sbn	(NOT required extension)
 ```
-4. Upon recognition of the 4 required files, the dataverse will:
++  Upon recognition of the 4 required files, the dataverse will:
   * Group them _as well as any other relevant files into a shapefile set_
   * Create a new .zip with "mimetype" as a shapefile.
   * The shapefile set will persist as this new .zip
   * Connected to this new set, a shapefile metadata block will be created containing file info: name, size, date
 
-h3. Example 1a: Original .zip contents
+### Example 1a: Original .zip contents
 
 A file name is *bikes_and_subways.zip* is uploaded to the Dataverse. This .zip contains the following files.
 ```
@@ -48,7 +48,7 @@ A file name is *bikes_and_subways.zip* is uploaded to the Dataverse. This .zip c
 - subway_line.dbf  (shapefile set #2)
 ```		
 
-h3. Example 1b: Unpacked files saved in DV
+### Example 1b: Unpacked files saved in DV
 
 Upon ingest, the dataverse unpacks the file *bikes_and_subways.zip*.  Upon recognizing the shapefile sets, it groups those files together into new .zip files.
 
@@ -61,8 +61,8 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 	Contains shapefile set #1: bicycles.shp, 	bicycles.shx, bicycles.prj, bicycles.dbf, bicycles.sbx, bicycles.sbn)
 ```			
 
-* mimetype: "shapefile"; isType("shapefile") -> true
-* metadata block: 
++ mimetype: "shapefile"; isType("shapefile") -> true
++ metadata block: 
 	
 ```
 [{ 
@@ -81,8 +81,8 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 - subway_line.zip  (contains shapefile set #2: subway_line.shp, subway_line.shx, subway_line.prj, subway_line.dbf)
 ```
 
-* mimetype: "shapefile"; isType("shapefile") -> true	
-* metadata block: 
++ mimetype: "shapefile"; isType("shapefile") -> true	
++ metadata block: 
 
 ```
 [{ 
