@@ -8,7 +8,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'dv_geoconnect.views.home', name='home'),
+    # url(r'^$', 'geoconnect.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^shapefile/', include('gis_shapefiles.urls')),
 
@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     url(r'^geo-connect-admin/', include(admin.site.urls)),
+    
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

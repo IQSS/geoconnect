@@ -265,7 +265,7 @@ class ShapefileZipCheck:
 if __name__ == '__main__':
     #fname = None
     #fname = '/Users/rmp553/Google Drive/BARI/test_data/boston-geo-infrastructure/Base Layers.zip'
-    fname = '/Users/rmp553/Documents/iqss-git/geo-annotate/dv_geoconnect/test_shapefiles/CommunityCenters_Pag.zip'
+    fname = '/Users/rmp553/Documents/iqss-git/geo-annotate/geoconnect/test_shapefiles/CommunityCenters_Pag.zip'
     
     ztest = ShapefileZipCheck(fname)
     #ztest = ShapefileZipCheck()

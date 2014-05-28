@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from gis_shapefiles.models import SingleShapefileSet, SingleFileInfo
 from gis_shapefiles.views import view_choose_shapefile
 
-from dv_geoconnect.settings import MEDIA_ROOT
+from geoconnect.settings import MEDIA_ROOT
 import os
 import logging
 logger = logging.getLogger(__name__)

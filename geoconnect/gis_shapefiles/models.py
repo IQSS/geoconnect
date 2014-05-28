@@ -4,8 +4,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
 from gis_basic_file.models import GISFileHelper
-from dv_geo_utils.fsize_human_readable import sizeof_fmt
-from dv_geo_utils.json_field_reader import JSONFieldReader
+from geo_utils.fsize_human_readable import sizeof_fmt
+from geo_utils.json_field_reader import JSONFieldReader
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 

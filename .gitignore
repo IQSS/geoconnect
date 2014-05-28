@@ -1,11 +1,10 @@
-dv_geoconnect/dv_geoconnect/gis_scratch*
-dv_geoconnect/dv_geoconnect/media*
-dv_geoconnect/dv_geoconnect/static/test_geojson*
-dv_geoconnect/dv_geoconnect/static_root/*
-dv_geoconnect/testdb/*
+geoconnect/geoconnect/config
+geoconnect/static/test_geojson*
+test_setup/*
+
 scripts/worldmap_api/test_shps/*
 scripts/worldmap_api/test_token*
-worldmap_import/test_token*
+geoconnect/worldmap_import/test_token*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,5 +1,5 @@
 """
-Django settings for dv_geoconnect project.
+Django settings for geoconnect project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -34,7 +34,7 @@ ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 #TEMPLATE_DIRS = config.TEMPLATE_DIRS
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'dv_geoconnect', 'templates'),
+    os.path.join(BASE_DIR, 'geoconnect', 'templates'),
 #    "/home/html/templates/lawrence.com",
 #    "/home/html/templates/default",
 )
@@ -52,9 +52,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'dv_geoconnect.urls'
+ROOT_URLCONF = 'geoconnect.urls'
 
-WSGI_APPLICATION = 'dv_geoconnect.wsgi.application'
+WSGI_APPLICATION = 'geoconnect.wsgi.application'
 
 # Used for working with GIS files
 #   example: extracting shapefiles
@@ -141,7 +141,7 @@ LOGGING = {
             'propagate': True,
             'level':'DEBUG',
         },
-    'dv_geoconnect': {
+    'geoconnect': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
         },

@@ -11,7 +11,7 @@ from gis_shapefiles.forms import ShapefileGroupForm
 from gis_shapefiles.models import ShapefileGroup, SingleShapefileSet, SingleFileInfo
 from gis_shapefiles.shp_services import update_shapefileset_with_metadata
 from gis_shapefiles.shapefilehelper_viewer import ShapefileGroupViewer
-from dv_geoconnect.settings import MEDIA_ROOT 
+from geoconnect.settings import MEDIA_ROOT 
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 

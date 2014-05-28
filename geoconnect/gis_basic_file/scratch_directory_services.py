@@ -1,7 +1,7 @@
 import shutil
 import os
 from datetime import datetime, timedelta
-from dv_geoconnect import settings
+from geoconnect import settings
 import re
 import logging
 
