@@ -49,39 +49,39 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
    #### .zip File Information ####
 + file names and sizes
 
-```json
- 	{ 'enclosed_file_info' : [
+```javascript
+ 	{ "enclosed_file_info" : [
  			{ 
-				'filename' : 'bicycles.shp',
-				'filesize' : 48596,
+				"filename" : "bicycles.shp",
+				"filesize" : 48596,
 			},
  			{ 
-				'filename' : 'bicycles.shx',
-				'filesize' : 13956,
+				"filename" : "bicycles.shx",
+				"filesize" : 13956,
 			},
  			{ 
-				'filename' : 'bicycles.prj',
-				'filesize' : 567,
+				"filename" : "bicycles.prj",
+				"filesize" : 567,
 			},
  			{ 
-				'filename' : 'bicycles.dbf',
-				'filesize' : 6803326,
+				"filename" : "bicycles.dbf",
+				"filesize" : 6803326,
 			},
  			{ 
-				'filename' : 'bicycles.sbx',
-				'filesize' : 972,
+				"filename" : "bicycles.sbx",
+				"filesize" : 972,
 			},
  			{ 
-				'filename' : 'bicycles.sbn',
-				'filesize' : 16804,
+				"filename" : "bicycles.sbn",
+				"filesize" : 16804,
 			},
 			{ 
-				'filename' : 'manifest.txt',
-				'filesize' : 201,
+				"filename" : "manifest.txt",
+				"filesize" : 201,
 			},
 			{ 
-				'filename' : 'bicycle_sheet.xls',
-				'filesize' : 41453,
+				"filename" : "bicycle_sheet.xls",
+				"filesize" : 41453,
 			},
 		] }
 ```
