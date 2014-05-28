@@ -32,6 +32,7 @@ For ingest and connecting to WorldMap 4 files are the minimum required:
 ### Example 1a: Original .zip contents
 
 A file name is *bikes_and_subways.zip* is uploaded to the Dataverse. This .zip contains the following files.
+
 ```
 - bicycles.shp  (shapefile set #1)
 - bicycles.shx  (shapefile set #1)
@@ -63,15 +64,16 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 
 + mimetype: "shapefile"; isType("shapefile") -> true
 + metadata block: 
-+```
-[{ 
+
+```javascript[{ 
 	"filename" : "bicycles.shp",
 	"filesize" : 48596,
 },
 	{ 
 	"filename" : "bicycles.shx",
 	"filesize" : 13956,
-}, ... etc ... ]```
+}, ... etc ... ]
+```
 
 
 ```
@@ -84,7 +86,7 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 + mimetype: "shapefile"; isType("shapefile") -> true	
 + metadata block: 
 
-```
+```javascript
 [{ 
 	"filename" : "subway_line.shp",
 	"filesize" : 78526,
