@@ -63,8 +63,7 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 
 + mimetype: "shapefile"; isType("shapefile") -> true
 + metadata block: 
-	
-```
++```
 [{ 
 	"filename" : "bicycles.shp",
 	"filesize" : 48596,
@@ -73,6 +72,7 @@ This is to ensure that a shapefile set remains intact--individual files are not 
 	"filename" : "bicycles.shx",
 	"filesize" : 13956,
 }, ... etc ... ]```
+
 
 ```
 - bicycles.txt  (separate, not part of a shapefile set)
