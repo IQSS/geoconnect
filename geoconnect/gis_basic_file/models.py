@@ -1,19 +1,23 @@
 from hashlib import md5
+from datetime import date
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
-from datetime import date
+
+from core.models import TimeStampedModel
+
 from gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
-import shutil
 
 
-class GISDataFile(models.Model):
+class GISDataFile(TimeStampedModel):
     """GeoConnect - For working with a Dataverse File for a given user
     These objects will persist for a limited time (days, weeks), depending on the system demand
     """
 
     # Dataverse user info
     dv_user_id = models.IntegerField()          # for API calls
+    dv_user_email = models.EmailField()          # for API calls
     dv_username = models.CharField(max_length=255)  # for display
 
     # Owning dataverse
@@ -22,6 +26,7 @@ class GISDataFile(models.Model):
     
     # Dataset Info
     dataset_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
+    dataset_version_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
     dataset_name = models.CharField(max_length=255)  # for display
     dataset_citation = models.TextField(blank=True) # for display
 
@@ -45,10 +50,7 @@ class GISDataFile(models.Model):
     
     # for object identifcation
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-    
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
-    
+  
     
     def get_scratch_work_directory(self):
         """Return the full path of the scratch working directory.  
@@ -73,10 +75,10 @@ class GISDataFile(models.Model):
 
 
     class Meta:
-        ordering = ('-update_time',  )
+        ordering = ('-modified',  )
         
 
-class GISFileHelper(models.Model):
+class GISFileHelper(TimeStampedModel):
     """Superclass for a GIS File "Helper"
     - Examples of GIS files: shapefiles, GeoTiffs, spreadsheets or delimited text files with lat/lng, GeoJSON etc
     """
@@ -94,8 +96,6 @@ class GISFileHelper(models.Model):
     
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
     
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
     
     def get_scratch_work_directory(self):
         """Return the full path of the scratch working directory.  
@@ -155,5 +155,5 @@ class GISFileHelper(models.Model):
         
         
     class Meta:
-        ordering = ('-update_time',  )
+        ordering = ('-modified',  )
         #verbose_name = 'COA File Load Log'

@@ -26,7 +26,7 @@ def get_shapefile_group_md5_from_metadata(shp_dict):
     # Check for existing groups based on the kwargs
     existing_md5s = ShapefileGroup.objects.filter(**shp_dict\
                                 ).values_list('md5', flat=True\
-                                ).order_by('create_time')
+                                ).order_by('created')
 
     existing_md5s = list(existing_md5s)
     # Existing group(s) found

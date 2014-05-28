@@ -1,8 +1,12 @@
 import os
 from hashlib import md5
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
+
+from core.models import TimeStampedModel
+
 from gis_basic_file.models import GISFileHelper
 from geo_utils.fsize_human_readable import sizeof_fmt
 from geo_utils.json_field_reader import JSONFieldReader
@@ -56,12 +60,12 @@ class ShapefileGroup(GISFileHelper):
         super(ShapefileGroup, self).save(*args, **kwargs)
  
     class Meta:
-        ordering = ('-update_time',  )
+        ordering = ('-modified',  )
         #verbose_name = 'COA File Load Log'
 
  
     
-class SingleShapefileSet(models.Model):
+class SingleShapefileSet(TimeStampedModel):
     """Used for working with a selected shapefile, specifically using the extensions specified in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
     
     """
@@ -76,9 +80,6 @@ class SingleShapefileSet(models.Model):
     #has_required_files
     
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-    
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
     
     def get_file_info(self):
         return self.singlefileinfo_set.all()
@@ -147,11 +148,11 @@ class SingleShapefileSet(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('-update_time', 'name')
+        ordering = ('-modified', 'name')
         #unique_together = ('name', 'shapefile_group')
 
 
-class SingleFileInfo(models.Model):
+class SingleFileInfo(TimeStampedModel):
     """
     For a shapefile set, this is metadata on the individual files.
     """
@@ -164,10 +165,6 @@ class SingleFileInfo(models.Model):
     extracted_file_path = models.CharField(max_length=255, blank=True)
 
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
-
 
     def get_human_readable_filesize(self):
         """Get human readable filesize, e.g. 13.7 MB"""
@@ -200,6 +197,6 @@ class SingleFileInfo(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('-update_time', 'name')
+        ordering = ('-modified', 'name')
         verbose_name = 'Single File Information'
         verbose_name_plural = verbose_name

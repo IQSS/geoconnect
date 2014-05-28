@@ -3,8 +3,8 @@
     "pk": 1, 
     "model": "style_layer_information.binningalgorithm", 
     "fields": {
-        "update_time": "2014-04-25T15:38:24.932Z", 
-        "create_time": "2014-04-25T15:38:24.932Z", 
+        "modified": "2014-04-25T15:38:24.932Z", 
+        "created": "2014-04-25T15:38:24.932Z", 
         "name": "Unique values", 
         "description": ""
     }
@@ -13,8 +13,8 @@
     "pk": 2, 
     "model": "style_layer_information.binningalgorithm", 
     "fields": {
-        "update_time": "2014-04-25T15:38:24.939Z", 
-        "create_time": "2014-04-25T15:38:24.939Z", 
+        "modified": "2014-04-25T15:38:24.939Z", 
+        "created": "2014-04-25T15:38:24.939Z", 
         "name": "Quantile", 
         "description": ""
     }
@@ -23,8 +23,8 @@
     "pk": 3, 
     "model": "style_layer_information.binningalgorithm", 
     "fields": {
-        "update_time": "2014-04-25T15:38:24.940Z", 
-        "create_time": "2014-04-25T15:38:24.940Z", 
+        "modified": "2014-04-25T15:38:24.940Z", 
+        "created": "2014-04-25T15:38:24.940Z", 
         "name": "Equal Intervals", 
         "description": ""
     }
@@ -33,8 +33,8 @@
     "pk": 4, 
     "model": "style_layer_information.binningalgorithm", 
     "fields": {
-        "update_time": "2014-04-25T15:38:24.941Z", 
-        "create_time": "2014-04-25T15:38:24.941Z", 
+        "modified": "2014-04-25T15:38:24.941Z", 
+        "created": "2014-04-25T15:38:24.941Z", 
         "name": "Jenks", 
         "description": ""
     }

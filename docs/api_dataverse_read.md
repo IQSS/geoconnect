@@ -24,31 +24,31 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 
 ### On Success: Information retrieved from Dataverse
 
-1. **status** - "success"
++ **status** - "success"
 
-   _Dataverse Information_:
+	#### Dataverse Information ####
 
-1. **dv_id** - owning dataverse primary key
-1. **dv_name** - owning dataverse name for display
++ **dv_id** - owning dataverse primary key
++ **dv_name** - owning dataverse name for display
 
-   _Dataset Information_:
+   #### Dataset Information ####
 
-1. **dataset_id** - dataset primary key
-1. **dataset_name** - dataset name for display
-1. **dataset_citation** - dataset citation for display
++ **dataset_id** - dataset primary key
++ **dataset_name** - dataset name for display
++ **dataset_citation** - dataset citation for display
 
-   _Datafile Information_:
+   #### Datafile Information ####
 
-1. **datafile_id** - id number
-1. **datafile_version** - version number
-1. **datafile_name** - for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
-1. **datafile_desc** - for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
-1. **datafile_type** - dvobject.contenttype
-1. **datafile_expected_md5_checksum** - MD5 to verify file if it is retrieved
++ **datafile_id** - id number
++ **datafile_version** - version number
++ **datafile_name** - for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
++ **datafile_desc** - for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
++ **datafile_type** - dvobject.contenttype
++ **datafile_expected_md5_checksum** - MD5 to verify file if it is retrieved
 
-   _User Session Information_:
+   #### User Session Information ####
 
-1. **dv_session_token** - Token to use for additional API calls in this session
++ **dv_session_token** - Token to use for additional API calls in this session (TBD)
 
 ### On Fail:  Invalid data or call conditions
 

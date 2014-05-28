@@ -5,7 +5,7 @@ class GISFileHelperAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ('name',  )
     list_filter = ('gis_file_type', 'dataset_name', )    
-    readonly_fields = ('update_time', 'create_time', 'md5', 'test_view', 'gis_file_type')
+    readonly_fields = ('modified', 'created', 'md5', 'test_view', 'gis_file_type')
     list_display = ('name', 'dv_username', 'dataset_name', 'gis_file_type', 'test_view'  )
 admin.site.register(GISFileHelper, GISFileHelperAdmin)
 
@@ -14,8 +14,8 @@ class GISDataFileAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ('dv_username',  'datafile_name', 'datafile_type', 'dataset_name', 'dv_name', 'dv_file')
     list_filter = ('dv_username', 'dv_name', 'dataset_name')    
-    readonly_fields = ('update_time', 'create_time', 'md5', )
-    list_display = ('dv_username',  'datafile_name', 'dataset_name', 'dv_name', 'dv_file', 'update_time')
+    readonly_fields = ('modified', 'created', 'md5', )
+    list_display = ('dv_username',  'datafile_name', 'dataset_name', 'dv_name', 'dv_file', 'modified')
     fieldsets = (
            ('Dataverse user', {
                'fields': ('dv_user_id', 'dv_username',)
@@ -33,7 +33,7 @@ class GISDataFileAdmin(admin.ModelAdmin):
                'fields': ('dv_file', 'gis_scratch_work_directory' )
            }),
            ('Read-Only Info', {
-               'fields': ('md5', 'update_time', 'create_time' )
+               'fields': ('md5', 'modified', 'created' )
            }),
        )
        

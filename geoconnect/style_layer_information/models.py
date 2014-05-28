@@ -1,19 +1,21 @@
 from hashlib import md5
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
+
+from core.models import TimeStampedModel
+
 from gis_basic_file.models import GISFileHelper
 
 
-class BinningAlgorithm(models.Model):
+class BinningAlgorithm(TimeStampedModel):
     """Corresponds to the classification tool on the WorldMap
      Examples: Unique values, Quantile, Equal Intervals, Jenks"""
     
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True)
-    
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
+
     
     def __unicode__(self):
         return self.name
@@ -22,7 +24,7 @@ class BinningAlgorithm(models.Model):
         ordering = ('name',)    
         
         
-class StyleLayerDescriptionInformation(models.Model):
+class StyleLayerDescriptionInformation(TimeStampedModel):
     """For a given GIS file, store the styling information, including:
     - Chosen column
     - Binning Algorithm
@@ -42,8 +44,6 @@ class StyleLayerDescriptionInformation(models.Model):
     
     md5 = models.CharField(max_length=40, blank=True, db_index=True)
     
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s, %s (%s)' % (self.gis_file_helper.name\

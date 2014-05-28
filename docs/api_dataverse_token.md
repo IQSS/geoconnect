@@ -53,8 +53,8 @@ class ApplicationInfo(models.Model):
     
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
     
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class DataverseToken(models.Model):
@@ -71,8 +71,8 @@ class DataverseToken(models.Model):
     
     last_refresh_time =  models.DateTimeField(auto_now_add=True)
            
-    update_time = models.DateTimeField(auto_now=True)
-    create_time = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
     def __unicode__(self):
