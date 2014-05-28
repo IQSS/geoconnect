@@ -50,7 +50,7 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 + file names and sizes
 
 ```javascript
- 	{ "enclosed_file_info" : [
+ 	{ "zip_file_info" : [
  			{ 
 				"filename" : "bicycles.shp",
 				"filesize" : 48596,
