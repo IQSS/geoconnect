@@ -49,7 +49,8 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
    #### .zip File Information ####
 + file names and sizes
 
-   ``` { 'enclosed_file_info' : [
+```json
+ 	{ 'enclosed_file_info' : [
  			{ 
 				'filename' : 'bicycles.shp',
 				'filesize' : 48596,
@@ -82,7 +83,8 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 				'filename' : 'bicycle_sheet.xls',
 				'filesize' : 41453,
 			},
-		] }```
+		] }
+```
 
    #### User Session Information ####
 
