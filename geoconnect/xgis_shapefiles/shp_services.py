@@ -5,13 +5,13 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
+from gis_shapefiles.models import ShapefileGroup
 import shapefile
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-'''
 def get_shapefile_group_md5_from_metadata(shp_dict):
     if shp_dict is None:
         return None
@@ -52,7 +52,7 @@ def get_shapefile_group_md5_from_metadata(shp_dict):
     shape_group_obj.save()           
     
     return shape_group_obj.md5      
-'''    
+    
 
 
 def update_shapefileset_with_metadata(shp_info_obj):

@@ -6,7 +6,7 @@ from django.db import models
 
 from core.models import TimeStampedModel
 
-from gis_basic_file.models import GISFileHelper
+from gis_basic_file.models import GISDataFile
 
 
 class BinningAlgorithm(TimeStampedModel):
@@ -33,7 +33,7 @@ class StyleLayerDescriptionInformation(TimeStampedModel):
     These choices match up with the WorldMap classification tool.
     Roughly corresponds to the WorldMap Style Layer Description (SLD)
     """
-    gis_file_helper = models.ForeignKey(GISFileHelper)
+    gis_data_file = models.ForeignKey(GISDataFile)
     
     chosen_column = models.CharField(max_length=255)
     binning_algorithm = models.ForeignKey(BinningAlgorithm)
@@ -46,7 +46,7 @@ class StyleLayerDescriptionInformation(TimeStampedModel):
     
 
     def __unicode__(self):
-        return '%s, %s (%s)' % (self.gis_file_helper.name\
+        return '%s, %s (%s)' % (self.gis_data_file.name\
                             , self.chosen_column\
                             , self.binning_algorithm\
                             )

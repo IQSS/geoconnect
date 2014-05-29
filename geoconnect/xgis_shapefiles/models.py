@@ -13,20 +13,73 @@ from geo_utils.json_field_reader import JSONFieldReader
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
-class ShapefileSet(GISDataFile):
+class ShapefileGroup(GISDataFile):
     """Expects a .zip file upload
     Modify in the future for shapefiles loaded separately
     """
-    name = models.CharField(max_length=255, blank=True)        #   shapefile basename
+    shp_file = models.FileField(upload_to='shp_process', max_length=255)
 
     zipfile_checked = models.BooleanField(default=False)
     has_shapefile = models.BooleanField(default=False)
+    
+    shapefile_names = models.TextField(blank=True, help_text='saved as JSON')
+    num_shapefiles = models.IntegerField(default=0)
+    
+    def add_shapefile_names(self, l=[]):
+        self.shapefile_names = JSONFieldReader.get_python_val_as_json_string(l)
+        
+    def get_shapefile_names(self):
+        return JSONFieldReader.get_json_string_as_python_val(self.shapefile_names)
+        
+        
+    def get_shapefile_basenames(shapefile_names):
+        l = self.get_shapefile_names()
+        if l is None or len(l) == 0:
+            return None
 
+        return [os.path.basename(x) for x in l]
+        
+        
+    def is_single_shapefile(self):
+        if self.num_shapfiles == 1:
+            return True
+        return False
+        
+    def test_view(self):
+        if not self.md5:
+            return 'n/a'
+        return '<a href="%s">test view</a>' % reverse('view_choose_shapefile', kwargs={ 'shp_md5' : self.md5 })
+    test_view.allow_tags = True
+    
+    def get_absolute_url(self):
+        return 'blah! (ShapefileGroup)'
+                                
+        
+    def save(self, *args, **kwargs):
+        self.gis_file_type = self.__class__.__name__        
+        super(ShapefileGroup, self).save(*args, **kwargs)
+ 
+    class Meta:
+        ordering = ('-modified',  )
+        #verbose_name = 'COA File Load Log'
+
+ 
+    
+class SingleShapefileSet(TimeStampedModel):
+    """Used for working with a selected shapefile, specifically using the extensions specified in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
+    
+    """
+    name = models.CharField(max_length=255)        #   shapefile basename
+    shapefile_group = models.ForeignKey(ShapefileGroup)
     number_of_features = models.IntegerField(default=0)
     bounding_box = models.CharField(max_length=255, blank=True)
     column_names = models.TextField(blank=True, help_text='Saved as a json list')
     column_info = models.TextField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
+    
+    #has_required_files
+    
+    md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
     
     def get_file_info(self):
         return self.singlefileinfo_set.all()
@@ -86,16 +139,16 @@ class ShapefileSet(GISDataFile):
         
     def save(self, *args, **kwargs):
         if not self.id:
-            super(ShapefileSet, self).save(*args, **kwargs)
+            super(SingleShapefileSet, self).save(*args, **kwargs)
         self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
 
-        super(ShapefileSet, self).save(*args, **kwargs)
+        super(SingleShapefileSet, self).save(*args, **kwargs)
     
     def __unicode__(self):
         return self.name
 
     class Meta:
-        ordering = ('-modified', 'datafile_label')
+        ordering = ('-modified', 'name')
         #unique_together = ('name', 'shapefile_group')
 
 
@@ -104,7 +157,7 @@ class SingleFileInfo(TimeStampedModel):
     For a shapefile set, this is metadata on the individual files.
     """
     name = models.CharField(max_length=255)
-    shapefile_set = models.ForeignKey(ShapefileSet)
+    shapefile_set = models.ForeignKey(SingleShapefileSet)
     extension= models.CharField(max_length=40, blank=True, help_text='auto-filled on save')
     filesize = models.IntegerField(help_text='in bytes')
     is_required_shapefile = models.BooleanField(default=False, help_text='auto-filled on save')

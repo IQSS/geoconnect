@@ -4,7 +4,7 @@ import zipfile
 import timeit
 import cStringIO
 
-from gis_shapefiles.models import ShapefileSet, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
+from gis_shapefiles.models import SingleShapefileSet, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -151,7 +151,7 @@ class ShapefileZipCheck:
             logger.error(msg)            
             return (False, msg)
             
-        single_shapefile_set = ShapefileSet(name=name_to_extract\
+        single_shapefile_set = SingleShapefileSet(name=name_to_extract\
                                             , shapefile_group=shp_group_obj\
                                             )    
         single_shapefile_set.save()
@@ -191,7 +191,7 @@ class ShapefileZipCheck:
         
         single_shapefile_set.save()
 
-        logger.info('new ShapefileSet saved')
+        logger.info('new SingleShapefileSet saved')
         
         return (True, single_shapefile_set)
         

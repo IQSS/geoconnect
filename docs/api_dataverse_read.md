@@ -41,8 +41,8 @@ The JSON response depends on the outcome of the POST.  Roughly follow the [JSend
 
 + **datafile_id** - id number
 + **datafile_version** - version number
-+ **datafile_name** - for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
-+ **datafile_desc** - for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
++ **datafile_label** - for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
++ **datafile_description** - for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
 + **datafile_type** - dvobject.contenttype
 + **datafile_expected_md5_checksum** - MD5 to verify file if it is retrieved
 

@@ -13,7 +13,7 @@ class StyleLayerDescriptionInformationAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ('name', 'description')
     readonly_fields = ('modified', 'created', 'md5')
-    list_display = ('gis_file_helper', 'chosen_column', 'chosen_column', 'binning_algorithm', 'modified')
-    list_filter = ('binning_algorithm', 'gis_file_helper', )    
+    list_display = ('gis_data_file', 'chosen_column', 'chosen_column', 'binning_algorithm', 'modified')
+    list_filter = ('binning_algorithm', 'gis_data_file', )    
 admin.site.register(StyleLayerDescriptionInformation, StyleLayerDescriptionInformationAdmin)
         

@@ -16,7 +16,7 @@ class WorldMapImportFailAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('import_attempt', 'msg', 'modified' )
     readonly_fields = ('modified', 'created',)
-    search_fields = ('msg')
+    search_fields = ('msg', 'import_attempt__title', 'import_attempt__abstract',)
 admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
 
 
@@ -25,5 +25,5 @@ class WorldMapImportSuccessAdmin(admin.ModelAdmin):
     list_display = ('import_attempt', 'worldmap_username', 'layer_name', 'layer_link', 'modified' )
     readonly_fields = ('modified', 'created',)
     list_filter = ('worldmap_username', )
-    search_fields = ('import_attempt ')
+    search_fields = ('import_attempt__title', 'import_attempt__abstract', )
 admin.site.register(WorldMapImportSuccess, WorldMapImportSuccessAdmin)

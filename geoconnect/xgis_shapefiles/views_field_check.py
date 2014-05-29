@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
-from gis_shapefiles.models import ShapefileSet, SingleFileInfo
+from gis_shapefiles.models import SingleShapefileSet, SingleFileInfo
 from gis_shapefiles.views import view_choose_shapefile
 
 from geoconnect.settings import MEDIA_ROOT
@@ -56,9 +56,9 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     
     d = { 'page_title' : 'Column Information: %s' % field_name}
     try:
-        shp_set = ShapefileSet.objects.get(md5=shp_md5)
-    except ShapefileSet.DoesNotExist:
-        raise Http404('ShapefileSet not found for: %s' % shp_md5)
+        shp_set = SingleShapefileSet.objects.get(md5=shp_md5)
+    except SingleShapefileSet.DoesNotExist:
+        raise Http404('SingleShapefileSet not found for: %s' % shp_md5)
     
     d['page_title'] = '%s: %s' % (shp_set.get_basename(), field_name)
     

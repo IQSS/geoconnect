@@ -1,0 +1,39 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 400px; }
+    </style>
+ {#  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdtzlz1WIvKtt7pYoYGyX_EbC1QgG-OzI&sensor=true"></script> #}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&sensor=true"></script>
+    <script type="text/javascript">
+ 	{#% include "boston_geo_income.json" %#}
+    </script>
+   
+ <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+			center: new google.maps.LatLng(42.326, -71.1512),
+          //center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 11
+        };
+        var map = new google.maps.Map(document.getElementById("map-canvas"),
+            mapOptions);
+
+		map.data.loadGeoJson('{{ STATIC_URL }}income_in_boston_gui.json');
+			
+      }
+
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"/>
+  </body>
+</html>
+

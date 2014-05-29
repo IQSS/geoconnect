@@ -7,8 +7,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
-from gis_shapefiles.forms import ShapefileSetForm
-from gis_shapefiles.models import ShapefileSet, SingleFileInfo
+from gis_shapefiles.forms import ShapefileGroupForm
+from gis_shapefiles.models import ShapefileGroup, SingleShapefileSet, SingleFileInfo
 from gis_shapefiles.shp_services import update_shapefileset_with_metadata
 from gis_shapefiles.shapefilehelper_viewer import ShapefileGroupViewer
 from geoconnect.settings import MEDIA_ROOT 
@@ -85,7 +85,7 @@ def view_choose_shapefile(request, shp_md5):
         shapefile_set_name = shp_group_obj
         shp_file_names = shp_group_obj.get_shapefile_names()
         if (not shp_file_names) or (not len(shp_file_names) == 1):
-            err_msg = 'ShapefileSet not found for group: %s (should only be one set)' % shp_group_obj
+            err_msg = 'SingleShapefileSet not found for group: %s (should only be one set)' % shp_group_obj
             logger.error(err_msg)
             raise Exception(err_msg)
         
@@ -95,7 +95,7 @@ def view_choose_shapefile(request, shp_md5):
     """
     (1) open the zip
     (2) see if contains a shapefile, save shapefile names - ShapefileGroup
-    (3) if only one shapefile, create ShapefileSet, load number of features, bounding box, column names, etc
+    (3) if only one shapefile, create SingleShapefileSet, load number of features, bounding box, column names, etc
     
     """
     logger.info('validate shapefile -- actually open: %s' % shp_group_obj.shp_file.name)
@@ -122,7 +122,7 @@ def view_choose_shapefile(request, shp_md5):
     shp_group_obj.num_shapefiles = len(list_of_shapefile_set_names)    
     shp_group_obj.save()
     
-    # Only one shapefile, so create a "ShapefileSet" object
+    # Only one shapefile, so create a "SingleShapefileSet" object
     if shp_group_obj.num_shapefiles == 1:
         return view_03_single_shapefile_set(request, shp_group_obj.md5, list_of_shapefile_set_names[0], shp_group_obj, zip_checker)
     
@@ -171,7 +171,7 @@ def view_03_single_shapefile_set(request, shp_md5, shapefile_base_name, shp_grou
     
     # Does the single shapefile set already exist?
     try:
-        single_shapefile_set = ShapefileSet.objects.get(\
+        single_shapefile_set = SingleShapefileSet.objects.get(\
                                       shapefile_group=shp_group_obj\
                                     , name=shapefile_base_name)
         d['single_shapefile_set'] = single_shapefile_set
@@ -210,11 +210,11 @@ def xview_03_single_shapefile_set(request, shapefileset_md5, shapefile_name):
     d = {}
 
     try:
-        shapefile_set = ShapefileSet(md5=shapefileset_md5)
+        shapefile_set = SingleShapefileSet(md5=shapefileset_md5)
         d['shapefile_set']  = shapefile_set
-    except ShapefileSet.DoesNotExist:
+    except SingleShapefileSet.DoesNotExist:
          d['Err_Found'] = True
-         d['Err_ShapefileSet_Not_Found'] = True
+         d['Err_SingleShapefileSet_Not_Found'] = True
          return render_to_response('view_03_single_shapefile_set.html', d\
                                  , context_instance=RequestContext(request))
 

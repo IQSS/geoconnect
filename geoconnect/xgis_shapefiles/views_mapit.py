@@ -10,8 +10,9 @@ from django.core.urlresolvers import reverse
 #from django.core.files.uploadedfile import SimpleUploadedFile
 
 
-from gis_shapefiles.models import ShapefileSet, SingleFileInfo
-from gis_shapefiles.shp_services import update_shapefileset_with_metadata
+from gis_shapefiles.forms import ShapefileGroupForm
+from gis_shapefiles.models import ShapefileGroup, SingleShapefileSet, SingleFileInfo
+from gis_shapefiles.shp_services import update_shapefileset_with_metadata, get_shapefile_group_md5_from_metadata
 
 from gis_shapefiles.views import view_choose_shapefile
 
@@ -58,7 +59,20 @@ def view_mapit_incoming(request, dv_token):
                                             , kwargs={ 'shp_md5' : shp_md5 })
                                         
         return HttpResponseRedirect(choose_shapefile_url)
-       
+        """
+        file_url = jresp['dataset_file_location']
+        f = urllib.urlopen(file_url)
+        
+        post_dict = {'name': jresp['dataset_name'], 'dv_username' : jresp['dv_username']}
+        file_dict = {'shp_file': SimpleUploadedFile(jresp['filename'], f.read())}
+        shp_form = ShapefileGroupForm(post_dict, file_dict)
+        if not shp_form.is_valid():
+            return HttpResponse(shp_form.errors)xw
+        
+        shape_file_helper_obj = shp_form.save()
+        """
+        #return HttpResponse(shape_file_helper_obj.md5)
+        #return view_choose_shapefile(request, shape_file_helper_obj.md5  )
         return HttpResponseRedirect(reverse('view_choose_shapefile'\
                                         , kwargs={ 'shp_md5' : shape_group_obj.md5 })\
                                     )

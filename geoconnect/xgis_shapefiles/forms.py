@@ -1,11 +1,11 @@
 from django import forms
-from gis_shapefiles.models import ShapefileSet
+from gis_shapefiles.models import ShapefileGroup
 
 
-class ShapefileSetForm(forms.ModelForm):
+class ShapefileGroupForm(forms.ModelForm):
     class Meta:
-        model = ShapefileSet
-        fields = ['name', 'dv_file',]
+        model = ShapefileGroup
+        fields = ['name', 'shp_file',]
 """
 
 class ShapefileGroupForm(forms.Form):

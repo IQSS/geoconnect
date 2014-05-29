@@ -5,16 +5,16 @@ import settings
 print settings.GISFILE_SCRATCH_WORK_DIRECTORY
 
 # make some directories
-from gis_shapefiles.models import GISFileHelper
-for g in GISFileHelper.objects.all():
+from gis_shapefiles.models import GISDataFile
+for g in GISDataFile.objects.all():
     g.get_scratch_work_directory()
 
 # delete them    
-for g in GISFileHelper.objects.all():
+for g in GISDataFile.objects.all():
     g.delete_scratch_work_directory()
 
 # make some directories
-for g in GISFileHelper.objects.all():
+for g in GISDataFile.objects.all():
         g.get_scratch_work_directory()
 
 # delete them

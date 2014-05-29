@@ -34,7 +34,7 @@ ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 #TEMPLATE_DIRS = config.TEMPLATE_DIRS
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'geoconnect', 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 #    "/home/html/templates/lawrence.com",
 #    "/home/html/templates/default",
 )
@@ -100,50 +100,4 @@ XLOGGING = {
 
 SESSION_COOKIE_NAME = config.SESSION_COOKIE_NAME
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'mysite.log',
-            'formatter': 'verbose'
-        },
-        'console':{
-                   'level': 'DEBUG',
-                   'class': 'logging.StreamHandler',
-                   'formatter': 'simple'
-               },
-       'console':{
-                'level':'INFO',
-                'class':'logging.StreamHandler',
-                'stream': sys.stdout
-            },
-            'console':{
-                     'level':'ERROR',
-                     'class':'logging.StreamHandler',
-                     'stream': sys.stdout
-                 },
-    },
-    'loggers': {
-        'django': {
-            'handlers':['file', 'console'],
-            'propagate': True,
-            'level':'DEBUG',
-        },
-    'geoconnect': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-        },
-    }
-}
+LOGGING = config.LOGGING
