@@ -14,6 +14,8 @@ urlpatterns = patterns('',
 
     url(r'^geoconnect/', include('gis_shapefiles.urls')),
 
+    url(r'^worldmap/', include('worldmap_import.urls')),
+
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     url(r'^geo-connect-admin/', include(admin.site.urls)),

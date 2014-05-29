@@ -6,7 +6,7 @@
 		<tr>
 			<th>Shapefile Name</th>
 			<td>{{ shapefile_set.get_basename }}
-				&nbsp; <a class="btn btn-info btn-xs">Visualize on WorldMap</a>
+				&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a>
 				</td>
 		</tr>
 		<tr>

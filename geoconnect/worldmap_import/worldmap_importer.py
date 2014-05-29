@@ -2,13 +2,15 @@ from __future__ import print_function
 
 import os
 import requests     # http://docs.python-requests.org
+
+#from geo_utils.json_field_reader import get_json_str_msg
 #import timeit
 #import json
 
 try:
-    from test_token import DVN_TOKEN, WORLDMAP_SERVER_URL
+    from test_token import WORLDMAP_TOKEN_FOR_DV, WORLDMAP_SERVER_URL
 except:
-    DVN_TOKEN = 'fake-key'
+    WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
 def get_json_str_msg(success=False, msg=''):
@@ -62,7 +64,7 @@ class WorldMapImporter:
             return get_json_str_msg(False, 'The path to the shapfiles was not found')
         
         if layer_params.__class__.__name__ == 'dict':
-            layer_params['geoconnect_token'] = DVN_TOKEN
+            layer_params['geoconnect_token'] = WORLDMAP_TOKEN_FOR_DV
         
         if not all([pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]):
             missing_keys = filter(lambda x: not x in layer_params, self.REQUIRED_PARAM_KEYS )# [not pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]
@@ -84,7 +86,9 @@ class WorldMapImporter:
 
         try:
             req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
-            return req.json()
+            json_resp = req.json()
+            return { 'success' : True\
+                    , 'data' : json_resp }
         except requests.exceptions.Timeout:
             return get_json_str_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
         except:
@@ -125,21 +129,23 @@ class WorldMapImporter:
                 , 'abstract' : abstract\
                 , 'email' : email\
                 , 'shapefile_name' : shapefile_name\
-                , 'geoconnect_token' : DVN_TOKEN\
+                , 'geoconnect_token' : WORLDMAP_TOKEN_FOR_DV\
                 }
 
         return self.send_shapefile_to_worldmap(params, fullpath_to_file)
         
         
 if __name__ == '__main__':
+    """
     f1 = '../scripts/worldmap_api/test_shps/blah.zip'
     wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
     print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1, 'raman_prasad@harvard.edu'))
+    """
+    f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
+    wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
     
-    #f2 = '../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    #wmi = WorldMapImporter()
-    #wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f2)
-    
+    print (wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f2, 'raman_prasad@harvard.edu'))
+    #{u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_vqs', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_vqs', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_vqs'}
     """
     
     params1 = {'title' : 'Boston Income'\

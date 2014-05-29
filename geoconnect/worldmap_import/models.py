@@ -25,13 +25,13 @@ class WorldMapImportAttempt(TimeStampedModel):
     import_success = models.BooleanField(default=False)
     
     # Dataverse User Info
-    dv_user_id = models.IntegerField()          # copied from GISDataFile for audit
-    dv_user_email = models.EmailField()          # copied from GISDataFile for audit
-    dv_username = models.CharField(max_length=255)  # copied from GISDataFile for audit
+    dv_user_id = models.IntegerField(default=-1)          # copied from GISDataFile for audit
+    dv_user_email = models.EmailField(blank=True)          # copied from GISDataFile for audit
+    dv_username = models.CharField(max_length=255, blank=True)  # copied from GISDataFile for audit
     
     # Dataverse Dataset Info
-    dataset_id = models.IntegerField()  # copied from GISDataFile for audit
-    dataset_version_id = models.IntegerField()  # copied from GISDataFile for audit
+    dataset_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
+    dataset_version_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
 
 
     def __unicode__(self):

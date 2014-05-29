@@ -2,6 +2,11 @@ import json
 import os
 # logging!!!
 
+def get_json_str_msg(success=False, msg=''):
+    return { 'success': success\
+            , 'message' : msg \
+            }
+
 class JSONFieldReader:
     """Convenience class used to move text values to JSON and vice-versa for Django TextFields
     """
@@ -19,10 +24,11 @@ class JSONFieldReader:
        """For storing in models.TextField"""
        print 'get_python_val_as_json_string', python_val
        print 'class:', python_val.__class__.__name__
-       return json.dumps(python_val)    # python list -> JSON string
+       
+       #return json.dumps(python_val)    # python list or dict -> JSON string
 
        try:
-           return json.dumps(python_val)    # python list -> JSON string
+           return json.dumps(python_val)    # python list or dict -> JSON string
        except:
            return ''
  

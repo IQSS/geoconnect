@@ -14,11 +14,10 @@ class GISDataFile(TimeStampedModel):
     """GeoConnect - For working with a Dataverse File for a given user
     These objects will persist for a limited time (days, weeks), depending on the system demand
     """
-
     # Dataverse user info
     dv_user_id = models.IntegerField()          # for API calls
     dv_user_email = models.EmailField(default='raman_prasad@harvard.edu')          # for API calls
-    dv_username = models.CharField(max_length=255, blank=True)  # for display
+    dv_username = models.CharField(max_length=255)  # for display
 
     # DataFile
     datafile_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='DataFile'
@@ -37,8 +36,8 @@ class GISDataFile(TimeStampedModel):
     dv_name = models.CharField(max_length=255, blank=True)  # for display
     
     # Dataset Info
-    dataset_id = models.IntegerField(blank=True, null=True)  # for API calls.  dvobject.id; dtype='Dataset'
-    dataset_version_id = models.IntegerField(blank=True, null=True)  # for API calls.  dvobject.id; dtype='Dataset'
+    dataset_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
+    dataset_version_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
     dataset_name = models.CharField(max_length=255, blank=True)  # for display
     dataset_citation = models.TextField(blank=True) # for display
 
