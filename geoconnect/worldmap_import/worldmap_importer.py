@@ -87,6 +87,9 @@ class WorldMapImporter:
         try:
             req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             json_resp = req.json()
+            print ('-'*40)
+            print ('json_resp', json_resp)
+            print ('-'*40)
             return { 'success' : True\
                     , 'data' : json_resp }
         except requests.exceptions.Timeout:

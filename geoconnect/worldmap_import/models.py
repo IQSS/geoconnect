@@ -10,7 +10,7 @@ from gis_basic_file.models import GISDataFile
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
 #
-DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'dataset_id', 'dataset_version_id']
+DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'datafile_id', 'datafile_version']
 
 class WorldMapImportAttempt(TimeStampedModel):
     """
@@ -29,21 +29,22 @@ class WorldMapImportAttempt(TimeStampedModel):
     dv_user_email = models.EmailField(blank=True)          # copied from GISDataFile for audit
     dv_username = models.CharField(max_length=255, blank=True)  # copied from GISDataFile for audit
     
-    # Dataverse Dataset Info
-    dataset_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
-    dataset_version_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
+    # Dataverse Datafile Info
+    datafile_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
+    datafile_version = models.BigIntegerField(default=-1)  # copied from GISDataFile for audit
 
 
     def __unicode__(self):
-        return '%s %s id:%s, version:%s' % (self.dv_username, self.title, self.dataset_id, self.dataset_version_id)
+        return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.datafile_version)
     
     def save(self, *args, **kwargs):
         """
         Fill in Dataverse user and dataset information from the GISDataFile object -- this only happens once
         """
-        if self.gis_data_file and not self.dv_user_id:
-            for attr in DV_SHARED_PARAMS:
-                setattr(self, attr, getattr(self.gis_data-file, attr)) 
+        if self.gis_data_file and self.dv_user_id < 0:
+            for attr in DV_SHARED_ATTRIBUTES:
+                print attr, getattr(self.gis_data_file, attr)
+                setattr(self, attr, getattr(self.gis_data_file, attr)) 
         super(WorldMapImportAttempt, self).save(*args, **kwargs)
     
     def get_params_for_worldmap_import(self, geoconnect_token=None):

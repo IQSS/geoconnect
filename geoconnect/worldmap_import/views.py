@@ -41,6 +41,8 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
 
     # send_shapefile_to_worldmap(self, layer_params, fullpath_to_file)
     zipped_shapefile_name = os.path.basename(shapefile_set.dv_file.name)
+    
+    # Look for previous attempt before doing this!
     wm_attempt = WorldMapImportAttempt(gis_data_file=shapefile_set\
                                     , title=zipped_shapefile_name\
                                     , abstract='[place holder abstract for %s]' % shapefile_set.name\
@@ -50,19 +52,36 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     
     layer_params = wm_attempt.get_params_for_worldmap_import(geoconnect_token=WORLDMAP_TOKEN_FOR_DV)
     wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
+    print layer_params
     data = wmi.send_shapefile_to_worldmap(layer_params, shapefile_set.dv_file.path)
+    print 'data'
+    print '-' *40
+    print data
     
     """{'data': {u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_p5n', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_p5n', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_p5n'}, 'success': True}"""
     
     import_worked = data.get('success', False)
     if import_worked:
-        wm_success = WorldMapImportSuccess(import_attempt=wm_attempt\
-                                            , worldmap_username=data.get('worldmap_username', None)\
-                                            , layer_name=data.get('layer_name', None)\
-                                            , layer_link=data.get('layer_link', None)\
-                                            , embed_map_link=data.get('embed_map_link', None)\
-                                        )
-        wm_success.save()
+        wm_data = data.get('data', None)
+        if wm_data is None:
+            wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
+                                            , msg="Error.  WorldMap says success not no layer data found")
+            wm_fail.save()
+        else:        
+            try:
+                #wm_data.update({ 'import_attempt' : wm_attempt})            
+                wm_success = WorldMapImportSuccess(import_attempt=wm_attempt\
+                                                , layer_name=wm_data.get('layer_name', '')\
+                                                , layer_link=wm_data.get('layer_link', '')\
+                                                , embed_map_link=wm_data.get('embed_map_link', '')\
+                                                , worldmap_username=wm_data.get('worldmap_username', '')\
+                                            )
+                wm_success.save()
+            except:
+                wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
+                                                , msg="Error.  WorldMap says success.  geoconnect failed to save results")
+                wm_fail.save()
+                        
                                             
     else:
         msg = data.get('message', 'Import Failed')

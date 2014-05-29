@@ -2,10 +2,22 @@ from django.contrib import admin
 
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
 
-
+class WorldMapImportFailInline(admin.TabularInline):
+    model = WorldMapImportFail
+    readonly_fields = ('modified', 'created',)
+    fields = ('msg', 'modified', 'created')
+    extra = 0
+    
+class WorldMapImportSuccessInline(admin.TabularInline):
+    model = WorldMapImportSuccess
+    readonly_fields = ('modified', 'created',)
+    fields = ('layer_name', 'layer_link', 'worldmap_username', 'modified', 'created')
+    extra = 0
+    
 class WorldMapImportAttemptAdmin(admin.ModelAdmin):
+    inlines = (WorldMapImportSuccessInline, WorldMapImportFailInline)
     save_on_top = True
-    list_display = ('dv_username', 'title', 'shapefile_name', 'dataset_id', 'dataset_version_id', 'modified'  )
+    list_display = ('id', 'dv_username', 'title', 'shapefile_name', 'datafile_id', 'datafile_version', 'modified'  )
     search_fields = ('title', 'abstract', )
     list_filter = ('dv_username',  )    
     readonly_fields = ('modified', 'created',)

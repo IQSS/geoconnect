@@ -21,7 +21,7 @@ class GISDataFile(TimeStampedModel):
 
     # DataFile
     datafile_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='DataFile'
-    datafile_version = models.BigIntegerField(blank=True, null=True)
+    datafile_version = models.BigIntegerField()
     datafile_label = models.CharField(max_length=255, blank=True)    # for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
 
     # Copy of the actual file
@@ -32,12 +32,12 @@ class GISDataFile(TimeStampedModel):
     datafile_expected_md5_checksum = models.CharField(blank=True, max_length=255)    # dvobject.md5
    
     # Owning dataverse
-    dv_id = models.IntegerField(blank=True, null=True)       # for API calls.  dvobject.id; dtype='Dataverse'
+    dv_id = models.IntegerField(default=-1)       # for API calls.  dvobject.id; dtype='Dataverse'
     dv_name = models.CharField(max_length=255, blank=True)  # for display
     
     # Dataset Info
-    dataset_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
-    dataset_version_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='Dataset'
+    dataset_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
+    dataset_version_id = models.IntegerFielddefault=(-1)  # for API calls.  dvobject.id; dtype='Dataset'
     dataset_name = models.CharField(max_length=255, blank=True)  # for display
     dataset_citation = models.TextField(blank=True) # for display
 
