@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
-from gis_shapefiles.views import view_choose_shapefile
+#from gis_shapefiles.views import view_choose_shapefile
 
 from geoconnect.settings import MEDIA_ROOT
 import os

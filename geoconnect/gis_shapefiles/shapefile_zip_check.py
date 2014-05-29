@@ -111,6 +111,88 @@ class ShapefileZipCheck:
             # log something!!
             return
     
+    def load_shapefile_from_open_zip(self, shapefile_basename, shapefile_set):
+        """
+        Assumes that self.zip_obj has opened an archive that contains a valid shapefile set
+        
+        param: shapefile_basename: Name of shapefile basename to remove from .zip.  
+            Will be stripped of any preceding directory "foo/bar" becomes "bar"
+        type: shapefile_basename: str 
+        """
+        if self.zip_obj is None:
+            msg = 'The shapefile was not open'
+            logger.error(msg)            
+            return (False, msg)
+
+        if shapefile_basename is None:      # no shapefile_basename specified, use name in self.potential_shapefile_sets                
+            msg = 'The shapefile name was not specified'
+            logger.error(msg)            
+            return (False, msg)
+        
+        if shapefile_set is None:      # no shapefile_basename specified, use name in self.potential_shapefile_sets                
+            msg = 'The ShapefileSet was not specified'
+            logger.error(msg)            
+            return (False, msg)
+
+        shapefile_basename = os.path.basename(shapefile_basename)
+        logger.info('shapefile_basename: %s' % shapefile_basename)
+
+        for archived_filename in self.potential_shapefile_sets.keys():            
+            if shapefile_basename == os.path.basename(archived_filename):
+                name_found = True
+                name_to_extract = archived_filename
+                break
+
+        if not name_found:
+            msg = 'shapefile_basename not found in .zip: %s' % shapefile_basename
+            logger.error(msg)            
+            return (False, msg)
+        
+        # #------------------------
+        shapefile_set.name = shapefile_basename
+        shapefile_set.save()
+
+        for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
+            fname = name_to_extract + ext
+            logger.info('extracting: %s' % fname)
+            self.zip_obj.extract(fname, shapefile_set.get_scratch_work_directory())
+            logger.info('extracted: %s' % fname)
+            sfi = SingleFileInfo(name=os.path.basename(fname)\
+                                , shapefile_set=shapefile_set\
+                                , extension=ext\
+                                , filesize=0\
+                                , is_required_shapefile=True\
+                                , extracted_file_path=os.path.join(shapefile_set.get_scratch_work_directory(), fname)\
+                                )
+            sfi.save()
+
+        extracted_shapefile_load_path = os.path.join(shapefile_set.get_scratch_work_directory(), name_to_extract)
+        shapefile_set.extracted_shapefile_load_path = extracted_shapefile_load_path
+
+        shp_reader = shapefile.Reader(extracted_shapefile_load_path)
+
+        # add number of shapes
+        shapefile_set.number_of_features = len(shp_reader.shapes())
+
+        # add column names
+        shapefile_set.add_column_info(shp_reader.fields[1:])   
+        shapefile_set.add_column_names_using_fields(shp_reader.fields)
+
+        # add bounding box
+        print 'add bounding box', shp_reader.bbox
+
+        try:
+            shapefile_set.add_bounding_box(list(shp_reader.bbox))
+        except:
+            shapefile_set.add_bounding_box('')
+
+        shapefile_set.save()
+
+        logger.info('ShapefileSet updated!')
+
+        return (True, None)
+        #------------------------
+        
     def load_shapefile(self, shp_group_obj, shapefile_basename):
         """
         shp_group_obj    ShapefileGroup object
@@ -169,6 +251,7 @@ class ShapefileZipCheck:
                                 , extracted_file_path=os.path.join(shp_group_obj.get_scratch_work_directory(), fname)\
                                 )
             sfi.save()
+            
         extracted_shapefile_load_path = os.path.join(shp_group_obj.get_scratch_work_directory(), name_to_extract)
         single_shapefile_set.extracted_shapefile_load_path = extracted_shapefile_load_path
         

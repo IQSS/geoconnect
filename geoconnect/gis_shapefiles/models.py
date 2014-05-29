@@ -21,6 +21,7 @@ class ShapefileSet(GISDataFile):
 
     zipfile_checked = models.BooleanField(default=False)
     has_shapefile = models.BooleanField(default=False)
+    #has_mulitple_shapefile
 
     number_of_features = models.IntegerField(default=0)
     bounding_box = models.CharField(max_length=255, blank=True)
@@ -92,7 +93,9 @@ class ShapefileSet(GISDataFile):
         super(ShapefileSet, self).save(*args, **kwargs)
     
     def __unicode__(self):
-        return self.name
+        if self.name:
+            return self.name
+        return super(ShapefileSet, self).__unicode__()
 
     class Meta:
         ordering = ('-modified', 'datafile_label')

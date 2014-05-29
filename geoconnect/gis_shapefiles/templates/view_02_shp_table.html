@@ -1,0 +1,69 @@
+{% load humanize %}
+<table class="table table-bordered">
+		<tr>
+			<th colspan="2" class="text-center">{{ shapefile_set.name }}</th>
+		</tr>
+		<tr>
+			<th>Shapefile Name</th>
+			<td>{{ shapefile_set.get_basename }}
+				&nbsp; <a class="btn btn-info btn-xs">Visualize on WorldMap</a>
+				</td>
+		</tr>
+		<tr>
+			<th>Dataverse User</th>
+			<td>{{ shapefile_set.dv_username }}</td>
+		</tr>
+		<tr>
+			<th># Features</th>
+			<td>{{ shapefile_set.number_of_features|intcomma }}</td>
+		</tr>
+		<tr>
+			<th>Files</th>
+			<td>	<ul class="list-unstyled">
+				{% for file_info in shapefile_set.get_file_info %}
+					<li>{{ file_info }}</li>
+				{% endfor %}
+					</ul>
+				</td>
+		</tr>
+		<tr>
+			<th># Fields</th>
+			<td>{{ shapefile_set.get_column_count|intcomma }}
+
+				&nbsp; &nbsp;<button type="button" class="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</button>
+					<div id="column_name_list" class="collapse" class="panel-body">
+						 <table class="table table-bordered table-striped table-condensed">
+							{% for fn in shapefile_set.get_column_info %}
+								<tr>
+									<td>{{ forloop.counter }}</td>
+									{% if fn.1 == 'C' %}
+										{#<td>{{ fn.0 }}</td>#}
+										<td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>												
+										<td>Character</td>
+									{% else %}{% if fn.1 == 'N' %}
+										<td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+										<td>Number</td>
+									{% else %}{% if fn.1 == 'L' %}
+										<td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+										<td>Long</td>
+									{% else %}{% if fn.1 == 'D' %}
+										<td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>
+										<td>Date</td>
+									{% else %}{% if fn.1 == 'M' %}
+										<td>{{ fn.0 }}</td><td>Memo</td>
+									{% else %}
+										<td>{{ fn.0 }}</td><td>{{ fn.1 }}<i>(Not recognized)</i></td>
+									{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+								</tr>
+							{% empty %}
+								<tr><td>Sorry!  There are no column names.</td></tr>
+							{% endfor %}
+						</table>					     
+			    </div>
+				</td>
+		</tr>
+		<tr>
+			<th>Bounding Box</th>
+			<td>{{ shapefile_set.get_bounding_box }}</td>
+		</tr>
+	</table>

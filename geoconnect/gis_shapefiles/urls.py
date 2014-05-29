@@ -4,11 +4,11 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('gis_shapefiles.views',
     url(r'^examine/$', 'view_examine_dataset', name="view_examine_dataset"),
 
-    url(r'^choose/(?P<shp_md5>\w{32})/$', 'view_choose_shapefile', name="view_choose_shapefile"),
+    #url(r'^choose/(?P<shp_md5>\w{32})/$', 'view_choose_shapefile', name="view_choose_shapefile"),
 
-    url(r'^choose2/(?P<shp_md5>\w{32})/(?P<shapefile_base_name>\w{3,90})/$', 'view_03_choose_shapefile_set', name="view_03_choose_shapefile_set"),
+    #url(r'^choose2/(?P<shp_md5>\w{32})/$', 'view_03_choose_shapefile_set', name="view_03_choose_shapefile_set"),
 
-    #url(r'^view-shp/(?P<shp_md5>\w{32})/$', 'view_choose_shapefile', name="view_choose_shapefile"),
+    url(r'^view-shp/(?P<shp_md5>\w{32})/$', 'view_shapefile', name="view_shapefile"),
 )
 
 urlpatterns += patterns('gis_shapefiles.views_mapit',

@@ -18,7 +18,7 @@
 			
 			{% if single_shapefile_set %}
 			{% if single_shapefile_set.shapefile_group.num_shapefiles > 1 %}
-			Return to <a href="{% url 'view_choose_shapefile' single_shapefile_set.shapefile_group.md5 %}">{{ single_shapefile_set.shapefile_group.name }}</a>
+			Return to <a href="{#% url 'view_choose_shapefile' single_shapefile_set.shapefile_group.md5 %#}">{{ single_shapefile_set.shapefile_group.name }}</a>
 			{% else %}
 				Return to <a href="{% url 'view_examine_dataset' %}">Home</a> &nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_singleshapefileset_change' single_shapefile_set.id %}">Edit</a>
 			{% endif %}

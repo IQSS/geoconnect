@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
 from gis_shapefiles.shp_services import update_shapefileset_with_metadata
 
-from gis_shapefiles.views import view_choose_shapefile
+#from gis_shapefiles.views import view_choose_shapefile
 
 import json
 from django.http import Http404

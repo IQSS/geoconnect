@@ -9,12 +9,12 @@
 			</div>
 			<br />
 			{% endif %}
-			{% if existing_shp_groups %}
+			{% if existing_shapefiles %}
 			<p>Choose an existing shapefile group:</p>
 				<ol>
-				{% for grp in existing_shp_groups %}
-						<li><a href="{% url 'view_choose_shapefile' grp.md5 %}">{{ grp.name }}</a></li>
-			
+				{% for shp in existing_shapefiles %}
+						<li><a href="{% url 'view_shapefile' shp.md5 %}">{{ shp }}</a> 
+								&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shp.id %}">edit</a></li>			
 				{% endfor %}
 				</ol>
 			{% endif %}
