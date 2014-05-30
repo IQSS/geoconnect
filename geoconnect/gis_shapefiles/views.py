@@ -118,6 +118,8 @@ def view_shapefile(request, shp_md5):
                 print 'here - err'
                 d['Err_Found'] = True
                 d['Err_Msg'] = err_msg_or_none
+                shapefile_set.has_shapefile = False
+                shapefile_set.save()
                 logger.error('Shapefile not loaded. (%s)' % shp_md5)
                 return render_to_response('view_02_single_shapefile.html', d\
                                         , context_instance=RequestContext(request))

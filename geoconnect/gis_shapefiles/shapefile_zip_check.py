@@ -169,8 +169,15 @@ class ShapefileZipCheck:
         extracted_shapefile_load_path = os.path.join(shapefile_set.get_scratch_work_directory(), name_to_extract)
         shapefile_set.extracted_shapefile_load_path = extracted_shapefile_load_path
 
-        shp_reader = shapefile.Reader(extracted_shapefile_load_path)
-
+        # let it blow up for now
+        shp_reader = shapefile.Reader(extracted_shapefile_load_path + '.shp')
+        #try:
+        #    shp_reader = shapefile.Reader(extracted_shapefile_load_path)
+        #except shapefile.ShapefileException:
+        #    msg = 'Error opening shapefile: %s' % extracted_shapefile_load_path
+        #    logger.error(msg)            
+        #    return (False, msg)
+            
         # add number of shapes
         shapefile_set.number_of_features = len(shp_reader.shapes())
 
