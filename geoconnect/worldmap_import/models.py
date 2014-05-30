@@ -7,6 +7,8 @@ from django.http import HttpResponseRedirect
 from core.models import TimeStampedModel
 from gis_basic_file.models import GISDataFile
 
+from geo_utils.json_field_reader import MessageHelperJSON
+
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
 #
@@ -37,6 +39,25 @@ class WorldMapImportAttempt(TimeStampedModel):
     def __unicode__(self):
         return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.datafile_version)
     
+    def get_success_info(self):
+        
+        success_info_list = self.worldmapimportsuccess_set.all().order_by('-modified')
+        if success_info_list.count() > 0:
+            return success_info_list[0]
+        return None
+    
+    def did_import_succeed(self):
+        # find successful import attempts
+        if self.worldmapimportsuccess_set.all().count() > 0:
+            self.import_success = True
+            self.save()
+            return True
+            
+        self.import_success = False
+        self.save()
+        return True
+            
+    
     def save(self, *args, **kwargs):
         """
         Fill in Dataverse user and dataset information from the GISDataFile object -- this only happens once
@@ -46,6 +67,25 @@ class WorldMapImportAttempt(TimeStampedModel):
                 print attr, getattr(self.gis_data_file, attr)
                 setattr(self, attr, getattr(self.gis_data_file, attr)) 
         super(WorldMapImportAttempt, self).save(*args, **kwargs)
+    
+    @staticmethod
+    def get_latest_attempt(shapefile_set):
+        """
+        Search for existing WorldMapImportAttempt objects where the params in DV_SHARED_ATTRIBUTES match
+        """
+        if shapefile_set is None:
+            return None
+        
+        lookup_params = {}
+        for attr in DV_SHARED_ATTRIBUTES:
+            lookup_params[attr] = getattr(shapefile_set, attr)
+            
+        l = WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified')
+        
+        if l.count() == 0:
+            return None
+            
+        return l[0]
     
     def get_params_for_worldmap_import(self, geoconnect_token=None):
         """
@@ -83,10 +123,11 @@ class WorldMapImportAttempt(TimeStampedModel):
 class WorldMapImportFail(TimeStampedModel):
     import_attempt = models.ForeignKey(WorldMapImportAttempt)
     msg = models.TextField()
-
+    orig_response = models.TextField('original response', blank=True)
+    
     def __unicode__(self):
         return '%s' % self.import_attempt
-        
+                
     class Meta:
         ordering = ('-modified',)
         
@@ -99,6 +140,19 @@ class WorldMapImportSuccess(TimeStampedModel):
     layer_name = models.CharField(max_length=255)
     layer_link = models.URLField()
     embed_map_link = models.URLField(blank=True)
+
+    def get_as_json_message(self):
+        """
+        Return something like:
+        {"message": "", "data": {"layer_link": "http://localhost:8000/data/geonode:income_in_boston_gui_5_zip_q5v", "worldmap_username": "raman_prasad", "layer_name": "geonode:income_in_boston_gui_5_zip_q5v", "embed_map_link": "http://localhost:8000/maps/embed/?layer=geonode:income_in_boston_gui_5_zip_q5v"}, "success": true}    
+        """
+        data_dict = {}
+        data_dict['worldmap_username'] = self.worldmap_username
+        data_dict['layer_name'] = self.layer_name
+        data_dict['layer_link'] = self.layer_link
+        data_dict['embed_map_link'] = self.embed_map_link
+
+        return MessageHelperJSON.get_json_msg(success=True, msg='', data_dict=data_dict)
 
     def __unicode__(self):
         return '%s' % self.import_attempt

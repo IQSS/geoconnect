@@ -5,13 +5,13 @@ def make_changelist_updates(model_admin_instance, attr_name, additional_fields, 
     if model_admin_instance is None:
         return 
         
-    if attr_name is None or not additional_fields.__class__.__name__ == 'list':
+    if attr_name is None or not type(additional_fields) is list:
         return
     
     current_fields = getattr(model_admin_instance, attr_name)
     if current_fields is None:
         return
-    if current_fields.__class__.__name__ == 'tuple':
+    if type(current_fields) is tuple:           
         current_fields = list(current_fields)
         
     if not set(additional_fields).issubset(set(current_fields)):

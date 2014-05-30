@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
-from geo_utils.json_field_reader import get_json_str_msg
+from geo_utils.json_field_reader import MessageHelperJSON
 
 from gis_shapefiles.models import ShapefileSet
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
@@ -24,52 +24,90 @@ except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
-def view_send_shapefile_to_worldmap(request, shp_md5):
-    d = {}
 
+def view_send_shapefile_to_worldmap(request, shp_md5):
+    """
+    Send a shapefile over to WorldMap for import and record the results.
+    A successful import should return a new layer name as well as links to this layer
+    
+    :param shp_md5: md5 of a ShapefileSet object
+    :type shp_md5: str
+    :returns: JSON with "success" flag and either error or data
+    :rtype: JSON string
+    
+    Example of successful import by WorldMap: 
+     { "success": true, "data": {"layer_link": "http://localhost:8000/data/geonode:poverty_1990_gfz_zip_p5n", "worldmap_username": "saru_jaya", "layer_name": "geonode:poverty_1990_gfz_zip_p5n", "embed_map_link": "http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_p5n"}}
+    """
+
+    # (1) Retrieve the ShapefileSet object
     try:
         shapefile_set = ShapefileSet.objects.get(md5=shp_md5)
-        d['shapefile_set'] = shapefile_set        
     except ShapefileSet.DoesNotExist:
+        data = MessageHelperJSON.get_json_mesg(False, 'Sorry, the shapefile was not found')
+        return HttpResponse(data, mimetype='application/json')
         
-        logger.error('Shapefile not found for hash: %s' % shp_md5)
-        raise Http404('Shapefile not found.')
-        
+    # (2) Check if it has a valid shapefile (or that shapefile has been validated)
     if not shapefile_set.has_shapefile:
-        data = json.dumps(get_json_str_msg(False, 'This file does not contain a valid shapefile'))
+        data = MessageHelperJSON.get_json_mesg(False, 'This file does not contain a valid shapefile')
         return HttpResponse(data, mimetype='application/json')
 
-    # send_shapefile_to_worldmap(self, layer_params, fullpath_to_file)
-    zipped_shapefile_name = os.path.basename(shapefile_set.dv_file.name)
     
-    # Look for previous attempt before doing this!
-    wm_attempt = WorldMapImportAttempt(gis_data_file=shapefile_set\
+    # (3a) Look for a previous import attempt (WorldMapImportAttempt) object related to this ShapefileSet
+    #
+    wm_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
+    if wm_attempt is not None and wm_attempt.did_import_succeed():
+
+        # (3b) If the previous attempt succeeded, return the results
+        success_info = wm_attempt.get_success_info()
+        if success_info is not None:
+            #data = MessageHelperJSON.get_json_mesg(True\
+            #                    , 'Success: %s<br /> %s' % (success_info, success_info.layer_name))
+            return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
+    
+    # (4) Create a new WorldMapImportAttempt
+    #
+    if wm_attempt is None:
+        zipped_shapefile_name = os.path.basename(shapefile_set.dv_file.name)
+        wm_attempt = WorldMapImportAttempt(gis_data_file=shapefile_set\
                                     , title=zipped_shapefile_name\
                                     , abstract='[place holder abstract for %s]' % shapefile_set.name\
                                     , shapefile_name=zipped_shapefile_name\
                                     )
-    wm_attempt.save()
+        wm_attempt.save()
     
+    # (5) Prepare parameters (title, abstract, etc) to send with the import request
+    #
     layer_params = wm_attempt.get_params_for_worldmap_import(geoconnect_token=WORLDMAP_TOKEN_FOR_DV)
+
+    # (6) Instantiate the WorldMapImporter object and attempt the import
+    # *** This part of the process will be moved to a celery queue -- asyn b/c it may take a while ***
+    #
     wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
-    print layer_params
-    data = wmi.send_shapefile_to_worldmap(layer_params, shapefile_set.dv_file.path)
-    print 'data'
+    worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, shapefile_set.dv_file.path)
+    
     print '-' *40
-    print data
+    print worldmap_response
+    print '-' *40
     
-    """{'data': {u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_p5n', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_p5n', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_p5n'}, 'success': True}"""
-    
-    import_worked = data.get('success', False)
-    if import_worked:
-        wm_data = data.get('data', None)
+    # (7) Check if import worked.  
+    #
+    #
+    import_success = worldmap_response.get('success', False)
+
+    if import_success is True:  # Import appears to have worked
+        
+        wm_data = worldmap_response.get('data', None)
         if wm_data is None:
+            # Failed, where is the data?  Create a WorldMapImportFail object
+            #
             wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
-                                            , msg="Error.  WorldMap says success not no layer data found")
+                                            , msg="Error.  WorldMap says success but no layer data found"\
+                                            , orig_response='%s' % worldmap_response)
             wm_fail.save()
         else:        
             try:
-                #wm_data.update({ 'import_attempt' : wm_attempt})            
+                # Success!  Create a WorldMapImportSuccess object
+                #
                 wm_success = WorldMapImportSuccess(import_attempt=wm_attempt\
                                                 , layer_name=wm_data.get('layer_name', '')\
                                                 , layer_link=wm_data.get('layer_link', '')\
@@ -77,20 +115,28 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                                 , worldmap_username=wm_data.get('worldmap_username', '')\
                                             )
                 wm_success.save()
+                wm_attempt.import_success = True
+                wm_attempt.save()
             except:
+                # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
+                # Save a WorldMapImportFail object to check original response
+                #
                 wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
-                                                , msg="Error.  WorldMap says success.  geoconnect failed to save results")
+                                                , msg="Error.  WorldMap says success.  geoconnect failed to save results"\
+                                                , orig_response='%s' % worldmap_response)
                 wm_fail.save()
                         
                                             
     else:
-        msg = data.get('message', 'Import Failed')
+        # Fail! Save a WorldMapImportFail object to check original response
+        #
+        msg = worldmap_response.get('message', 'Import Failed')
         wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
                                     , msg=msg)
         wm_fail.save()
         
     
-    json_msg = json.dumps(data)
+    json_msg = json.dumps(worldmap_response)
     return HttpResponse(json_msg, mimetype='application/json')
     
     #print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1, 'raman_prasad@harvard.edu'))
