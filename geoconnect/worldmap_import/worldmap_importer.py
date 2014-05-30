@@ -5,6 +5,14 @@ import requests     # http://docs.python-requests.org
 
 #import timeit
 #import json
+if __name__=='__main__':
+    import sys
+    CURRENT_DIR = os.path.dirname(os.path.dirname(__file__))
+    sys.path.append(os.path.join(CURRENT_DIR, '../'))
+    #sys.path.append(os.path.join(CURRENT_DIR, '../../'))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings")
+    
+
 from geo_utils.json_field_reader import MessageHelperJSON
 
 try:

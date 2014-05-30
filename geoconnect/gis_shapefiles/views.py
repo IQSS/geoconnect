@@ -13,6 +13,8 @@ from geoconnect.settings import MEDIA_ROOT
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
+from worldmap_import.models import WorldMapImportAttempt
+
 import json
 from django.http import Http404
 
@@ -134,7 +136,12 @@ def view_shapefile(request, shp_md5):
         return render_to_response('view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
         
-    #return HttpResponse('yes')
+    # File already checked and has shapefile
+    # Has an import been attempted?
+    import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
+    if import_attempt is not None:
+        d['worldmap_import_info'] = import_attempt.get_success_info()
+    
     return render_to_response('view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))
                             

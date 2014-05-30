@@ -135,6 +135,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                     , msg=msg)
         wm_fail.save()
         
+    return HttpResponseRedirect(reverse('view_shapefile', kwargs={'shp_md5': shp_md5 }))
     
     json_msg = json.dumps(worldmap_response)
     return HttpResponse(json_msg, mimetype='application/json')

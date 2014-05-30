@@ -1,12 +1,19 @@
 {% load humanize %}
 <table class="table table-bordered">
 		<tr>
-			<th colspan="2" class="text-center">{{ shapefile_set.name }}</th>
+			<th colspan="2" class="text-center">{{ shapefile_set.datafile_label }}</th>
 		</tr>
 		<tr>
 			<th>Shapefile Name</th>
 			<td>{{ shapefile_set.get_basename }}
-				&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a>
+				{% if not worldmap_import_info %}
+					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a>
+				{% else %}
+					<br /><br /><a href="{{ worldmap_import_info.layer_link }}">View on WorldMap</a> 				
+					<br />
+					<iframe height="300" width="100%" src="{{ worldmap_import_info.embed_map_link }}"></iframe>
+					(layer name: <a href="{{ worldmap_import_info.layer_link }}">{{ worldmap_import_info.layer_name }}</a>)	
+				{% endif %}
 				</td>
 		</tr>
 		<tr>
@@ -67,3 +74,11 @@
 			<td>{{ shapefile_set.get_bounding_box }}</td>
 		</tr>
 	</table>
+	<script>
+	$('#column_name_list').on('show.bs.collapse', function () {
+	  	$('#btn_show_cols').html('hide fields');	
+	})
+	$('#column_name_list').on('hide.bs.collapse', function () {
+	  	$('#btn_show_cols').html('show fields');
+	})
+	</script>
