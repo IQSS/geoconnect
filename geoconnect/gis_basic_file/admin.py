@@ -21,7 +21,7 @@ class GISDataFileAdmin(admin.ModelAdmin):
                     ,  'datafile_type', 'datafile_expected_md5_checksum']
     fieldsets = [
          ('DataFile Info', {
-                  'fields': (('datafile_id', 'datafile_label', 'datafile_version' )\
+                  'fields': (('datafile_id', 'datafile_label', )\
                   , 'datafile_description'\
                   , ('datafile_expected_md5_checksum', 'datafile_type'))
               }),
@@ -35,7 +35,7 @@ class GISDataFileAdmin(admin.ModelAdmin):
                'fields': (('dv_name', 'dv_id'), )
            }),
            ('Dataset Info', {
-               'fields': (('dataset_name', 'dataset_id'),  'dataset_citation')
+               'fields': (('dataset_name', 'dataset_id', 'dataset_version_id'),  'dataset_description')
            }),
          
           

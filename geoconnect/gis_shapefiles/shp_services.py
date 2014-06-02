@@ -4,6 +4,7 @@ import urllib2
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
+from gis_shapefiles.models import ShapefileSet
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 import shapefile
 
@@ -11,49 +12,80 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-'''
-def get_shapefile_group_md5_from_metadata(shp_dict):
+DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dv_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', ]
+NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize']
+
+def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
+    """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileSet' object.  This function should only receive successful responses.
+    
+    :param shp_dict: dict containing response from the Dataverse API
+    
+    example: {
+             'datafile_label': 'income_in_boston_gui_1.zip'
+            , 'dv_user_email': 'raman_prasad@harvard.ed'
+            , 'dv_username': 'raman'
+            , 'datafile_id': 1
+            , 'datafile_type': '--file-type--'
+            , 'datafile_expected_md5_checksum' : '1007330fd9c833d2aac518bbbb5354d9'
+            , 'dataset_description': ''
+            , 'filename': 'income_in_boston_gui_1.zip'
+            , 'has_gis_data': True
+            , 'dv_user_id': 1
+            , 'created': '2014-06-02 17:32:43.802018+00:00'
+            , 'dataset_version_id': 1
+            , 'dataset_id': 1
+            , 'dataset_name': 'Boston Income data'
+            , 'filesize': 498556\
+            , 'datafile_download_url' : 'http://127.0.0.1:8090/media/datafile/2014/06/02/boston_income.zip'
+            }
+    """
     if shp_dict is None:
         return None
-        
-    req_keys = ['name', 'filename', 'dv_username', 'dataset_link']
-    if not all(rkey in shp_dict.keys() for rkey in req_keys):
-        raise Exception('Not all keys found in %s' % shp_dict)
 
-    filename = shp_dict.get('filename')
-    shp_dict.pop('filename')
+    if not all(rkey in shp_dict.keys() for rkey in DV_API_REQ_KEYS):
+        missing_keys = [rkey for rkey in DV_API_REQ_KEYS if rkey not in shp_dict.keys() ]
+        raise Exception('Not all keys found in %s' % missing_keys)
 
-    # Check for existing groups based on the kwargs
-    existing_md5s = ShapefileGroup.objects.filter(**shp_dict\
+    datafile_download_url = shp_dict.get('datafile_download_url', '')
+    datafile_filename = shp_dict.get('filename', '')
+    for non_essential_param in NON_SHAPEFILE_SET_PARAMS:
+        if shp_dict.has_key(non_essential_param):
+            shp_dict.pop(non_essential_param)
+    
+    # Check for existing shapefile sets based on the kwargs
+    existing_sets = ShapefileSet.objects.filter(**shp_dict\
                                 ).values_list('md5', flat=True\
                                 ).order_by('created')
 
-    existing_md5s = list(existing_md5s)
-    # Existing group(s) found
+    existing_sets = list(existing_sets)
+    
+    # Existing ShapefileSet(s) found
     # Return the md5, delete other groups, if any
-    if len(existing_md5s) > 0:
-        grp1_md5 = existing_md5s.pop()
-        if len(existing_md5s) > 0:
-            ShapefileGroups.objects.filter(md5__in=existing_md5s).delete()   # delete older groups
-        return grp1_md5
+    if len(existing_sets) > 0:
+        shp_md5 = existing_sets.pop()
+        if len(existing_sets) > 0:
+            ShapefileSet.objects.filter(md5__in=existing_sets).delete()   # delete older ShapefileSet(s)
+        return shp_md5
 
     #------------------------------
     # Make a new group
     #------------------------------
-    shape_group_obj = ShapefileGroup(**shp_dict)
+    if dv_session_token:
+        shp_dict['dv_session_token'] = dv_session_token
+    shapefile_set = ShapefileSet(**shp_dict)
+    shapefile_set.save()
     
-    file_url = shp_dict['dataset_link']
-
+    # Download and attach file
     img_temp = NamedTemporaryFile(delete=True)
-    img_temp.write(urllib2.urlopen(file_url).read())
+    img_temp.write(urllib2.urlopen(datafile_download_url).read())
     img_temp.flush()
 
-    shape_group_obj.shp_file.save(filename, File(img_temp))
-    shape_group_obj.save()           
+    shapefile_set.dv_file.save(datafile_filename, File(img_temp))
+    shapefile_set.save()           
     
-    return shape_group_obj.md5      
-'''    
-
+    return shapefile_set.md5      
+   
+'''
 
 def update_shapefileset_with_metadata(shp_info_obj):
     """
@@ -62,7 +94,7 @@ def update_shapefileset_with_metadata(shp_info_obj):
     if shp_info_obj is None:
         return
         
-    zip_checker = ShapefileZipCheck(shp_info_obj.shp_file, **{'is_django_file_field': True})
+    zip_checker = ShapefileZipCheck(shp_info_obj.dv_file, **{'is_django_file_field': True})
     #zip_checker = ShapefileZipCheck(os.path.join(MEDIA_ROOT, shp_info.shp_file.name))
     zip_checker.validate()
     
@@ -115,7 +147,7 @@ def update_shapefileset_with_metadata(shp_info_obj):
     zip_checker.close_zip()        
     
         
-        
+'''        
 def update_with_single_shapefile_info(shp_info_obj, shapefile_base_name):
     """
     Need to extract files from .zip!    

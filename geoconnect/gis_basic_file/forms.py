@@ -10,7 +10,7 @@ class GISDataFileAdminForm(forms.ModelForm):
     
     class Meta:
         widgets = {  'datafile_description': forms.Textarea(attrs={'rows': 2, 'cols':70})\
-                , 'dataset_citation': forms.Textarea(attrs={'rows': 2, 'cols':70})\
+                , 'dataset_description': forms.Textarea(attrs={'rows': 2, 'cols':70})\
            # , 'name': forms.TextInput(attrs={'size':20}) 
             }
     """    filtered_qs = GMFUser.objects.filter(groups__id=3)        

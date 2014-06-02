@@ -12,7 +12,7 @@ from geo_utils.json_field_reader import MessageHelperJSON
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
 #
-DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'datafile_id', 'datafile_version']
+DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'datafile_id', 'dataset_version_id']
 
 class WorldMapImportAttempt(TimeStampedModel):
     """
@@ -35,11 +35,11 @@ class WorldMapImportAttempt(TimeStampedModel):
     
     # Dataverse Datafile Info
     datafile_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
-    datafile_version = models.BigIntegerField(default=-1)  # copied from GISDataFile for audit
+    dataset_version_id = models.BigIntegerField(default=-1)  # copied from GISDataFile for audit
 
 
     def __unicode__(self):
-        return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.datafile_version)
+        return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.dataset_version_id)
     
     def get_success_info(self):
         

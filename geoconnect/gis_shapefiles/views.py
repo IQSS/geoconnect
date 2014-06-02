@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 from gis_shapefiles.forms import ShapefileSetForm
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
-from gis_shapefiles.shp_services import update_shapefileset_with_metadata
+#from gis_shapefiles.shp_services import update_shapefileset_with_metadata
 from geoconnect.settings import MEDIA_ROOT 
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 

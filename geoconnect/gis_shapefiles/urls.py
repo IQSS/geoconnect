@@ -12,7 +12,7 @@ urlpatterns = patterns('gis_shapefiles.views',
 )
 
 urlpatterns += patterns('gis_shapefiles.views_mapit',
-    url(r'^shp/(?P<dv_token>\w{56})/$', 'view_mapit_incoming', name="view_mapit_incoming"),
+    url(r'^shp/(?P<dv_session_token>\w{56})/$', 'view_mapit_incoming', name="view_mapit_incoming"),
 
 )
 

@@ -21,7 +21,7 @@ class GISDataFile(TimeStampedModel):
 
     # DataFile
     datafile_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='DataFile'
-    datafile_version = models.BigIntegerField()
+    #datafile_version = models.BigIntegerField()
     datafile_label = models.CharField(max_length=255, blank=True)    # for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
 
     # Copy of the actual file
@@ -37,9 +37,10 @@ class GISDataFile(TimeStampedModel):
     
     # Dataset Info
     dataset_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
-    dataset_version_id = models.IntegerFielddefault=(-1)  # for API calls.  dvobject.id; dtype='Dataset'
+
+    dataset_version_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
     dataset_name = models.CharField(max_length=255, blank=True)  # for display
-    dataset_citation = models.TextField(blank=True) # for display
+    dataset_description = models.TextField(blank=True) # for display
 
    
     
@@ -103,7 +104,7 @@ class GISDataFile(TimeStampedModel):
 
     dataset_name = models.CharField(max_length=255, help_text='auto-filled on save', blank=True)
     dataset_link = models.URLField(max_length=255, help_text='auto-filled on save', blank=True)
-    dataset_citation = models.CharField(max_length=255, help_text='auto-filled on save', blank=True)
+    dataset_description = models.CharField(max_length=255, help_text='auto-filled on save', blank=True)
     
     gis_file_type = models.CharField(blank=True, max_length=255, help_text='auto-filled on save', db_index=True)
 
