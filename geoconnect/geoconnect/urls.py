@@ -18,6 +18,8 @@ urlpatterns = patterns('',
 
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
+    (r'^geo-connect-admin/doc/', include('django.contrib.admindocs.urls')),
+    
     url(r'^geo-connect-admin/', include(admin.site.urls)),
     
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

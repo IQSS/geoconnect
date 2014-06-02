@@ -53,7 +53,22 @@ def count_unique(keys):
     
 # Create your views here.
 def view_field_stats(request, shp_md5, field_name, column_index):
+    """
+    In progress.  Examine the contents of a given field for a shapefile.
+
+    **Context** 
     
+    ``RequestContext``
+
+    :field_name: str, name of the column to examine
+    :shp_md5: 32-char str, unique md5 hash for a :model:`gis_shapefiles.ShapefileSet`
+    :column_index: int, index of the column to examine
+    
+    
+    **Template:**
+
+    :template:`gis_shapefiles/view_04_field_info.html`
+    """
     d = { 'page_title' : 'Column Information: %s' % field_name}
     try:
         shp_set = ShapefileSet.objects.get(md5=shp_md5)

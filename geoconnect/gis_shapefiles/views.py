@@ -35,6 +35,20 @@ def get_shapefile_step_title(k):
     
 # Create your views here.
 def view_examine_dataset(request):
+    """
+    Display a list of :model:`gis_shapefiles.ShapefileSet` objects, each linked to a detail page.
+    For testing, allow the upload of a new shapefile object.
+
+    **Context** 
+    
+    ``RequestContext``
+
+    :ShapefileSetForm: Check for a ShapefileSetForm object in the request.POST
+    
+    **Template:**
+
+    :template:`gis_shapefiles/view_01_examine_zip.html`
+    """
     #return HttpResponse('view_google_map')
     d = { 'page_title' : get_shapefile_step_title(10)\
         , 'existing_shapefiles' : ShapefileSet.objects.all()
@@ -61,7 +75,19 @@ def view_examine_dataset(request):
                             , context_instance=RequestContext(request))
 
 def view_shapefile(request, shp_md5):
+    """
+    Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object
+
+    **Context** 
     
+    ``RequestContext``
+
+    :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileSet`
+    
+    **Template:**
+
+    :template:`gis_shapefiles/view_02_single_shapefile.html`
+    """
     d = {}
     
     try:

@@ -1,4 +1,6 @@
-geoconnect/geoconnect/config
+geoconnect/geoconnect/config/laptop.py
+geoconnect/geoconnect/config/prod.py
+
 geoconnect/static/test_geojson*
 test_setup/*
 

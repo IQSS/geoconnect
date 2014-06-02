@@ -16,7 +16,9 @@ DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'datafile_
 
 class WorldMapImportAttempt(TimeStampedModel):
     """
-    These objects are *not* deleted from the system
+    Record the use of the WorldMap Import API.  This object records details including the DV user and file which will be sent to the WorldMap for import via API. 
+    
+    The result of the API call will be saved in either a :model:`worldmap_import.WorldMapImportSuccess` or :model:`worldmap_import.WorldMapImportFail` object
     """
     title = models.CharField(max_length=255)
     abstract = models.TextField()
@@ -133,6 +135,9 @@ class WorldMapImportFail(TimeStampedModel):
         
         
 class WorldMapImportSuccess(TimeStampedModel):
+    """
+    Record the results of a success WorldMap visualization.
+    """
     import_attempt = models.ForeignKey(WorldMapImportAttempt)
 
     worldmap_username = models.CharField(max_length=255)
