@@ -146,16 +146,31 @@ class WorldMapImportSuccess(TimeStampedModel):
     layer_link = models.URLField()
     embed_map_link = models.URLField(blank=True)
 
+    def get_data_dict(self):
+        data_dict = { 'worldmap_username' : self.worldmap_username\
+                        , 'layer_name' : self.layer_name\
+                        , 'layer_link' : self.layer_link\
+                        , 'embed_map_link' : self.embed_map_link\
+                    }
+        return data_dict
+        
+    def get_params_for_dv_update(self):
+        #['dataset_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
+        d = self.get_data_dict()
+
+        if self.import_attempt and self.import_attempt.gis_data_file:
+            d['dataset_id'] = self.import_attempt.gis_data_file.dataset_id
+            
+        return d
+        
+
+
     def get_as_json_message(self):
         """
         Return something like:
         {"message": "", "data": {"layer_link": "http://localhost:8000/data/geonode:income_in_boston_gui_5_zip_q5v", "worldmap_username": "raman_prasad", "layer_name": "geonode:income_in_boston_gui_5_zip_q5v", "embed_map_link": "http://localhost:8000/maps/embed/?layer=geonode:income_in_boston_gui_5_zip_q5v"}, "success": true}    
         """
-        data_dict = {}
-        data_dict['worldmap_username'] = self.worldmap_username
-        data_dict['layer_name'] = self.layer_name
-        data_dict['layer_link'] = self.layer_link
-        data_dict['embed_map_link'] = self.embed_map_link
+        data_dict = self.get_data_dict()
 
         return MessageHelperJSON.get_json_msg(success=True, msg='', data_dict=data_dict)
 

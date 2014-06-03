@@ -23,6 +23,10 @@ DATABASES = {
 
 SECRET_KEY = 'some-secret-key'
 
+SITE_ID = 1 
+
+LOGIN_URL = "admin:index"
+
 
 # Used for working with GIS files
 #   example: extracting shapefiles
@@ -38,7 +42,6 @@ STATICFILES_DIRS = (os.path.join(PROJECT_DIR, "static") ,)  # original file sour
 STATIC_ROOT = os.path.join(TEST_SETUP_DIR, 'static_root') # where files gathered and served from
 STATIC_URL = '/static/' # url for static files
 
-SITE_ID = 1 
 
 SESSION_COOKIE_NAME = 'geo_connect_dev'
 

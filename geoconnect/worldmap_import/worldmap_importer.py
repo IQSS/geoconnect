@@ -3,16 +3,13 @@ from __future__ import print_function
 import os
 import requests     # http://docs.python-requests.org
 
-#import timeit
-#import json
 if __name__=='__main__':
     import sys
     CURRENT_DIR = os.path.dirname(os.path.dirname(__file__))
     sys.path.append(os.path.join(CURRENT_DIR, '../'))
-    #sys.path.append(os.path.join(CURRENT_DIR, '../../'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings")
-    
 
+from geo_utils.key_checker import KeyChecker
 from geo_utils.json_field_reader import MessageHelperJSON
 
 try:
@@ -21,9 +18,11 @@ except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
+import logging
+logger = logging.getLogger(__name__)
 
 
-            
+
 class WorldMapImporter:
     """
     Attempts to create a WorldMap layer by sending over a shapefile and Dataverse related parameters 
@@ -43,7 +42,7 @@ class WorldMapImporter:
         :param timeout_seconds: Optional. Number of seconds request is given until an exception is raised
         :type timeout_seconds: int or float
         """
-        self.import_url = os.path.join(worldmap_server_url, self.IMPORT_API_PATH)
+        self.api_import_url = os.path.join(worldmap_server_url, self.IMPORT_API_PATH)
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
     
@@ -78,35 +77,53 @@ class WorldMapImporter:
                 see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
         :rtype: python dict
         """
+        logger.info('send_shapefile_to_worldmap')
         if layer_params is None:
-            return self.get_result_msg(False, 'The shapefile metadata (title, abstract, etc.) was not found')
+            err_msg = 'The shapefile metadata (title, abstract, etc.) was not found. '
+            
+            logger.error(err_msg + 'layer_params is None')
+            return self.get_result_msg(False, err_msg)
 
         if fullpath_to_file is None:
-            return self.get_result_msg(False, 'The path to the shapfiles was not found')
+            err_msg = 'The path to the shapfiles was not found. '
+            logger.error(err_msg + 'fullpath_to_file is None')
+            return self.get_result_msg(False, err_msg)
         
-        if type(layer_params) is dict:
+        if type(layer_params) is dict:            
             layer_params['geoconnect_token'] = WORLDMAP_TOKEN_FOR_DV
+        else:
+            err_msg = 'The shapefile metadata (title, abstract, etc.) in the correct format.'
+            logger.error(err_msg + ' layer_params is not a type dict.')
+            return self.get_result_msg(False, err_msg)
         
+                
+        key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        
+        if not key_check_response.success:
+            logger.error(key_check_response.err_msg + ' Info not in "layer_params"')
+            return self.get_result_msg(key_check_response.err_msg)
+        """
         if not all([pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]):
             missing_keys = filter(lambda x: not x in layer_params, self.REQUIRED_PARAM_KEYS )# [not pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]
             missing_keys = [str(k) for k in missing_keys]
             key_str = ', '.join(missing_keys)
-            return self.get_result_msg(False, 'These parameters are missing from "layer_params": %s' % key_str)
-
+            err_msg = 'Sorry, information was missing for: %s.' % key_str
+            logger.error(err_msg + ' Info not in "layer_params"')
+            return self.get_result_msg(err_msg)
+        """
         if not os.path.isfile(fullpath_to_file):
             return self.get_result_msg(False, 'This file does not exist: %s' % fullpath_to_file)
 
                 
-        #print(self.import_url)
+        #print(self.api_import_url)
         #return
         #params = { 'key1' : 'ha' }
         #payload = {'key1': 'value1', 'key2': 'value2'}
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
 
-        #req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
+        #req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
        
         try:
-            req = requests.post(self.import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
+            req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             wm_response_dict = req.json()
             
             if wm_response_dict.get('success', False) is True:

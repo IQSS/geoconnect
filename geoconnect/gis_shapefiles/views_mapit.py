@@ -8,6 +8,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 #from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -26,6 +27,8 @@ logger = logging.getLogger(__name__)
 import urllib, cStringIO
 
 # Create your views here.
+# 
+@login_required
 def view_mapit_incoming(request, dv_session_token):
     """Quick view that needs major error checking
     
@@ -60,7 +63,7 @@ def view_mapit_incoming(request, dv_session_token):
             shp_md5 = get_shapefile_from_dv_api_info(dv_session_token, jresp.get('data'))
         
             if shp_md5 is None:
-                raise Exception('shp_md5 failure: %s' % shp_dict)
+                raise Exception('shp_md5 failure: %s' % shp_md5)
 
             choose_shapefile_url =  reverse('view_shapefile'\
                                             , kwargs={ 'shp_md5' : shp_md5 })

@@ -6,6 +6,7 @@ from gis_shapefiles.admin_forms import ShapefileSetAdminForm
 
 from geo_utils.admin_util import make_changelist_updates
 
+
 class SingleFileInfoAdmin(admin.ModelAdmin ):    
     save_on_top = True
     search_fields = ('name',  )
@@ -19,7 +20,6 @@ class ShapefileSetAdmin(GISDataFileAdmin):
     form = ShapefileSetAdminForm
     save_on_top = True
     #list_display = ('name',  'number_of_features', 'column_names', 'modified'  )
-
                 
     def changelist_view(self, request, extra_context=None):
         make_changelist_updates(self, 'list_filter', ['name', 'zipfile_checked'])

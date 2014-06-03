@@ -1,10 +1,14 @@
 import os
+import json
+import logging
 
 from django.shortcuts import render_to_response
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
+
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 from gis_shapefiles.forms import ShapefileSetForm
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
@@ -15,10 +19,7 @@ from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDA
 
 from worldmap_import.models import WorldMapImportAttempt
 
-import json
-from django.http import Http404
 
-import logging
 logger = logging.getLogger(__name__)
 
 # Temp while figuring out steps
@@ -34,6 +35,7 @@ def get_shapefile_step_title(k):
     return None
     
 # Create your views here.
+@login_required
 def view_examine_dataset(request):
     """
     Display a list of :model:`gis_shapefiles.ShapefileSet` objects, each linked to a detail page.
@@ -74,6 +76,7 @@ def view_examine_dataset(request):
     return render_to_response('view_01_examine_zip.html', d\
                             , context_instance=RequestContext(request))
 
+@login_required
 def view_shapefile(request, shp_md5):
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object

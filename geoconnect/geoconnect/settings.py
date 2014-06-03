@@ -24,6 +24,9 @@ import config.laptop as config
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.SECRET_KEY
 
+SITE_ID = config.SITE_ID
+
+LOGIN_URL = config.LOGIN_URL
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.DEBUG
@@ -31,6 +34,7 @@ DEBUG = config.DEBUG
 TEMPLATE_DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = config.ALLOWED_HOSTS
+
 
 #TEMPLATE_DIRS = config.TEMPLATE_DIRS
 TEMPLATE_DIRS = (
@@ -81,7 +85,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = config.SITE_ID
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -102,3 +105,13 @@ XLOGGING = {
 SESSION_COOKIE_NAME = config.SESSION_COOKIE_NAME
 
 LOGGING = config.LOGGING
+
+# Dataverse server for API calls
+#   example: http://127.0.0.1:8090
+#   No trailing slash
+#
+DATAVERSE_SERVER_URL = config.DATAVERSE_SERVER_URL
+
+#
+DATAVERSE_SERVER_URL = config.DATAVERSE_SERVER_URL
+

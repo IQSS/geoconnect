@@ -1,6 +1,7 @@
 from django.contrib import admin
 from gis_basic_file.models import GISDataFile
 from gis_basic_file.forms import GISDataFileAdminForm
+
 """
 class GISDataFileAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -13,6 +14,7 @@ admin.site.register(GISDataFile, GISDataFileAdmin)
 
 class GISDataFileAdmin(admin.ModelAdmin):
     form = GISDataFileAdminForm
+    
     save_on_top = True
     search_fields = ['dv_username',  'datafile_label','dataset_name', 'dv_name', 'dv_file']
     list_display = ['datafile_id', 'dv_username',  'datafile_label', 'dataset_name', 'dv_name', 'dv_file', 'modified']

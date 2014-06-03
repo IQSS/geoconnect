@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
 #from gis_shapefiles.views import view_choose_shapefile
@@ -52,6 +53,7 @@ def count_unique(keys):
     return uniq_keys, np.bincount(bins)
     
 # Create your views here.
+@login_required
 def view_field_stats(request, shp_md5, field_name, column_index):
     """
     In progress.  Examine the contents of a given field for a shapefile.

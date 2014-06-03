@@ -12,7 +12,7 @@ from geo_utils.json_field_reader import MessageHelperJSON
 from gis_shapefiles.models import ShapefileSet
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
 from worldmap_import.worldmap_importer import WorldMapImporter
-
+from dv_notify.metadata_updater import MetadataUpdater
 
 
 import logging
@@ -27,6 +27,7 @@ except:
 
 def view_send_shapefile_to_worldmap(request, shp_md5):
     """
+    *** This will be async via celery ***
     Send a shapefile over to WorldMap for import and record the results.
     A successful import should return a new layer name as well as links to this layer
     
@@ -117,6 +118,15 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                 wm_success.save()
                 wm_attempt.import_success = True
                 wm_attempt.save()
+                
+                # Separate this into another async. task!
+                # Send message back to the Dataverse -- to update metadata
+                #
+                # Round-trip example, break into separate process with 
+                #   MetadataUpdateFail, MetadataUpdateSuccess objects
+                #
+                MetadataUpdater.update_dataverse_with_metadata(wm_success)
+                                
             except:
                 # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
                 # Save a WorldMapImportFail object to check original response
@@ -134,7 +144,9 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
         wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
                                     , msg=msg)
         wm_fail.save()
-        
+    
+    
+    
     return HttpResponseRedirect(reverse('view_shapefile', kwargs={'shp_md5': shp_md5 }))
     
     json_msg = json.dumps(worldmap_response)
