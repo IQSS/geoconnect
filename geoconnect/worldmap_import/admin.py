@@ -10,7 +10,7 @@ class WorldMapImportFailInline(admin.TabularInline):
     
 class WorldMapImportSuccessInline(admin.TabularInline):
     model = WorldMapImportSuccess
-    readonly_fields = ('modified', 'created',)
+    readonly_fields = ('modified', 'created', 'update_dataverse')
     fields = ('layer_name', 'layer_link', 'worldmap_username', 'modified', 'created')
     extra = 0
     
@@ -35,7 +35,7 @@ admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
 class WorldMapImportSuccessAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('import_attempt', 'worldmap_username', 'layer_name', 'layer_link', 'modified' )
-    readonly_fields = ('modified', 'created',)
+    readonly_fields = ('modified', 'created', 'update_dataverse')
     list_filter = ('worldmap_username', )
     search_fields = ('import_attempt__title', 'import_attempt__abstract', )
 admin.site.register(WorldMapImportSuccess, WorldMapImportSuccessAdmin)

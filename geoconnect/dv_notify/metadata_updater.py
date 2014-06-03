@@ -102,7 +102,8 @@ class MetadataUpdater:
         params_for_dv = worldmap_import_success_obj.get_params_for_dv_update()
         mu = MetadataUpdater(DATAVERSE_SERVER_URL)
         resp_dict = mu.send_info_to_dataverse(params_for_dv)
-        if resp_dict.success is True:
+        print ('>>>>>>>>>',resp_dict)
+        if resp_dict.get('success', False) is True:
             return True
         return False
     

@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 
 from core.models import TimeStampedModel
 from gis_basic_file.models import GISDataFile
+from dv_notify.metadata_updater import MetadataUpdater
 
 from geo_utils.json_field_reader import MessageHelperJSON
 
@@ -146,6 +147,16 @@ class WorldMapImportSuccess(TimeStampedModel):
     layer_link = models.URLField()
     embed_map_link = models.URLField(blank=True)
 
+    def update_dataverse(self):
+        if not self.id:
+            return 'n/a'
+        print 'blahhhhhhhhhhh'
+        lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id', self.id})
+        print '*******************', lnk
+        return lnk
+        return '<a href="%s">update dataverse</a>' % lnk
+    update_dataverse.allow_tags = True 
+        
     def get_data_dict(self):
         data_dict = { 'worldmap_username' : self.worldmap_username\
                         , 'layer_name' : self.layer_name\

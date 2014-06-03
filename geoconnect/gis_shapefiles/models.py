@@ -10,6 +10,7 @@ from core.models import TimeStampedModel
 from gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
 from geo_utils.json_field_reader import JSONFieldReader
+
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
@@ -40,6 +41,7 @@ class ShapefileSet(GISDataFile):
     def get_bounding_box(self):
         return JSONFieldReader.get_json_string_as_python_val(self.bounding_box)
 
+    
     def get_column_count(self):
         cols = self.get_column_names()
         if cols:

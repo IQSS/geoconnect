@@ -24,7 +24,20 @@ except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
-
+def send_metadata_to_dataverse(request, import_success_id):
+    try:
+        wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
+    except WorldMapImportSuccess.DoesNotExist:
+        return HttpResponse('WorldMapImportSuccess object not found: %s' % import_success_id)
+    
+    MetadataUpdater.update_dataverse_with_metadata(wm_success)
+    if wm_success.import_attempt.gis_data_file:
+        lnk = reverse('view_shapefile'\
+                    , kwargs={ 'shp_md5' : wm_success.import_attempt.gis_data_file.md5 }\
+                    )
+        return HttpResponseRedirect(lnk)
+    return HttpResponse('metadata sent')
+    
 def view_send_shapefile_to_worldmap(request, shp_md5):
     """
     *** This will be async via celery ***
@@ -63,6 +76,10 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
         if success_info is not None:
             #data = MessageHelperJSON.get_json_mesg(True\
             #                    , 'Success: %s<br /> %s' % (success_info, success_info.layer_name))
+            # hack before ajax is hooked up
+            #return HttpResponseRedirect(reverse('view_shapefile'\
+            #                            , kwargs={ 'shp_md5' : shp_md5 })\
+            #                        )
             return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
     
     # (4) Create a new WorldMapImportAttempt
@@ -126,7 +143,14 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                 #   MetadataUpdateFail, MetadataUpdateSuccess objects
                 #
                 MetadataUpdater.update_dataverse_with_metadata(wm_success)
-                                
+                
+                return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
+                
+                # hack before ajax is hooked up
+                #return HttpResponseRedirect(reverse('view_shapefile'\
+                #                            , kwargs={ 'shp_md5' : shp_md5 })\
+                #                        )
+                   
             except:
                 # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
                 # Save a WorldMapImportFail object to check original response
