@@ -99,7 +99,7 @@ class MetadataUpdater:
             logger.error('worldmap_import_success_obj is None')
             return False
             
-        params_for_dv = wm_success.get_params_for_dv_update()
+        params_for_dv = worldmap_import_success_obj.get_params_for_dv_update()
         mu = MetadataUpdater(DATAVERSE_SERVER_URL)
         resp_dict = mu.send_info_to_dataverse(params_for_dv)
         if resp_dict.success is True:
