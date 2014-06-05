@@ -120,7 +120,7 @@ class SingleFileInfo(TimeStampedModel):
 
     def get_human_readable_filesize(self):
         """Get human readable filesize, e.g. 13.7 MB"""
-        return self.sizeof_fmt(self.filesize)
+        return sizeof_fmt(self.filesize)
 
     def filesize_text(self):
         """Display human readable filesize in the admin"""
