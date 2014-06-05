@@ -96,6 +96,7 @@ STATIC_URL = config.STATIC_URL
 STATICFILES_DIRS = config.STATICFILES_DIRS
 STATIC_ROOT = config.STATIC_ROOT
 
+TIME_ZONE = "America/New_York"
 
 XLOGGING = {
     'version': 1,

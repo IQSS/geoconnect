@@ -77,9 +77,9 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
             #data = MessageHelperJSON.get_json_mesg(True\
             #                    , 'Success: %s<br /> %s' % (success_info, success_info.layer_name))
             # hack before ajax is hooked up
-            #return HttpResponseRedirect(reverse('view_shapefile'\
-            #                            , kwargs={ 'shp_md5' : shp_md5 })\
-            #                        )
+            return HttpResponseRedirect(reverse('view_shapefile'\
+                                        , kwargs={ 'shp_md5' : shp_md5 })\
+                                    )
             return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
     
     # (4) Create a new WorldMapImportAttempt
@@ -122,7 +122,8 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                             , msg="Error.  WorldMap says success but no layer data found"\
                                             , orig_response='%s' % worldmap_response)
             wm_fail.save()
-        else:        
+        else:       
+            wm_success = None 
             try:
                 # Success!  Create a WorldMapImportSuccess object
                 #
@@ -135,22 +136,6 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                 wm_success.save()
                 wm_attempt.import_success = True
                 wm_attempt.save()
-                
-                # Separate this into another async. task!
-                # Send message back to the Dataverse -- to update metadata
-                #
-                # Round-trip example, break into separate process with 
-                #   MetadataUpdateFail, MetadataUpdateSuccess objects
-                #
-                MetadataUpdater.update_dataverse_with_metadata(wm_success)
-                
-                return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
-                
-                # hack before ajax is hooked up
-                #return HttpResponseRedirect(reverse('view_shapefile'\
-                #                            , kwargs={ 'shp_md5' : shp_md5 })\
-                #                        )
-                   
             except:
                 # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
                 # Save a WorldMapImportFail object to check original response
@@ -159,7 +144,32 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                                 , msg="Error.  WorldMap says success.  geoconnect failed to save results"\
                                                 , orig_response='%s' % worldmap_response)
                 wm_fail.save()
-                        
+            
+            try:
+                # Separate this into another async. task!
+                # Send message back to the Dataverse -- to update metadata
+                #
+                # Round-trip example, break into separate process with 
+                #   MetadataUpdateFail, MetadataUpdateSuccess objects
+                #
+                MetadataUpdater.update_dataverse_with_metadata(wm_success)
+            except:
+                wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
+                                                , msg="Error.  Layer created and saved BUT update to dataverse failed."\
+                                                , orig_response='%s' % worldmap_response)
+                wm_fail.save()
+            
+            
+            #if wm_success:
+            #    return HttpResponse(wm_success.get_as_json_message(), mimetype='application/json')
+            
+                
+                # hack before ajax is hooked up
+                #return HttpResponseRedirect(reverse('view_shapefile'\
+                #                            , kwargs={ 'shp_md5' : shp_md5 })\
+                #                        )
+                   
+            
                                             
     else:
         # Fail! Save a WorldMapImportFail object to check original response

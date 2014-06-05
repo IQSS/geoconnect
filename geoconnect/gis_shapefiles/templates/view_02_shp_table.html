@@ -5,16 +5,42 @@
 		</tr>
 		<tr>
 			<th>Shapefile Name</th>
-			<td>{{ shapefile_set.get_basename }}
-				{% if not worldmap_import_info %}
-					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a>
+			<td>{{ shapefile_set.get_basename }}</td>
+		</tr>
+		<tr>
+			<th>WorldMap Visualizations</th>
+			<td>
+				{% if import_success_list.count > 0 %}
+					<!-- Layer already sent to WorldMap, show results -->
+						{% for success_info in import_success_list %}
+							<a href="{{ success_info.layer_link }}">View on WorldMap</a> 				
+							<br />
+							<iframe height="300" width="100%" src="{{ success_info.embed_map_link }}"></iframe>
+							(layer name: <a href="{{ success_info.layer_link }}">{{ success_info.layer_name }}</a>)	
+						{% endfor %}
 				{% else %}
-					<br /><br /><a href="{{ worldmap_import_info.layer_link }}">View on WorldMap</a> 				
-					<br />
-					<iframe height="300" width="100%" src="{{ worldmap_import_info.embed_map_link }}"></iframe>
-					(layer name: <a href="{{ worldmap_import_info.layer_link }}">{{ worldmap_import_info.layer_name }}</a>)	
+					<!-- send info to WorldMap API -->
+					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />
 				{% endif %}
-				</td>
+				{% if import_fail_list %}
+					<!-- show failed attempts -->
+					<hr />
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th colspan="2"><i>Failed attempts to create WorldMap layer
+									&nbsp; <a href="{% url 'admin:worldmap_import_worldmapimportattempt_changelist' %}">(admin)</a></i></th>
+							</tr>
+						{% for fail_info in import_fail_list %}
+						<tr>
+							<td>{{ fail_info.msg }}
+								<br />{{ fail_info.orig_response }}</td>
+							<td>{{ fail_info.modified }}</td>
+						</tr>
+						{% endfor %}
+					</table>
+				{% endif %}
+			</td>
 		</tr>
 		<tr>
 			<th>Dataverse User</th>

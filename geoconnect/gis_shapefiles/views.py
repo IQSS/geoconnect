@@ -17,7 +17,7 @@ from geoconnect.settings import MEDIA_ROOT
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
-from worldmap_import.models import WorldMapImportAttempt
+from worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess, WorldMapImportFail
 
 
 logger = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def view_shapefile(request, shp_md5):
         logger.error('Shapefile not found for hash: %s' % shp_md5)
         raise Http404('Shapefile not found.')
     
-    
+
     """
     Early pass: Move this logic out of view
     """
@@ -111,6 +111,8 @@ def view_shapefile(request, shp_md5):
         zip_checker.validate()
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
 
+        # Error: No shapefiles found
+        #
         if list_of_shapefile_set_names is None:
             shapefile_set.has_shapefile = False
             shapefile_set.zipfile_checked = True
@@ -123,6 +125,8 @@ def view_shapefile(request, shp_md5):
             return render_to_response('view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
 
+        # Error: More than one shapefile in the .zip
+        #
         elif len(list_of_shapefile_set_names) > 1:      # more than one shapefile is in this zip
             shapefile_set.has_shapefile = False
             shapefile_set.zipfile_checked = True
@@ -136,6 +140,8 @@ def view_shapefile(request, shp_md5):
             return render_to_response('view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
 
+        # Load the single shapefile
+        #
         elif len(list_of_shapefile_set_names) == 1:
             shapefile_set.has_shapefile = True
             shapefile_set.zipfile_checked = True
@@ -166,12 +172,15 @@ def view_shapefile(request, shp_md5):
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         return render_to_response('view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
-        
+    
+    d['import_success_list'] = WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
+    d['import_fail_list'] = WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_set)
+    
     # File already checked and has shapefile
     # Has an import been attempted?
-    import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
-    if import_attempt is not None:
-        d['worldmap_import_info'] = import_attempt.get_success_info()
+    #import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
+    #if import_attempt is not None:
+    #    d['worldmap_import_info'] = import_attempt.get_success_info()
     
     return render_to_response('view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))
