@@ -91,6 +91,8 @@ def view_shapefile(request, shp_md5):
 
     :template:`gis_shapefiles/view_02_single_shapefile.html`
     """
+    logger.debug('view_shapefile')
+
     d = {}
     
     try:
@@ -101,11 +103,15 @@ def view_shapefile(request, shp_md5):
         logger.error('Shapefile not found for hash: %s' % shp_md5)
         raise Http404('Shapefile not found.')
     
+    logger.debug('shapefile_set: %s' % shapefile_set)
+    
 
     """
     Early pass: Move this logic out of view
     """
     if not shapefile_set.zipfile_checked:
+        logger.debug('zipfile_checked NOT checked')
+        
         #zip_checker = ShapefileZipCheck(shapefile_set.dv_file, **{'is_django_file_field': True})
         zip_checker = ShapefileZipCheck(os.path.join(MEDIA_ROOT, shapefile_set.dv_file.name))
         zip_checker.validate()
@@ -114,6 +120,8 @@ def view_shapefile(request, shp_md5):
         # Error: No shapefiles found
         #
         if list_of_shapefile_set_names is None:
+            logger.debug('Error: No shapefiles found')
+            
             shapefile_set.has_shapefile = False
             shapefile_set.zipfile_checked = True
             shapefile_set.save()
@@ -128,6 +136,8 @@ def view_shapefile(request, shp_md5):
         # Error: More than one shapefile in the .zip
         #
         elif len(list_of_shapefile_set_names) > 1:      # more than one shapefile is in this zip
+            logger.debug('Error: More than one shapefile in the .zip')
+            
             shapefile_set.has_shapefile = False
             shapefile_set.zipfile_checked = True
             shapefile_set.save()
@@ -143,6 +153,8 @@ def view_shapefile(request, shp_md5):
         # Load the single shapefile
         #
         elif len(list_of_shapefile_set_names) == 1:
+            logger.debug('Load the single shapefile')
+            
             shapefile_set.has_shapefile = True
             shapefile_set.zipfile_checked = True
             shapefile_set.save()
@@ -166,6 +178,8 @@ def view_shapefile(request, shp_md5):
         
         
     if not shapefile_set.has_shapefile:
+        logger.debug('No shapefile found in .zip')
+        
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         #d['zip_name_list'] = zip_checker.get_zipfile_names()
@@ -173,8 +187,18 @@ def view_shapefile(request, shp_md5):
         return render_to_response('view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
     
-    d['import_success_list'] = WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
-    d['import_fail_list'] = WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_set)
+    logger.debug('Has an import been attempted?')
+    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
+
+    if latest_import_attempt:
+        logger.debug('latest_import_attempt: %s' % latest_import_attempt )
+        d['import_success_list'] = latest_import_attempt.get_success_info()
+        
+        logger.debug('import_success_list: %s' % d['import_success_list'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
+        d['import_fail_list'] =latest_import_attempt.get_fail_info() 
+        
+        logger.debug('import_fail_list: %s' % d['import_fail_list'] ) 
+        #WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_set)
     
     # File already checked and has shapefile
     # Has an import been attempted?

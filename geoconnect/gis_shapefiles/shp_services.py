@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dv_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', ]
-NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize']
+NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize', 'created']
 
 def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileSet' object.  This function should only receive successful responses.
@@ -52,12 +52,19 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
         if shp_dict.has_key(non_essential_param):
             shp_dict.pop(non_essential_param)
     
+    for k in shp_dict.keys():
+        print '%s->%s' % (k, shp_dict[k])
+    
+    
     # Check for existing shapefile sets based on the kwargs
     existing_sets = ShapefileSet.objects.filter(**shp_dict\
                                 ).values_list('md5', flat=True\
                                 ).order_by('created')
 
     existing_sets = list(existing_sets)
+    
+    print '-' *40
+    print 'Existing set count: %s' % len(existing_sets)
     
     # Existing ShapefileSet(s) found
     # Return the md5, delete other groups, if any
@@ -86,68 +93,6 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     return shapefile_set.md5      
    
 '''
-
-def update_shapefileset_with_metadata(shp_info_obj):
-    """
-    Remember to close the .zip via the ShapefileZipCheck object!
-    """
-    if shp_info_obj is None:
-        return
-        
-    zip_checker = ShapefileZipCheck(shp_info_obj.dv_file, **{'is_django_file_field': True})
-    #zip_checker = ShapefileZipCheck(os.path.join(MEDIA_ROOT, shp_info.shp_file.name))
-    zip_checker.validate()
-    
-    #-------------------------------------
-    # (1) No shapefiles found in .zip
-    #-------------------------------------
-    list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
-    if list_of_shapefile_set_names is None:
-        zip_checker.close_zip()        
-        shp_info_obj.has_shapefile = False
-        shp_info_obj.save()
-        return
-    
-    #-------------------------------------
-    # (2) Add basic data (later; add file sizes, etc)
-    #-------------------------------------
-    shp_info_obj.has_shapefile = True
-    shp_info_obj.shapefile_names = json.dumps(list_of_shapefile_set_names)
-    shp_info_obj.num_shapefiles = len(list_of_shapefile_set_names)    
-    shp_info_obj.save()
-
-    #-------------------------------------
-    # (3) If only 1 shapefile, then get shapefile info
-    #-------------------------------------
-    if shp_info_obj.num_shapefiles == 1:
-       if zip_checker.load_shapefile(shp_info_obj, list_of_shapefile_set_names[0]):
-           try:
-               sr = shapefile.Reader(shp_info_obj.extracted_shapefile_load_path)
-           except:
-               if shp_info_obj:
-                   logger.error('Failed to read shapefile from extracted path: %s\nShapefileGroup id:%s' %\
-                        (extracted_shapefile_load_path, shp_info_obj.id)\
-                        )
-               else:
-                   logger.error('ShapefileGroup is None! Failed to read shapefile from extracted path: %s' %\
-                        (extracted_shapefile_load_path)\
-                        )
-                   
-               return
-       
-              
-       # update_with_single_shapefile_info(shp_info_obj, list_of_shapefile_set_names[0] )
-       #ZipFile.read
-        
-       return
-        
-    #-------------------------------------
-    # (4) Multiple shapefiles, let the user choose one
-    #-------------------------------------
-    zip_checker.close_zip()        
-    
-        
-'''        
 def update_with_single_shapefile_info(shp_info_obj, shapefile_base_name):
     """
     Need to extract files from .zip!    
@@ -162,3 +107,4 @@ def update_with_single_shapefile_info(shp_info_obj, shapefile_base_name):
         #mydbf = open("shapefiles/blockgroups.dbf", "rb")
         
     #sf_reader = shapefile.Reader(shp_info_obj.shp_file)
+'''

@@ -70,15 +70,10 @@ def view_mapit_incoming(request, dv_session_token):
                                         
             return HttpResponseRedirect(choose_shapefile_url)
        
-        #return HttpResponseRedirect(reverse('view_choose_shapefile'\
-        #                                , kwargs={ 'shp_md5' : shape_group_obj.md5 })\
-        #                            )
+
+    """
+    Add error page!!
+    """
     return HttpResponse(str(jresp))
         
      
-
-    img_temp = NamedTemporaryFile(delete=True)
-    img_temp.write(urllib2.urlopen(url).read())
-    img_temp.flush()
-
-    im.file.save(img_filename, File(img_temp))

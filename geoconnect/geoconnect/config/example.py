@@ -79,33 +79,24 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(TEST_SETUP_DIR, 'logs', 'geoconnect.log'),
-            'formatter': 'verbose'
+            'formatter': 'simple'
         },
         'console':{
                    'level': 'DEBUG',
                    'class': 'logging.StreamHandler',
                    'formatter': 'simple'
-               },
-       'console':{
-                'level':'INFO',
-                'class':'logging.StreamHandler',
-                'stream': sys.stdout
-            },
-            'console':{
-                     'level':'ERROR',
-                     'class':'logging.StreamHandler',
-                     'stream': sys.stdout
-                 },
+       },
     },
     'loggers': {
         'django': {
             'handlers':['file', 'console'],
             'propagate': True,
             'level':'DEBUG',
-        },
-    'geoconnect': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-        },
+        }
     }
 }
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']
+        

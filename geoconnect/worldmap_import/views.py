@@ -54,26 +54,31 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     """
 
     # (1) Retrieve the ShapefileSet object
+    print '(1) Retrieve the ShapefileSet object'
     try:
         shapefile_set = ShapefileSet.objects.get(md5=shp_md5)
     except ShapefileSet.DoesNotExist:
         data = MessageHelperJSON.get_json_mesg(False, 'Sorry, the shapefile was not found')
         return HttpResponse(data, mimetype='application/json')
-        
+    
+    print '(2) Check if it has a valid shapefile (or that shapefile has been validated)'
+    
     # (2) Check if it has a valid shapefile (or that shapefile has been validated)
     if not shapefile_set.has_shapefile:
         data = MessageHelperJSON.get_json_mesg(False, 'This file does not contain a valid shapefile')
         return HttpResponse(data, mimetype='application/json')
 
-    
+    print '(3a) Look for a previous import attempt (WorldMapImportAttempt) object related to this ShapefileSet'
     # (3a) Look for a previous import attempt (WorldMapImportAttempt) object related to this ShapefileSet
     #
     wm_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
-    if wm_attempt is not None and wm_attempt.did_import_succeed():
+    if wm_attempt and wm_attempt.did_import_succeed():
 
+        print '(3b) If the previous attempt succeeded, return the results'
         # (3b) If the previous attempt succeeded, return the results
         success_info = wm_attempt.get_success_info()
-        if success_info is not None:
+        print 'success_info', success_info
+        if success_info:
             #data = MessageHelperJSON.get_json_mesg(True\
             #                    , 'Success: %s<br /> %s' % (success_info, success_info.layer_name))
             # hack before ajax is hooked up
@@ -82,6 +87,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                     )
             return HttpResponse(success_info.get_as_json_message(), mimetype='application/json')
     
+    print '(4) Create a new WorldMapImportAttempt'
     # (4) Create a new WorldMapImportAttempt
     #
     if wm_attempt is None:
@@ -93,10 +99,12 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                     )
         wm_attempt.save()
     
+    print '(5) Prepare parameters (title, abstract, etc) to send with the import request'
     # (5) Prepare parameters (title, abstract, etc) to send with the import request
     #
     layer_params = wm_attempt.get_params_for_worldmap_import(geoconnect_token=WORLDMAP_TOKEN_FOR_DV)
 
+    print '(6) Instantiate the WorldMapImporter object and attempt the import'
     # (6) Instantiate the WorldMapImporter object and attempt the import
     # *** This part of the process will be moved to a celery queue -- asyn b/c it may take a while ***
     #
@@ -107,6 +115,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     print worldmap_response
     print '-' *40
     
+    print '(7) Check if import worked.  '
     # (7) Check if import worked.  
     #
     #

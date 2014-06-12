@@ -12,8 +12,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-gis_shapefiles_app_pth = os.path.join(BASE_DIR, '../')
-sys.path.append(gis_shapefiles_app_pth)
+#sys.path.insert(0, '/Users/rmp553/Documents/iqss-git/geoconnect/geoconnect/apps')
+#sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
+app_pth1 = os.path.join(BASE_DIR, '../')
+#app_pth2 = os.path.join(BASE_DIR, '../../')
+sys.path.append(app_pth1)
+#sys.path.append(app_pth2)
 
 
 import config.laptop as config
@@ -98,10 +102,7 @@ STATIC_ROOT = config.STATIC_ROOT
 
 TIME_ZONE = "America/New_York"
 
-XLOGGING = {
-    'version': 1,
-    'root': {'level': 'DEBUG' if DEBUG else 'INFO'},
-}
+INTERNAL_IPS = config.INTERNAL_IPS
 
 SESSION_COOKIE_NAME = config.SESSION_COOKIE_NAME
 

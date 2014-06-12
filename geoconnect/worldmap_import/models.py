@@ -42,16 +42,18 @@ class WorldMapImportAttempt(TimeStampedModel):
     def __unicode__(self):
         return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.dataset_version_id)
     
+    def get_fail_info(self):
+        fail_info_list = self.worldmapimportfail_set.all().order_by('-modified')
+        return fail_info_list
+        
     def get_success_info(self):
         
         success_info_list = self.worldmapimportsuccess_set.all().order_by('-modified')
-        if success_info_list.count() > 0:
-            return success_info_list[0]
-        return None
-    
+        return success_info_list
+        
     def did_import_succeed(self):
         # find successful import attempts
-        if self.worldmapimportsuccess_set.all().count() > 0:
+        if self.worldmapimportsuccess_set.count() > 0:
             self.import_success = True
             self.save()
             return True
@@ -71,10 +73,14 @@ class WorldMapImportAttempt(TimeStampedModel):
                 setattr(self, attr, getattr(self.gis_data_file, attr)) 
         super(WorldMapImportAttempt, self).save(*args, **kwargs)
     
+    
     @staticmethod
-    def get_latest_attempt(shapefile_set):
+    def get_import_attempts(shapefile_set):
         """
         Search for existing WorldMapImportAttempt objects where the params in DV_SHARED_ATTRIBUTES match
+
+        :param shapefile_set: ShapefileSet object
+        :returns: queryset -- either containing WorldMapImportAttempt objects or empty
         """
         if shapefile_set is None:
             return None
@@ -82,13 +88,42 @@ class WorldMapImportAttempt(TimeStampedModel):
         lookup_params = {}
         for attr in DV_SHARED_ATTRIBUTES:
             lookup_params[attr] = getattr(shapefile_set, attr)
-            
-        l = WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified')
         
-        if l.count() == 0:
+        return WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified')
+        
+
+    @staticmethod
+    def get_latest_attempt(shapefile_set):
+        """
+        Get the latest WorldMapImportAttempt object where the params in DV_SHARED_ATTRIBUTES match
+        
+        :param shapefile_set: ShapefileSet object
+        :returns: latest WorldMapImportAttempt object or None.  "latest" means most recently modified date
+        """
+        if shapefile_set is None:
             return None
+        
+        # Retrieve the latest attempts
+        l = WorldMapImportAttempt.get_import_attempts(shapefile_set)
+
+        # Nada, return None
+        if not l:
+            return None
+        
+        # Got one!
+        latest_attempt = l[0]
+
+        # If latest_attempt doesn't have a reference to the shapefile_set,
+        # then make one 
+        if not latest_attempt.gis_data_file:
+            latest_attempt.gis_data_file = shapefile_set
+            latest_attempt.save()
             
-        return l[0]
+        # return the latest_attempt
+        print 'latest_attempt', latest_attempt
+        return latest_attempt
+        
+    
     
     def get_params_for_worldmap_import(self, geoconnect_token=None):
         """
@@ -127,6 +162,7 @@ class WorldMapImportFail(TimeStampedModel):
     import_attempt = models.ForeignKey(WorldMapImportAttempt)
     msg = models.TextField()
     orig_response = models.TextField('original response', blank=True)
+
     
     def __unicode__(self):
         return '%s' % self.import_attempt
