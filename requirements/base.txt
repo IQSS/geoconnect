@@ -1,0 +1,15 @@
+Django==1.6
+pyshp==1.2.0
+requests==2.3.0
+bpython==0.12
+django-braces==1.2.2
+django-model-utils==1.5.0
+logutils==0.3.3
+#South==0.8.2
+Pillow==2.4.0
+numpy==1.6.2
+matplotlib==1.1.1
+xlrd==0.9.3	# excel read
+reportlab==3.0
+
+

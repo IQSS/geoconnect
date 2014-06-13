@@ -1,7 +1,7 @@
 import shutil
 import os
 from datetime import datetime, timedelta
-from geoconnect import settings
+from django.conf import settings
 import re
 import logging
 

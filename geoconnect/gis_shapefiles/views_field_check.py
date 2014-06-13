@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
 #from gis_shapefiles.views import view_choose_shapefile
 
-from geoconnect.settings import MEDIA_ROOT
+from django.conf import settings  
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     plt.barh(range(len(data_array)), data_array)
     
     img_name_for_web = os.path.join('plots', '%s-%s.png' % (shp_md5, column_index))
-    img_name_fullpath = os.path.join(MEDIA_ROOT, img_name_for_web)
+    img_name_fullpath = os.path.join(settings.MEDIA_ROOT, img_name_for_web)
     
     """
     pyplot.hist(data_array, bins=5, facecolor='green', alpha=0.75)

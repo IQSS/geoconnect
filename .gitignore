@@ -1,5 +1,7 @@
 geoconnect/geoconnect/config/laptop.py
 geoconnect/geoconnect/config/prod.py
+geoconnect/geoconnect/settings/prod.py
+geoconnect/geoconnect/geoconnect /settings/local.py
 
 geoconnect/static/test_geojson*
 test_setup/*

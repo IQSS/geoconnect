@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from gis_shapefiles.forms import ShapefileSetForm
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
 #from gis_shapefiles.shp_services import update_shapefileset_with_metadata
-from geoconnect.settings import MEDIA_ROOT 
+from django.conf import settings
 from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
@@ -113,7 +113,7 @@ def view_shapefile(request, shp_md5):
         logger.debug('zipfile_checked NOT checked')
         
         #zip_checker = ShapefileZipCheck(shapefile_set.dv_file, **{'is_django_file_field': True})
-        zip_checker = ShapefileZipCheck(os.path.join(MEDIA_ROOT, shapefile_set.dv_file.name))
+        zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_set.dv_file.name))
         zip_checker.validate()
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
 
@@ -124,6 +124,7 @@ def view_shapefile(request, shp_md5):
             
             shapefile_set.has_shapefile = False
             shapefile_set.zipfile_checked = True
+            shapefile_set.name = '(not a shapefile)'
             shapefile_set.save()
             d['Err_Found'] = True
             d['Err_No_Shapefiles_Found'] = True

@@ -6,12 +6,12 @@ if __name__=='__main__':
     import sys
     CURRENT_DIR = os.path.dirname(os.path.dirname(__file__))
     sys.path.append(os.path.join(CURRENT_DIR, '../'))
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
 from geo_utils.key_checker import KeyChecker 
 from geo_utils.json_field_reader import MessageHelperJSON
 
-from geoconnect.settings import DATAVERSE_SERVER_URL
+from django.conf import settings 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ class MetadataUpdater:
             return False
             
         params_for_dv = worldmap_import_success_obj.get_params_for_dv_update()
-        mu = MetadataUpdater(DATAVERSE_SERVER_URL)
+        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         resp_dict = mu.send_info_to_dataverse(params_for_dv)
         print ('>>>>>>>>>',resp_dict)
         if resp_dict.get('success', False) is True:
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         params = success_obj.get_params_for_dv_update()
         print('params to send: %s' % params)
 
-        mu = MetadataUpdater(DATAVERSE_SERVER_URL)
+        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         print (mu.send_info_to_dataverse(params))
     else:
         print('No WorldMapImportSuccess objects')
