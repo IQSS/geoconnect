@@ -14,9 +14,8 @@ import java.util.HashMap;
 import java.util.*;
 
 import java.nio.file.Files;
-import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.nio.file.Path;
-//import java.nio.file.Paths;
 
 public class ZipFileMetadataExtractor{
 
@@ -72,8 +71,8 @@ public class ZipFileMetadataExtractor{
                System.out.println( "No file name, so add one!");
                // Water_single_shp.zip
              //  ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("unzipped.zip");    
-              // ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("Waterbody_shp.zip");    
-               ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("social_disorder_in_boston.zip");
+               ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("../test_data/Waterbody_shp.zip");    
+              // ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("social_disorder_in_boston.zip");
               // zpt.processZipfile("notazip.zip");                           
                if (!zpt.zipFileProcessed){
                    System.out.println("--------- FAIL -------------");
@@ -222,6 +221,24 @@ public class ZipFileMetadataExtractor{
         
     }
     
+    
+    private boolean deleteDirectory(String dirname){
+        if (dirname==null){
+            return false;
+        }
+        File dir_obj = new File(dirname);
+        if (!(dir_obj.exists())){
+            return true;
+        }
+       String[]entries = dir_obj.list();
+       for(String s: entries){
+          File currentFile = new File(dir_obj.getPath(),s);
+          currentFile.delete();
+       }
+       dir_obj.delete();
+       return true;
+    }
+    
     /*
         Make a folder with the extracted files
         Except: separately rezip shapefile sets
@@ -237,18 +254,30 @@ public class ZipFileMetadataExtractor{
             return false;
         }
         
+        deleteDirectory(rezippedFolder);
         if (!createDirectory(rezippedFolder)){
             errorMessage = "Failed to create rezipped directory: " + rezippedFolder;
         }
         
         Iterator<String> fileGroupsIterator = fileGroups.keySet().iterator();
+        
         while(fileGroupsIterator.hasNext()){
             String key = fileGroupsIterator.next();
-            //msg("\n" + key);
+            msg("\n" + key);
             List<String> ext_list = fileGroups.get(key);
-            //msg(Arrays.toString(ext_list.toArray()));
+            msg(Arrays.toString(ext_list.toArray()));
+        
             if (doesListContainShapefileExtensions(ext_list)){
-                return true;
+                List<String> namesToZip = new ArrayList<String>();
+                
+                for (String ext : ext_list) {
+                    namesToZip.add(key + '.' + ext);
+                }
+                String shpZippedName = rezippedFolder + "/" + key + ".zip";
+                ZipMaker zip_maker = new ZipMaker(namesToZip, outputFolder, shpZippedName);
+                // rezip it
+                
+                
             }else{
                 for (String ext : ext_list) {
                     File source_file = new File(outputFolder + '/' + key + '.' + ext);
@@ -258,8 +287,8 @@ public class ZipFileMetadataExtractor{
                     createDirectory(target_file_dir);
     
                    try{
-                        Files.copy(source_file.toPath(), target_file.toPath());//, REPLACE_EXISTING);    
-                     msg("File copied: " + source_file.toPath() + " To: " + target_file.toPath());
+                        Files.copy(source_file.toPath(), target_file.toPath(), REPLACE_EXISTING);    
+                        msg("File copied: " + source_file.toPath() + " To: " + target_file.toPath());
                     }catch(java.nio.file.NoSuchFileException ex){
                         ex.printStackTrace(); 
                         
