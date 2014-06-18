@@ -1,7 +1,6 @@
 from __future__ import print_function
 import os, sys
 import json
-from os.path import basename, join, dirname, abspath, isfile
 
 from osgeo import ogr, osr
 import shapefile
@@ -13,7 +12,6 @@ def msgt(s): dashes(); msg(s); dashes()
 def msgx(s): dashes(); msg('ERROR'); msg(s); dashes(); sys.exit(0)
 
 
-
 def get_output_fname(fname, new_suffix):
     fparts = fname.split('.')
     if len(fparts[-1]) == 3:
@@ -22,8 +20,14 @@ def get_output_fname(fname, new_suffix):
     return fname + new_suffix
     
 def reproject_to_4326(shape_fname):
+    """From the Python GDAL/OGR Cookbook
     
-    if not isfile(shape_fname):
+    Source: http://pcjericks.github.io/py-gdalogr-cookbook/projection.html#reproject-a-layer
+    
+    :param shape_fname: full file path to a shapefile (.shp)
+    :returns: full file path to a shapefile reprojected as 4326
+    """
+    if not os.path.isfile(shape_fname):
         msgx('File not found: %s' % shape_fname)
             
     driver = ogr.GetDriverByName('ESRI Shapefile')
@@ -77,10 +81,7 @@ def reproject_to_4326(shape_fname):
         outFeature.Destroy()
         inFeature.Destroy()
         inFeature = inLayer.GetNextFeature()
-    
-    #msg(dir(outDataSet))
-    #msg(outLayer.ExportToJson())
-    
+        
     # close the shapefiles
     inDataSet.Destroy()
     outDataSet.Destroy()
@@ -90,11 +91,20 @@ def reproject_to_4326(shape_fname):
     return outputShapefile
     
 def convert_shp_to_geojson(shape_fname):
-    if not isfile(shape_fname):
+    """Using the pyshp library, https://github.com/GeospatialPython/pyshp, convert the shapefile to JSON
+    
+    Code is from this example:  http://geospatialpython.com/2013/07/shapefile-to-geojson.html
+    
+    :param shape_fname: full file path to a shapefile (.shp)
+    :returns: full file path to a GEOJSON representation of the shapefile
+    
+    (recheck/redo using gdal)
+    """
+    if not os.path.isfile(shape_fname):
         msgx('File not found: %s' % shape_fname)
     
-    try:
-        # read the shapefile
+    # Read the shapefile
+    try: 
         reader = shapefile.Reader(shape_fname)
     except:
         msgx('Failed to read shapefile: %s' % shape_fname)
@@ -108,7 +118,7 @@ def convert_shp_to_geojson(shape_fname):
           output_buffer.append(dict(type="Feature", geometry=geom, properties=atr))
 
     # write the GeoJSON file
-    out_fname = os.path.join('page-out', basename(shape_fname).replace('.shp', '.json'))
+    out_fname = os.path.join('page-out', os.path.basename(shape_fname).replace('.shp', '.json'))
    
     geojson = open(out_fname, "w")
     geojson.write(json.dumps({"type": "FeatureCollection","features": output_buffer}, indent=2) + "\n")
@@ -116,24 +126,38 @@ def convert_shp_to_geojson(shape_fname):
     msg('file written: %s' % out_fname)
 
     return out_fname
+    
 
-def make_leaflet_page(geojson_file, ouput_html_fname):
-    if not isfile(geojson_file):
-        msgx('File not found: %s' % geojson_file)
+def make_leaflet_page(geojson_files=[], ouput_html_fname='leaflet_page.html'):
+    """Using folium, make an HTML page using GEOJSON input 
+        examples: https://github.com/wrobstory/folium
+            
+    :param geojson_file: full file path to a GEO JSON file
+    :param ouput_html_fname: name of HTML file to create (will only use the basename)
+    """
+    if not type(geojson_files) in [dict, list]:
+        msgx('geojson_files should be a list or tupe, not a %s' % geojson_files.__class__.__name__)
+        
+    for geojson_file in geojson_files:
+        if not os.path.isfile(geojson_file):
+            msgx('File not found: %s' % geojson_file)
     
     # Boston 
     mboston = folium.Map(location=[ 42.3267154, -71.1512353])
-    mboston.geo_json(geojson_file)
+    for geojson_file in geojson_files:
+        mboston.geo_json(geojson_file)
+    
     #mboston.geo_json('income.json')
+    ouput_html_fname = os.path.basename(ouput_html_fname)
     mboston.create_map(path=ouput_html_fname)
     print ('file written', ouput_html_fname)
     
+    
 if __name__=='__main__':
     reprojected_fname = reproject_to_4326('data/social_disorder_in_boston/social_disorder_in_boston_yqh.shp')
-    
     geojson_fname = convert_shp_to_geojson(reprojected_fname)
-    
-    make_leaflet_page(geojson_fname, 'page-out/disorder.html')
+    make_leaflet_page([geojson_fname], 'disorder.html')
+    #make_leaflet_page([geojson_fname, 'data/HOSPITALS.geojson'], 'disorder.html')
     
     
     

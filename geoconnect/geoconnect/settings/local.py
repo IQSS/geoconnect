@@ -57,7 +57,8 @@ CACHES = {
 # See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
 INSTALLED_APPS += (
     'debug_toolbar',
-    'djcelery',
+    #'djcelery',
+    'kombu.transport.django', 
 )
 
 MIDDLEWARE_CLASSES += (

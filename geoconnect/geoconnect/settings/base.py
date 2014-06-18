@@ -282,6 +282,6 @@ LOGIN_URL = "admin:index"
 DATAVERSE_SERVER_URL = None
 ########## END DATAVERSE_SERVER_URL
 
-
+BROKER_URL = 'django://'
 
 
