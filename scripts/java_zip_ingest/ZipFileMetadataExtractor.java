@@ -161,20 +161,13 @@ public class ZipFileMetadataExtractor{
 
         msgt("Hash: file base names + extensions");
         
-        Iterator<String> fileGroupsIterator = fileGroups.keySet().iterator();
-        while(fileGroupsIterator.hasNext()){
-            String key = fileGroupsIterator.next();
-            msg("\n" + key);
-            List<String> ext_list = fileGroups.get(key);
-            msg(Arrays.toString(ext_list.toArray()));
-            if (doesListContainShapefileExtensions(ext_list)){
+        for (Map.Entry<String, List<String>> entry : fileGroups.entrySet()){
+            msg("Key: " + entry.getKey() + " .ext List: " + entry.getValue());
+            if (doesListContainShapefileExtensions(entry.getValue())){
                 msg(" >>>> GOT IT! <<<<<<<<");
             }
-            
-          // if (SHAPEFILE_MANDATORY_EXTENSIONS.contains("shp")){
-            //       msg("YES!!!");
-           //}
-        } // end while
+        }
+       
     } // end showFileGroups
     
     
@@ -199,8 +192,7 @@ public class ZipFileMetadataExtractor{
         rezipShapefileSets();
         
         //showFileNamesSizes();
-        //showFileGroups();
-        
+        showFileGroups();
     }
     
     /*
@@ -209,16 +201,12 @@ public class ZipFileMetadataExtractor{
     public int getShapefileCount(){
         int shp_cnt = 0;
         
-        Iterator<String> fileGroupsIterator = fileGroups.keySet().iterator();
-        while(fileGroupsIterator.hasNext()){
-            String key = fileGroupsIterator.next();
-            List<String> ext_list = fileGroups.get(key);
-            if (doesListContainShapefileExtensions(ext_list)){
+        for (Map.Entry<String, List<String>> entry : fileGroups.entrySet()){
+            if (doesListContainShapefileExtensions(entry.getValue())){
                 shp_cnt+=1;
             }
         }
         return shp_cnt;
-        
     }
     
     
@@ -259,12 +247,12 @@ public class ZipFileMetadataExtractor{
             errorMessage = "Failed to create rezipped directory: " + rezippedFolder;
         }
         
-        Iterator<String> fileGroupsIterator = fileGroups.keySet().iterator();
         
-        while(fileGroupsIterator.hasNext()){
-            String key = fileGroupsIterator.next();
+        for (Map.Entry<String, List<String>> entry : fileGroups.entrySet()){
+            
+            String key = entry.getKey();
             msg("\n" + key);
-            List<String> ext_list = fileGroups.get(key);
+            List<String> ext_list = entry.getValue();
             msg(Arrays.toString(ext_list.toArray()));
         
             if (doesListContainShapefileExtensions(ext_list)){
@@ -320,16 +308,14 @@ public class ZipFileMetadataExtractor{
         Does this zip file contain a shapefile set?
     */
     public boolean containsShapefile(){
-        Iterator<String> fileGroupsIterator = fileGroups.keySet().iterator();
-        while(fileGroupsIterator.hasNext()){
-            String key = fileGroupsIterator.next();
-            //msg("\n" + key);
-            List<String> ext_list = fileGroups.get(key);
-            //msg(Arrays.toString(ext_list.toArray()));
+        for (Map.Entry<String, List<String>> entry : fileGroups.entrySet()){
+            String key = entry.getKey();
+            List<String> ext_list = entry.getValue();
             if (doesListContainShapefileExtensions(ext_list)){
                 return true;
             }
         }
+              
         return false;
     }
     
