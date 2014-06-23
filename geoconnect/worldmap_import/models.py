@@ -1,6 +1,6 @@
 from django.db import models
 from hashlib import md5
-
+import json
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
@@ -192,13 +192,41 @@ class WorldMapImportSuccess(TimeStampedModel):
         return lnk
         return '<a href="%s">update dataverse</a>' % lnk
     update_dataverse.allow_tags = True 
-        
+    
+    def dv_params(self):
+        if not self.id:
+            return 'n/a'
+
+        lnk = reverse('show_import_success_params', kwargs={ 'import_success_id' : self.id})
+
+        return '<a href="%s">dv params</a>' % lnk
+    dv_params.allow_tags = True 
+    
+    
+    
     def get_data_dict(self):
         data_dict = { 'worldmap_username' : self.worldmap_username\
                         , 'layer_name' : self.layer_name\
                         , 'layer_link' : self.layer_link\
                         , 'embed_map_link' : self.embed_map_link\
                     }
+        
+        if self.import_attempt.gis_data_file:
+            data_dict['dataset_id'] = self.import_attempt.gis_data_file.dataset_id
+
+            try:
+                shapefile_set = self.import_attempt.gis_data_file.shapefileset
+                if shapefile_set.bounding_box:
+                    bbox = json.loads(shapefile_set.bounding_box)
+                    print 'bbox', bbox.__class__.__name__
+                    data_dict.update({ 'bbox_min_lng' : bbox[0]
+                        , 'bbox_min_lat' : bbox[1]
+                        , 'bbox_max_lng' : bbox[2]
+                        , 'bbox_max_lat' : bbox[3]
+                        })
+            except:
+                pass
+                
         return data_dict
         
     def get_params_for_dv_update(self):
@@ -207,7 +235,18 @@ class WorldMapImportSuccess(TimeStampedModel):
 
         if self.import_attempt and self.import_attempt.gis_data_file:
             d['dataset_id'] = self.import_attempt.gis_data_file.dataset_id
-            
+            try:
+                shapefile_set = self.import_attempt.gis_data_file.shapefileset
+                if shapefile_set.bounding_box:
+                    bbox = json.loads(shapefile_set.bounding_box)
+                    print 'bbox', bbox.__class__.__name__
+                    d.update({ 'bbox_min_lng' : bbox[0]
+                        , 'bbox_min_lat' : bbox[1]
+                        , 'bbox_max_lng' : bbox[2]
+                        , 'bbox_max_lat' : bbox[3]
+                        })
+            except:
+                pass
         return d
         
 
@@ -227,6 +266,14 @@ class WorldMapImportSuccess(TimeStampedModel):
     class Meta:
         ordering = ('-modified',)
 
-    
+"""
+from gis_basic_file.models import *
+for g in GISDataFile.objects.all():
+    dir(g)
+
+from worldmap_import.models import *
+for wis in WorldMapImportSuccess.objects.all():
+    wis.dv_params()
+"""
     
     

@@ -45,7 +45,7 @@ class ShapefileSetAdmin(GISDataFileAdmin):
                'fields': ('name', ('zipfile_checked',  'has_shapefile'))
                     })\
                     , ('Shapefile Info', {
-                       'fields': ('number_of_features', 'column_names', 'column_info', 'extracted_shapefile_load_path')
+                       'fields': ('number_of_features', 'column_names', 'column_info', 'extracted_shapefile_load_path', 'bounding_box')
                     })\
                  ] + fs
         return fs   

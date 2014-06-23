@@ -24,6 +24,17 @@ except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
 
+
+def show_import_success_params(request, import_success_id):
+
+    try:
+        wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
+    except WorldMapImportSuccess.DoesNotExist:
+        return HttpResponse('WorldMapImportSuccess object not found: %s' % import_success_id)
+
+    return HttpResponse('%s' % wm_success.get_data_dict())
+
+
 def send_metadata_to_dataverse(request, import_success_id):
     try:
         wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)

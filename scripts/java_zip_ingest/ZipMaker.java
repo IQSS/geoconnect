@@ -11,31 +11,26 @@ import java.util.zip.ZipOutputStream;
 //
 public class ZipMaker{
 
-
+    private boolean DEBUG = false;
+    
     public static void main(String[] args){
         
     }
-    public ZipMaker(){
-        
-    }
+
     public ZipMaker(List<String> filenames, String inputDirname, String outputZipFilename){
 
         try {
 			FileOutputStream fos = new FileOutputStream(outputZipFilename);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+			ZipOutputStream zip_output_stream = new ZipOutputStream(fos);
 
             for(String fname: filenames){
             
                 String fullpath = new String(inputDirname + '/' + fname);
-                addToZipFile(fname, fullpath, zos);
+                addToZipFile(fname, fullpath, zip_output_stream);
     			
             }
 
-
-		//	String file5Name = "f1/f2/f3/file5.txt";
-		//	addToZipFile(file5Name, zos);
-
-			zos.close();
+			zip_output_stream.close();
 			fos.close();
 
 		} catch (FileNotFoundException e) {
@@ -47,23 +42,25 @@ public class ZipMaker{
     }
 
 
-	public static void addToZipFile(String fileName, String fullFilepath, ZipOutputStream zos) throws FileNotFoundException, IOException {
+	public static void addToZipFile(String fileName, String fullFilepath, ZipOutputStream zip_output_stream) throws FileNotFoundException, IOException {
 
-		System.out.println("Writing '" + fileName + "' to zip file");
-
+        if (DEBUG){
+		    System.out.println("Writing '" + fileName + "' to zip file");
+        }
+        
 		File file = new File(fullFilepath);
-		FileInputStream fis = new FileInputStream(file);
+		FileInputStream file_input_stream = new FileInputStream(file);
 		ZipEntry zipEntry = new ZipEntry(fileName);
-		zos.putNextEntry(zipEntry);
+		zip_output_stream.putNextEntry(zipEntry);
 
 		byte[] bytes = new byte[1024];
 		int length;
-		while ((length = fis.read(bytes)) >= 0) {
-			zos.write(bytes, 0, length);
+		while ((length = file_input_stream.read(bytes)) >= 0) {
+			zip_output_stream.write(bytes, 0, length);
 		}
 
-		zos.closeEntry();
-		fis.close();
+		zip_output_stream.closeEntry();
+		file_input_stream.close();
 	}
 
 }

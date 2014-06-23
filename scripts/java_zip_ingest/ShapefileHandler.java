@@ -1,3 +1,5 @@
+//package edu.harvard.iq.dataverse.util;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,42 +19,58 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.nio.file.Path;
 
-/*
-
-*/
-public class ZipFileMetadataExtractor{
+/**
+ *  Used to identify, "repackage", and extract data from Shapefiles in .zip format
+ * 
+ *  (1) Identify if a .zip contains a shapefile: 
+ *          boolean containsShapfile(FileInputStream zip_stream) or boolean containsShapfile(FileInputStream zip_filename) 
+ *
+ *  (2) Unpack/"Repackage" .zip:
+ *          (a) All files extracted
+ *          (b) Each group of files that make up a shapefile are made into individual .zip files
+ *          (c) Non shapefile related files left on their own
+ *
+ * (3) For shapefile sets, described in (2)(b), create a text file describing the contents of the zipped shapefile
+ * 
+ * @author Raman Prasad
+ * 
+ */
+public class ShapefileHandler{
 
     // Reference for these extensions: http://en.wikipedia.org/wiki/Shapefile
-    //
     public final static List<String> SHAPEFILE_MANDATORY_EXTENSIONS = Arrays.asList("shp", "shx", "dbf", "prj");
     public final static String SHP_XML_EXTENSION = "shp.xml";
-    public final static List<String> SHAPEFILE_ALL_EXTENSIONS = Arrays.asList("shp", "shx", "dbf", "prj", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "ixs", "mxs", "atx", ".cpg", SHP_XML_EXTENSION);  //  Note, this treats the ".shp.xml" as a separate file
-
+    public final static List<String> SHAPEFILE_ALL_EXTENSIONS = Arrays.asList("shp", "shx", "dbf", "prj", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "ixs", "mxs", "atx", ".cpg", SHP_XML_EXTENSION);  
+    
+    private boolean DEBUG = true;
+    
     public String zipFilename = new String();
-    public boolean zipFileProcessed = false;
+    
+    private boolean zipFileProcessed = false;
     public String errorMessage = new String();
     
+    // List of files in .zip archive
     private List<String> filesListInDir = new ArrayList<String>();
 
-    /* Hash of file names and byte sizes {  "file name" : bytes }
-       e.g. { "water.shp" : 541234 }
-    */
+    // Hash of file names and byte sizes {  "file name" : bytes }  example: { "water.shp" : 541234 }
     private HashMap<String, Long> filesizeHash = new HashMap<String, Long>();   
     
-    /* Make a hash with basename and a list of extensions. Ignore files without extensions.
-        
-       e.g.  { "Tracts" : [ ".dbf", ".prj", ".sbn", ".sbx", ".shp", ".shx"] 
-               , "my_word_doc" : [".docx"]
+    // Hash of file basenames and a list of extensions. 
+    /*   e.g.  { "subway_shapefile" : [ ".dbf", ".prj", ".sbn", ".sbx", ".shp", ".shx"] 
+               , "shapefile_info" : [".docx"]
+               , "README" : [""]
               }
     */
-    //private HashMap<String, List> fileGroups = new HashMap<String, Arraylist>(); 
     private Map<String, List<String>> fileGroups = new HashMap<String, List<String>>();
     
     private String outputFolder = "unzipped";
     private String rezippedFolder = "rezipped";
 
+    // Debug helper
     public void msg(String s){
-        System.out.println(s);
+        if (DEBUG){
+            System.out.println(s);
+        }
     }
     
     public void msgt(String s){
@@ -62,53 +80,24 @@ public class ZipFileMetadataExtractor{
     }
 
     /*
-        Constructor
+        Constructor, start with filename
     */
-    public ZipFileMetadataExtractor(String filename){
-        zipFilename = filename;
-        processZipfile();
+    public ShapefileHandler(String filename){
+        this.zipFilename = filename;
+        processZipfile(this.zipFilename);
     }
-    
-    public static void main(String[] args){
 
-           if (args.length == 0){
-               System.out.println( "No file name, so add one!");
-               // Water_single_shp.zip
-             //  ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("unzipped.zip");    
-               ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("../test_data/Waterbody_shp.zip");    
-              // ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor("social_disorder_in_boston.zip");
-              // zpt.processZipfile("notazip.zip");                           
-               if (!zpt.zipFileProcessed){
-                   System.out.println("--------- FAIL -------------");
-                   System.out.println(zpt.errorMessage);
-               }
-               if (zpt.containsShapefile()){
-                   System.out.println("--------- SHAPE FOUND! -------------");
-                   System.out.println("Shape count: " + zpt.getShapefileCount());
-               }
+    /*
+        Constructor, start with FileInputStream
+    */
+    public ShapefileHandler(FileInputStream zip_file_stream){
+        //processZipfile(zip_file_stream);
+        
+        examineZipfile(zip_file_stream);
+        //showFileNamesSizes();
+        showFileGroups();
+    }
 
-           }else if(args.length > 1){
-               System.out.println( "Please only give one file name!");  
-           }else{   
-               String zip_name =  args[0];      
-               System.out.println( "Process File: " + zip_name);
-
-               System.out.println( "Process File: " + zip_name);                
-               ZipFileMetadataExtractor zpt = new ZipFileMetadataExtractor(zip_name);
-               if (!zpt.zipFileProcessed){
-                   System.out.println("--------- FAIL -------------");
-                   
-                   System.out.println(zpt.errorMessage);
-               }
-               if (zpt.containsShapefile()){
-                   System.out.println("--------- SHAPE FOUND! -------------");
-                   System.out.println("Shape count: " + zpt.getShapefileCount());
-                   
-               }
-               
-           }
-       } // end main
- 
     /*
         Create a directory, if one doesn"t exist
     */
@@ -148,11 +137,11 @@ public class ZipFileMetadataExtractor{
     */
     private void showFileNamesSizes(){
         msgt("Hash: file names + sizes");
-        Iterator<String> keySetIterator = filesizeHash.keySet().iterator();
+        Iterator<String> keySetIterator = this.filesizeHash.keySet().iterator();
 
         while(keySetIterator.hasNext()){
           String key = keySetIterator.next();
-          msg("key: [" + key + "] value: [" + filesizeHash.get(key)+"]");
+          msg("key: [" + key + "] value: [" + this.filesizeHash.get(key)+"]");
           
         }
     } // end showFileNamesSizes
@@ -166,7 +155,7 @@ public class ZipFileMetadataExtractor{
         msgt("Hash: file base names + extensions");
         
         for (Map.Entry<String, List<String>> entry : fileGroups.entrySet()){
-            msg("Key: " + entry.getKey() + " .ext List: " + entry.getValue());
+            msg("Key: " + entry.getKey() + " Ext List: " + entry.getValue());
             if (doesListContainShapefileExtensions(entry.getValue())){
                 msg(" >>>> GOT IT! <<<<<<<<");
             }
@@ -174,18 +163,21 @@ public class ZipFileMetadataExtractor{
        
     } // end showFileGroups
     
-    
-    
+        
     
     /*    
         Process the .zip file!  
     */
-    public void processZipfile(){
-        
+    public void processZipfile(String zip_filename){
+        if (zip_filename==null){
+            this.errorMessage = "The .zip filename was not given";
+            return;
+        }
         // Examine the file
-        unzipFile(zipFilename);
+        examineAndUnzipFile(zipFilename);
         
-        if (!zipFileProcessed){
+        if (!this.zipFileProcessed){
+            msgt("not processed?");
             return;
         }
         msgt("What have we got!");
@@ -195,7 +187,32 @@ public class ZipFileMetadataExtractor{
         
         rezipShapefileSets();
         
-        //showFileNamesSizes();
+        showFileNamesSizes();
+        showFileGroups();
+    }
+    
+    
+    public void processZipfile(FileInputStream zip_filestream){
+        if (zip_filestream==null){
+            this.errorMessage = "The .zip FileInputStream was not given";
+            return;
+        }
+        
+        // Examine the file
+        examineAndUnzipFile(zip_filestream);
+
+        if (!this.zipFileProcessed){
+            msgt("not processed?");
+            return;
+        }
+        msgt("What have we got!");
+        for (String element : filesListInDir) {
+            msg(element);
+        }
+
+        rezipShapefileSets();
+
+        showFileNamesSizes();
         showFileGroups();
     }
     
@@ -263,7 +280,7 @@ public class ZipFileMetadataExtractor{
                 List<String> namesToZip = new ArrayList<String>();
                 
                 for (String ext : ext_list) {
-                    namesToZip.add(key + '.' + ext);
+                    namesToZip.add(key + "." + ext);
                 }
                 String shpZippedName = rezippedFolder + "/" + key + ".zip";
                 ZipMaker zip_maker = new ZipMaker(namesToZip, outputFolder, shpZippedName);
@@ -272,8 +289,8 @@ public class ZipFileMetadataExtractor{
                 
             }else{
                 for (String ext : ext_list) {
-                    File source_file = new File(outputFolder + '/' + key + '.' + ext);
-                    File target_file = new File(rezippedFolder + '/' + key + '.' + ext);
+                    File source_file = new File(outputFolder + "/" + key + "." + ext);
+                    File target_file = new File(rezippedFolder + "/" + key + "." + ext);
                    
                     File target_file_dir = target_file.getParentFile();
                     createDirectory(target_file_dir);
@@ -374,7 +391,11 @@ public class ZipFileMetadataExtractor{
         }
         
         String[] tokens = fname.split("\\.(?=[^\\.]+$)");
-        if (tokens.length==2){
+        if (tokens.length==1){
+            addToFileGroupHash(tokens[0], "");      // file basename, no extension
+
+        }else if (tokens.length==2){
+            addToFileGroupHash(tokens[0], tokens[1]);  // file basename, extension
             String basename = tokens[0];
             String ext = tokens[1];
             //msg("basename: " + basename + " ext:" + ext);
@@ -383,7 +404,75 @@ public class ZipFileMetadataExtractor{
     } // end updateFileGroupHash
     
     
-    
+    /**************************************
+     * Iterate through the zip file contents.
+     * Does it contain any shapefiles?
+     *
+     * @param FileInputStream zip_file_stream
+     */
+    private boolean examineZipfile(FileInputStream zip_file_stream){
+
+        if (zip_file_stream==null){
+               this.errorMessage = "The zip file stream was null";
+               return false;
+           }
+        
+       try{
+            ZipInputStream zip_stream = new ZipInputStream(zip_file_stream);
+            ZipEntry entry;
+            
+            while((entry = zip_stream.getNextEntry())!=null){
+
+                 String zentry_file_name = entry.getName();
+
+                 // Skip files or folders starting with __
+                 if (zentry_file_name.startsWith("__")){
+                     continue;
+                 }
+
+                if (entry.isDirectory()) {
+                   String dirpath = outputFolder + "/" + zentry_file_name;
+                   createDirectory(dirpath);
+                   continue;       
+                }
+                
+                String s = String.format("Entry: %s len %d added %TD",
+                                   entry.getName(), entry.getSize(),
+                                   new Date(entry.getTime()));
+
+                filesListInDir.add(s);
+                updateFileGroupHash(zentry_file_name);
+                filesizeHash.put(zentry_file_name, entry.getSize());
+           } // end while
+           
+           if(zip_stream!=null){
+               zip_stream.close();
+           } 
+
+           if (filesListInDir.size()==0){
+               errorMessage = "No files in zip_stream";
+               return false;
+           }
+
+           zipFileProcessed = true;
+           return true;
+
+       }catch(ZipException ex){
+               errorMessage = "ZipException";
+               msgt("ZipException");
+               return false;
+
+       }catch(IOException ex){
+           //ex.printStackTrace(); 
+           errorMessage = "IOException File name";
+           msgt("IOException");
+           return false;
+       }finally{
+           // we must always close the zip file.
+       }
+
+   } // end examineFile
+
     
     
     /*
@@ -391,31 +480,54 @@ public class ZipFileMetadataExtractor{
        @param fname .zip filename in String format
         
     */
-    private boolean unzipFile(String filename){
-        msgt("unzipFile: " + filename);
+    private boolean examineAndUnzipFile(String filename){
+       
+         if (filename==null){
+                errorMessage = "No file name was given.  Please use a file with the .zip extension";            
+                return false;
+            }
+            if (!filename.toLowerCase().endsWith(".zip")){
+                errorMessage = "This file does not end with the .zip extension";
+                return false;
+            }
+            
+            File f = new File(filename);
+            if (!f.exists()){            
+                errorMessage = "The file does not exist: " + filename;            
+                return false;
+            }
 
-        if (filename==null){
-            errorMessage = "No file name was given.  Please use a file with the .zip extension";            
-            return false;
-        }
-        if (!filename.toLowerCase().endsWith(".zip")){
-            errorMessage = "This file does not end with the .zip extension";
-            return false;
-        }
-        File f = new File(filename);
-        if (!f.exists()){            
-            errorMessage = "The file does not exist: " + filename;            
-            return false;
-        }
-        
 
-        if (!createDirectory(outputFolder)){
-            msg("Failed to create directory! " + outputFolder);
-            return false;
-        }
-        
+            if (!createDirectory(outputFolder)){
+                msg("Failed to create directory! " + outputFolder);
+                return false;
+            }
+            
+            FileInputStream zip_file_stream = null;
+            
+            try{
+                zip_file_stream = new FileInputStream(filename);
+            
+            }catch(FileNotFoundException ex){
+                    ex.printStackTrace(); 
+                    errorMessage = "The file was not found!  File name: " + filename;
+                    return false;
+
+            }
+            return this.examineAndUnzipFile(zip_file_stream);
+            
+            
+    }
+    
+    private boolean examineAndUnzipFile(FileInputStream zip_file_stream){
+        //msgt("examineAndUnzipFile: " + filename);
+         if (zip_file_stream==null){
+                this.errorMessage = "The zip file stream was null";
+                return false;
+            }
+               
     try{
-        ZipInputStream zip_stream = new ZipInputStream(new FileInputStream(filename));
+        ZipInputStream zip_stream = new ZipInputStream(zip_file_stream);
         
         
          ZipEntry entry;
@@ -474,32 +586,75 @@ public class ZipFileMetadataExtractor{
             if(zip_stream!=null) zip_stream.close();
             
             if (filesListInDir.size()==0){
-                errorMessage = "No files in .zip: " + filename;
+                errorMessage = "No files in zip_stream";
                 return false;
             }
             
             zipFileProcessed = true;
             return true;
             
-        }catch(FileNotFoundException ex){
-            ex.printStackTrace(); 
-            errorMessage = "The file was not found!  File name: " + filename;
-            return false;
-            
         }catch(ZipException ex){
-                errorMessage = "ZipException File name: " + filename;
+                errorMessage = "ZipException";
                 msgt("ZipException");
                 return false;
                 
         }catch(IOException ex){
             //ex.printStackTrace(); 
-            errorMessage = "IOException File name: " + filename;
+            errorMessage = "IOException File name";
             msgt("IOException");
             return false;
         }finally{
             // we must always close the zip file.
         }
         
-    } // end unzipFile
+    } // end examineAndUnzipFile
     
-} // end ZipFileMetadataExtractor
+    
+    public static void main(String[] args){
+
+       if (args.length == 0){
+           System.out.println( "No file name, so add one!");
+           // Water_single_shp.zip
+         //  ShapefileHandler zpt = new ShapefileHandler("unzipped.zip");  
+           File zfile = new File("../test_data/Waterbody_shp.zip");
+           FileInputStream zstream = null;
+           try{
+               zstream = new FileInputStream(zfile);
+           }catch(FileNotFoundException ex){
+               
+           }
+           ShapefileHandler zpt = new ShapefileHandler(zstream);
+          // ShapefileHandler zpt = new ShapefileHandler("../test_data/Waterbody_shp.zip");    
+          // ShapefileHandler zpt = new ShapefileHandler("social_disorder_in_boston.zip");
+           if (!zpt.zipFileProcessed){
+               System.out.println("--------- FAIL -------------");
+               System.out.println(zpt.errorMessage);
+           }
+           if (zpt.containsShapefile()){
+               System.out.println("--------- SHAPE FOUND! -------------");
+               System.out.println("Shape count: " + zpt.getShapefileCount());
+           }
+
+       }else if(args.length > 1){
+           System.out.println( "Please only give one file name!");  
+       }else{   
+           String zip_name =  args[0];      
+           System.out.println( "Process File: " + zip_name);
+
+           System.out.println( "Process File: " + zip_name);                
+           ShapefileHandler zpt = new ShapefileHandler(zip_name);
+           if (!zpt.zipFileProcessed){
+               System.out.println("--------- FAIL -------------");
+               
+               System.out.println(zpt.errorMessage);
+           }
+           if (zpt.containsShapefile()){
+               System.out.println("--------- SHAPE FOUND! -------------");
+               System.out.println("Shape count: " + zpt.getShapefileCount());
+               
+           }
+           
+       }
+   } // end main
+
+} // end ShapefileHandler

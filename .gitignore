@@ -5,7 +5,7 @@ geoconnect/geoconnect/geoconnect /settings/local.py
 scripts/geojson/*.html
 geoconnect/static/test_geojson*
 test_setup/*
-
+scripts/pyshp_test/*
 scripts/bin_test/*
 scripts/test_data/*
 scripts/java_zip_ingest/rezipped*
