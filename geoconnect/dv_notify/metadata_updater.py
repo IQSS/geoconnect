@@ -22,7 +22,7 @@ class MetadataUpdater:
     for a given file."""
     
     METADATA_UPDATE_API_PATH = 'geo-api/singlefile/update-gis-metadata/'
-    REQUIRED_PARAM_KEYS = ['dataset_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username']#, 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
+    REQUIRED_PARAM_KEYS = ['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username']#, 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
     
     def __init__(self, dataverse_server_url, timeout_seconds=240, return_type_json=False):
         """

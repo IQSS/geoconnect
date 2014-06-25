@@ -19,6 +19,9 @@
 							<br />
 							<iframe height="300" width="100%" src="{{ success_info.embed_map_link }}"></iframe>
 							(layer name: <a href="{{ success_info.layer_link }}">{{ success_info.layer_name }}</a>)	
+							<p>
+							<a href="{% url 'send_metadata_to_dataverse' success_info.id %}">resend metadata to dataverse</a>
+							</p>
 						{% endfor %}
 				{% else %}
 					<!-- send info to WorldMap API -->
