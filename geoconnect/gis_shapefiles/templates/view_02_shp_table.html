@@ -4,6 +4,17 @@
 			<th colspan="2" class="text-center">{{ shapefile_set.datafile_label }}</th>
 		</tr>
 		<tr>
+			<th>Dataverse -> Dataset</th>
+			<td>{{ shapefile_set.dv_name }} -> {{ shapefile_set.dataset_name}}</td>
+		</tr>
+		{% if shapefile_set.description %}
+		<tr>
+			<th>Description</th>
+			<td>{{ shapefile_set.description }}</td>
+		</tr>
+		
+		{% endif %}
+		<tr>
 			<th>Shapefile Name</th>
 			<td>{{ shapefile_set.get_basename }}</td>
 		</tr>
@@ -34,12 +45,13 @@
 						<thead>
 							<tr>
 								<th colspan="2"><i>Failed attempts to create WorldMap layer
-									&nbsp; <a href="{% url 'admin:worldmap_import_worldmapimportattempt_changelist' %}">(admin)</a></i></th>
+								</i></th>
 							</tr>
 						{% for fail_info in import_fail_list %}
 						<tr>
-							<td>{{ fail_info.msg }}
-								<br />{{ fail_info.orig_response }}</td>
+							<td><a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' fail_info.import_attempt.id %}">(admin)</a>
+							    {{ fail_info.msg }}
+							    <br />{{ fail_info.orig_response }}</td>
 							<td>{{ fail_info.modified }}</td>
 						</tr>
 						{% endfor %}
@@ -68,7 +80,7 @@
 			<th># Fields</th>
 			<td>{{ shapefile_set.get_column_count|intcomma }}
 
-				&nbsp; &nbsp;<button type="button" class="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</button>
+				&nbsp; &nbsp;<a xtype="button" xclass="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</a>
 					<div id="column_name_list" class="collapse" class="panel-body">
 						 <table class="table table-bordered table-striped table-condensed">
 							{% for fn in shapefile_set.get_column_info %}

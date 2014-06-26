@@ -19,6 +19,7 @@ from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDA
 
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess, WorldMapImportFail
 
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,23 @@ def get_shapefile_step_title(k):
     if t:
         return t[0]
     return None
+
+@login_required
+def view_delete_files(request):
+    if not settings.DEBUG:
+        return HttpResponse('only for testing!')
+    ShapefileSet.objects.all().delete()
+    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
+
     
-# Create your views here.
+@login_required
+def view_delete_worldmap_visualization_attempts(request):
+    if not settings.DEBUG:
+        return HttpResponse('only for testing!')
+    WorldMapImportAttempt.objects.all().delete()
+    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
+
+
 @login_required
 def view_examine_dataset(request):
     """

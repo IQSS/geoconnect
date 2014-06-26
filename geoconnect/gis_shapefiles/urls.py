@@ -9,6 +9,10 @@ urlpatterns = patterns('gis_shapefiles.views',
     #url(r'^choose2/(?P<shp_md5>\w{32})/$', 'view_03_choose_shapefile_set', name="view_03_choose_shapefile_set"),
 
     url(r'^view-shp/(?P<shp_md5>\w{32})/$', 'view_shapefile', name="view_shapefile"),
+
+    url(r'^delete-files/$', 'view_delete_files', name="view_delete_files"),
+    url(r'^delete-worldmap-import-attempts/$', 'view_delete_worldmap_visualization_attempts', name="view_delete_worldmap_visualization_attempts"),
+
 )
 
 urlpatterns += patterns('gis_shapefiles.views_mapit',

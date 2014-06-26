@@ -213,6 +213,7 @@ class WorldMapImportSuccess(TimeStampedModel):
         
         if self.import_attempt.gis_data_file:
             data_dict['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
+            data_dict['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
 
             try:
                 shapefile_set = self.import_attempt.gis_data_file.shapefileset
@@ -230,11 +231,12 @@ class WorldMapImportSuccess(TimeStampedModel):
         return data_dict
         
     def get_params_for_dv_update(self):
-        #['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
+        #['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat', 'dv_session_token']
         d = self.get_data_dict()
 
         if self.import_attempt and self.import_attempt.gis_data_file:
             d['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
+            d['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
             try:
                 shapefile_set = self.import_attempt.gis_data_file.shapefileset
                 if shapefile_set.bounding_box:
