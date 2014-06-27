@@ -1,4 +1,12 @@
 {% load humanize %}
+{% if first_time_notify %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      File <b>{{ shapefile_set.datafile_label }}</b> loaded! 
+           &nbsp; (<b>{{ shapefile_set.number_of_features|intcomma }}</b> geospatial 
+          feature{{ shapefile_set.number_of_features|pluralize }})
+    </div>
+{% endif %}
 <table class="table table-bordered">
 		<tr>
 			<th colspan="2" class="text-center">{{ shapefile_set.datafile_label }}</th>

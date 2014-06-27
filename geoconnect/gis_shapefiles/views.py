@@ -93,7 +93,11 @@ def view_examine_dataset(request):
                             , context_instance=RequestContext(request))
 
 @login_required
-def view_shapefile(request, shp_md5):
+def view_shapefile_first_time(request, shp_md5):
+    return view_shapefile(request, shp_md5, first_time_notify=True)
+
+@login_required
+def view_shapefile(request, shp_md5, first_time_notify=False):
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object
 
@@ -110,6 +114,9 @@ def view_shapefile(request, shp_md5):
     logger.debug('view_shapefile')
 
     d = {}
+    
+    if first_time_notify:
+        d['first_time_notify'] = True
     
     try:
         shapefile_set = ShapefileSet.objects.get(md5=shp_md5)
