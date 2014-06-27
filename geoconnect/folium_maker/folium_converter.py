@@ -84,8 +84,18 @@ class FoliumConverter:
         geojson_fname, center_lat, center_lng = convert_shp_to_geojson(reprojected_fname, output_dir)
 
         html_page_name = os.path.splitext(self.folium_map.name)[0] + '.html'
+        
         kwargs = { 'center_lat': center_lat, 'center_lng': center_lng}
         make_leaflet_page([geojson_fname], output_dir, html_page_name, **kwargs)
+
+        full_folium_path = os.path.join(output_dir, html_page_name)
+        
+        path_parts = full_folium_path.split('/media')
+        #/Users/rmp553/Documents/iqss-git/geoconnect/test_setup', 'http://127.0.0.1:8000
+
+        self.folium_map.folium_url = 'http://127.0.0.1:8000/media' + path_parts[1]
+        self.folium_map.save()
+
         #make_leaflet_page([geojson_fname, 'data/HOSPITALS.geojson'], 'disorder.html')
 
         
@@ -258,7 +268,7 @@ def make_leaflet_page(geojson_files=[], output_dir='.', output_html_fname='leafl
     
     # Real hack to make path work through server
     fh = open(html_fullpath, 'r'); content = fh.read(); fh.close()
-    content = content.replace('/Users/rmp553/Documents/iqss-git/geoconnect/test_setup', 'http://127.0.0.1:8000/media')
+    content = content.replace('/Users/rmp553/Documents/iqss-git/geoconnect/test_setup', 'http://127.0.0.1:8000')
     fh = open(html_fullpath, 'w'); fh.write(content); fh.close()
     
     

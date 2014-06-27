@@ -24,7 +24,7 @@
 		{% endif %}
 		<tr>
 			<th>Shapefile Name</th>
-			<td>{{ shapefile_set.get_basename }}</td>
+			<td>{{ shapefile_set.get_basename }}  (<a href="{% url 'view_try_folium' shapefile_set.md5 %}" target="_blank">folium</a>)</td>
 		</tr>
 		<tr>
 			<th>WorldMap Visualizations</th>

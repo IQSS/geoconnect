@@ -16,7 +16,7 @@ class FoliumMap(TimeStampedModel):
 
     folium_output_directory = models.CharField(max_length=255, blank=True, help_text='folium output directory')
 
-    folium_url = models.URLField(blank=True)
+    folium_url = models.CharField(max_length=255, blank=True)
     
     def __unicode__(self):
         if self.name:
