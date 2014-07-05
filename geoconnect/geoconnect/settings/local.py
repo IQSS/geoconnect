@@ -88,10 +88,19 @@ LOGIN_URL = "admin:index"
 DATAVERSE_SERVER_URL = 'http://127.0.0.1:8090'
 ########## DATAVERSE_SERVER_URL
 
+########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
+# Do NOT make this directory accessible to a browser
+#
+DV_DATAFILE_DIRECTORY = join(TEST_SETUP_DIR, 'dv_datafile_directory')
+
 ########## GISFILE_SCRATCH_WORK_DIRECTORY
 # Used for opening up files for processing, etc
 GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 ########## END GISFILE_SCRATCH_WORK_DIRECTORY
 
+#WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
+#WORLDMAP_SERVER_URL = 'http://107.22.231.227'
 
+WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
+WORLDMAP_SERVER_URL = 'http://localhost:8000' #'http://127.0.0.1:8000'
 

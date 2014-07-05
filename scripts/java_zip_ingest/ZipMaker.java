@@ -11,7 +11,7 @@ import java.util.zip.ZipOutputStream;
 //
 public class ZipMaker{
 
-    private boolean DEBUG = false;
+    private static boolean DEBUG = false;
     
     public static void main(String[] args){
         

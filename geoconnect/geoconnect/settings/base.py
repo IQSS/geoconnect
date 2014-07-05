@@ -281,8 +281,17 @@ LOGIN_URL = "admin:index"
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
 DATAVERSE_SERVER_URL = None
+
+########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
+# Do NOT make this directory accessible to a browser
+#
+DV_DATAFILE_DIRECTORY = None
+
 ########## END DATAVERSE_SERVER_URL
 
 BROKER_URL = 'django://'
 
+########## WORLDMAP CONNECTION INFO
 
+WORLDMAP_TOKEN_FOR_DV = None
+WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'

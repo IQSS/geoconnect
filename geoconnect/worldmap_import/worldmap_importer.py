@@ -11,13 +11,14 @@ if __name__=='__main__':
 
 from geo_utils.key_checker import KeyChecker
 from geo_utils.json_field_reader import MessageHelperJSON
-
+from django.conf import settings
+"""
 try:
     from test_token import WORLDMAP_TOKEN_FOR_DV, WORLDMAP_SERVER_URL
 except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
-
+"""
 import logging
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,7 @@ class WorldMapImporter:
             return self.get_result_msg(False, err_msg)
         
         if type(layer_params) is dict:            
-            layer_params['geoconnect_token'] = WORLDMAP_TOKEN_FOR_DV
+            layer_params['geoconnect_token'] = settings.WORLDMAP_TOKEN_FOR_DV
         else:
             err_msg = 'The shapefile metadata (title, abstract, etc.) in the correct format.'
             logger.error(err_msg + ' layer_params is not a type dict.')
@@ -176,7 +177,7 @@ class WorldMapImporter:
                 , 'abstract' : abstract\
                 , 'email' : email\
                 , 'shapefile_name' : shapefile_name\
-                , 'geoconnect_token' : WORLDMAP_TOKEN_FOR_DV\
+                , 'geoconnect_token' : settings.WORLDMAP_TOKEN_FOR_DV\
                 }
 
         return self.send_shapefile_to_worldmap(params, fullpath_to_file)
@@ -189,7 +190,7 @@ if __name__ == '__main__':
     print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1, 'raman_prasad@harvard.edu'))
     """
     f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
+    wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
     
     print (wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f2, 'raman_prasad@harvard.edu'))
     #{u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_vqs', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_vqs', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_vqs'}

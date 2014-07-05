@@ -42,7 +42,7 @@ public class ShapefileHandler{
     public final static String SHP_XML_EXTENSION = "shp.xml";
     public final static List<String> SHAPEFILE_ALL_EXTENSIONS = Arrays.asList("shp", "shx", "dbf", "prj", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "ixs", "mxs", "atx", ".cpg", SHP_XML_EXTENSION);  
     
-    private boolean DEBUG = true;
+    private static boolean DEBUG = true;
     
     public String zipFilename = new String();
     

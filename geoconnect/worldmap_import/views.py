@@ -18,12 +18,14 @@ from dv_notify.metadata_updater import MetadataUpdater
 import logging
 logger = logging.getLogger(__name__)
 
+from django.conf import settings
+"""
 try:
     from test_token import WORLDMAP_TOKEN_FOR_DV, WORLDMAP_SERVER_URL
 except:
     WORLDMAP_TOKEN_FOR_DV = 'fake-key'
     WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
-
+"""
 
 def show_import_success_params(request, import_success_id):
 
@@ -113,13 +115,13 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     print '(5) Prepare parameters (title, abstract, etc) to send with the import request'
     # (5) Prepare parameters (title, abstract, etc) to send with the import request
     #
-    layer_params = wm_attempt.get_params_for_worldmap_import(geoconnect_token=WORLDMAP_TOKEN_FOR_DV)
+    layer_params = wm_attempt.get_params_for_worldmap_import(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DV)
 
     print '(6) Instantiate the WorldMapImporter object and attempt the import'
     # (6) Instantiate the WorldMapImporter object and attempt the import
     # *** This part of the process will be moved to a celery queue -- asyn b/c it may take a while ***
     #
-    wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
+    wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
     worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, shapefile_set.dv_file.path)
     
     print '-' *40

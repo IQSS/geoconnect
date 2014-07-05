@@ -13,7 +13,7 @@
 			<p>Choose an existing shapefile group:</p>
 				<ol>
 				{% for shp in existing_shapefiles %}
-						<li><a href="{% url 'view_shapefile' shp.md5 %}">{{ shp }}</a> 
+						<li><a href="{% url 'view_shapefile' shp.md5 %}">{{ shp.dataset_name }}: {{ shp }} </a> 
 								&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shp.id %}">edit</a></li>			
 				{% endfor %}
 				</ol>

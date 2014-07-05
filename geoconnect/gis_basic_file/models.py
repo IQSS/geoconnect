@@ -4,10 +4,13 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
-
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 from core.models import TimeStampedModel
 
 from gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
+
+dv_file_system_storage = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
 
 
 class GISDataFile(TimeStampedModel):
@@ -25,7 +28,7 @@ class GISDataFile(TimeStampedModel):
     datafile_label = models.CharField(max_length=255, blank=True)    # for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
 
     # Copy of the actual file
-    dv_file = models.FileField(upload_to='dv_files/%Y/%m/%d', blank=True, null=True)
+    dv_file = models.FileField(upload_to='dv_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
 
     datafile_description = models.TextField(blank=True)    # for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
     datafile_type = models.CharField(max_length=255, help_text='Usually mime type')    # dvobject.contenttype
