@@ -15,6 +15,16 @@ Send a layer name to the geoserver and receive a list of attributes. Make this a
     1. TYPENAME: geonode:boston_social_disorder_pbl
 
 + Response
+
+   + List of field names and types
+   + Types which allow all "Method", or binning algorithm, choices:
+       + xsd:long
+       + xsd:double
+       + xsd:int
+   + Field types that classify by unique values
+       + xsd:string
+       
+     
 ```xml
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:base="http://capra.opengeo.org/base/" xmlns:geonode="http://geonode.org/" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" elementFormDefault="qualified" targetNamespace="http://geonode.org/">
 <xsd:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://localhost:8080/geoserver/schemas/gml/3.2.1/gml.xsd"></xsd:import>
@@ -83,3 +93,8 @@ Send a layer name to the geoserver and receive a list of attributes. Make this a
 <xsd:element name="boston_social_disorder_pbl" substitutionGroup="gml:AbstractFeature" type="geonode:boston_social_disorder_pblType"></xsd:element>
 </xsd:schema>
 ```
+
+#### Response questions:
+
+    1.  What other "xsd:" types are there?
+    1.  Are the algorithm types and colors available via command call or hardcoded in .js?
