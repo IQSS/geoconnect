@@ -12,9 +12,9 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
 + TYPE: GET
  
 + GET Params (broken out):
-    - Request: DescribeFeatureType
-    - Service: WFS
-    - TYPENAME: geonode:boston_social_disorder_pbl
+  1. Request: DescribeFeatureType
+  1. Service: WFS
+  1. TYPENAME: geonode:boston_social_disorder_pbl
 
 + Response
 
@@ -124,13 +124,13 @@ http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/clas
 + TYPE: GET
  
 + GET Params (broken out):
- 1. attribute:  Violence_4
- 1. method:  equalInterval
- 1. intervals:  5
- 1. ramp:  Gray
- 1. reverse:  (blank or true)
- 1. startColor:  #FEE5D9
- 1. endColor:  #A50F15
+  1. attribute:  Violence_4
+  1. method:  equalInterval
+  1 . intervals:  5
+  1. ramp:  Gray
+  1. reverse:  (blank or true)
+  1. startColor:  #FEE5D9
+  1. endColor:  #A50F15
 
 + Response
     ```xml
