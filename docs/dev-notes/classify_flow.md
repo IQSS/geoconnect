@@ -5,6 +5,9 @@
 
 Send a layer name to the geoserver and receive a list of attributes. Make this available via the API?
 
+http://localhost:8000/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=DescribeLayer&LAYERS=geonode%3Aincome_4x5
+http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYPENAME=geonode%3Aincome_4x5
+
 + URL: 
     ```
 http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYPENAME=geonode%3Aboston_social_disorder_pbl
@@ -127,9 +130,9 @@ http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/clas
 + GET Params (broken out):
   1. attribute:  Violence_4
   1. method:  equalInterval
-  1 . intervals:  5
+  1  intervals:  5
   1. ramp:  Gray
-  1. reverse:  (blank or true)
+  1. reverse: (blank) or "true"
   1. startColor:  #FEE5D9
   1. endColor:  #A50F15
 
@@ -392,3 +395,18 @@ http://localhost:8000/gs/rest/styles/boston_social_disorder_pbl.xml
 + Response
     + 200 - updated
     + 201 - created
+    
+    
+### Step 4: Set new style to layer
+
++ URL
+```
+http://localhost:8000/gs/rest/layers/geonode:boston_social_disorder_pbl.json
+```
+
++ TYPE: PUT
+
++ JSON Data sent
+    ```
+    {"layer":{"defaultStyle":{"name":"boston_social_disorder_pbl"},"styles":{},"enabled":true}}
+    ```
