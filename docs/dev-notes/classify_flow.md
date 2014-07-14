@@ -12,9 +12,9 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
 + TYPE: GET
  
 + GET Params (broken out):
-    1. Request: DescribeFeatureType
-    1. Service: WFS
-    1. TYPENAME: geonode:boston_social_disorder_pbl
+    - Request: DescribeFeatureType
+    - Service: WFS
+    - TYPENAME: geonode:boston_social_disorder_pbl
 
 + Response
 
@@ -106,10 +106,12 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
 </xsd:schema>
     ```
 
+
 #### Response questions:
 
-    1.  What other "xsd:" types are there?
-    1.  Algorithm types and color choices appear to be hardcoded in the .js:
+1.  What other "xsd:" types are there?
+1.  Algorithm types and color choices are few and can be placed in a configuration file.
+    
     
 ### Step 2: Send style params and receive formatted rules
 
@@ -122,13 +124,13 @@ http://localhost:8000/gs/rest/sldservice/geonode:boston_social_disorder_pbl/clas
 + TYPE: GET
  
 + GET Params (broken out):
-    1. attribute:  Violence_4
-    1. method:  equalInterval
-    1. intervals:  5
-    1. ramp:  Gray
-    1. reverse:  (blank or true)
-    1. startColor:  #FEE5D9
-    1. endColor:  #A50F15
+ 1. attribute:  Violence_4
+ 1. method:  equalInterval
+ 1. intervals:  5
+ 1. ramp:  Gray
+ 1. reverse:  (blank or true)
+ 1. startColor:  #FEE5D9
+ 1. endColor:  #A50F15
 
 + Response
     ```xml
