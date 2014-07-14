@@ -12,6 +12,7 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
 + TYPE: GET
  
 + GET Params (broken out):
+
   1. Request: DescribeFeatureType
   1. Service: WFS
   1. TYPENAME: geonode:boston_social_disorder_pbl
@@ -254,7 +255,138 @@ http://localhost:8000/gs/rest/styles/boston_social_disorder_pbl.xml
  
 + XML Data sent:
     ```xml
-    <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><sld:NamedLayer><sld:Name>geonode:boston_social_disorder_pbl</sld:Name><sld:UserStyle><sld:Name>boston_social_disorder_pbl</sld:Name><sld:IsDefault>1</sld:IsDefault><sld:FeatureTypeStyle><sld:Rule><sld:Title> &gt; -2.7786 AND &lt;= 2.4966</sld:Title><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>-2.7786</ogc:Literal></ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>2.4966</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#424242</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter><sld:CssParameter name="stroke-width">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule><sld:Rule><sld:Title> &gt; 2.4966 AND &lt;= 7.7718</sld:Title><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>2.4966</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>7.7718</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#676767</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter><sld:CssParameter name="stroke-width">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule><sld:Rule><sld:Title> &gt; 7.7718 AND &lt;= 13.047</sld:Title><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>7.7718</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>13.047</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#8B8B8B</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter><sld:CssParameter name="stroke-width">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule><sld:Rule><sld:Title> &gt; 13.047 AND &lt;= 18.3222</sld:Title><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>13.047</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>18.3222</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#B0B0B0</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter><sld:CssParameter name="stroke-width">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule><sld:Rule><sld:Title> &gt; 18.3222 AND &lt;= 23.5975</sld:Title><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>18.3222</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>Violence_4</ogc:PropertyName><ogc:Literal>23.5975</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name="fill">#D4D4D4</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter><sld:CssParameter name="stroke-width">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>
+    <?xml version="1.0"?>
+    <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+        <sld:NamedLayer>
+            <sld:Name>geonode:boston_social_disorder_pbl</sld:Name>
+            <sld:UserStyle>
+                <sld:Name>boston_social_disorder_pbl</sld:Name>
+                <sld:IsDefault>1</sld:IsDefault>
+                <sld:FeatureTypeStyle>
+                    <sld:Rule>
+                        <sld:Title> &gt; -2.7786 AND &lt;= 2.4966</sld:Title>
+                        <ogc:Filter>
+                            <ogc:And>
+                                <ogc:PropertyIsGreaterThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>-2.7786</ogc:Literal>
+                                </ogc:PropertyIsGreaterThanOrEqualTo>
+                                <ogc:PropertyIsLessThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>2.4966</ogc:Literal>
+                                </ogc:PropertyIsLessThanOrEqualTo>
+                            </ogc:And>
+                        </ogc:Filter>
+                        <sld:PolygonSymbolizer>
+                            <sld:Fill>
+                                <sld:CssParameter name="fill">#424242</sld:CssParameter>
+                            </sld:Fill>
+                            <sld:Stroke>
+                                <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+                                <sld:CssParameter name="stroke-width">0.7</sld:CssParameter>
+                            </sld:Stroke>
+                        </sld:PolygonSymbolizer>
+                    </sld:Rule>
+                    <sld:Rule>
+                        <sld:Title> &gt; 2.4966 AND &lt;= 7.7718</sld:Title>
+                        <ogc:Filter>
+                            <ogc:And>
+                                <ogc:PropertyIsGreaterThan>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>2.4966</ogc:Literal>
+                                </ogc:PropertyIsGreaterThan>
+                                <ogc:PropertyIsLessThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>7.7718</ogc:Literal>
+                                </ogc:PropertyIsLessThanOrEqualTo>
+                            </ogc:And>
+                        </ogc:Filter>
+                        <sld:PolygonSymbolizer>
+                            <sld:Fill>
+                                <sld:CssParameter name="fill">#676767</sld:CssParameter>
+                            </sld:Fill>
+                            <sld:Stroke>
+                                <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+                                <sld:CssParameter name="stroke-width">0.7</sld:CssParameter>
+                            </sld:Stroke>
+                        </sld:PolygonSymbolizer>
+                    </sld:Rule>
+                    <sld:Rule>
+                        <sld:Title> &gt; 7.7718 AND &lt;= 13.047</sld:Title>
+                        <ogc:Filter>
+                            <ogc:And>
+                                <ogc:PropertyIsGreaterThan>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>7.7718</ogc:Literal>
+                                </ogc:PropertyIsGreaterThan>
+                                <ogc:PropertyIsLessThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>13.047</ogc:Literal>
+                                </ogc:PropertyIsLessThanOrEqualTo>
+                            </ogc:And>
+                        </ogc:Filter>
+                        <sld:PolygonSymbolizer>
+                            <sld:Fill>
+                                <sld:CssParameter name="fill">#8B8B8B</sld:CssParameter>
+                            </sld:Fill>
+                            <sld:Stroke>
+                                <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+                                <sld:CssParameter name="stroke-width">0.7</sld:CssParameter>
+                            </sld:Stroke>
+                        </sld:PolygonSymbolizer>
+                    </sld:Rule>
+                    <sld:Rule>
+                        <sld:Title> &gt; 13.047 AND &lt;= 18.3222</sld:Title>
+                        <ogc:Filter>
+                            <ogc:And>
+                                <ogc:PropertyIsGreaterThan>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>13.047</ogc:Literal>
+                                </ogc:PropertyIsGreaterThan>
+                                <ogc:PropertyIsLessThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>18.3222</ogc:Literal>
+                                </ogc:PropertyIsLessThanOrEqualTo>
+                            </ogc:And>
+                        </ogc:Filter>
+                        <sld:PolygonSymbolizer>
+                            <sld:Fill>
+                                <sld:CssParameter name="fill">#B0B0B0</sld:CssParameter>
+                            </sld:Fill>
+                            <sld:Stroke>
+                                <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+                                <sld:CssParameter name="stroke-width">0.7</sld:CssParameter>
+                            </sld:Stroke>
+                        </sld:PolygonSymbolizer>
+                    </sld:Rule>
+                    <sld:Rule>
+                        <sld:Title> &gt; 18.3222 AND &lt;= 23.5975</sld:Title>
+                        <ogc:Filter>
+                            <ogc:And>
+                                <ogc:PropertyIsGreaterThan>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>18.3222</ogc:Literal>
+                                </ogc:PropertyIsGreaterThan>
+                                <ogc:PropertyIsLessThanOrEqualTo>
+                                    <ogc:PropertyName>Violence_4</ogc:PropertyName>
+                                    <ogc:Literal>23.5975</ogc:Literal>
+                                </ogc:PropertyIsLessThanOrEqualTo>
+                            </ogc:And>
+                        </ogc:Filter>
+                        <sld:PolygonSymbolizer>
+                            <sld:Fill>
+                                <sld:CssParameter name="fill">#D4D4D4</sld:CssParameter>
+                            </sld:Fill>
+                            <sld:Stroke>
+                                <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+                                <sld:CssParameter name="stroke-width">0.7</sld:CssParameter>
+                            </sld:Stroke>
+                        </sld:PolygonSymbolizer>
+                    </sld:Rule>
+                </sld:FeatureTypeStyle>
+            </sld:UserStyle>
+        </sld:NamedLayer>
+    </sld:StyledLayerDescriptor>
     ```
     
 + Response
