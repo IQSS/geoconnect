@@ -6,9 +6,9 @@
 Send a layer name to the geoserver and receive a list of attributes. Make this available via the API?
 
 + URL: 
-```
+    ```
 http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYPENAME=geonode%3Aboston_social_disorder_pbl
-```
+    ```
 + TYPE: GET
  
 + GET Params (broken out):
@@ -27,7 +27,7 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
        + xsd:string
        
      
-```xml
+    ```xml
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:base="http://capra.opengeo.org/base/" xmlns:geonode="http://geonode.org/" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" elementFormDefault="qualified" targetNamespace="http://geonode.org/">
 <xsd:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://localhost:8080/geoserver/schemas/gml/3.2.1/gml.xsd"></xsd:import>
 <xsd:complexType name="boston_social_disorder_pblType">
@@ -94,7 +94,7 @@ http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYP
 </xsd:complexType>
 <xsd:element name="boston_social_disorder_pbl" substitutionGroup="gml:AbstractFeature" type="geonode:boston_social_disorder_pblType"></xsd:element>
 </xsd:schema>
-```
+    ```
 
 #### Response questions:
 
