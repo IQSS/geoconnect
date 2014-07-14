@@ -5,8 +5,10 @@
 
 Send a layer name to the geoserver and receive a list of attributes. Make this available via the API?
 
-+ URL: http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYPENAME=geonode%3Aboston_social_disorder_pbl
-
++ URL: 
+```
+http://localhost:8000/geoserver/wfs?&SERVICE=WFS&REQUEST=DescribeFeatureType&TYPENAME=geonode%3Aboston_social_disorder_pbl
+```
 + TYPE: GET
  
 + GET Params (broken out):
@@ -17,10 +19,10 @@ Send a layer name to the geoserver and receive a list of attributes. Make this a
 + Response
 
    + List of field names and types
-   + Types which allow all "Method", or binning algorithm, choices:
-       + xsd:long
-       + xsd:double
-       + xsd:int
+   + Vartiable types which allow all "Method", or binning algorithm.  This choice mapping (xmls->js) is from from gxp.js, line 42:
+    ```javascript
+       {"xsd:boolean":"boolean","xsd:int":"int","xsd:integer":"int","xsd:short":"int","xsd:long":"int","xsd:date":"date","xsd:string":"string","xsd:float":"float","xsd:double":"float"}
+    ```
    + Field types that classify by unique values
        + xsd:string
        
