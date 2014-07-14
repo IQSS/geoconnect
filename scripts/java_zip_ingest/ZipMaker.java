@@ -7,8 +7,14 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-// source: http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
-//
+/**
+ *  Convenience class to create a zip file, used by ShapefileHandler
+ *
+ * source: http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
+ * 
+ * 
+ * 
+ */
 public class ZipMaker{
 
     private static boolean DEBUG = false;
