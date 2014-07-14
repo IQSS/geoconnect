@@ -10,9 +10,10 @@
 + Param list
   
 (field name : example)
+
 1. attribute: income
 1. method:  equalInterval
-1  intervals:  5
+1.  intervals:  5
 1. ramp:  Gray
 1. reverse: (blank) or "true"
 1. startColor:  #FEE5D9
