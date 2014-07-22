@@ -78,7 +78,7 @@ class WorldMapImporter:
                 see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
         :rtype: python dict
         """
-        logger.info('send_shapefile_to_worldmap')
+        logger.debug('send_shapefile_to_worldmap')
         if layer_params is None:
             err_msg = 'The shapefile metadata (title, abstract, etc.) was not found. '
             
@@ -112,7 +112,9 @@ class WorldMapImporter:
             return self.get_result_msg(err_msg)
         """
         if not os.path.isfile(fullpath_to_file):
-            return self.get_result_msg(False, 'This file does not exist: %s' % fullpath_to_file)
+            err_msg = 'This file does not exist: %s' % fullpath_to_file
+            logger.error(err_msg)
+            return self.get_result_msg(False, err_msg)
 
                 
         #print(self.api_import_url)
@@ -126,13 +128,14 @@ class WorldMapImporter:
         try:
             req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             wm_response_dict = req.json()
-            
-            if wm_response_dict.get('success', False) is True:
+            logger.debug('response: %s' % wm_response_dict)
+            if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
                 wm_response_dict.pop('success')
-                return self.get_result_msg(True, '', data_dict=wm_response_dict)
+                return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
                                 
-            elif wm_response_dict.has_key('errormsgs'):
-                msgs = '<br />'.join(wm_response_dict['errormsgs'])
+            elif wm_response_dict.has_key('message'):
+                #msgs = '<br />'.join(wm_response_dict['message'])
+                msg = wm_response_dict['message']
                 #wm_response_dict['message'] = msgs
                 #wm_response_dict.pop('errormsgs')
                 return self.get_result_msg(False, msgs)
