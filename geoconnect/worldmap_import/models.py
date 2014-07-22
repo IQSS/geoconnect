@@ -8,7 +8,8 @@ from core.models import TimeStampedModel
 from gis_basic_file.models import GISDataFile
 from dv_notify.metadata_updater import MetadataUpdater
 
-from geo_utils.json_field_reader import MessageHelperJSON
+from geo_utils.json_field_reader import MessageHelperJSON, JSONFieldReader
+
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
@@ -183,10 +184,22 @@ class WorldMapImportSuccess(TimeStampedModel):
     layer_link = models.URLField()
     embed_map_link = models.URLField(blank=True)
 
+    attribute_info = models.TextField(blank=True, help_text='JSON list of attributes')
+    
+    
+    def add_attribute_info(self, l=[]):
+        if not type(l) in list:
+            return 
+
+        self.attribute_info = JSONFieldReader.get_python_val_as_json_string(l)
+
+    def get_attribute_info(self):
+        return JSONFieldReader.get_json_string_as_python_val(self.attribute_info)
+    
+    
     def update_dataverse(self):
         if not self.id:
             return 'n/a'
-        print 'blahhhhhhhhhhh'
         lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id', self.id})
         print '*******************', lnk
         return lnk

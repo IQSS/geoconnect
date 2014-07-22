@@ -155,6 +155,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                                 , embed_map_link=wm_data.get('embed_map_link', '')\
                                                 , worldmap_username=wm_data.get('worldmap_username', '')\
                                             )
+                wm_success.add_attribute_info(wm_data.get('attribute_info', None))
                 wm_success.save()
                 wm_attempt.import_success = True
                 wm_attempt.save()
