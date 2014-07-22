@@ -7,8 +7,7 @@ from os.path import join, normpath
 from .base import *
 
 # Store uploaded files, logs, etc, etc
-TEST_SETUP_DIR = join(dirname(dirname(DJANGO_ROOT)), 'test_setup')
-
+TEST_SETUP_DIR = normpath(join(dirname(dirname(DJANGO_ROOT)), 'test_setup'))
 STATIC_ROOT =join(TEST_SETUP_DIR, 'assets') # where files gathered and served from
 
 MEDIA_ROOT = join(TEST_SETUP_DIR, 'media' )
@@ -104,3 +103,51 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
 WORLDMAP_SERVER_URL = 'http://localhost:8000' #'http://127.0.0.1:8000'
 
+########## LOGGING
+
+LOGGING = {
+    'version': 1,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+            },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': join(TEST_SETUP_DIR, 'logs', 'geolog.log'),
+            'formatter': 'simple'
+            },
+        },
+    'loggers': {
+        '': {
+               'handlers': ['console'],
+               'level': 'DEBUG',
+               'propagate': True
+           },
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': False,
+            },
+        },
+        'geoconnect': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+            },
+    }
+    
+# make all loggers use the console.
+#for logger in LOGGING['loggers']:
+#   LOGGING['loggers'][logger]['handlers'] = ['console']
+LOGGING['loggers']['']['handlers'] = ['console']

@@ -7,6 +7,7 @@ import cStringIO
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
 import logging
+#logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 """
@@ -300,10 +301,18 @@ class ShapefileZipCheck:
         returns True or False and sets the dict self.potential_shapefile_sets
         """
                  
+        # Is it a file?
+        if not os.path.isfile(self.zip_input):
+            self.err_detected = True
+            self.err_msg = 'File not found for zip_input: %s' % self.zip_input
+            logger.debug(self.err_msg )
+            return False
+
         # Is it a zip file?
         if not zipfile.is_zipfile(self.zip_input):
             self.err_detected = True
             self.err_msg = 'Not a zip archive'
+            logger.debug(self.err_msg )
             return False
 
         self.zip_obj = zipfile.ZipFile(self.zip_input, 'r')
@@ -311,6 +320,7 @@ class ShapefileZipCheck:
         #for l in z.infolist(): l.name,l.filename, l.date_time
         
         zip_info_list = self.zip_obj.infolist()
+        logger.debug('zip_info_list: %s' % zip_info_list)            
         
         zip_info_list = [z for z in zip_info_list if not z.filename[:2] == '__']
         

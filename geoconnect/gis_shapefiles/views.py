@@ -134,9 +134,11 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     """
     if not shapefile_set.zipfile_checked:
         logger.debug('zipfile_checked NOT checked')
-        
+
+        logger.debug('fname: %s' % shapefile_set.dv_file.name)
         #zip_checker = ShapefileZipCheck(shapefile_set.dv_file, **{'is_django_file_field': True})
-        zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_set.dv_file.name))
+        #zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_set.dv_file.name))
+        zip_checker = ShapefileZipCheck(shapefile_set.get_dv_file_fullpath())
         zip_checker.validate()
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
 

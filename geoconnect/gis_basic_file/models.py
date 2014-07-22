@@ -12,7 +12,6 @@ from gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
 dv_file_system_storage = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
 
-
 class GISDataFile(TimeStampedModel):
     """GeoConnect - For working with a Dataverse File for a given user
     These objects will persist for a limited time (days, weeks), depending on the system demand
@@ -59,6 +58,13 @@ class GISDataFile(TimeStampedModel):
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
   
     
+    
+    def get_dv_file_fullpath(self):
+        if not self.dv_file:
+            return None
+            
+        return self.dv_file.file.name
+        
     def get_scratch_work_directory(self):
         """Return the full path of the scratch working directory.  
         Creates directory if it doesn't exist """
