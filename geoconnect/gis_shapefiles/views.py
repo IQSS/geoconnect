@@ -135,7 +135,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     if not shapefile_set.zipfile_checked:
         logger.debug('zipfile_checked NOT checked')
 
-        logger.debug('fname: %s' % shapefile_set.dv_file.name)
+        logger.debug('fname: %s' % shapefile_set.get_dv_file_fullpath())
         #zip_checker = ShapefileZipCheck(shapefile_set.dv_file, **{'is_django_file_field': True})
         #zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_set.dv_file.name))
         zip_checker = ShapefileZipCheck(shapefile_set.get_dv_file_fullpath())
@@ -218,19 +218,15 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
 
     if latest_import_attempt:
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
-        d['import_success_list'] = latest_import_attempt.get_success_info()
+        d['import_success_object'] = latest_import_attempt.get_success_info()
         
-        logger.debug('import_success_list: %s' % d['import_success_list'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
+        logger.debug('import_success_object: %s' % d['import_success_object'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
         d['import_fail_list'] =latest_import_attempt.get_fail_info() 
         
         logger.debug('import_fail_list: %s' % d['import_fail_list'] ) 
         #WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_set)
     
-    # File already checked and has shapefile
-    # Has an import been attempted?
-    #import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
-    #if import_attempt is not None:
-    #    d['worldmap_import_info'] = import_attempt.get_success_info()
+
     
     return render_to_response('view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))

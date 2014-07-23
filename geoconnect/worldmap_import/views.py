@@ -105,7 +105,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     # (4) Create a new WorldMapImportAttempt
     #
     if wm_attempt is None:
-        zipped_shapefile_name = os.path.basename(shapefile_set.dv_file.name)
+        zipped_shapefile_name = shapefile_set.get_dv_file_basename()
         wm_attempt = WorldMapImportAttempt(gis_data_file=shapefile_set\
                                     , title=zipped_shapefile_name\
                                     , abstract='[place holder abstract for %s]' % shapefile_set.name\
@@ -128,16 +128,19 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
     
     logger.debug('print worldmap_response:\n%s' % worldmap_response)
     
-    print '(7) Check if import worked.  '
+    logger.debug('(7) Check if import worked.')
     # (7) Check if import worked.  
     #
     #
     import_success = worldmap_response.get('success', False)
 
     if import_success is True:  # Import appears to have worked
+        logger.debug('Import worked!')
         
         wm_data = worldmap_response.get('data', None)
+        
         if wm_data is None:
+            logger.debug('wm_data NOT FOUND!!')
             # Failed, where is the data?  Create a WorldMapImportFail object
             #
             wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
@@ -146,7 +149,8 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
             wm_fail.save()
         else:       
             wm_success = None 
-            try:
+            logger.debug('wm_data: %s' % wm_data)
+            if 1:
                 # Success!  Create a WorldMapImportSuccess object
                 #
                 wm_success = WorldMapImportSuccess(import_attempt=wm_attempt\
@@ -157,17 +161,21 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                             )
                 wm_success.add_attribute_info(wm_data.get('attribute_info', None))
                 wm_success.save()
+                logger.debug('--- SAVED ---')
                 wm_attempt.import_success = True
                 wm_attempt.save()
+            """
             except:
                 # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
                 # Save a WorldMapImportFail object to check original response
                 #
+                logger.debug('--- FAIL! ---')
+                
                 wm_fail = WorldMapImportFail(import_attempt=wm_attempt\
                                                 , msg="Error.  WorldMap says success.  geoconnect failed to save results"\
                                                 , orig_response='%s' % worldmap_response)
                 wm_fail.save()
-            
+            """
             try:
                 # Separate this into another async. task!
                 # Send message back to the Dataverse -- to update metadata

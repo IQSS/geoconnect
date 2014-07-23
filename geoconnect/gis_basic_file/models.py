@@ -1,6 +1,8 @@
 from hashlib import md5
 from datetime import date
 
+from os.path import basename
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
@@ -58,6 +60,12 @@ class GISDataFile(TimeStampedModel):
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
   
     
+
+    def get_dv_file_basename(self):
+        if not self.dv_file:
+            return None
+            
+        return basename(self.dv_file.name)
     
     def get_dv_file_fullpath(self):
         if not self.dv_file:

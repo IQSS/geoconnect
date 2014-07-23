@@ -29,19 +29,16 @@
 		<tr>
 			<th>WorldMap Visualizations</th>
 			<td>
-				{% if import_success_list %}
+				{% if import_success_object %}
 				
-					<!-- Layer already sent to WorldMap, show results -->
-						{% for success_info in import_success_list %}
-							<a href="{{ success_info.layer_link }}">View on WorldMap</a>  &nbsp; | &nbsp; <a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' success_info.import_attempt.id %}">(edit)</a></i>
+							<a href="{{ import_success_object.layer_link }}">View on WorldMap</a>  &nbsp; | &nbsp; <a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' import_success_object.import_attempt.id %}">(edit)</a></i>
 											
 							<br />
-							<iframe height="300" width="100%" src="{{ success_info.embed_map_link }}"></iframe>
-							(layer name: <a href="{{ success_info.layer_link }}">{{ success_info.layer_name }}</a>)	
+							<iframe height="300" width="100%" src="{{ import_success_object.embed_map_link }}"></iframe>
+							(layer name: <a href="{{ import_success_object.layer_link }}">{{ import_success_object.layer_name }}</a>)	
 							<p>
-							<a href="{% url 'send_metadata_to_dataverse' success_info.id %}">resend metadata to dataverse</a>
+							<a href="{% url 'send_metadata_to_dataverse' import_success_object.id %}">resend metadata to dataverse</a>
 							</p>
-						{% endfor %}
 				{% else %}
 					<!-- send info to WorldMap API -->
 					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />

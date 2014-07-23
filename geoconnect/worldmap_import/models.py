@@ -48,9 +48,13 @@ class WorldMapImportAttempt(TimeStampedModel):
         return fail_info_list
         
     def get_success_info(self):
-        
-        success_info_list = self.worldmapimportsuccess_set.all().order_by('-modified')
-        return success_info_list
+        """
+        Modify this to only retrieve the latest WorldMapImportSuccess object
+
+        :returns: latest WorldMapImportSuccess or None
+        """
+        return self.worldmapimportsuccess_set.order_by('-modified').first()
+
         
     def did_import_succeed(self):
         # find successful import attempts
@@ -188,7 +192,7 @@ class WorldMapImportSuccess(TimeStampedModel):
     
     
     def add_attribute_info(self, l=[]):
-        if not type(l) in list:
+        if not type(l) is list:
             return 
 
         self.attribute_info = JSONFieldReader.get_python_val_as_json_string(l)

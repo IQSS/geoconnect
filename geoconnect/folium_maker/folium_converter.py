@@ -42,7 +42,7 @@ class FoliumConverter:
             self.err_found = True
             self.err_msg = 'There is not GIS file to convert'
         
-        self.folium_map = FoliumMap(name=os.path.basename(self.gis_data_file.dv_file.name)\
+        self.folium_map = FoliumMap(name=os.path.basename(self.gis_data_file.get_dv_file_fullpath())\
                             , gis_data_file=self.gis_data_file\
                             )
         self.folium_map.save()
@@ -52,7 +52,7 @@ class FoliumConverter:
         # (1) Copy DV file to folium output directory
         copied_gis_fname = os.path.join(output_dir, self.folium_map.name )
         
-        orig_file_fullpath = os.path.join(settings.MEDIA_ROOT, self.gis_data_file.dv_file.name)
+        orig_file_fullpath = os.path.join(settings.MEDIA_ROOT, self.gis_data_file.get_dv_file_fullpath())
         shutil.copy(orig_file_fullpath, copied_gis_fname)
         msg('file copied: %s' % copied_gis_fname)
         
@@ -98,11 +98,6 @@ class FoliumConverter:
 
         #make_leaflet_page([geojson_fname, 'data/HOSPITALS.geojson'], 'disorder.html')
 
-        
-        
-        #     folium_url = models.URLField(blank=True)
-        ##       zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_set.dv_file.name))
-                
                 
 def get_output_fname(fname, new_suffix):
     fparts = fname.split('.')
