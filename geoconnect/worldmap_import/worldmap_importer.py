@@ -78,53 +78,40 @@ class WorldMapImporter:
                 see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
         :rtype: python dict
         """
+        
+        #
+        #   (1) Make sure that the required parameters are there
+        #
         logger.debug('send_shapefile_to_worldmap')
-        if layer_params is None:
+        if not type(layer_params) is dict:  
             err_msg = 'The shapefile metadata (title, abstract, etc.) was not found. '
-            
-            logger.error(err_msg + 'layer_params is None')
+            logger.error(err_msg + 'layer_params is type: %s' % (layer_params.__class__.__name__) )
             return self.get_result_msg(False, err_msg)
 
-        if fullpath_to_file is None:
-            err_msg = 'The path to the shapfiles was not found. '
-            logger.error(err_msg + 'fullpath_to_file is None')
+        # Is the file available?
+        #
+        if fullpath_to_file is None or not os.path.isfile(fullpath_to_file):
+            err_msg = 'This file does not exist: %s' % fullpath_to_file
+            logger.error(err_msg)
             return self.get_result_msg(False, err_msg)
         
-        if type(layer_params) is dict:            
-            layer_params['geoconnect_token'] = settings.WORLDMAP_TOKEN_FOR_DV
-        else:
-            err_msg = 'The shapefile metadata (title, abstract, etc.) in the correct format.'
-            logger.error(err_msg + ' layer_params is not a type dict.')
-            return self.get_result_msg(False, err_msg)
+        # Set the dv auth token
+        layer_params['geoconnect_token'] = settings.WORLDMAP_TOKEN_FOR_DV
         
-                
+        # Check for required keys -- replace this with a form!!
         key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        
         if not key_check_response.success:
             logger.error(key_check_response.err_msg + ' Info not in "layer_params"')
             return self.get_result_msg(key_check_response.err_msg)
-        """
-        if not all([pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]):
-            missing_keys = filter(lambda x: not x in layer_params, self.REQUIRED_PARAM_KEYS )# [not pkey in layer_params for pkey in self.REQUIRED_PARAM_KEYS]
-            missing_keys = [str(k) for k in missing_keys]
-            key_str = ', '.join(missing_keys)
-            err_msg = 'Sorry, information was missing for: %s.' % key_str
-            logger.error(err_msg + ' Info not in "layer_params"')
-            return self.get_result_msg(err_msg)
-        """
-        if not os.path.isfile(fullpath_to_file):
-            err_msg = 'This file does not exist: %s' % fullpath_to_file
-            logger.error(err_msg)
-            return self.get_result_msg(False, err_msg)
 
-                
-        #print(self.api_import_url)
-        #return
-        #params = { 'key1' : 'ha' }
-        #payload = {'key1': 'value1', 'key2': 'value2'}
+        #
+        #   Prepare the actual file to send to WorldMap
+        #
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
 
-        #req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
        
+        # Send the request to WorldMap
+        #
         try:
             req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             wm_response_dict = req.json()
@@ -134,10 +121,7 @@ class WorldMapImporter:
                 return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
                                 
             elif wm_response_dict.has_key('message'):
-                #msgs = '<br />'.join(wm_response_dict['message'])
                 msg = wm_response_dict['message']
-                #wm_response_dict['message'] = msgs
-                #wm_response_dict.pop('errormsgs')
                 return self.get_result_msg(False, msgs)
                 
         except requests.exceptions.Timeout:

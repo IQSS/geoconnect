@@ -108,16 +108,14 @@ class WorldMapImportAttempt(TimeStampedModel):
         if shapefile_set is None:
             return None
         
-        # Retrieve the latest attempts
-        l = WorldMapImportAttempt.get_import_attempts(shapefile_set)
+        lookup_params = {}
+        for attr in DV_SHARED_ATTRIBUTES:
+            lookup_params[attr] = getattr(shapefile_set, attr)
 
-        # Nada, return None
-        if not l:
+        latest_attempt = WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified').first()
+        if not latest_attempt:
             return None
-        
-        # Got one!
-        latest_attempt = l[0]
-
+            
         # If latest_attempt doesn't have a reference to the shapefile_set,
         # then make one 
         if not latest_attempt.gis_data_file:
@@ -125,7 +123,6 @@ class WorldMapImportAttempt(TimeStampedModel):
             latest_attempt.save()
             
         # return the latest_attempt
-        print 'latest_attempt', latest_attempt
         return latest_attempt
         
     

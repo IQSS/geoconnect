@@ -150,7 +150,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
         else:       
             wm_success = None 
             logger.debug('wm_data: %s' % wm_data)
-            if 1:
+            try:
                 # Success!  Create a WorldMapImportSuccess object
                 #
                 wm_success = WorldMapImportSuccess(import_attempt=wm_attempt\
@@ -164,7 +164,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                 logger.debug('--- SAVED ---')
                 wm_attempt.import_success = True
                 wm_attempt.save()
-            """
+            
             except:
                 # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
                 # Save a WorldMapImportFail object to check original response
@@ -175,7 +175,7 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
                                                 , msg="Error.  WorldMap says success.  geoconnect failed to save results"\
                                                 , orig_response='%s' % worldmap_response)
                 wm_fail.save()
-            """
+            
             try:
                 # Separate this into another async. task!
                 # Send message back to the Dataverse -- to update metadata

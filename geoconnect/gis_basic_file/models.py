@@ -1,7 +1,7 @@
 from hashlib import md5
 from datetime import date
 
-from os.path import basename
+from os.path import basename, isfile
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -60,6 +60,12 @@ class GISDataFile(TimeStampedModel):
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
   
     
+    def is_dv_file_available(self):
+        """Does the file actually exist in the dv_file specified path"""
+        
+        if isfile(self.get_dv_file_fullpath):
+            return True
+        return False
 
     def get_dv_file_basename(self):
         if not self.dv_file:
