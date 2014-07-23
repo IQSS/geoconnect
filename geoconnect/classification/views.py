@@ -1,3 +1,5 @@
+import requests
+
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
@@ -21,7 +23,18 @@ def view_classify_layer_form(request, import_success_md5):
     if not classify_form.is_valid():
         return HttpResponse('invalid form')
 
-    classify_parms = classify_form.get_params_dict_for_classification()
-    print(classify_parms)
-    return HttpResponse('post: %s' % request.POST.keys())
+
+    classify_params = classify_form.get_params_dict_for_classification()
+    if classify_params is None:
+        return HttpResponse('bad params')
+    print(classify_params)
+    
+    classify_url = classify_form.get_worldmap_classify_api_url()
+    
+    req = requests.post(classify_url, data=classify_params, timeout=2)
+    print (req.status_code)
+    print (req.text)
+    #wm_response_dict = req.json() #print()
+    #print(wm_response_dict)
+    return HttpResponse('post: %s<br />%s' % (request.POST.keys(), classify_url))
     

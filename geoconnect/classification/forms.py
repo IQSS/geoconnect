@@ -9,6 +9,7 @@ if __name__=='__main__':
 
 from django import forms
 
+from django.conf import settings
 from classification.models import ClassificationMethod, ColorRamp
 
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
@@ -24,7 +25,7 @@ class ClassifyLayerForm(forms.Form):
     method = forms.ChoiceField(choices=CLASSIFY_METHOD_CHOICES)
     intervals = forms.IntegerField(required=False)
     ramp = forms.ChoiceField(choices=COLOR_RAMP_CHOICES)
-    #reverse = forms.BooleanField(initial=False, required=False)
+    #reverse = forms.BooleanField(initial=False, widget=forms.HiddenInput())
 
     #startColor =forms.CharField(max_length=7, required=False)   # irregular naming convention used to match the outgoing url string
     #endColor =forms.CharField(max_length=7, required=False)      # irregular naming convention used to match the outgoing url string
@@ -53,6 +54,27 @@ class ClassifyLayerForm(forms.Form):
 
         return method_obj
         
+    def get_worldmap_classify_api_url(self):
+        if not self.is_valid:
+            return None
+        
+        layer_name = self.cleaned_data.get('layer_name', None)
+        if layer_name is None:
+            return None
+            
+
+        return '%s/dvn/classify-layer/' % (settings.WORLDMAP_SERVER_URL)
+
+        #return '%s/dvn/classify-layer/%s/' % (settings.WORLDMAP_SERVER_URL, layer_name)
+        
+    
+    def clean_layer_name(self):
+        layer_name = self.cleaned_data.get('layer_name', None)
+        if layer_name is None:
+            raise Exception('Color ramp must be specified')
+
+        return layer_name.split(':')[-1]
+        
     def get_params_dict_for_classification(self):
         if not self.is_valid:
             return None
@@ -68,7 +90,8 @@ class ClassifyLayerForm(forms.Form):
                     , 'ramp' :  color_ramp_obj.value_name\
                     , 'startColor' :  color_ramp_obj.start_color\
                     , 'endColor' :  color_ramp_obj.end_color\
-                    , 'reverse' : ''\
+                    , 'reverse' : False\
+                    , 'geoconnect_token' : settings.WORLDMAP_TOKEN_FOR_DV\
                 }
         return params
         """
