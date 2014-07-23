@@ -217,6 +217,7 @@ class WorldMapImportSuccess(TimeStampedModel):
     dv_params.allow_tags = True 
     
     
+
     
     def get_data_dict(self):
         data_dict = { 'worldmap_username' : self.worldmap_username\

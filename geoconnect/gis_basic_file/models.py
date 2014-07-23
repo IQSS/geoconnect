@@ -63,7 +63,7 @@ class GISDataFile(TimeStampedModel):
     def is_dv_file_available(self):
         """Does the file actually exist in the dv_file specified path"""
         
-        if isfile(self.get_dv_file_fullpath):
+        if isfile(self.get_dv_file_fullpath()):
             return True
         return False
 
