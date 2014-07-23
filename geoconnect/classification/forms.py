@@ -29,16 +29,75 @@ class ClassifyLayerForm(forms.Form):
     #startColor =forms.CharField(max_length=7, required=False)   # irregular naming convention used to match the outgoing url string
     #endColor =forms.CharField(max_length=7, required=False)      # irregular naming convention used to match the outgoing url string
 
+    def clean_ramp(self):
+        color_ramp_id = self.cleaned_data.get('ramp', None)
+        if color_ramp_id is None:
+            raise Exception('Color ramp must be specified')
+
+        try:
+            color_ramp_obj = ColorRamp.objects.filter(active=True).get(pk=color_ramp_id)
+        except ColorRamp.DoesNotExist:
+            raise Exception('This value is not an active ColorRamp id')
+
+        return color_ramp_obj 
     
+    def clean_method(self):
+        method_id = self.cleaned_data.get('method', None)
+        if method_id is None:
+            raise Exception('Color ramp must be specified')
+
+        try:
+            method_obj = ClassificationMethod.objects.filter(active=True).get(pk=method_id)
+        except ClassificationMethod.DoesNotExist:
+            raise Exception('This value is not an active ColorRamp id')
+
+        return method_obj
+        
+    def get_params_dict_for_classification(self):
+        if not self.is_valid:
+            return None
+            
+        form_vals = self.cleaned_data.copy()
+        
+        
+        color_ramp_obj = form_vals['ramp']
+        
+        params = { 'layer_name' : form_vals['layer_name']\
+                    , 'intervals' : form_vals['intervals']\
+                    , 'method' :  form_vals['method'].value_name\
+                    , 'ramp' :  color_ramp_obj.value_name\
+                    , 'startColor' :  color_ramp_obj.start_color\
+                    , 'endColor' :  color_ramp_obj.end_color\
+                    , 'reverse' : ''\
+                }
+        return params
+        """
+        layer_name = forms.CharField(max_length=255)
+        attribute = forms.CharField(max_length=100)
+        method = forms.ChoiceField(choices=CLASSIFY_METHOD_CHOICES)
+        intervals = forms.IntegerField(required=False)
+        ramp = forms.ChoiceField(choices=COLOR_RAMP_CHOICES)
+        reverse = forms.BooleanField(initial=False, required=False)
+
+        startColor =forms.CharField(max_length=7, required=False)   # irregular naming convention used to match the outgoing url string
+        endColor =forms.CharField(max_length=7, required=False)      # irregular naming convention used to match the outgoing url string
+        """
 
 
     def __init__(self, *args, **kwargs):
-        attribute_choices = kwargs.pop('attribute_choices', None)
-        if attribute_choices is None or len(attribute_choices) < 1:
-            raise Exception('ClassifyLayerForm does not have attribute_choices')
+        """Initialize using a WorldMapImportSuccess object
+        
+        """
+        
+        import_success_object = kwargs.pop('import_success_object', None)
+        
+        if import_success_object is None:
+            raise Exception('ClassifyLayerForm does not have an import_success_object')
+            
         super(ClassifyLayerForm, self).__init__(*args, **kwargs)
-        self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices)
 
+        self.fields['attribute'] = forms.ChoiceField(choices=import_success_object.get_attribute_choices_for_form())
+        self.fields['layer_name'].initial = import_success_object.layer_name
 
 if __name__=='__main__':
     f = ClassifyLayerForm(initial={'layer_name': 'income_abadfe'}\

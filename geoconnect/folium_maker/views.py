@@ -20,7 +20,7 @@ def view_try_folium(request, shp_md5):
         logger.error('Shapefile not found for hash: %s' % shp_md5)
         raise Http404('Shapefile not found.')
         
-    fc = FoliumConverter(shapefile_set)
+    fc = FoliumConverter(shapefile_set, request)
     
     # Another super-hack for test
     

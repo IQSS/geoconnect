@@ -39,6 +39,7 @@
 							<p>
 							<a href="{% url 'send_metadata_to_dataverse' import_success_object.id %}">resend metadata to dataverse</a>
 							</p>
+							{% include "view_02_classify_form.html" %}
 				{% else %}
 					<!-- send info to WorldMap API -->
 					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />

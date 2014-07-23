@@ -56,7 +56,7 @@ class GISDataFile(TimeStampedModel):
     # For file working.  examples: unzipping, pulling raw data from columns, etc
     gis_scratch_work_directory = models.CharField(max_length=255, blank=True, help_text='scratch directory for files')
     
-    # for object identifcation
+    # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
   
     

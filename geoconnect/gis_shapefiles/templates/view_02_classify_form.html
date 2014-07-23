@@ -1,0 +1,23 @@
+{% if classify_form %}
+<form method="post" action="{% url 'view_classify_layer_form' import_success_object.md5 %}">
+    {% csrf_token %}{% for hidden in classify_form.hidden_fields %}{{ hidden }}{% endfor %}
+    <table style="border:none;">
+    
+    <tr>
+        {% for field in classify_form.visible_fields %}
+            <td>{{ field.label_tag }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for field in classify_form.visible_fields %}
+            <td>{{ field }}{% if field.errors %}<br >{{ field.errors}}{% endif %}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td><input type="reset" /> <input type="submit" /></td>
+    </tr>
+<table>
+</form>
+{% endif %}
+	
+	

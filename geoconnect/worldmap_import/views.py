@@ -20,7 +20,9 @@ from django.conf import settings
 
 
 def show_import_success_params(request, import_success_id):
-
+    """
+    Convenience method for reviewing the parameters
+    """
     try:
         wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
     except WorldMapImportSuccess.DoesNotExist:
@@ -30,6 +32,9 @@ def show_import_success_params(request, import_success_id):
 
 
 def send_metadata_to_dataverse(request, import_success_id):
+    """
+    Send metadata to dataverse: async this!!
+    """
     try:
         wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
     except WorldMapImportSuccess.DoesNotExist:
@@ -45,7 +50,13 @@ def send_metadata_to_dataverse(request, import_success_id):
     
 
 def view_send_shapefile_to_worldmap(request, shp_md5):
+    """
+    Send shapefile to WorldMap.
     
+    Async the SendShapefileService.send_shapefile_to_worldmap process
+
+    For now, it follows the process and then redirects back to the shapefile page with success (and map) or fail messages
+    """
     if not shp_md5:
         raise Http404('No shapefile indicated')
     

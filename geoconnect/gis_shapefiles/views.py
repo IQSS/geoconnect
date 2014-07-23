@@ -18,6 +18,7 @@ from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess, WorldMapImportFail
+from classification.forms import ClassifyLayerForm
 
 from django.conf import settings
 
@@ -98,17 +99,11 @@ def view_shapefile_first_time(request, shp_md5):
 
 @login_required
 def view_shapefile(request, shp_md5, first_time_notify=False):
+    ## This is an unreal mess, factor it out similar to SendShapefileService
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object
 
-    **Context** 
-    
-    ``RequestContext``
-
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileSet`
-    
-    **Template:**
-
     :template:`gis_shapefiles/view_02_single_shapefile.html`
     """
     logger.debug('view_shapefile')
@@ -213,12 +208,21 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
         return render_to_response('view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
     
+    
+                            
+    
     logger.debug('Has an import been attempted?')
     latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_set)
 
     if latest_import_attempt:
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
-        d['import_success_object'] = latest_import_attempt.get_success_info()
+        import_success_object = latest_import_attempt.get_success_info()
+        if import_success_object:
+            classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+            d['classify_form'] = classify_form
+                
+                    
+        d['import_success_object'] = import_success_object
         
         logger.debug('import_success_object: %s' % d['import_success_object'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
         d['import_fail_list'] =latest_import_attempt.get_fail_info() 

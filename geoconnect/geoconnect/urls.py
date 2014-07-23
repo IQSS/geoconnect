@@ -16,6 +16,8 @@ urlpatterns = patterns('',
 
     url(r'^worldmap/', include('worldmap_import.urls')),
 
+    url(r'^classify/', include('classification.urls')),
+
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     (r'^geo-connect-admin/doc/', include('django.contrib.admindocs.urls')),
