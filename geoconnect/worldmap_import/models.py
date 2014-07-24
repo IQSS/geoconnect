@@ -205,29 +205,7 @@ class WorldMapImportSuccess(TimeStampedModel):
         super(WorldMapImportSuccess, self).save(*args, **kwargs)
 
         
-    def get_attribute_choices_for_form(self):
-        """
-        {"display_name": "Objectid", "type": "long", "name": "OBJECTID"}, 
-        
-        """
-        attr_info = self.get_attribute_info()
-        
-        if attr_info is None or len(attr_info) == 0:
-            return [('-1', 'Information not found')]
-        
-        choice_tuples = []
-        for x in attr_info:
-            if not type(x) is dict: continue
-            if not (x.has_key('type') and x.has_key('name') and x.has_key('display_name')): continue
-            choice_pair = ('%s|%s' % (x['type'], x['name']), x['display_name'])
-            choice_tuples.append( choice_pair)
-        
-        if len(choice_tuples)==0:
-            return [('-1', 'Information not found')]
-            
-        return choice_tuples
-        
-        
+
         
     def add_attribute_info(self, l=[]):
         if not type(l) is list:

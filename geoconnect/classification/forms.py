@@ -15,6 +15,7 @@ from classification.models import ClassificationMethod, ColorRamp
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
 COLOR_RAMP_CHOICES = [ (x.id, x.display_name) for x in ColorRamp.objects.filter(active=True) ]
 
+ATTRIBUTE_VALUE_DELIMITER = '|'
 
 class ClassifyLayerForm(forms.Form):
     """
@@ -22,36 +23,88 @@ class ClassifyLayerForm(forms.Form):
     """
     layer_name = forms.CharField(widget=forms.HiddenInput())
     attribute = forms.ChoiceField(choices=[(-1, 'Error: no choices available')])
-    method = forms.ChoiceField(choices=CLASSIFY_METHOD_CHOICES)
+    method = forms.ChoiceField(label='classification method', choices=CLASSIFY_METHOD_CHOICES)
     intervals = forms.IntegerField(required=False)
     ramp = forms.ChoiceField(choices=COLOR_RAMP_CHOICES)
     #reverse = forms.BooleanField(initial=False, widget=forms.HiddenInput())
 
     #startColor =forms.CharField(max_length=7, required=False)   # irregular naming convention used to match the outgoing url string
     #endColor =forms.CharField(max_length=7, required=False)      # irregular naming convention used to match the outgoing url string
+    # 
+    # 
+    
+    def __init__(self, *args, **kwargs):
+        """Initialize using a WorldMapImportSuccess object
+        
+        """
+        
+        import_success_object = kwargs.pop('import_success_object', None)
+        
+        if import_success_object is None:
+            raise Exception('ClassifyLayerForm does not have an import_success_object')
+            
+        super(ClassifyLayerForm, self).__init__(*args, **kwargs)
+
+        raw_attribute_info = import_success_object.get_attribute_info()
+        attribute_choices = ClassifyLayerForm.format_attribute_choices_for_form(raw_attribute_info)
+        
+        self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices)
+        self.fields['layer_name'].initial = import_success_object.layer_name
+        
+    @staticmethod
+    def format_attribute_choices_for_form(attr_info):
+        """
+        {"display_name": "Objectid", "type": "long", "name": "OBJECTID"}, 
+
+        """        
+        if attr_info is None or len(attr_info) == 0: 
+            return [('-1', 'Information not found')]
+        
+        choice_tuples = []
+        for x in attr_info:
+            if not type(x) is dict: continue        # skip non dicts
+            if not (x.has_key('type') and x.has_key('name') and x.has_key('display_name')): continue    # skip missing keys
+            
+            choice_pair = ('%s%s%s' % (x['type'],ATTRIBUTE_VALUE_DELIMITER, x['name']), x['display_name'])     # format choice
+            choice_tuples.append( choice_pair)      # add choice
+
+        if len(choice_tuples)==0:
+            return [('-1', 'Information not found')]
+
+        return choice_tuples
+
+        
 
     def clean_ramp(self):
         color_ramp_id = self.cleaned_data.get('ramp', None)
         if color_ramp_id is None:
-            raise Exception('Color ramp must be specified')
+            raise forms.ValidationError(_('Color ramp must be specified'), code='invalid')
 
         try:
             color_ramp_obj = ColorRamp.objects.filter(active=True).get(pk=color_ramp_id)
         except ColorRamp.DoesNotExist:
-            raise Exception('This value is not an active ColorRamp id')
+            #raise forms.ValidationError(_('This value is not an active ColorRamp id'), code='invalid')
+            raise forms.ValidationError(\
+                _('This value is not an active ColorRamp id: %(value)s'),\
+                params={'value': color_ramp_id },\
+            )
+            #raise Exception('This value is not an active ColorRamp id')
 
         return color_ramp_obj 
     
     def clean_method(self):
         method_id = self.cleaned_data.get('method', None)
         if method_id is None:
-            raise Exception('Color ramp must be specified')
-
+            raise forms.ValidationError(_('The classification method must be specified'), code='invalid')
+            
         try:
             method_obj = ClassificationMethod.objects.filter(active=True).get(pk=method_id)
         except ClassificationMethod.DoesNotExist:
-            raise Exception('This value is not an active ColorRamp id')
-
+            raise forms.ValidationError(\
+                _('This value is not an active classification id: %(value)s'),\
+                params={'value': method_id },\
+            )
+            
         return method_obj
         
     def get_worldmap_classify_api_url(self):
@@ -67,12 +120,24 @@ class ClassifyLayerForm(forms.Form):
 
         #return '%s/dvn/classify-layer/%s/' % (settings.WORLDMAP_SERVER_URL, layer_name)
         
+
+    def clean_attribute(self):
+        attribute = self.cleaned_data.get('attribute', None)
+        if attribute is None:
+            raise forms.ValidationError(_('The attribute must be specified'), code='invalid')
+
+        return attribute.split(ATTRIBUTE_VALUE_DELIMITER)[-1]
+    
     
     def clean_layer_name(self):
+        """
+        "geonode:my_layer_name" becomes "my_layer_name"
+        "my_layer_name" stays "my_layer_name"
+        """
         layer_name = self.cleaned_data.get('layer_name', None)
         if layer_name is None:
-            raise Exception('Color ramp must be specified')
-
+            raise forms.ValidationError(_('The layer name must be specified'), code='invalid')
+            
         return layer_name.split(':')[-1]
         
     def get_params_dict_for_classification(self):
@@ -85,6 +150,7 @@ class ClassifyLayerForm(forms.Form):
         color_ramp_obj = form_vals['ramp']
         
         params = { 'layer_name' : form_vals['layer_name']\
+                    , 'attribute' : form_vals['attribute']\
                     , 'intervals' : form_vals['intervals']\
                     , 'method' :  form_vals['method'].value_name\
                     , 'ramp' :  color_ramp_obj.value_name\
@@ -107,20 +173,6 @@ class ClassifyLayerForm(forms.Form):
         """
 
 
-    def __init__(self, *args, **kwargs):
-        """Initialize using a WorldMapImportSuccess object
-        
-        """
-        
-        import_success_object = kwargs.pop('import_success_object', None)
-        
-        if import_success_object is None:
-            raise Exception('ClassifyLayerForm does not have an import_success_object')
-            
-        super(ClassifyLayerForm, self).__init__(*args, **kwargs)
-
-        self.fields['attribute'] = forms.ChoiceField(choices=import_success_object.get_attribute_choices_for_form())
-        self.fields['layer_name'].initial = import_success_object.layer_name
 
 if __name__=='__main__':
     f = ClassifyLayerForm(initial={'layer_name': 'income_abadfe'}\
