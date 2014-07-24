@@ -23,6 +23,8 @@
         //  $('#id_progress_bar_text').html('Styling Map Layer...');               
         //  $('#id_progress_bar_img').removeClass('progress-bar-warning');               
             
+            // Fade out classify button
+            $('#id_frm_style_submit').addClass('disabled').html('Working...');
             
            var classify_url = "{% url 'view_classify_layer_form' import_success_object.md5 %}";
            var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
@@ -51,9 +53,12 @@
 
            })
            .always(function() {
+                // Restore classify button
+                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');;
+                
              //  alert( "finished" );
-               $('#id_progress_bar_img').removeClass('progress-bar-warning');               
-               $('#id_progress_bar').hide();    
+              // $('#id_progress_bar_img').removeClass('progress-bar-warning');               
+               //$('#id_progress_bar').hide();    
                //bind_form_submit_button();           
            });
    }
@@ -127,7 +132,6 @@
 			{% endif %}
 			<!-- =========================================  -->
 				{% if shapefile_set and not Err_Found %}
-				
 				{% include "view_02_shp_table.html" %}
 			
 				{% endif %}

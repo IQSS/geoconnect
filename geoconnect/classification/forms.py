@@ -162,9 +162,29 @@ class ClassifyLayerForm(forms.Form):
             raise forms.ValidationError(_('The layer name must be specified'), code='invalid')
             
         return layer_name.split(':')[-1]
+    
+    def get_params_for_display(self):
+        if not self.is_valid():
+            return None
+            
+        form_vals = self.cleaned_data.copy()
+        
+        
+        color_ramp_obj = form_vals['ramp']
+        
+        params = { 'layer_name' : form_vals['layer_name']\
+                    , 'attribute' : form_vals['attribute']\
+                    , 'intervals' : form_vals['intervals']\
+                    , 'method' :  form_vals['method'].display_name\
+                    , 'ramp' :  color_ramp_obj.display_name\
+                    , 'startColor' :  color_ramp_obj.start_color\
+                    , 'endColor' :  color_ramp_obj.end_color\
+                    , 'reverse' : False\
+                }
+        return params
         
     def get_params_dict_for_classification(self):
-        if not self.is_valid:
+        if not self.is_valid():
             return None
             
         form_vals = self.cleaned_data.copy()

@@ -1,5 +1,5 @@
 <p>A new layer style has been created using:</p>
-
+{% spaceless %}
 <table id="id_classify_msg_tbl" class="table table-condensed table-bordered">
     <tr>
         <th>Attribute</th>  <td>{{ attribute }}</td>
@@ -13,7 +13,23 @@
     <tr>
         <th>Colors</th> <td>{{ ramp }}</td>
     </tr>
+    {% if not ramp == 'Random' %}
+    <tr>
+        <th>Start Color</th> 
+        <td>{{ startColor }} 
+            <div style="background-color:{{ startColor|safe }};width:50px;height:20px;border:1px solid#333;">&nbsp;</div>
+        </td>
+    </tr>
+    <tr>
+        <th>End Color</th> 
+        <td>{{ endColor }}
+            <div style="background-color:{{ endColor|safe }};width:50px;height:20px;border:1px solid#333;">&nbsp;</div>            
+        </td>
+    </tr>
+    {% endif %}
 </table>
+{% endspaceless %}
+
 ({% now "F jS, Y f:s a" %})
 {% comment %}
 

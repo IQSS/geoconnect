@@ -74,8 +74,8 @@ def view_classify_layer_form(request, import_success_md5):
     req = requests.post(classify_url, data=classify_params, timeout=2)
     
     if req.status_code == 200:
-        msg_params = classify_params.copy()
-        msg_params.pop('geoconnect_token', None) # don't want this in the template
+        msg_params = classify_form.get_params_for_display()
+        #msg_params.pop('geoconnect_token', None) # don't want this in the template
         classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
         success_msg =  render_to_string('classify_success_msg.html', msg_params)
         d = dict(classify_form=classify_form\
