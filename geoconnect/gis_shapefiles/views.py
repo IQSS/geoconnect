@@ -219,6 +219,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
         import_success_object = latest_import_attempt.get_success_info()
         if import_success_object:
             classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+            #d['form_inline'] = True
             d['classify_form'] = classify_form
                 
                     

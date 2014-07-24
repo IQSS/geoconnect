@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.http import Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 from worldmap_import.models import WorldMapImportSuccess
 from worldmap_import.send_shapefile_service import SendShapefileService
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 from django.conf import settings
 
-
+@login_required
 def show_import_success_params(request, import_success_id):
     """
     Convenience method for reviewing the parameters
@@ -30,7 +31,7 @@ def show_import_success_params(request, import_success_id):
 
     return HttpResponse('%s' % wm_success.get_data_dict())
 
-
+@login_required
 def send_metadata_to_dataverse(request, import_success_id):
     """
     Send metadata to dataverse: async this!!
@@ -48,7 +49,7 @@ def send_metadata_to_dataverse(request, import_success_id):
         return HttpResponseRedirect(lnk)
     return HttpResponse('metadata sent')
     
-
+@login_required
 def view_send_shapefile_to_worldmap(request, shp_md5):
     """
     Send shapefile to WorldMap.

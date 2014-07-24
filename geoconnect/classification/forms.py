@@ -8,6 +8,7 @@ if __name__=='__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'geoconnect.settings.local'
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from classification.models import ClassificationMethod, ColorRamp
@@ -16,16 +17,25 @@ CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod
 COLOR_RAMP_CHOICES = [ (x.id, x.display_name) for x in ColorRamp.objects.filter(active=True) ]
 
 ATTRIBUTE_VALUE_DELIMITER = '|'
+FIELD_CSS_ATTRS = {'class':'form-control input-sm'} 
 
 class ClassifyLayerForm(forms.Form):
     """
     Evaluate classification parameters to be used for a new layer style
     """
     layer_name = forms.CharField(widget=forms.HiddenInput())
-    attribute = forms.ChoiceField(choices=[(-1, 'Error: no choices available')])
-    method = forms.ChoiceField(label='classification method', choices=CLASSIFY_METHOD_CHOICES)
-    intervals = forms.IntegerField(required=False)
-    ramp = forms.ChoiceField(choices=COLOR_RAMP_CHOICES)
+    attribute = forms.ChoiceField(choices=[(-1, 'Error: no choices available')]\
+                                    , widget=forms.Select(attrs=FIELD_CSS_ATTRS)\
+                                    )
+    method = forms.ChoiceField(label='Classification method'\
+                                , choices=CLASSIFY_METHOD_CHOICES\
+                                , widget=forms.Select(attrs=FIELD_CSS_ATTRS)\
+                                )
+    intervals = forms.IntegerField(label='No. of intervals', initial=5, widget=forms.NumberInput(attrs=FIELD_CSS_ATTRS))
+    ramp = forms.ChoiceField(label='Colors'\
+                                , choices=COLOR_RAMP_CHOICES\
+                                , widget=forms.Select(attrs=FIELD_CSS_ATTRS)\
+                                )
     #reverse = forms.BooleanField(initial=False, widget=forms.HiddenInput())
 
     #startColor =forms.CharField(max_length=7, required=False)   # irregular naming convention used to match the outgoing url string
@@ -48,7 +58,7 @@ class ClassifyLayerForm(forms.Form):
         raw_attribute_info = import_success_object.get_attribute_info()
         attribute_choices = ClassifyLayerForm.format_attribute_choices_for_form(raw_attribute_info)
         
-        self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices)
+        self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices, widget=forms.Select(attrs=FIELD_CSS_ATTRS))
         self.fields['layer_name'].initial = import_success_object.layer_name
         
     @staticmethod
@@ -128,7 +138,17 @@ class ClassifyLayerForm(forms.Form):
 
         return attribute.split(ATTRIBUTE_VALUE_DELIMITER)[-1]
     
-    
+    def clean_intervals(self):
+        num_bins = self.cleaned_data.get('intervals', None)
+        if num_bins is None:
+            raise forms.ValidationError(_('The number of intervals must be specified'), code='invalid')
+        
+        print 'num_bins', type(num_bins)
+        if num_bins < 1:
+            raise forms.ValidationError(_('The number of intervals must be 1 or greater'), code='invalid')
+
+        return num_bins
+        
     def clean_layer_name(self):
         """
         "geonode:my_layer_name" becomes "my_layer_name"
