@@ -2,72 +2,7 @@
 
 {% block extra_js %}
 {% if classify_form %}
-<style type="text/css">
- ul.errorlist{ list-style-type:none; padding:5px;margin:0; font-size:85%; color:#ff0000;}
- ul.errorlist li {padding:0; margin:0;}
- #id_classify_msg_tbl {width:75%}
- #id_classify_msg_tbl.table th, #id_classify_msg_tbl.table td { 
-      border-top: none; 
-  }
-  div.alert{width:75%;}
-</style>
-   <script>
-   
-   function get_alert(alert_type, err_msg){
-        return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
-   }
-   
-   function submit_classify_form(){
-       
-        //  $('#id_progress_bar').show();
-        //  $('#id_progress_bar_text').html('Styling Map Layer...');               
-        //  $('#id_progress_bar_img').removeClass('progress-bar-warning');               
-            
-            // Fade out classify button
-            $('#id_frm_style_submit').addClass('disabled').html('Working...');
-            
-           var classify_url = "{% url 'view_classify_layer_form' import_success_object.md5 %}";
-           var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
-               
-               console.log(json_resp);
-               if ((json_resp.data)&&(json_resp.data.div_content)){
-                 $( "#div_classify_form" ).html(json_resp.data.div_content);
-                 $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-                 
-               }
-           })
-           .done(function(json_resp) {
-               if (json_resp.success){
-                   
-                 //  $('#id_progress_bar_text').html('Reloading Map...');               
-                 //  $('#id_progress_bar_img').addClass('progress-bar-warning');                
-                   //alert( "now reload map!" );               
-                   $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                   $('#id_progress_bar').hide();    
-                   
-               }
-             })
-           .fail(function(json_resp) {
-                $('#simple_msg_div').show();
-                $('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
-
-           })
-           .always(function() {
-                // Restore classify button
-                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');;
-                
-             //  alert( "finished" );
-              // $('#id_progress_bar_img').removeClass('progress-bar-warning');               
-               //$('#id_progress_bar').hide();    
-               //bind_form_submit_button();           
-           });
-   }
-   
-   $(document).ready(function() {
-        $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-        //bind_form_submit_button();
-     });
- </script>
+    {% include "classify_form_js.html" %}
 {% endif %}
 {% endblock %}
 {% block main_container %}

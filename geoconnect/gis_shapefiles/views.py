@@ -18,7 +18,7 @@ from gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess, WorldMapImportFail
-from classification.forms import ClassifyLayerForm
+from classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from django.conf import settings
 
@@ -71,6 +71,7 @@ def view_examine_dataset(request):
     #return HttpResponse('view_google_map')
     d = { 'page_title' : get_shapefile_step_title(10)\
         , 'existing_shapefiles' : ShapefileSet.objects.all()
+        
         }
     
     if request.method=='POST':        
@@ -108,7 +109,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     """
     logger.debug('view_shapefile')
 
-    d = {}
+    d = dict(page_title='View Shapefile')
     
     if first_time_notify:
         d['first_time_notify'] = True
@@ -221,6 +222,8 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
             classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
             #d['form_inline'] = True
             d['classify_form'] = classify_form
+            d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
+            
                 
                     
         d['import_success_object'] = import_success_object

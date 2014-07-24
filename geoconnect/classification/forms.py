@@ -14,6 +14,8 @@ from django.conf import settings
 from classification.models import ClassificationMethod, ColorRamp
 
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
+CLASSIFY_STRING_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True, is_string_usable=True) ]
+
 COLOR_RAMP_CHOICES = [ (x.id, x.display_name) for x in ColorRamp.objects.filter(active=True) ]
 
 ATTRIBUTE_VALUE_DELIMITER = '|'
@@ -83,8 +85,15 @@ class ClassifyLayerForm(forms.Form):
 
         return choice_tuples
 
-        
+    @staticmethod
+    def get_classify_choices():
+        return ClassificationMethod.objects.filter(active=True) 
 
+    @staticmethod
+    def get_classify_string_choices():
+        return ClassificationMethod.objects.filter(active=True, is_string_usable=True) 
+
+        
     def clean_ramp(self):
         color_ramp_id = self.cleaned_data.get('ramp', None)
         if color_ramp_id is None:

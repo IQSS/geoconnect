@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 from geo_utils.json_field_reader import MessageHelperJSON
 from worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
-from classification.forms import ClassifyLayerForm
+from classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,9 @@ def view_classify_layer_form(request, import_success_md5):
     except WorldMapImportSuccess.DoesNotExist:
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The WorldMapImportSuccess object does not exist')            
         return HttpResponse(status=410, content=json_msg, content_type="application/json")
-        
+
+    d = { 'ATTRIBUTE_VALUE_DELIMITER' :ATTRIBUTE_VALUE_DELIMITER }
+    
     # Is the form valid?
     #
     classify_form = ClassifyLayerForm(request.POST, **dict(import_success_object=import_success_object))
@@ -52,15 +54,17 @@ def view_classify_layer_form(request, import_success_md5):
     # Form validation will replace the classification div on the page
     if not classify_form.is_valid():
         print ('form not valid')
-        d = dict(classify_form=classify_form\
+        d.update( dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
-                , error_msg='The form submission contains errors')
+                , error_msg='The form submission contains errors'\
+                ))
         form_content = render_to_string('view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
         json_msg = MessageHelperJSON.get_json_msg(success=False
                                             , msg='The form submission contains errors'
                                             , data_dict={'div_content':form_content}\
-                                            )            
+                                            )    
+                                                    
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
     classify_params = classify_form.get_params_dict_for_classification()
@@ -78,10 +82,10 @@ def view_classify_layer_form(request, import_success_md5):
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
         classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
         success_msg =  render_to_string('classify_success_msg.html', msg_params)
-        d = dict(classify_form=classify_form\
+        d.update(dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
                 , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
-                )
+                ))
                 
         form_content = render_to_string('view_classify_form.html', d\
                                 , context_instance=RequestContext(request))

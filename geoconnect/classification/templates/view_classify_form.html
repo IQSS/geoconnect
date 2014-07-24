@@ -3,9 +3,9 @@
 
 
 <!-- col 1 -->
-<div style="float:left; width:50%;padding:10px 10px;"><h4>Style the Layer</h4>
+<div style="float:left; width:50%;padding:5px 10px;"><h4>Style the Layer</h4>
     
-<!-- start form --><form id="frm_classify" class="form-{% if form_inline %}inline{% else %}horizontal{% endif %}" role="form" method="post" xaction="#" {#action="{% url 'view_classify_layer_form' import_success_object.md5 %}"#}><!-- shapefile_set.md5 -->
+<!-- start form --><form id="frm_classify" class="form-{% if form_inline %}inline{% else %}horizontal{% endif %}" role="form" method="post"><!-- shapefile_set.md5 -->
 
     
     {% csrf_token %}{% for hidden in classify_form.hidden_fields %}{{ hidden }}{% endfor %}

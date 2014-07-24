@@ -1,0 +1,98 @@
+<style type="text/css">
+ ul.errorlist{ list-style-type:none; padding:5px;margin:0; font-size:85%; color:#ff0000;}
+ ul.errorlist li {padding:0; margin:0;}
+ #id_classify_msg_tbl {width:75%}
+ #id_classify_msg_tbl.table th, #id_classify_msg_tbl.table td { 
+      border-top: none; 
+  }
+  div.alert{width:75%;}
+</style>
+   <script>
+   
+   function get_alert(alert_type, err_msg){
+        return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
+   }
+   
+   function submit_classify_form(){
+       
+            // Fade out classify button
+            $('#id_frm_style_submit').addClass('disabled').html('Working...');
+            
+           var classify_url = "{% url 'view_classify_layer_form' import_success_object.md5 %}";
+           var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
+               
+              // console.log(json_resp);
+              // If new form/message data is in the response, then update the page
+               if ((json_resp.data)&&(json_resp.data.div_content)){
+                 $( "#div_classify_form" ).html(json_resp.data.div_content);
+                 $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
+                 
+               }
+           })
+           .done(function(json_resp) {
+               if (json_resp.success){
+                    // Reload the map!
+                   $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
+                   $('#id_progress_bar').hide();    
+                   
+               }
+             })
+           .fail(function(json_resp) {
+                $('#simple_msg_div').show();
+                $('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
+
+           })
+           .always(function() {
+                // Restore classify button
+                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');;                
+               //bind_form_submit_button();           
+           });
+   }
+   
+   
+   var all_classification_methods = { {% for m in classify_form.get_classify_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
+   
+   var string_classification_methods =  { {% for m in classify_form.get_classify_string_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1" {% endfor %} }
+
+
+   
+   function check_attribute(){
+       /*
+        Attribute values have a type and a name.
+            e.g. "string|TRACT"
+        For string types, restrict the classification methods, if not, allow all classifications
+       */
+       current_attr_val = $( "#id_attribute option:selected" ).val();
+       //alert(current_attr_val);
+       if (current_attr_val.length==0){
+           return;
+       }
+       attr_val_pieces = current_attr_val.split('{{ ATTRIBUTE_VALUE_DELIMITER }}');
+       if (attr_val_pieces.length!=2){
+            return;
+       }
+       var $select_elem = $("#id_method");
+       $select_elem.empty();  // remove choices
+       if (attr_val_pieces[0]=='string'){
+           //alert('string only');
+           
+           $.each(string_classification_methods, function(key, value) {
+               $select_elem.append($("<option></option>")
+                .attr("value", value).text(key));
+           });
+   
+       }else{
+
+           $.each(all_classification_methods, function(key, value) {
+               $select_elem.append($("<option></option>")
+                .attr("value", value).text(key));
+           });           
+       }
+       
+   }
+   
+   $(document).ready(function() {
+        $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
+        $( "#id_attribute" ).on( "change", check_attribute );        
+   });
+ </script>

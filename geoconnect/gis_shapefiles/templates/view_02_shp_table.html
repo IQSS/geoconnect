@@ -33,8 +33,7 @@
 			<td>
 				
 				{% if import_success_object %}
-				    {% include "view_02_import_success.html" %}
-							  
+				    {% include "view_02_import_success.html" %}							  
 				{% else %}
 					<!-- send info to WorldMap API -->
 					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />
@@ -81,8 +80,8 @@
 			<th># Fields</th>
 			<td>{{ shapefile_set.get_column_count|intcomma }}
 
-				&nbsp; &nbsp;<a xtype="button" xclass="btn btn-success btn-xs" data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</a>
-					<div id="column_name_list" class="collapse" class="panel-body">
+				&nbsp; &nbsp;<a data-toggle="collapse" data-target="#column_name_list" id="btn_show_cols">show fields</a>
+					<div id="column_name_list" class="collapse panel-body">
 						 <table class="table table-bordered table-striped table-condensed">
 							{% for fn in shapefile_set.get_column_info %}
 								<tr>
