@@ -1,0 +1,27 @@
+<p>A new layer style has been created using:</p>
+
+<table id="id_classify_msg_tbl" class="table table-condensed table-bordered">
+    <tr>
+        <th>Attribute</th>  <td>{{ attribute }}</td>
+    </tr>
+    <tr>
+        <th>Method</th> <td>{{ method }}</td>
+    </tr>
+    <tr>
+        <th>No. of Intervals</th>   <td>{{ intervals }}</td>
+    </tr>
+    <tr>
+        <th>Colors</th> <td>{{ ramp }}</td>
+    </tr>
+</table>
+({% now "F jS, Y f:s a" %})
+{% comment %}
+
+<ul class="list-unstyled">
+    <li><b>Attribute</b>: {{ attribute }}</li>
+    <li><b>Method</b>: {{ method }}</li>
+    <li><b>No. of Intervals</b>: {{ intervals }}</li>
+    <li><b>Colors</b>: {{ ramp }}</li>
+</ul>
+{% endcomment %}
+

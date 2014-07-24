@@ -1,0 +1,20 @@
+<a href="{{ import_success_object.layer_link }}">View on WorldMap</a> 
+				
+<br />
+
+<iframe id="id_iframe_map" height="300" width="100%" src="{{ import_success_object.embed_map_link }}"></iframe>
+
+<!--
+<div id="id_progress_bar" style="display:none;" class="progress">
+     <div id="id_progress_bar_img" class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+       <span id="id_progress_bar_text"></span>
+     </div>
+   </div>
+-->   
+<div id="div_classify_form">{% include "view_classify_form.html" %}</div>
+<hr />
+<br />
+
+<a href="{% url 'send_metadata_to_dataverse' import_success_object.id %}">resend metadata to dataverse</a>
+| <a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' import_success_object.import_attempt.id %}">edit import</a> 	
+| layer name: <a href="{{ import_success_object.layer_link }}">{{ import_success_object.layer_name }}</a>

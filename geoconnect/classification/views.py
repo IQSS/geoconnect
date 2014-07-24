@@ -72,11 +72,17 @@ def view_classify_layer_form(request, import_success_md5):
     classify_url = classify_form.get_worldmap_classify_api_url()
     
     req = requests.post(classify_url, data=classify_params, timeout=2)
+    
     if req.status_code == 200:
+        msg_params = classify_params.copy()
+        msg_params.pop('geoconnect_token', None) # don't want this in the template
         classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+        success_msg =  render_to_string('classify_success_msg.html', msg_params)
         d = dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
-                , success_msg='The new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???'))
+                , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
+                )
+                
         form_content = render_to_string('view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
         json_msg = MessageHelperJSON.get_json_msg(success=True

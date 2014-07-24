@@ -83,7 +83,7 @@
     "pk": 3, 
     "model": "classification.colorramp", 
     "fields": {
-        "value_name": "Orange", 
+        "value_name": "Custom", 
         "display_name": "Orange", 
         "created": "2014-07-18T13:03:05.796", 
         "modified": "2014-07-18T13:03:05.797", 
