@@ -66,7 +66,7 @@ def view_classify_layer_form(request, import_success_md5):
     classify_params = classify_form.get_params_dict_for_classification()
     if classify_params is None:
         logger.error('Failed with valid form: classify_form.get_params_dict_for_classification()')
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The form submission contains errors (code: 2)')            
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The layer styling form contains errors (code: 2)')            
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
     classify_url = classify_form.get_worldmap_classify_api_url()

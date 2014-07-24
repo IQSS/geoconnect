@@ -147,6 +147,9 @@ class ClassifyLayerForm(forms.Form):
         if num_bins < 1:
             raise forms.ValidationError(_('The number of intervals must be 1 or greater'), code='invalid')
 
+        if num_bins > 300:
+            raise forms.ValidationError(_('The number of intervals must be less than that!'), code='invalid')
+
         return num_bins
         
     def clean_layer_name(self):
