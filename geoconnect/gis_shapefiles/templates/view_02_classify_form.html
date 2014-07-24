@@ -1,5 +1,5 @@
 {% if classify_form %}
-<form method="post" action="{% url 'view_classify_layer_form' import_success_object.md5 %}">
+<form method="post" action="{% url 'view_classify_layer_form' shapefile_set.md5 import_success_object.md5 %}">
     {% csrf_token %}{% for hidden in classify_form.hidden_fields %}{{ hidden }}{% endfor %}
     <table style="border:none;">
     
