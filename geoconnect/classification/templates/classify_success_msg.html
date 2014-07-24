@@ -7,9 +7,11 @@
     <tr>
         <th>Method</th> <td>{{ method }}</td>
     </tr>
+    {% if not method == 'Unique Values' %}
     <tr>
         <th>No. of Intervals</th>   <td>{{ intervals }}</td>
     </tr>
+    {% endif %}
     <tr>
         <th>Colors</th> <td>{{ ramp }}</td>
     </tr>

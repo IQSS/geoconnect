@@ -40,11 +40,15 @@
            .fail(function(json_resp) {
                 $('#simple_msg_div').show();
                 $('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
+                $('#id_success_msg').hide();
+                $('#id_alert_msg').hide();
 
            })
            .always(function() {
                 // Restore classify button
-                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');;                
+                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');
+                $( "#id_attribute" ).on( "change", check_attribute );        
+                               
                //bind_form_submit_button();           
            });
    }
@@ -80,6 +84,7 @@
                $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
            });
+           $('#id_intervals').attr("readonly", "readonly"); 
    
        }else{
 
@@ -87,6 +92,8 @@
                $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
            });           
+           $('#id_intervals').removeAttr("readonly"); 
+           
        }
        
    }

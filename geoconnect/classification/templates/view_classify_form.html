@@ -25,10 +25,10 @@
 <!-- col 2 -->
 <div style="float:left;width:50%;font-size:90%;padding:20px 10px;" class="text-left">
     <div id="simple_msg_div" style="display:none"></div>
-    {% if success_msg %}<div class="alert alert-success">Success!</div>
+    {% if success_msg %}<div id="id_success_msg" class="alert alert-success">Success!</div>
         <p>{{ success_msg|safe }}</p>
     {% endif %}
-    {% if error_msg %}<div class="alert alert-danger">Error!</div>
+    {% if error_msg %}<div id="id_alert_msg" class="alert alert-danger">Error!</div>
         <p>{{ error_msg|safe }}</p>
     {% endif %}
    
