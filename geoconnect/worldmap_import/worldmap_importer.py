@@ -113,6 +113,9 @@ class WorldMapImporter:
         # Send the request to WorldMap
         #
         try:
+            logger.debug('import url: %s' % self.api_import_url)
+            
+            logger.debug('layer_params: %s' % layer_params)
             req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             wm_response_dict = req.json()
             logger.debug('response: %s' % wm_response_dict)

@@ -14,28 +14,41 @@ from classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 logger = logging.getLogger(__name__)
 
+
+def format_major_error_message(msg, import_success_md5=None):
+    """
+    This error is severe and replaces the entire classify form
+    """
+    return render_to_string('classify_major_error.html', dict(error_message=msg,import_success_md5=import_success_md5))
+
 @login_required
 def view_classify_layer_form(request, import_success_md5):
-    #if not (shapefile_md5 and import_success_md5):
+    """
+    Given a ClassifyLayerForm submission, return an JSON response
     
-    #json_msg = MessageHelperJSON.get_json_msg(success=False
-    #                                    , msg='The form submission contains errors'
-    #                                    , data_dict={'div_content':'blah'}\
-    #                                    )            
-    #return HttpResponse(status=400, content=json_msg, content_type="application/json")
-    
-    # Is the success object md5 available?
-    #
-    if not import_success_md5:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Parameters are missing')
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
-     
+    :param import_success_md5: str, md5 identifying a WorldMapImportSuccess object
+    :returns JSON response: JSON generated with the MessageHelperJSON.get_json_msg function
+    """
     # Is it a POST?   
     #
     if not request.POST:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Use a POST request")    
-        return HttpResponse(status=405, content=json_msg, content_type="application/json")
+        err_note = 'A POST request must be used to classify the layer.'
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                  , msg=err_note\
+                                 , data_dict=dict(div_content=format_major_error_message(err_note, import_success_md5=import_success_md5)))
+        # technically a 405 error, but we want the JSON message to appear
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
     
+    # Is the WorldMapImportSuccess object md5 available?
+    #
+    if not import_success_md5:
+        err_note = 'Sorry! The layer could not be identified.\n\nThe Styling option is not available.'
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                                , msg=err_note\
+                                                , data_dict=dict(div_content=format_major_error_message(err_note)))
+        # technically a 400 error, but we want the JSON message to appear
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+         
     # Does the success object exist?
     #
     try: 
@@ -80,7 +93,7 @@ def view_classify_layer_form(request, import_success_md5):
     if req.status_code == 200:
         msg_params = classify_form.get_params_for_display()
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
-        classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+        #classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
         success_msg =  render_to_string('classify_success_msg.html', msg_params)
         d.update(dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
