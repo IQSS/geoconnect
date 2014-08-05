@@ -1,5 +1,7 @@
 from __future__ import print_function
+
 import os
+import json
 import requests # for POST
 
 if __name__=='__main__':
@@ -12,7 +14,7 @@ from geo_utils.key_checker import KeyChecker
 from geo_utils.json_field_reader import MessageHelperJSON
 
 from django.conf import settings 
-
+from dv_notify.models import DATAVERSE_REQUIRED_KEYS
 import logging
 logger = logging.getLogger(__name__)
 
@@ -21,8 +23,9 @@ class MetadataUpdater:
     """Send a metadata update to Dataverse.  Specifically, update the GIS Metadata block
     for a given file."""
     
-    METADATA_UPDATE_API_PATH = 'geo-api/singlefile/update-gis-metadata/'
-    REQUIRED_PARAM_KEYS = ['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'dv_session_token']#, 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
+    #METADATA_UPDATE_API_PATH = 'geo-api/singlefile/update-gis-metadata/'
+    REQUIRED_PARAM_KEYS = DATAVERSE_REQUIRED_KEYS
+    # ['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'dv_session_token']#, 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat']
     
     def __init__(self, dataverse_server_url, timeout_seconds=240, return_type_json=False):
         """
@@ -30,7 +33,7 @@ class MetadataUpdater:
         
         :param dv_metadata_params: dict containing information necessary for contacting dataverse
         """
-        self.api_update_url = os.path.join(dataverse_server_url, self.METADATA_UPDATE_API_PATH)
+        self.api_update_url = dataverse_server_url + settings.DATAVERSE_METADATA_UPDATE_API_PATH
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
     
@@ -65,7 +68,8 @@ class MetadataUpdater:
             
         print('2) passed key check')
         try:
-            req = requests.post(self.api_update_url, data=dv_metadata_params, timeout=self.timeout_seconds)
+            
+            req = requests.post(self.api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
             print('3) req: %s' % req)
 
             print (req.text)

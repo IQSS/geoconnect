@@ -84,7 +84,8 @@ LOGIN_URL = "admin:index"
 # Used to make API calls
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
-DATAVERSE_SERVER_URL = 'http://127.0.0.1:8090'
+DATAVERSE_SERVER_URL = 'http://localhost:8080'
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/?key=pete' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
 ########## DATAVERSE_SERVER_URL
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV

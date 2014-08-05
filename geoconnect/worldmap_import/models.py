@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from core.models import TimeStampedModel
 from gis_basic_file.models import GISDataFile
 from dv_notify.metadata_updater import MetadataUpdater
+from dv_notify.models import KEY_UPDATES_TO_MATCH_DATAVERSE_API
 
 from geo_utils.json_field_reader import MessageHelperJSON, JSONFieldReader
 
@@ -264,9 +265,11 @@ class WorldMapImportSuccess(TimeStampedModel):
                 
         return data_dict
         
+        
     def get_params_for_dv_update(self):
         #['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat', 'dv_session_token']
         d = self.get_data_dict()
+
 
         if self.import_attempt and self.import_attempt.gis_data_file:
             d['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
@@ -283,6 +286,13 @@ class WorldMapImportSuccess(TimeStampedModel):
                         })
             except:
                 pass
+                
+        
+        for old_key, new_key in KEY_UPDATES_TO_MATCH_DATAVERSE_API.items():
+            if d.has_key(old_key):
+                d[new_key] = d.get(old_key) # add new key name
+                d.pop(old_key)  # pop off the old key name
+        print (d)
         return d
         
 

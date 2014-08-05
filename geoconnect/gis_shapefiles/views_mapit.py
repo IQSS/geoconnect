@@ -18,6 +18,7 @@ from gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
 
 #from gis_shapefiles.views import view_choose_shapefile
 
+from urllib import urlencode
 import json
 from django.http import Http404
 #import urllib2
@@ -26,11 +27,47 @@ logger = logging.getLogger(__name__)
 
 import urllib, cStringIO
 
-# Create your views here.
-# 
+
+def view_mapit_incoming_no_token(request):
+    if not request.GET:
+        raise Http404('no callback')
+    
+    if not request.GET.has_key('cb'):
+        raise Http404('no callback url')
+        
+    callback_url = request.GET['cb'] + "?%s" % urlencode(dict(key='pete'))    
+    
+    TOKEN_PARAM = { 'GEOCONNECT_TOKEN' : 'howdy' }
+    r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
+    print r.text
+    if not r.status_code == 200:
+        return HttpResponse("Sorry! Failed to retrieve Dataverse file")
+
+    jresp = r.json()
+    if not type(jresp) is dict:
+        return HttpResponse("Sorry! Failed to convert response to JSON")
+    
+    if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
+        shp_md5 = get_shapefile_from_dv_api_info('dv_session_token', jresp.get('data'))
+    
+        if shp_md5 is None:
+            raise Exception('shp_md5 failure: %s' % shp_md5)
+
+        choose_shapefile_url =  reverse('view_shapefile_first_time'\
+                                        , kwargs={ 'shp_md5' : shp_md5 })
+                                    
+        return HttpResponseRedirect(choose_shapefile_url)
+        return HttpResponse("Good so far")
+    
+    return HttpResponse("Good so far")
+    
+
+
 @login_required
 def view_mapit_incoming(request, dv_session_token):
-    """Quick view that needs major error checking
+    """For miniverse testing
+    
+    Quick view that needs major error checking
     
     (1) receive token + callback url
     (2) try url to retrieve metadata

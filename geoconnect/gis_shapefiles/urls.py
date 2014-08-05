@@ -20,6 +20,10 @@ urlpatterns = patterns('gis_shapefiles.views',
 urlpatterns += patterns('gis_shapefiles.views_mapit',
     url(r'^shp/(?P<dv_session_token>\w{56})/$', 'view_mapit_incoming', name="view_mapit_incoming"),
 
+    #url(r'^map-it/(?P<dataset_id>\d{1,10})/$', 'view_mapit_incoming_no_token', name="view_mapit_incoming_no_token"),
+
+    url(r'^map-it/$', 'view_mapit_incoming_no_token', name="view_mapit_incoming_no_token"),
+    
 )
 
 urlpatterns += patterns('folium_maker.views',
