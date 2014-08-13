@@ -174,7 +174,8 @@ class SendShapefileService:
             
         wm_attempt = WorldMapImportAttempt(gis_data_file=self.shapefile_set\
                                         , title=zipped_shapefile_name\
-                                        , abstract='[place holder abstract for %s]' % self.shapefile_set.name\
+                                        #, abstract='[place holder abstract for %s]' % self.shapefile_set.name\
+                                        , abstract=self.shapefile_set.get_abstract_for_worldmap() 
                                         , shapefile_name=zipped_shapefile_name\
                                         )
         try:

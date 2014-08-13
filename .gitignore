@@ -1,6 +1,6 @@
 geoconnect/geoconnect/config/laptop.py
 geoconnect/geoconnect/config/prod.py
-geoconnect/geoconnect/settings/prod.py
+geoconnect/geoconnect/settings/prod*.py
 geoconnect/geoconnect/geoconnect /settings/local.py
 scripts/geojson/*.html
 geoconnect/static/test_geojson*
@@ -15,7 +15,8 @@ scripts/worldmap_api/test_shps/*
 scripts/worldmap_api/test_token*
 scripts/geojson/data*
 geoconnect/worldmap_import/test_token*
-
+*/.idea/*
+.idea/*
 *.class
 # Byte-compiled / optimized / DLL files
 __pycache__/

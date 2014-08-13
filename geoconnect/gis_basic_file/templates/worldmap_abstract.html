@@ -1,0 +1,38 @@
+{% if gis_file.dataset_description %}
+ {{ gis_file.dataset_description|safe }}<br /><br />
+{% endif %}
+{% if gis_file.datafile_description %}
+  {{ gis_file.datafile_description|safe }}<br /><br />
+{% endif %}
+{% if gis_file.dataset_name and gis_file.dv_name %}
+    Source: Data set <b>{{ gis_file.dataset_name }}</b> stored in Dataverse <b>{{ gis_file.dv_name }}</b><br />
+{% endif %}
+{% comment %}
+# Dataverse user info
+   dv_user_id = models.IntegerField()          # for API calls
+   dv_user_email = models.EmailField(default='raman_prasad@harvard.edu')          # for API calls
+   dv_username = models.CharField(max_length=255)  # for display
+
+   # DataFile
+   datafile_id = models.IntegerField()  # for API calls.  dvobject.id; dtype='DataFile'
+   #datafile_version = models.BigIntegerField()
+   datafile_label = models.CharField(max_length=255, blank=True)    # for display; filemetadata.label   (dvobject.id = filemetadata.datafile_id)
+
+   # Copy of the actual file
+   dv_file = models.FileField(upload_to='dv_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
+
+   datafile_description = models.TextField(blank=True)    # for display; filemetadata.description   (dvobject.id = filemetadata.datafile_id)
+   datafile_type = models.CharField(max_length=255, help_text='Usually mime type')    # dvobject.contenttype
+   datafile_expected_md5_checksum = models.CharField(blank=True, max_length=255)    # dvobject.md5
+  
+   # Owning dataverse
+   dv_id = models.IntegerField(default=-1)       # for API calls.  dvobject.id; dtype='Dataverse'
+   dv_name = models.CharField(max_length=255, blank=True)  # for display
+   
+   # Dataset Info
+   dataset_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
+
+   dataset_version_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
+   dataset_name = models.CharField(max_length=255, blank=True)  # for display
+   dataset_description = models.TextField(blank=True) # for display
+{% endcomment %}

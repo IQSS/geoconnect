@@ -1,6 +1,8 @@
 from hashlib import md5
 from datetime import date
 
+from django.template.loader import render_to_string
+
 from os.path import basename, isfile
 
 from django.core.urlresolvers import reverse
@@ -106,7 +108,9 @@ class GISDataFile(TimeStampedModel):
         self.md5 = md5('%s%s%s' % (self.id, self.dv_user_id, self.datafile_id)).hexdigest()
         super(GISDataFile, self).save(*args, **kwargs)
 
-
+    def get_abstract_for_worldmap(self):
+        return render_to_string('worldmap_abstract.html', { 'gis_file' : self }) 
+        
     def __unicode__(self):
         if self.dv_name and self.dataset_name and self.datafile_label:
             return '%s : %s : %s' % (self.dv_name, self.dataset_name, self.datafile_label)
