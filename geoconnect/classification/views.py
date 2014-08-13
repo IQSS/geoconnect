@@ -1,3 +1,4 @@
+from __future__ import print_function
 import requests
 import logging
 
@@ -20,6 +21,9 @@ def format_major_error_message(msg, import_success_md5=None):
     This error is severe and replaces the entire classify form
     """
     return render_to_string('classify_major_error.html', dict(error_message=msg,import_success_md5=import_success_md5))
+
+def format_minor_error_message(msg):
+    return render_to_string('classify_basic_error.html', dict(error_message=msg))
 
 @login_required
 def view_classify_layer_form(request, import_success_md5):
@@ -54,8 +58,13 @@ def view_classify_layer_form(request, import_success_md5):
     try: 
         import_success_object = WorldMapImportSuccess.objects.get(md5=import_success_md5)
     except WorldMapImportSuccess.DoesNotExist:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The WorldMapImportSuccess object does not exist')            
-        return HttpResponse(status=410, content=json_msg, content_type="application/json")
+        err_note = 'Sorry! The layer data could not be found.\n\nThe Styling option is not available. (WorldMapImportSuccess object not found)'
+        json_msg = MessageHelperJSON.get_json_msg(success=False\
+                                                , msg=err_note\
+                                                , data_dict=dict(div_content=format_major_error_message(err_note)))
+        # technically a 410 error, but we want the JSON message to appear
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        
 
     d = { 'ATTRIBUTE_VALUE_DELIMITER' :ATTRIBUTE_VALUE_DELIMITER }
     
@@ -66,7 +75,6 @@ def view_classify_layer_form(request, import_success_md5):
     # Invalid forms are status=200 so caught by ajax
     # Form validation will replace the classification div on the page
     if not classify_form.is_valid():
-        print ('form not valid')
         d.update( dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
                 , error_msg='The form submission contains errors'\
@@ -84,13 +92,28 @@ def view_classify_layer_form(request, import_success_md5):
     if classify_params is None:
         logger.error('Failed with valid form: classify_form.get_params_dict_for_classification()')
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The layer styling form contains errors (code: 2)')            
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
     classify_url = classify_form.get_worldmap_classify_api_url()
     
-    req = requests.post(classify_url, data=classify_params, timeout=2)
-    
-    if req.status_code == 200:
+    resp = requests.post(classify_url, data=classify_params, timeout=2)
+    if resp.status_code == 200:
+        json_resp = resp.json()
+        
+        try:
+            json_resp = resp.json()
+        except:
+            logger.error('Worldmap call did not parse into valid json: %s' % json.text)
+            json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')            
+            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+        if json_resp.get("success") is False:
+            logger.error('Worldmap call returned success = false: %s' % resp.text)
+            user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
+            json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)            
+            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+        
         msg_params = classify_form.get_params_for_display()
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
         #classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
@@ -125,10 +148,10 @@ def view_classify_layer_form(request, import_success_md5):
                             
     
     
-    print (req.status_code)
-    print (req.text)
-    return HttpResponse('Fail out: %s<pre>%s</pre>' % (req.status_code, req.text))
-    #wm_response_dict = req.json() #print()
+    print (resp.status_code)
+    print (resp.text)
+    return HttpResponse('Fail out: %s<pre>%s</pre>' % (resp.status_code, resp.text))
+    #wm_response_dict = resp.json() #print()
     #print(wm_response_dict)
     return HttpResponse('post: %s<br />%s' % (request.POST.keys(), classify_url))
     

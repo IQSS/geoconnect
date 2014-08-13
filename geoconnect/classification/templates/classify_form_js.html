@@ -35,6 +35,10 @@
                    $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
                    $('#id_progress_bar').hide();    
                    
+               }else{
+                   $('#simple_msg_div').show();
+                   $('#simple_msg_div').empty().append(get_alert('danger', json_resp.message));
+                   
                }
              })
            .fail(function(json_resp) {

@@ -28,9 +28,11 @@
     {% if success_msg %}<div id="id_success_msg" class="alert alert-success">Success!</div>
         <p>{{ success_msg|safe }}</p>
     {% endif %}
+    {% comment %}
     {% if error_msg %}<div id="id_alert_msg" class="alert alert-danger">Error!</div>
         <p>{{ error_msg|safe }}</p>
     {% endif %}
+    {% endcomment %}
    
 </div><!-- end: col 2 -->
 <div style="clear:both;"></div>
