@@ -60,7 +60,7 @@ class MetadataUpdater:
         """
         logger.info('send_params_to_dataverse')
         print('1) send_params_to_dataverse')
-        
+        print (dv_metadata_params)
         key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, dv_metadata_params)        
         if not key_check_response.success:
             logger.error(key_check_response.err_msg + ' Info not in "layer_params"')
@@ -79,7 +79,7 @@ class MetadataUpdater:
             print('4) req to json')
             
             print( dv_response_dict)
-            if dv_response_dict.get('status', False) == 'success':
+            if dv_response_dict.get('status', False) in ('OK', 'success'):
                 dv_response_dict.pop('status')
                 print('4) send result')
                 return self.get_result_msg(True, '', data_dict=dv_response_dict)

@@ -84,8 +84,9 @@ LOGIN_URL = "admin:index"
 # Used to make API calls
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
+DATAVERSE_TOKEN_KEYNAME = 'GEOCONNECT_TOKEN'
 DATAVERSE_SERVER_URL = 'http://localhost:8080'
-DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/?key=pete' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
 ########## DATAVERSE_SERVER_URL
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
@@ -101,6 +102,9 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 
 #WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
 #WORLDMAP_SERVER_URL = 'http://localhost:8000' #'http://127.0.0.1:8000'
+
+WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
+WORLDMAP_SERVER_URL = 'http://107.22.231.227'
 
 ########## LOGGING
 

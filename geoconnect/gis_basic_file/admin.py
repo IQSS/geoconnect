@@ -39,8 +39,9 @@ class GISDataFileAdmin(admin.ModelAdmin):
            ('Dataset Info', {
                'fields': (('dataset_name', 'dataset_id', 'dataset_version_id'),  'dataset_description')
            }),
-         
-          
+           ('Session Info', {
+               'fields': ('dv_session_token', )
+           }),          
            ('Read-Only Info', {
                'fields': ('md5',('modified', 'created') )
            }),

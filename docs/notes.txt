@@ -1,0 +1,3 @@
+insert into worldmap_auth_tokentype values (2, 'info@dataverse.org', '2014-09-13 11:18:45.223', '107.22.231.227', '107.22.231.227', 'http://107.22.231.227', 'e7d4d1954337e83f0591a5212e260b5e', '2014-09-13 11:18:45.223', 'GeoConnect Local Server',30, 1800);
+
+http://localhost:8080/api/worldmap/map-it/

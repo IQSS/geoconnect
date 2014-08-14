@@ -283,7 +283,9 @@ LOGIN_URL = "admin:index"
 # Used to make API calls
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
-DATAVERSE_SERVER_URL = None
+DATAVERSE_TOKEN_KEYNAME = 'GEOCONNECT_TOKEN'
+DATAVERSE_SERVER_URL = 'http://localhost:8080'
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DATAVERSE_SERVER_URL +
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
 # Do NOT make this directory accessible to a browser

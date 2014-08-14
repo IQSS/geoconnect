@@ -9,9 +9,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 #from django.core.files.uploadedfile import SimpleUploadedFile
-
+from geo_utils.msg_util import *
 
 from gis_shapefiles.models import ShapefileSet, SingleFileInfo
 from gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
@@ -28,18 +29,19 @@ logger = logging.getLogger(__name__)
 import urllib, cStringIO
 
 
-def view_mapit_incoming_no_token(request):
+def view_mapit_incoming_token64(request, dataverse_token):
     if not request.GET:
         raise Http404('no callback')
     
     if not request.GET.has_key('cb'):
         raise Http404('no callback url')
         
-    callback_url = request.GET['cb'] + "?%s" % urlencode(dict(key='pete'))    
+    callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))    
     
-    TOKEN_PARAM = { 'GEOCONNECT_TOKEN' : 'howdy' }
+    TOKEN_PARAM = { settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token }
     r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
-    print r.text
+    msgt(r.text)
+    msg(r.status_code)
     if not r.status_code == 200:
         return HttpResponse("Sorry! Failed to retrieve Dataverse file")
 
@@ -48,7 +50,7 @@ def view_mapit_incoming_no_token(request):
         return HttpResponse("Sorry! Failed to convert response to JSON")
     
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
-        shp_md5 = get_shapefile_from_dv_api_info('dv_session_token', jresp.get('data'))
+        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, jresp.get('data'))
     
         if shp_md5 is None:
             raise Exception('shp_md5 failure: %s' % shp_md5)
@@ -64,6 +66,7 @@ def view_mapit_incoming_no_token(request):
 
 
 @login_required
+'''
 def view_mapit_incoming(request, dv_session_token):
     """For miniverse testing
     
@@ -82,11 +85,12 @@ def view_mapit_incoming(request, dv_session_token):
         raise Http404('no callback url')
     
     callback_url = request.GET['cb'] + dv_session_token    
-
+    msgt('callback_url: %s' % callback_url)
     # Attach timeout/error check here!
     r = requests.get(callback_url)
+    msg("resp: %s" % r.text)
+    msg("status: %s" % r.status_code)
     jresp = r.json()
-    
     #return HttpResponse(dv_token)
     
     print jresp
@@ -112,5 +116,5 @@ def view_mapit_incoming(request, dv_session_token):
     Add error page!!
     """
     return HttpResponse(str(jresp))
-        
+'''        
      
