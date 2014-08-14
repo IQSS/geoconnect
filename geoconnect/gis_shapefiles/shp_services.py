@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dv_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', ]
+DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dv_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', 'return_to_dataverse_url' ]
 NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize', 'created']
 
 def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
@@ -37,6 +37,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
             , 'dataset_name': 'Boston Income data'
             , 'filesize': 498556\
             , 'datafile_download_url' : 'http://127.0.0.1:8090/media/datafile/2014/06/02/boston_income.zip'
+            , 'return_to_dataverse_url' : http://localhost:8080/dataset.xhtml?id=245&versionId=26
             }
     """
     if shp_dict is None:
@@ -88,6 +89,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
             return None
             
         shp_set.dv_session_token = dv_session_token
+        shp_set.return_to_dataverse_url = shp_dict.get('return_to_dataverse_url', '')
         shp_set.save()
         
         if len(existing_sets) > 0:

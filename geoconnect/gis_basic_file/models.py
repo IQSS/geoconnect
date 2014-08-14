@@ -53,7 +53,7 @@ class GISDataFile(TimeStampedModel):
     # session token
     # Token used to make requests of the Dataverse api; may expire, be refreshed
     dv_session_token = models.CharField(max_length=255, blank=True)
-    
+    return_to_dataverse_url = models.URLField(max_length=255, blank=True)
 
     # For file working.  examples: unzipping, pulling raw data from columns, etc
     gis_scratch_work_directory = models.CharField(max_length=255, blank=True, help_text='scratch directory for files')

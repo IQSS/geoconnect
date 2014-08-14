@@ -7,12 +7,16 @@
 {% endblock %}
 {% block main_container %}
 		<div class="pull-left" style="padding:20px;">
+		    {% if shapefile_set and shapefile_set.return_to_dataverse_url %}
+		        <a href="{{ shapefile_set.return_to_dataverse_url }}">Return to the Dataverse</a>
+		    {% endif %}
+			{% comment %}
 			<p>Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
 				{% if shapefile_set %}
 				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shapefile_set.id %}">Edit</a>
 				{% endif %}
 			</p>
-			
+			{% endcomment %}
 			{% if Err_Found %}
 			
 				{% if Err_ShapefileGroup_Not_Found %}

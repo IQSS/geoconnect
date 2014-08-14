@@ -65,7 +65,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
     
 
 
-@login_required
+#@login_required
 '''
 def view_mapit_incoming(request, dv_session_token):
     """For miniverse testing
@@ -117,4 +117,5 @@ def view_mapit_incoming(request, dv_session_token):
     """
     return HttpResponse(str(jresp))
 '''        
+
      
