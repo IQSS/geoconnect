@@ -56,8 +56,13 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
         print '%s->%s' % (k, shp_dict[k])
     
     
+    #------------------------------
     # Check for existing shapefile sets based on the kwargs
-    existing_sets = ShapefileSet.objects.filter(**shp_dict\
+    #------------------------------
+    params_for_existing_check = dict(datafile_id=shp_dict.get('datafile_id', -1)\
+                                    , dv_user_id=shp_dict.get('dv_user_id', -1)\
+                                    )
+    existing_sets = ShapefileSet.objects.filter(**params_for_existing_check\
                                 ).values_list('md5', flat=True\
                                 ).order_by('created')
 
@@ -66,16 +71,31 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     print '-' *40
     print 'Existing set count: %s' % len(existing_sets)
     
-    # Existing ShapefileSet(s) found
-    # Return the md5, delete other groups, if any
+    #------------------------------
+    # Existing ShapefileSet(s) found:
+    #  (a) Update the dv_session_token
+    #  (b) Delete other groups ShapefileSet object for this datafile and user
+    #  (c) Return the md5
+    #------------------------------
     if len(existing_sets) > 0:
         shp_md5 = existing_sets.pop()
+
+        # Update the dv_session_token
+        try:
+            shp_set = ShapefileSet.objects.get(md5=shp_md5)
+        except ShapefileSet.DoesNotExist:
+            # serious error!
+            return None
+            
+        shp_set.dv_session_token = dv_session_token
+        shp_set.save()
+        
         if len(existing_sets) > 0:
             ShapefileSet.objects.filter(md5__in=existing_sets).delete()   # delete older ShapefileSet(s)
         return shp_md5
 
     #------------------------------
-    # Make a new group
+    # Make a new ShapefileSet
     #------------------------------
     if dv_session_token:
         shp_dict['dv_session_token'] = dv_session_token
@@ -91,20 +111,4 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     shapefile_set.save()           
     
     return shapefile_set.md5      
-   
-'''
-def update_with_single_shapefile_info(shp_info_obj, shapefile_base_name):
-    """
-    Need to extract files from .zip!    
-    """
-    print 'blah'
-    if shp_info_obj is None or shapefile_base_name is None:
-        return
-        
-    #myshp = open(os.path.join(config.BOSTON_SHAPEFILES, "income_in_boston_gui.shp"), "rb")
-    #mydbf = open(os.path.join(config.BOSTON_SHAPEFILES, "income_in_boston_gui.dbf"), "rb")
-    #myshx = open(os.path.join(config.BOSTON_SHAPEFILES, "income_in_boston_gui.shx"), "rb")
-        #mydbf = open("shapefiles/blockgroups.dbf", "rb")
-        
-    #sf_reader = shapefile.Reader(shp_info_obj.shp_file)
-'''
+ 
