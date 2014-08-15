@@ -204,7 +204,7 @@ LOCAL_APPS = (
     'gis_basic_file',
     'gis_shapefiles',
     'worldmap_import',
-    'folium_maker',     # quick experiment
+    #'folium_maker',     # quick experiment
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

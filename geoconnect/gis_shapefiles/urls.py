@@ -26,10 +26,9 @@ urlpatterns += patterns('gis_shapefiles.views_mapit',
     
 )
 
-urlpatterns += patterns('folium_maker.views',
-    url(r'^folium-test/(?P<shp_md5>\w{32})/$', 'view_try_folium', name="view_try_folium"),
-
-)
+#urlpatterns += patterns('folium_maker.views',
+#    url(r'^folium-test/(?P<shp_md5>\w{32})/$', 'view_try_folium', name="view_try_folium"),
+#)
 
 
 
