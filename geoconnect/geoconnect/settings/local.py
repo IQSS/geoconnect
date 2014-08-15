@@ -57,7 +57,7 @@ CACHES = {
 INSTALLED_APPS += (
     'debug_toolbar',
     #'djcelery',
-    'kombu.transport.django', 
+    #'kombu.transport.django', 
 )
 
 MIDDLEWARE_CLASSES += (
