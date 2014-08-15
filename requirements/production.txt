@@ -2,5 +2,5 @@
 
 psycopg2==2.5.3
 gunicorn==19.1.0
-supervisor==3.1.1
+#supervisor==3.1.1
 
