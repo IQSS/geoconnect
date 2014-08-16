@@ -34,8 +34,7 @@ urlpatterns += patterns('gis_shapefiles.views_mapit',
 
 #urlpatterns += patterns('gis_shapefiles.views_field_check',
 #    url(r'^shp/(?P<shp_md5>\w{32})/(?P<field_name>\w{1,200})/(?P<column_index>\d{1,7})/$', #'view_field_stats', name="view_field_stats"),
-
-)
+#)
 
 
 """
