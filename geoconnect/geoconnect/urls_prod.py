@@ -6,7 +6,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-URL_PREFIX = 'geo/'
+URL_PREFIX = '' #'geo/'
 
 urlpatterns = patterns('',
     # Examples:
