@@ -88,7 +88,7 @@
 									<td>{{ forloop.counter }}</td>
 									{% if fn.1 == 'C' %}
 										<td>{{ fn.0 }}</td>
-										{#<td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td>	#}											
+										<!--><td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td>	-->											
 										<td>Character</td>
 									{% else %}{% if fn.1 == 'N' %}
 										<!--td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td-->
@@ -101,10 +101,13 @@
 									{% else %}{% if fn.1 == 'D' %}
 										<td>{{ fn.0 }}</td>
 										<td>Date</td>
+										
 									{% else %}{% if fn.1 == 'M' %}
-										<td>{{ fn.0 }}</td><td>Memo</td>
+										<td>{{ fn.0 }}</td>
+										<td>Memo</td>
 									{% else %}
-										<td>{{ fn.0 }}</td><td>{{ fn.1 }}<i>(Not recognized)</i></td>
+										<td>{{ fn.0 }}</td>
+										<td>{{ fn.1 }}<i>(Not recognized)</i></td>
 									{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
 								</tr>
 							{% empty %}
