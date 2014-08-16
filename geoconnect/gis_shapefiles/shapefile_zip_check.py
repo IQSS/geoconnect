@@ -156,7 +156,8 @@ class ShapefileZipCheck:
         for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
             fname = name_to_extract + ext
             logger.info('extracting: %s' % fname)
-            self.zip_obj.extract(fname, shapefile_set.get_scratch_work_directory())
+            scratch_directory = shapefile_set.get_scratch_work_directory()
+            self.zip_obj.extract(fname, scratch_directory)
             logger.info('extracted: %s' % fname)
             sfi = SingleFileInfo(name=os.path.basename(fname)\
                                 , shapefile_set=shapefile_set\
