@@ -88,14 +88,14 @@
 									<td>{{ forloop.counter }}</td>
 									{% if fn.1 == 'C' %}
 										<td>{{ fn.0 }}</td>
-										{#<td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>	#}											
+										{#<td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td>	#}											
 										<td>Character</td>
 									{% else %}{% if fn.1 == 'N' %}
-										<!--td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td-->
+										<!--td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td-->
 										<td><a href="javascript:alert('add stats');">{{ fn.0 }} </a></td>
 										<td>Number</td>
 									{% else %}{% if fn.1 == 'L' %}
-										<!--td><a href="{% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %}">{{ fn.0 }} </a></td>-->
+										<!--td><a href="{#% url 'view_field_stats' shapefile_set.md5 fn.0 forloop.counter0 %#}">{{ fn.0 }} </a></td>-->
 										<td><a href="javascript:alert('add stats');">{{ fn.0 }} </a></td>
 										<td>Long</td>
 									{% else %}{% if fn.1 == 'D' %}
