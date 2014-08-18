@@ -1,7 +1,7 @@
 """Development settings and globals."""
 
 from __future__ import absolute_import
-
+import json
 from os.path import join, normpath
 
 from .base import *
@@ -80,14 +80,6 @@ LOGIN_URL = "admin:index"
 ########## END LOGIN_URL
 
 
-########## DATAVERSE_SERVER_URL
-# Used to make API calls
-# e.g.  http://dvn-build.hmdc.harvard.edu/
-#
-DATAVERSE_TOKEN_KEYNAME = 'GEOCONNECT_TOKEN'
-DATAVERSE_SERVER_URL = 'http://localhost:8080'
-DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
-########## DATAVERSE_SERVER_URL
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
 # Do NOT make this directory accessible to a browser
@@ -99,9 +91,24 @@ DV_DATAFILE_DIRECTORY = join(TEST_SETUP_DIR, 'dv_datafile_directory')
 GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 ########## END GISFILE_SCRATCH_WORK_DIRECTORY
 
+##### RETRIEVE WORLDMAP PARAMS
+worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
+worldmap_secrets_json = json.loads(open(worldmap_secrets_fname, 'r').read())
 
-#WORLDMAP_TOKEN_FOR_DV = 'JdPGVSga9yM8gt74ZpLp'
-#WORLDMAP_SERVER_URL = 'http://localhost:8000' #'http://127.0.0.1:8000'
+########## WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
+#
+WORLDMAP_TOKEN_FOR_DV = worldmap_secrets_json['WORLDMAP_TOKEN_FOR_DV']
+WORLDMAP_SERVER_URL = worldmap_secrets_json['WORLDMAP_SERVER_URL']
+##########  END WORLDMAP TOKEN / SERVER
+
+########## DATAVERSE_SERVER_URL
+# Used to make API calls
+# e.g.  http://dvn-build.hmdc.harvard.edu/
+#
+DATAVERSE_TOKEN_KEYNAME = 'GEOCONNECT_TOKEN'
+DATAVERSE_SERVER_URL = 'http://localhost:8080'
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
+##########  END DATAVERSE_SERVER_URL
 
 
 ########## LOGGING

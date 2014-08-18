@@ -1,4 +1,5 @@
 deploy/
+geoconnect/geoconnect/settings/worldmap_secrets*.json
 geoconnect/geoconnect/config/laptop.py
 geoconnect/geoconnect/config/prod.py
 geoconnect/geoconnect/settings/prod*.py
