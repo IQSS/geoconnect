@@ -72,7 +72,7 @@ class MetadataUpdater:
             req = requests.post(self.api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
             print('3) req: %s' % req)
             
-            if not req.status == 200:
+            if not req.status_code == 200:
                 logger.severe('Metadata update failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
                 
                 return self.get_result_msg(False, 'Sorry! The update failed.')
