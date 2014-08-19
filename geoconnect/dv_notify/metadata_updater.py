@@ -68,7 +68,7 @@ class MetadataUpdater:
             
         print('2) passed key check')
         try:
-            
+            print ('params to send: %s' % dv_metadata_params)
             req = requests.post(self.api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
             print('3) req: %s' % req)
             
@@ -77,7 +77,7 @@ class MetadataUpdater:
                 
                 return self.get_result_msg(False, 'Sorry! The update failed.')
    
-            #print (req.text)
+            print (req.text)
             #open('err.html', 'w').write(req.text)
 
             dv_response_dict = req.json()
