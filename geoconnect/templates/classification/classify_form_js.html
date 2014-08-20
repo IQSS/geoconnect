@@ -58,6 +58,8 @@
    }
    
    
+   var non_string_classification_methods = { {% for m in classify_form.get_classify_non_string_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
+   
    var all_classification_methods = { {% for m in classify_form.get_classify_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
    
    var string_classification_methods =  { {% for m in classify_form.get_classify_string_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1" {% endfor %} }
@@ -92,8 +94,9 @@
    
        }else{
 
-           $.each(all_classification_methods, function(key, value) {
-               $select_elem.append($("<option></option>")
+//           $.each(all_classification_methods, function(key, value) {
+           $.each(non_string_classification_methods, function(key, value) {
+                $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
            });           
            $('#id_intervals').removeAttr("readonly"); 
@@ -104,6 +107,7 @@
    
    $(document).ready(function() {
         $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-        $( "#id_attribute" ).on( "change", check_attribute );        
+        $( "#id_attribute" ).on( "change", check_attribute );     
+        check_attribute();   
    });
  </script>

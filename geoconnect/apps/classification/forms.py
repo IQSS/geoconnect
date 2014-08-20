@@ -89,6 +89,12 @@ class ClassifyLayerForm(forms.Form):
     def get_classify_choices():
         return ClassificationMethod.objects.filter(active=True) 
 
+
+    @staticmethod
+    def get_classify_non_string_choices():
+        return ClassificationMethod.objects.filter(active=True, is_string_usable=False) 
+
+
     @staticmethod
     def get_classify_string_choices():
         return ClassificationMethod.objects.filter(active=True, is_string_usable=True) 
