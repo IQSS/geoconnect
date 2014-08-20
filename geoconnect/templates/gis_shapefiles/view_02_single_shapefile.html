@@ -2,7 +2,7 @@
 
 {% block extra_js %}
 {% if classify_form %}
-    {% include "classify_form_js.html" %}
+    {% include "classification/classify_form_js.html" %}
 {% endif %}
 {% endblock %}
 {% block main_container %}
@@ -71,7 +71,7 @@
 			{% endif %}
 			<!-- =========================================  -->
 				{% if shapefile_set and not Err_Found %}
-				{% include "view_02_shp_table.html" %}
+				{% include "gis_shapefiles/view_02_shp_table.html" %}
 			
 				{% endif %}
 		

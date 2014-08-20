@@ -109,7 +109,7 @@ class GISDataFile(TimeStampedModel):
         super(GISDataFile, self).save(*args, **kwargs)
 
     def get_abstract_for_worldmap(self):
-        return render_to_string('worldmap_abstract.html', { 'gis_file' : self }) 
+        return render_to_string('gis_basic_file/worldmap_abstract.html', { 'gis_file' : self })
         
     def __unicode__(self):
         if self.dv_name and self.dataset_name and self.datafile_label:

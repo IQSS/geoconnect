@@ -91,7 +91,7 @@ def view_examine_dataset(request):
 
     d['shp_form'] = shp_form 
 
-    return render_to_response('view_01_examine_zip.html', d\
+    return render_to_response('gis_shapefiles/view_01_examine_zip.html', d\
                             , context_instance=RequestContext(request))
 
 @login_required
@@ -152,7 +152,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
             d['zip_name_list'] = zip_checker.get_zipfile_names()
             d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
             zip_checker.close_zip()        
-            return render_to_response('view_02_single_shapefile.html', d\
+            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
 
         # Error: More than one shapefile in the .zip
@@ -169,7 +169,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
             d['zip_name_list'] = zip_checker.get_zipfile_names()
             #d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
             zip_checker.close_zip()        
-            return render_to_response('view_02_single_shapefile.html', d\
+            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
 
         # Load the single shapefile
@@ -190,11 +190,11 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
                 shapefile_set.has_shapefile = False
                 shapefile_set.save()
                 logger.error('Shapefile not loaded. (%s)' % shp_md5)
-                return render_to_response('view_02_single_shapefile.html', d\
+                return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                         , context_instance=RequestContext(request))
 
             zip_checker.close_zip()        
-            return render_to_response('view_02_single_shapefile.html', d\
+            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
             
         
@@ -206,7 +206,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
         d['Err_No_Shapefiles_Found'] = True
         #d['zip_name_list'] = zip_checker.get_zipfile_names()
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-        return render_to_response('view_02_single_shapefile.html', d\
+        return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
     
     
@@ -236,7 +236,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     
 
     
-    return render_to_response('view_02_single_shapefile.html', d\
+    return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))
                             
    

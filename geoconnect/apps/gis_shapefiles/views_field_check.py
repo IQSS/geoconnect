@@ -102,7 +102,7 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     d['field_name'] = field_name
     d['data_array'] = data_array
     #pylab.savefig('foo.png')
-    return render_to_response('view_04_field_info.html', d\
+    return render_to_response('gis_shapefiles/view_04_field_info.html', d\
                                      , context_instance=RequestContext(request))
                                      
     return HttpResponse('%s %s %s<br />%s<br />%s' % (shp_md5, field_name, column_index, data_array, img_name_fullpath))

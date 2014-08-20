@@ -33,7 +33,7 @@
 			<td>
 				
 				{% if import_success_object %}
-				    {% include "view_02_import_success.html" %}							  
+				    {% include "gis_shapefiles/view_02_import_success.html" %}							  
 				{% else %}
 					<!-- send info to WorldMap API -->
 					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />

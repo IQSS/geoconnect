@@ -20,10 +20,10 @@ def format_major_error_message(msg, import_success_md5=None):
     """
     This error is severe and replaces the entire classify form
     """
-    return render_to_string('classify_major_error.html', dict(error_message=msg,import_success_md5=import_success_md5))
+    return render_to_string('classification/classify_major_error.html', dict(error_message=msg,import_success_md5=import_success_md5))
 
 def format_minor_error_message(msg):
-    return render_to_string('classify_basic_error.html', dict(error_message=msg))
+    return render_to_string('classification/classify_basic_error.html', dict(error_message=msg))
 
 @login_required
 def view_classify_layer_form(request, import_success_md5):
@@ -79,7 +79,7 @@ def view_classify_layer_form(request, import_success_md5):
                 , import_success_object=import_success_object\
                 , error_msg='The form submission contains errors'\
                 ))
-        form_content = render_to_string('view_classify_form.html', d\
+        form_content = render_to_string('classification/view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
         json_msg = MessageHelperJSON.get_json_msg(success=False
                                             , msg='The form submission contains errors'
@@ -117,13 +117,13 @@ def view_classify_layer_form(request, import_success_md5):
         msg_params = classify_form.get_params_for_display()
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
         #classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
-        success_msg =  render_to_string('classify_success_msg.html', msg_params)
+        success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
         d.update(dict(classify_form=classify_form\
                 , import_success_object=import_success_object\
                 , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
                 ))
                 
-        form_content = render_to_string('view_classify_form.html', d\
+        form_content = render_to_string('classification/view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                             , msg='Success!'
@@ -139,11 +139,11 @@ def view_classify_layer_form(request, import_success_md5):
     classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
     #d['form_inline'] = True
     d = dict(classify_form=classify_form, import_success_object=import_success_object)
-    form_content = render_to_string('view_classify_form.html', d\
+    form_content = render_to_string('classification/view_classify_form.html', d\
                             , context_instance=RequestContext(request))
     #print form_content
     #return HttpResponse(form_content)
-    return render_to_response('view_02_single_shapefile.html', d\
+    return render_to_response('classification/view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))
                             
     
