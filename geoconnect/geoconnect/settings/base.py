@@ -199,11 +199,11 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'classification',       # used for styling WorldMap layers
-    'style_layer_information',
-    'gis_basic_file',
-    'gis_shapefiles',
-    'worldmap_import',
+    'apps.classification',       # used for styling WorldMap layers
+    'apps.style_layer_information',
+    'apps.gis_basic_file',
+    'apps.gis_shapefiles',
+    'apps.worldmap_import',
     #'folium_maker',     # quick experiment
 )
 
