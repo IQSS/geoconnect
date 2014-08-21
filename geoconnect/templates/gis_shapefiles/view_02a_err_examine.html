@@ -1,0 +1,64 @@
+
+{#  <!-- No shapefile, show alert --> #}
+{% if Err_ShapefileGroup_Not_Found %}
+	<div class="alert-danger alert">Sorry! The file was not found.</div>
+{% endif %}
+
+{#  <!-- Invalid shapefile, show alert --> #}
+{% if Err_No_Shapefiles_Found %}
+	<div class="alert-danger alert">Sorry! This was not a valid shapefile.</div>
+	
+	<div class="panel panel-default">
+	    <div class="panel-body">
+	        {#% if not zip_name_list %}<p>This was not a valid shapefile.</p>{% endif %#}
+	        <p>For a complete "shapefile," files are needed with the following extensions:  
+				<ul>
+				{% for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS %}
+				    <li>{{ ext }}</li>
+				{% endfor %}
+				</ul>
+			</p>
+	
+			{% if zip_name_list %}
+			<p>The {{ zip_name_list|length }} file name{{ zip_name_list|pluralize }} in the this .zip {{ zip_name_list|pluralize:"is,are"}}:</p>
+			<ol>
+				{% for fname in zip_name_list %}
+				<li>{{ fname }}</li>
+				{% empty %}
+					<li>No files in .zip</li>
+				{% endfor %}	
+			</ol>
+			{% endif %}
+        </div><!-- end: panel body -->
+	</div><!-- end: panel -->
+{% endif %}
+
+{#  <!-- Multiple shapefiles, show alert --> #}
+
+{% if Err_Multiple_Shapefiles_Found %}
+	<div class="alert-danger alert">Sorry! Multiple shapefiles were found in the zip archive.
+		<p>Please use a .zip file with only one shapefile</p>
+	</div>
+	<div class="panel panel-default">
+	    <div class="panel-body">
+						
+		<p>The {{ list_of_shapefile_set_names|length }} shapefile name{{ list_of_shapefile_set_names|pluralize }} in the this .zip {{ zip_name_list|pluralize:"is,are"}}::</p>
+			<ol>
+				{% for shp_name in list_of_shapefile_set_names %}
+				<li>{{ shp_name }}</li>
+				{% empty %}
+					<li>No names found</li>
+				{% endfor %}	
+			</ol>
+
+		<p>A full listing of the {{ zip_name_list|length }} file{{ zip_name_list|pluralize }} in the .zip appears below:</p>
+			<ol>
+				{% for fname in zip_name_list %}
+				<li>{{ fname }}</li>
+				{% empty %}
+					<li>No files in .zip</li>
+				{% endfor %}	
+			</ol>
+        </div><!-- end: panel body -->
+	</div><!-- end: panel -->					
+{% endif %}

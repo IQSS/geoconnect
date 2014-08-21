@@ -78,15 +78,9 @@
         </div>
     </div>
 	<div class="container">
-	    
-		{% block main_container %}
+	{% block main_container %}
 		hallo
-		{% endblock %}
-		<div style="clear:both;"></div>
-		<div class="pull-left" style="padding:0 14px;">
-        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
-		</div>
-        
+	{% endblock %}
 	</div>
 {#% include "sql_query_debug.html" %#}
   </body>
