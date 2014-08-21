@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block extra_js %}
+{% if classify_form %}
+    {% include "classification/classify_form_js.html" %}
+{% endif %}
+{% endblock %}
+{% block main_container %}
+<div class="pull-left" style="padding:0 20px;">
+		{% if Err_Found %}
+		    <!-- The shapefile didn't open at all, 
+		            failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
+		            or contained multiple shapefiles -->
+		    {% include "gis_shapefiles/view_02a_err_examine.html" %}
+		{% endif %}
+
+		{% if shapefile_set and not Err_Found %}
+            <!-- We have a shapefile here -->
+            {% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
+		        {% include "gis_shapefiles/view_03_style_layer.html" %}	
+            {% else %}
+			    {% include "gis_shapefiles/view_02a_shp_table.html" %}	
+            {% endif %}
+            
+		{% endif %}
+		
+	    {% if is_logged_in and is_staff %}
+    		<p>Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
+				{% if shapefile_set %}
+				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shapefile_set.id %}">Edit</a>
+				{% endif %}
+			</p>
+        {% endif %}
+        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+</div>
+{% endblock %}

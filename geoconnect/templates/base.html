@@ -66,9 +66,9 @@
                     <ol class="breadcrumb" style="margin-bottom:0;">                    
            		    {% for step in GEOCONNECT_STEPS %}
                         {% if GEOCONNECT_STEP_KEY == step %}
-                            <li class="active"><span class="text-primary">{{ step }}</span></li>
+                            <li class="active"><span class="text-info"><strong>{{ forloop.counter }}. {{ step }}</strong></span></li>
                         {% else %}
-                            <li>{{ step }}</li>
+                            <li><span class="text-muted">{{ forloop.counter }}. {{ step }}</span></li>
                         {% endif %}
                     {% endfor %}
                     </ol>                    

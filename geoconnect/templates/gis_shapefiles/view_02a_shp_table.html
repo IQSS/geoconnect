@@ -1,80 +1,62 @@
 {% load humanize %}
-{% if first_time_notify  %}
+{% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
     <!-- First time file is loaded, show a notification -->
-    {% if not GEOCONNECT_STEP_KEY == STEP3_STYLE %}
     <div class="alert alert-success alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
       File <b>{{ shapefile_set.datafile_label }}</b> loaded! 
            &nbsp; (<b>{{ shapefile_set.number_of_features|intcomma }}</b> geospatial 
           feature{{ shapefile_set.number_of_features|pluralize }})
     </div>
-    {% endif %}
 {% endif %}
-{% comment %}
+
+
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">{{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
+    <h3 class="panel-title">1. {{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
   </div>
   <div class="panel-body">
-      {% if import_success_object %}
-        Use the form below the map to style the layer.
-		    {% include "gis_shapefiles/view_02b_import_success.html" %}
-      {% endif %}
-  </div>
-</div>
-{% endcomment %}
+        The shapefile was successfully examined!
+        
+        <p>Press the button below to create a Map Layer:</p>
+        
+        <!-- send info to WorldMap API -->
+		&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />
+  </div><!-- end: panel body -->
+</div><!-- end: panel -->
 
-<table class="table table-bordered">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Shapefile information</h3>
+  </div>
+  <div class="panel-body">
+    Below are several details regarding the shapefile.
+  </div><!-- end: panel body -->
+  <table class="table table-bordered">
 		<tr>
-			<th colspan="2" class="text-center">{{ shapefile_set.datafile_label }}</th>
+		    <th>File name</th>
+			<td>{{ shapefile_set.datafile_label }}</td>
 		</tr>
-		{% if shapefile_set.dataset_name %}
+		{% if shapefile_set.dv_name %}
 		<tr>
-			<th>Dataverse -> Dataset</th>
-			<td>{% if shapefile_set.dv_name %}{{ shapefile_set.dv_name }} -> {% endif %}{{ shapefile_set.dataset_name}}</td>
+			<th>Dataverse</th>
+			<td>{{ shapefile_set.dv_name }}</td>
 		</tr>
 		{% endif %}
-		{% if shapefile_set.description %}
+		{% if shapefile_set.dataset_name %}
+		<tr>
+			<th>Dataset</th>
+			<td>{{ shapefile_set.dataset_name}} (version id: {{ shapefile_set.dataset_version_id }})</td>
+		</tr>
+		{% endif %}
+		{% if shapefile_set.dataset_description %}
 		<tr>
 			<th>Description</th>
-			<td>{{ shapefile_set.description }}</td>
+			<td>{{ shapefile_set.dataset_description }}</td>
 		</tr>
-		
 		{% endif %}
 		<tr>
 			<th>Shapefile Name</th>
 			<td>{{ shapefile_set.get_basename }}  {#(<a href="{% url 'view_try_folium' shapefile_set.md5 %}" target="_blank">folium</a>)#}</td>
-		</tr>
-		<tr>
-			<th>WorldMap Visualizations</th>
-			<td>
-				
-				{% if import_success_object %}
-				    {% include "gis_shapefiles/view_02b_import_success.html" %}							  
-				{% else %}
-					<!-- send info to WorldMap API -->
-					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />
-				{% endif %}
-				{% if import_fail_list %}
-					<!-- show failed attempts -->
-					<hr />
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th colspan="2"><i>Failed attempts to create WorldMap layer
-								</i></th>
-							</tr>
-						{% for fail_info in import_fail_list %}
-						<tr>
-							<td><a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' fail_info.import_attempt.id %}">(admin)</a>
-							    {{ fail_info.msg }}
-							    <br />{{ fail_info.orig_response }}</td>
-							<td>{{ fail_info.modified }}</td>
-						</tr>
-						{% endfor %}
-					</table>
-				{% endif %}
-			</td>
 		</tr>
 		<tr>
 			<th>Dataverse User</th>
@@ -134,13 +116,20 @@
 			    </div>
 				</td>
 		</tr>
-		<!--
 		<tr>
 			<th>Bounding Box</th>
 			<td>{{ shapefile_set.get_bounding_box }}</td>
 		</tr>
-		-->
+		{% if import_fail_list %}
+        <tr>
+            <th>Previous import attempts</th>
+		    <td>{% include "gis_shapefiles/view_02c_import_fails.html" %}</td>
+		</tr>							  	    
+		{% endif %}
+
 	</table>
+	</div><!-- end: panel -->
+    
 	<script>
 	$('#column_name_list').on('show.bs.collapse', function () {
 	  	$('#btn_show_cols').html('hide fields');	
