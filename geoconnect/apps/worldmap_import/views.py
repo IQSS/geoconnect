@@ -31,7 +31,7 @@ def show_import_success_params(request, import_success_id):
 
     return HttpResponse('%s' % wm_success.get_data_dict())
 
-@login_required
+#@login_required
 def send_metadata_to_dataverse(request, import_success_id):
     """
     Send metadata to dataverse: async this!!
@@ -49,7 +49,7 @@ def send_metadata_to_dataverse(request, import_success_id):
         return HttpResponseRedirect(lnk)
     return HttpResponse('metadata sent')
     
-@login_required
+#@login_required
 def view_send_shapefile_to_worldmap(request, shp_md5):
     """
     Send shapefile to WorldMap.

@@ -283,7 +283,7 @@ class SendShapefileService:
         # Round-trip example, break into separate process with 
         #   MetadataUpdateFail, MetadataUpdateSuccess objects
         try:
-            MetadataUpdater.update_dataverse_with_metadata(wm_success)
+            MetadataUpdater.update_dataverse_with_metadata(self.import_success_obj)
         except:
             self.record_worldmap_failure(self.worldmap_response, 'Error.  Layer created and saved BUT update to dataverse failed')
             return False

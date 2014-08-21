@@ -25,10 +25,10 @@ def format_major_error_message(msg, import_success_md5=None):
 def format_minor_error_message(msg):
     return render_to_string('classification/classify_basic_error.html', dict(error_message=msg))
 
-@login_required
+#@login_required
 def view_classify_layer_form(request, import_success_md5):
     """
-    Given a ClassifyLayerForm submission, return an JSON response
+    Given a ClassifyLayerForm submission, return a JSON response
     
     :param import_success_md5: str, md5 identifying a WorldMapImportSuccess object
     :returns JSON response: JSON generated with the MessageHelperJSON.get_json_msg function

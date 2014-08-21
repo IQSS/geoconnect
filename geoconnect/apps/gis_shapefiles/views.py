@@ -94,11 +94,11 @@ def view_examine_dataset(request):
     return render_to_response('gis_shapefiles/view_01_examine_zip.html', d\
                             , context_instance=RequestContext(request))
 
-@login_required
+#@login_required
 def view_shapefile_first_time(request, shp_md5):
     return view_shapefile(request, shp_md5, first_time_notify=True)
 
-@login_required
+#@login_required
 def view_shapefile(request, shp_md5, first_time_notify=False):
     ## This is an unreal mess, factor it out similar to SendShapefileService
     """
