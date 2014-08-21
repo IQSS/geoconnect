@@ -34,7 +34,7 @@ class ScratchDirectoryHelper:
                 dt = datetime.strptime(dirname[:14], ScratchDirectoryHelper.TIME_FORMAT_STRING)
                 time_diff = current_time - dt
                 if time_diff.days > 0 or (time_diff.seconds/3600) > max_hours:
-                    #shutil.rmtree(dir_to_remove)
+                    shutil.rmtree(dir_to_remove)
                     names_of_deleted_dirs.append(dir_to_remove)
             except:
                 names_failed_delete_dirs.append(dir_to_remove)
