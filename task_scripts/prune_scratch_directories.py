@@ -21,6 +21,13 @@ from django.template.loader import render_to_string
 from geo_utils.msg_util import *
 from apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
+"""
+# sudo crontab -e
+MAILTO=raman_prasad@harvard.edu
+9 * * * * /usr/bin/python /home/ubuntu/code/geoconnect/task_script/prune_scratch_directories.py
+
+"""
+
 class ScratchDirectoryPruner:
     
     def __init__(self, max_directory_age_in_hours=6):
