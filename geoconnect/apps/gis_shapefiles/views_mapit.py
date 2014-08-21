@@ -31,9 +31,11 @@ import urllib, cStringIO
 
 def view_mapit_incoming_token64(request, dataverse_token):
     if not request.GET:
+        logger.error('view_mapit_incoming_token64: no get params')
         raise Http404('no callback')
     
     if not request.GET.has_key('cb'):
+        logger.error('view_mapit_incoming_token64: no callback parameter')
         raise Http404('no callback url')
         
     callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))    
@@ -43,10 +45,12 @@ def view_mapit_incoming_token64(request, dataverse_token):
     msgt(r.text)
     msg(r.status_code)
     if not r.status_code == 200:
+        logger.error('view_mapit_incoming_token64. status code: %s\nresponse: %s' % (r.status_code, r.text))
         return HttpResponse("Sorry! Failed to retrieve Dataverse file")
 
     jresp = r.json()
     if not type(jresp) is dict:
+        logger.error('view_mapit_incoming_token64. Failed to convert response to JSON\nstatus code: %s\nresponse: %s' % (r.status_code, r.text))        
         return HttpResponse("Sorry! Failed to convert response to JSON")
     
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:

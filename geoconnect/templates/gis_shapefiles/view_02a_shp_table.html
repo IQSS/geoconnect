@@ -1,0 +1,38 @@
+{% load humanize %}
+{% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
+    <!-- First time file is loaded, show a notification -->
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      File <b>{{ shapefile_set.datafile_label }}</b> loaded! 
+           &nbsp; (<b>{{ shapefile_set.number_of_features|intcomma }}</b> geospatial 
+          feature{{ shapefile_set.number_of_features|pluralize }})
+    </div>
+{% endif %}
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">1. {{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
+  </div>
+  <div class="panel-body">
+        The shapefile was successfully examined!
+        
+        <p>Press the button below to create a Map Layer:</p>
+        
+        <!-- send info to WorldMap API -->
+		&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a> <small>(may take several seconds)</small><br />
+  </div><!-- end: panel body -->
+</div><!-- end: panel -->
+
+{% include "gis_shapefiles/shapefile_info_panel.html" %}
+
+    
+	<script>
+	$('#column_name_list').on('show.bs.collapse', function () {
+	  	$('#btn_show_cols').html('hide fields');	
+	})
+	$('#column_name_list').on('hide.bs.collapse', function () {
+	  	$('#btn_show_cols').html('show fields');
+	})
+	</script>
+	
