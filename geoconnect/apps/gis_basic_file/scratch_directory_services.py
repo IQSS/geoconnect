@@ -23,16 +23,23 @@ class ScratchDirectoryHelper:
         l = os.listdir(settings.GISFILE_SCRATCH_WORK_DIRECTORY)
         l = [x for x in l if re.search('\d{4}(-\d{4}){2}', x)]
         
+        names_of_deleted_dirs = []
+        names_failed_delete_dirs = []
+        
         current_time = datetime.now()
         for dirname in l:
-            print dirname
+            dir_to_remove = os.path.join(settings.GISFILE_SCRATCH_WORK_DIRECTORY, dirname )
+            print dir_to_remove
             try:
                 dt = datetime.strptime(dirname[:14], ScratchDirectoryHelper.TIME_FORMAT_STRING)
                 time_diff = current_time - dt
                 if time_diff.days > 0 or (time_diff.seconds/3600) > max_hours:
-                    shutil.rmtree(os.path.join(settings.GISFILE_SCRATCH_WORK_DIRECTORY, dirname ))
+                    #shutil.rmtree(dir_to_remove)
+                    names_of_deleted_dirs.append(dir_to_remove)
             except:
-                pass
+                names_failed_delete_dirs.append(dir_to_remove)
+
+        return  (names_of_deleted_dirs, names_failed_delete_dirs)
                 
     @staticmethod
     def delete_scratch_work_directory(gis_data_file):
