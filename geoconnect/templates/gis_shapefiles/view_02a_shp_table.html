@@ -1,12 +1,29 @@
 {% load humanize %}
-{% if first_time_notify %}
+{% if first_time_notify  %}
+    <!-- First time file is loaded, show a notification -->
+    {% if not GEOCONNECT_STEP_KEY == STEP3_STYLE %}
     <div class="alert alert-success alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
       File <b>{{ shapefile_set.datafile_label }}</b> loaded! 
            &nbsp; (<b>{{ shapefile_set.number_of_features|intcomma }}</b> geospatial 
           feature{{ shapefile_set.number_of_features|pluralize }})
     </div>
+    {% endif %}
 {% endif %}
+{% comment %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
+  </div>
+  <div class="panel-body">
+      {% if import_success_object %}
+        Use the form below the map to style the layer.
+		    {% include "gis_shapefiles/view_02b_import_success.html" %}
+      {% endif %}
+  </div>
+</div>
+{% endcomment %}
+
 <table class="table table-bordered">
 		<tr>
 			<th colspan="2" class="text-center">{{ shapefile_set.datafile_label }}</th>
@@ -33,7 +50,7 @@
 			<td>
 				
 				{% if import_success_object %}
-				    {% include "gis_shapefiles/view_02_import_success.html" %}							  
+				    {% include "gis_shapefiles/view_02b_import_success.html" %}							  
 				{% else %}
 					<!-- send info to WorldMap API -->
 					&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a><br />

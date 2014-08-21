@@ -33,9 +33,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button><a href="{% url 'view_examine_dataset' %}"><span class="navbar-brand">GeoConnect</span></a>
+                </button>
+                <a href="{% if shapefile_set and shapefile_set.return_to_dataverse_url %}{{ shapefile_set.return_to_dataverse_url }}{% else %}{{ DATAVERSE_SERVER_URL }}{% endif %}"><span class="navbar-brand">GeoConnect: Map Data</span></a>
+                <!--a href="{#% url 'view_examine_dataset' %#}"><span class="navbar-brand">GeoConnect: Map Data</span></a-->
                 <span class="label label-default beta">pre-alpha</span>
             </div>
+            {% if is_logged_in and is_staff %}
 			<div class="collapse navbar-collapse" id="topNavBar">
 				<ul class="nav navbar-nav navbar-right">
                     
@@ -50,22 +53,40 @@
                    
                 </ul>
 			</div>
+			{% endif %}
 		</div>
 	</nav>
     <!-- Header Panel -->
     <div id="dataverseHeader" class="container" style="background:#F5F5F5;">
-        <div class="dataverseHeaderBlock">
-                <div class="dataverseHeaderCell dataverseHeaderName">	
+        <div class="dataverseHeaderBlock">            
+                <div class="dataverseHeaderCell dataverseHeaderName" style="padding-bottom:0;">
+                       
+           		    {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+
+                    <ol class="breadcrumb" style="margin-bottom:0;">                    
+           		    {% for step in GEOCONNECT_STEPS %}
+                        {% if GEOCONNECT_STEP_KEY == step %}
+                            <li class="active"><span class="text-primary">{{ step }}</span></li>
+                        {% else %}
+                            <li>{{ step }}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ol>                    
+					{#<h3 style="line-height:90%; margin:5px 0;">{{ page_title|safe }}</h3>#}
                     {#<a href="/dataverse.xhtml?id=1" style="font-size: 1.3em; color:inheret;">{{ page_title }}</a>#}
-					<span style="font-size: 1.3em; color:inheret;">{{ page_title|safe }}</span>
                 </div>
         </div>
     </div>
 	<div class="container">
+	    
 		{% block main_container %}
 		hallo
 		{% endblock %}
-		
+		<div style="clear:both;"></div>
+		<div class="pull-left" style="padding:0 14px;">
+        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+		</div>
+        
 	</div>
 {#% include "sql_query_debug.html" %#}
   </body>

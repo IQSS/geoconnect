@@ -10,31 +10,24 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
+from django.conf import settings
+
 from apps.gis_shapefiles.forms import ShapefileSetForm
 from apps.gis_shapefiles.models import ShapefileSet, SingleFileInfo
 #from apps.gis_shapefiles.shp_services import update_shapefileset_with_metadata
-from django.conf import settings
-from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from apps.gis_shapefiles.models import SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
 
 from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess, WorldMapImportFail
+from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
+
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
-from django.conf import settings
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
+
+from geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
 
-# Temp while figuring out steps
-shapefile_steps = { 10 : ('Examine Dataset', )\
-                   #, 20 : ('Choose Shapefile', )\
-                   , 30 : ('Inspect Shapefile', )\
-                   , 40 : ('Choose Column\Style Info', )\
-                    }
-def get_shapefile_step_title(k):
-    t = shapefile_steps.get(k, None)
-    if t:
-        return t[0]
-    return None
 
 @login_required
 def view_delete_files(request):
@@ -69,9 +62,8 @@ def view_examine_dataset(request):
     :template:`gis_shapefiles/view_01_examine_zip.html`
     """
     #return HttpResponse('view_google_map')
-    d = { 'page_title' : get_shapefile_step_title(10)\
+    d = { 'page_title' : 'Shapefiles: Test Upload Page'\
         , 'existing_shapefiles' : ShapefileSet.objects.all()
-        
         }
     
     if request.method=='POST':        
@@ -100,7 +92,7 @@ def view_shapefile_first_time(request, shp_md5):
 
 #@login_required
 def view_shapefile(request, shp_md5, first_time_notify=False):
-    ## This is an unreal mess, factor it out similar to SendShapefileService
+    ## This is a mess, factor it out similar to SendShapefileService
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object
 
@@ -109,7 +101,9 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     """
     logger.debug('view_shapefile')
 
-    d = dict(page_title='View Shapefile')
+    d = get_common_lookup(request)
+    d['page_title'] = 'Examine Shapefile'
+    d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE 
     
     if first_time_notify:
         d['first_time_notify'] = True
@@ -193,7 +187,8 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
                 return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                         , context_instance=RequestContext(request))
 
-            zip_checker.close_zip()        
+            zip_checker.close_zip()    
+                
             return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                     , context_instance=RequestContext(request))
             
@@ -219,6 +214,9 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
         import_success_object = latest_import_attempt.get_success_info()
         if import_success_object:
+            d['page_title'] = 'Style Shapefile'
+            d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
+            
             classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
             #d['form_inline'] = True
             d['classify_form'] = classify_form
@@ -227,7 +225,7 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
                 
                     
         d['import_success_object'] = import_success_object
-        
+        print(d)
         logger.debug('import_success_object: %s' % d['import_success_object'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_set)
         d['import_fail_list'] =latest_import_attempt.get_fail_info() 
         
