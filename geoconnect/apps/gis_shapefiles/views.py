@@ -90,8 +90,12 @@ def view_examine_dataset(request):
 def view_shapefile_first_time(request, shp_md5):
     return view_shapefile(request, shp_md5, first_time_notify=True)
 
+def view_shapefile_visualize_attempt(request, shp_md5):
+    return view_shapefile(request, shp_md5, just_made_visualize_attempt=True)
+
+
 #@login_required
-def view_shapefile(request, shp_md5, first_time_notify=False):
+def view_shapefile(request, shp_md5, **kwargs):
     ## This is a mess, factor it out similar to SendShapefileService
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileSet` object
@@ -100,6 +104,9 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
     :template:`gis_shapefiles/view_02_single_shapefile.html`
     """
     logger.debug('view_shapefile')
+
+    first_time_notify = kwargs.get('first_time_notify', False)
+    just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
 
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'
@@ -193,7 +200,9 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
                                     , context_instance=RequestContext(request))
             
         
-        
+    # The examination failed
+    # No shapefile was found in this .zip
+    #
     if not shapefile_set.has_shapefile:
         logger.debug('No shapefile found in .zip')
         
@@ -214,8 +223,12 @@ def view_shapefile(request, shp_md5, first_time_notify=False):
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
         import_success_object = latest_import_attempt.get_success_info()
         if import_success_object:
-            d['page_title'] = 'Style Shapefile'
-            d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
+            if just_made_visualize_attempt:
+                d['page_title'] = 'Visualize Shapefile'
+                d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
+            else:
+                d['page_title'] = 'Style Shapefile'
+                d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
             
             classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
             #d['form_inline'] = True

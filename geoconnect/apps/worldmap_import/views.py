@@ -71,6 +71,6 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
         print('\n'.join(shp_service.err_msgs))
         print ('-' * 40)
         
-    return HttpResponseRedirect(reverse('view_shapefile', kwargs={'shp_md5': shp_md5 }))
+    return HttpResponseRedirect(reverse('view_shapefile_visualize_attempt', kwargs={'shp_md5': shp_md5 }))
     
     

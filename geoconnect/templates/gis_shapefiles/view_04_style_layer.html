@@ -1,6 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">3. {{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
+    <h3 class="panel-title">3. {{ GEOCONNECT_STEP_KEY }} the Map Layer</h3>
   </div>
   <div class="panel-body">
       {% if import_success_object %}
@@ -11,18 +11,12 @@
             <iframe id="id_iframe_map" height="275" width="100%" src="{{ import_success_object.embed_map_link }}"></iframe>
 
             <div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
-
-		    {% include "gis_shapefiles/view_03b_import_success.html" %}
 		    
-		    <hr />
-		    <p class="text-muted">
-		    (utils)
-            dv test: <a href="{% url 'send_metadata_to_dataverse' import_success_object.id %}">resend metadata</a>
-            <br />edit object:  <a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' import_success_object.import_attempt.id %}">WorldMap API result</a> 	
-                <br />layer name: <a href="{{ import_success_object.layer_link }}">{{ import_success_object.layer_name }}</a>
-            </p>
+		    {% include "gis_shapefiles/import_debug_links.html" %}
+           
       {% else %}
         <div class="alert alert-warning">Sorry!  An Error occurred! The Map Layer is not available</div>
       {% endif %}
   </div><!-- end: panel body -->
 </div><!-- end: panel -->
+{% include "gis_shapefiles/shapefile_info_panel.html" %}

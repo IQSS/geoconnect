@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">2. {{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
+  </div>
+  <div class="panel-body">
+      {% if import_success_object %}
+        A new Map Layer has been created!  
+        
+        <p>Press the button below to style the Map Layer:</p>
+                
+        <a href="{% url 'view_shapefile' shapefile_set.md5 %}" class="btn btn-info btn-xs">Style the Map Layer</a><br />&nbsp;
+        
+            <!-- WorldMap Layer in iframe -->
+            <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ import_success_object.embed_map_link }}"></iframe>
+            {% include "gis_shapefiles/import_debug_links.html" %}
+		   
+      {% else %}
+        <div class="alert alert-warning">Sorry!  An Error occurred! The Map Layer is not available</div>
+      {% endif %}
+  </div><!-- end: panel body -->
+</div><!-- end: panel -->
+{% include "gis_shapefiles/shapefile_info_panel.html" %}

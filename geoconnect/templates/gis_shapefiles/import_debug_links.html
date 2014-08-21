@@ -1,0 +1,8 @@
+ <hr />
+    <p class="text-muted"><small>
+    (utils)
+    dv test: <a href="{% url 'send_metadata_to_dataverse' import_success_object.id %}">resend metadata</a>
+    <br />edit object:  <a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' import_success_object.import_attempt.id %}">WorldMap API result</a> 	
+        <br />layer name: <a href="{{ import_success_object.layer_link }}">{{ import_success_object.layer_name }}</a>
+    </small></p>
+    <div style="width:600px;">&nbsp;</div>

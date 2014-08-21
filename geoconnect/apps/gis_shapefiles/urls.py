@@ -8,7 +8,9 @@ urlpatterns = patterns('apps.gis_shapefiles.views',
 
     #url(r'^choose2/(?P<shp_md5>\w{32})/$', 'view_03_choose_shapefile_set', name="view_03_choose_shapefile_set"),
 
-    url(r'^view-shp-initial/(?P<shp_md5>\w{32})/$', 'view_shapefile_first_time', name="view_shapefile_first_time"),
+    url(r'^view-shp-examine/(?P<shp_md5>\w{32})/$', 'view_shapefile_first_time', name="view_shapefile_first_time"),
+
+    url(r'^view-shp-visualize/(?P<shp_md5>\w{32})/$', 'view_shapefile_visualize_attempt', name="view_shapefile_visualize_attempt"),
 
     url(r'^view-shp/(?P<shp_md5>\w{32})/$', 'view_shapefile', name="view_shapefile"),
 

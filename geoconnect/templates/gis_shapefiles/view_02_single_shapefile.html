@@ -17,10 +17,18 @@
 		{% if shapefile_set and not Err_Found %}
             <!-- We have a shapefile here -->
             {% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
-		        {% include "gis_shapefiles/view_03_style_layer.html" %}	
+		    
+		        {% include "gis_shapefiles/view_04_style_layer.html" %}	
+		        
+            {% else %}{% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
+            
+                {% include "gis_shapefiles/view_03_visualize_layer.html" %}	                
+            
             {% else %}
+			
 			    {% include "gis_shapefiles/view_02a_shp_table.html" %}	
-            {% endif %}
+            
+            {% endif %}{% endif %}
             
 		{% endif %}
 		
