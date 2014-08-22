@@ -206,6 +206,11 @@ class ShapefileZipCheck:
         # add number of shapes
         shapefile_set.number_of_features = len(shp_reader.shapes())
 
+        if shapefile_set.number_of_features == 0:
+            self.err_could_not_process_shapefile = False
+            return (False, "This shapefile does not have any geospatial features")
+
+
         # add column names
         shapefile_set.add_column_info(shp_reader.fields[1:])   
         shapefile_set.add_column_names_using_fields(shp_reader.fields)
