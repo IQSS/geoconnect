@@ -73,6 +73,7 @@ class ShapefileZipCheck:
         self.err_no_shapefiles = False
         self.err_multiple_shapefiles = False
         self.err_no_file_to_check = False
+        self.err_could_not_process_shapefile = False
         #self.err_no_file_to_check
         # Err msg
         self.err_msg = ''
@@ -198,6 +199,7 @@ class ShapefileZipCheck:
             msg = 'Shapefile reader failed for file: %s' % (extracted_shapefile_load_path + '.shp')
             logger.error(msg)
             self.err_detected = True
+            self.err_could_not_process_shapefile = True
             self.err_msg = msg
             return (False, msg)
             

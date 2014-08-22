@@ -203,11 +203,15 @@ def view_shapefile(request, shp_md5, **kwargs):
             shapefile_set.save()
             #shapefile_set.name = os.path.basename(list_of_shapefile_set_names[0])
             (success, err_msg_or_none) = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_set)
-            print 'here'
             if not success:
-                print 'here - err'
+                #print 'here - err'
                 d['Err_Found'] = True
-                d['Err_Msg'] = err_msg_or_none
+                print ('Err msg: %s' % err_msg_or_none)
+                if zip_checker.err_could_not_process_shapefile:
+                    d['Err_Shapefile_Could_Not_Be_Opened'] = True
+                    d['zip_name_list'] = zip_checker.get_zipfile_names()
+                else:
+                    d['Err_Msg'] = err_msg_or_none
                 shapefile_set.has_shapefile = False
                 shapefile_set.save()
                 logger.error('Shapefile not loaded. (%s)' % shp_md5)

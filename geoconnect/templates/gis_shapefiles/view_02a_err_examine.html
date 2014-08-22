@@ -1,5 +1,35 @@
 <!-- START: overall 'if' check -->
 {% if Err_Found %}
+    {% if Err_Msg %}
+        <div class="alert-danger alert">Sorry!  Unable to open the shapefile.
+
+                <p>{{ Err_Msg }}</p>
+        </div>
+    {% endif %}
+    {% if Err_Shapefile_Could_Not_Be_Opened %}
+        <div class="alert-danger alert">The shapefile could not be processed.
+            <p>This looks like a shapefile but the file may be corrupt.</p>
+        </div>
+        {% if zip_name_list %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <p>The {{ zip_name_list|length }} file name{{ zip_name_list|pluralize }} in the this .zip {{ zip_name_list|pluralize:"is,are"}}:</p>
+                <ol>
+                    {% for fname in zip_name_list %}
+                    <li>{{ fname }}</li>
+                    {% empty %}
+                        <li>No files in .zip</li>
+                    {% endfor %}
+                </ol>
+            </div><!-- end: panel body -->
+        </div><!-- end: panel -->
+        {% endif %}
+
+    {% endif %}
+
+
+
 
     {#  <!-- No shapefile, show alert --> #}
     {% if Err_No_File_Found %}
