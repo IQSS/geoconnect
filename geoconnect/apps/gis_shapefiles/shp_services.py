@@ -5,8 +5,6 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from apps.gis_shapefiles.models import ShapefileSet
-from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
-import shapefile
 
 import logging
 logger = logging.getLogger(__name__)

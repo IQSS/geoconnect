@@ -63,7 +63,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                         , kwargs={ 'shp_md5' : shp_md5 })
                                     
         return HttpResponseRedirect(choose_shapefile_url)
-        return HttpResponse("Good so far")
+        #return HttpResponse("Good so far")
     
     return HttpResponse("Good so far")
     

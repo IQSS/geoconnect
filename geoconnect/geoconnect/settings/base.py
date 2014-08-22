@@ -15,6 +15,10 @@ SITE_ROOT = dirname(DJANGO_ROOT)
 # Site name:
 SITE_NAME = basename(DJANGO_ROOT)
 
+# Project test files
+# Absolute filesystem path to the Django project directory:
+PROJECT_TEST_FILES_DIR = join(SITE_ROOT, 'test_files')
+
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(DJANGO_ROOT)
