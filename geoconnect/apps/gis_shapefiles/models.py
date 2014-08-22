@@ -34,8 +34,8 @@ class ShapefileSet(GISDataFile):
         return self.singlefileinfo_set.all()
     
     def add_bounding_box(self, l=[]):
-        print 'really add_bounding_box', l
-        print 'json string', JSONFieldReader.get_python_val_as_json_string(l)
+        #print 'really add_bounding_box', l
+        #print 'json string', JSONFieldReader.get_python_val_as_json_string(l)
         self.bounding_box = JSONFieldReader.get_python_val_as_json_string(l)
 
     def get_bounding_box(self):
