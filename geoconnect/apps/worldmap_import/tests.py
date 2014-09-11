@@ -5,7 +5,7 @@ from StringIO import StringIO
 import os
 
 """
-python manage.py test worldmap_import.tests.WorldMapImporterTestCase.test_importer_rejects_bad_params_01
+python manage.py test apps.worldmap_import.tests.WorldMapImporterTestCase.test_importer_rejects_bad_params_01
 """
 
 try:
@@ -45,6 +45,8 @@ class WorldMapImporterTestCase(TestCase):
         layer_params = self.get_layer_test_params(fname)
         layer_params.pop('shapefile_name')
         msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
+        print(msg)
+        print('-'*90)
         self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": shapefile_name', 'success': False})
         
         # Test params missing email

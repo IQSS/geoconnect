@@ -39,7 +39,7 @@ class GISDataFile(TimeStampedModel):
    
     # Owning dataverse
     dv_id = models.IntegerField(default=-1)       # for API calls.  dvobject.id; dtype='Dataverse'
-    dv_name = models.CharField(max_length=255, blank=True)  # for display
+    dataverse_name = models.CharField(max_length=255, blank=True)  # for display
     
     # Dataset Info
     dataset_id = models.IntegerField(default=-1)  # for API calls.  dvobject.id; dtype='Dataset'
@@ -112,8 +112,8 @@ class GISDataFile(TimeStampedModel):
         return render_to_string('gis_basic_file/worldmap_abstract.html', { 'gis_file' : self })
         
     def __unicode__(self):
-        if self.dv_name and self.dataset_name and self.datafile_label:
-            return '%s : %s : %s' % (self.dv_name, self.dataset_name, self.datafile_label)
+        if self.dataverse_name and self.dataset_name and self.datafile_label:
+            return '%s : %s : %s' % (self.dataverse_name, self.dataset_name, self.datafile_label)
         return '%s %s' % (self.datafile_id, self.dv_user_id)
         return self.id  # shouldn't happen
 

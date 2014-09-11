@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dv_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', 'return_to_dataverse_url' ]
+DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dataverse_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', 'return_to_dataverse_url' ]
 NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize', 'created']
 
 def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):

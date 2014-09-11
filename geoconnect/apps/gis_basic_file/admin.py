@@ -16,9 +16,9 @@ class GISDataFileAdmin(admin.ModelAdmin):
     form = GISDataFileAdminForm
     
     save_on_top = True
-    search_fields = ['dv_username',  'datafile_label','dataset_name', 'dv_name', 'dv_file']
-    list_display = ['datafile_id', 'dv_username',  'datafile_label', 'dataset_name', 'dv_name', 'dv_file', 'modified']
-    list_filter = ['dv_username', 'dv_name', 'dataset_name']   
+    search_fields = ['dv_username',  'datafile_label','dataset_name', 'dataverse_name', 'dv_file']
+    list_display = ['datafile_id', 'dv_username',  'datafile_label', 'dataset_name', 'dataverse_name', 'dv_file', 'modified']
+    list_filter = ['dv_username', 'dataverse_name', 'dataset_name']   
     readonly_fields = ['modified', 'created', 'md5'\
                     ,  'datafile_type', 'datafile_expected_md5_checksum']
     fieldsets = [
@@ -34,7 +34,7 @@ class GISDataFileAdmin(admin.ModelAdmin):
                'fields': ('dv_user_email', ('dv_user_id', 'dv_username'))
            }),
            ('Owning dataverse', {
-               'fields': (('dv_name', 'dv_id'), )
+               'fields': (('dataverse_name', 'dv_id'), )
            }),
            ('Dataset Info', {
                'fields': (('dataset_name', 'dataset_id', 'dataset_version_id'),  'dataset_description')
