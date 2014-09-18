@@ -59,9 +59,9 @@ def view_mapit_incoming_token64(request, dataverse_token):
         # ------------------------------------
         # FIX - when common dataverse_info object is in
         # ------------------------------------
-        if data_dict.has_key('dataverse_name'):
-            data_dict['dv_name'] = data_dict.get('dataverse_name', 'dv name not found') 
-            data_dict.pop('dataverse_name')
+        #if data_dict.has_key('dataverse_name'):
+        #    data_dict['dv_name'] = data_dict.get('dataverse_name', 'dv name not found') 
+        #    data_dict.pop('dataverse_name')
         # ------------------------------------
         
         shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)#jresp.get('data'))
