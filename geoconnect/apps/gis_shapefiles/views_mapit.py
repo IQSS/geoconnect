@@ -54,6 +54,13 @@ def view_mapit_incoming_token64(request, dataverse_token):
         return HttpResponse("Sorry! Failed to convert response to JSON")
     
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
+        data_dict = jresp.get('data')
+        
+        # FIX - when common dataverse_info object is in
+        if date_dict.has_key('dataverse_name'):
+            data_dict['dv_name'] = data_dict.get('dataverse_name', 'dv name not found') 
+            data_dict.pop('dataverse_name')
+            
         shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, jresp.get('data'))
     
         if shp_md5 is None:
