@@ -64,7 +64,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
             data_dict.pop('dataverse_name')
         # ------------------------------------
         
-        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, jresp.get('data'))
+        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)#jresp.get('data'))
     
         if shp_md5 is None:
             raise Exception('shp_md5 failure: %s' % shp_md5)
