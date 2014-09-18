@@ -73,7 +73,7 @@ class MetadataUpdater:
             print('3) req: %s' % req)
             
             if not req.status_code == 200:
-                logger.severe('Metadata update failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
+                logger.error('Metadata update failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
                 
                 return self.get_result_msg(False, 'Sorry! The update failed.')
    
