@@ -69,7 +69,11 @@ class MetadataUpdater:
         print('2) passed key check')
         try:
             print ('params to send: %s' % dv_metadata_params)
+            print ('-' * 40)
             print ('update url: %s' % self.api_update_url)
+            print ('-' * 40)
+            print ('payload: %s' % json.dumps(dv_metadata_params))
+            print ('-' * 40)
             req = requests.post(self.api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
             print('3) req: %s' % req)
             
