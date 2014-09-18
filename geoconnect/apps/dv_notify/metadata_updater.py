@@ -16,7 +16,7 @@ from geo_utils.json_field_reader import MessageHelperJSON
 from django.conf import settings 
 from apps.dv_notify.models import DATAVERSE_REQUIRED_KEYS
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('geoconnect')
 
 
 class MetadataUpdater:
