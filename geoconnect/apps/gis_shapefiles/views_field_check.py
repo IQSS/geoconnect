@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
-from apps.gis_shapefiles.models import ShapefileSet, SingleFileInfo
+from apps.gis_shapefiles.models import ShapefileInfo, SingleFileInfo
 #from apps.gis_shapefiles.views import view_choose_shapefile
 
 from django.conf import settings  
@@ -32,13 +32,13 @@ def to_percent(y, position):
     else:
         return s + '%'
 
-def get_data_array(shapefile_set, col_idx):
-    if shapefile_set is None:
+def get_data_array(shapefile_info, col_idx):
+    if shapefile_info is None:
         return None
     if col_idx is None or not col_idx.isdigit():
         return None
 
-    shp_info = shapefile_set.get_shp_fileinfo_obj()
+    shp_info = shapefile_info.get_shp_fileinfo_obj()
     if shp_info is None:
         return None
         
@@ -63,7 +63,7 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     ``RequestContext``
 
     :field_name: str, name of the column to examine
-    :shp_md5: 32-char str, unique md5 hash for a :model:`gis_shapefiles.ShapefileSet`
+    :shp_md5: 32-char str, unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
     :column_index: int, index of the column to examine
     
     
@@ -73,9 +73,9 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     """
     d = { 'page_title' : 'Column Information: %s' % field_name}
     try:
-        shp_set = ShapefileSet.objects.get(md5=shp_md5)
-    except ShapefileSet.DoesNotExist:
-        raise Http404('ShapefileSet not found for: %s' % shp_md5)
+        shp_set = ShapefileInfo.objects.get(md5=shp_md5)
+    except ShapefileInfo.DoesNotExist:
+        raise Http404('ShapefileInfo not found for: %s' % shp_md5)
     
     d['page_title'] = '%s: %s' % (shp_set.get_basename(), field_name)
     
@@ -98,7 +98,7 @@ def view_field_stats(request, shp_md5, field_name, column_index):
     plt.savefig(img_name_fullpath)
         
     d['plot_url'] = img_name_for_web
-    d['shapefile_set'] = shp_set
+    d['shapefile_info'] = shp_set
     d['field_name'] = field_name
     d['data_array'] = data_array
     #pylab.savefig('foo.png')

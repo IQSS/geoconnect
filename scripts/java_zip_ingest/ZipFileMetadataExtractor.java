@@ -193,7 +193,7 @@ public class ZipFileMetadataExtractor{
             msg(element);
         }
         
-        rezipShapefileSets();
+        rezipShapefileInfos();
         
         //showFileNamesSizes();
         showFileGroups();
@@ -235,9 +235,9 @@ public class ZipFileMetadataExtractor{
         Make a folder with the extracted files
         Except: separately rezip shapefile sets
     */
-    private boolean rezipShapefileSets(){
+    private boolean rezipShapefileInfos(){
         
-        msgt("rezipShapefileSets");
+        msgt("rezipShapefileInfos");
         if (!containsShapefile()){
             msgt("There are no shapefiles to re-zip");
             return false;

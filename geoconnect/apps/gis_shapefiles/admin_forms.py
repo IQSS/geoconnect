@@ -1,7 +1,7 @@
 from django import forms
 
 
-class ShapefileSetAdminForm(forms.ModelForm):
+class ShapefileInfoAdminForm(forms.ModelForm):
      
     class Meta:
         widgets = {  'datafile_description': forms.Textarea(attrs={'rows': 2, 'cols':70})\

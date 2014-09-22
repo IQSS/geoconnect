@@ -1,6 +1,6 @@
 <!-- start: back to dataverse button -->
-{% if shapefile_set and shapefile_set.return_to_dataverse_url %}
-    <a href="{{ shapefile_set.return_to_dataverse_url }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
+    <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% else %}
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% endif %}<br />&nbsp;

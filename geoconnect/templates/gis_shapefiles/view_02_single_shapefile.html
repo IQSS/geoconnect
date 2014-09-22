@@ -1,12 +1,24 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block extra_js %}
-{% if classify_form %}
-    {% include "classification/classify_form_js.html" %}
-{% endif %}
+    {{ block.super }}
+   {% if  GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
+        <script>
+          {% include "gis_shapefiles/ajax_attempt_visualization.js" %}
+        </script>
+   {% endif %}
+
+    {% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
+        {% if classify_form %}
+            {% include "classification/classify_form_js.html" %}
+        {% endif %}
+    {% endif %}
 {% endblock %}
+
 {% block main_container %}
 <div class="pull-left" style="padding:0 20px;">
+
 		{% if Err_Found %}
 		    <!-- The shapefile didn't open at all, 
 		            failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
@@ -14,31 +26,50 @@
 		    {% include "gis_shapefiles/view_02a_err_examine.html" %}
 		{% endif %}
 
-		{% if shapefile_set and not Err_Found %}
+    {% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
+    <!-- First time file is loaded, show a notification -->
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      File <b>{{ shapefile_info.datafile_label }}</b> loaded!
+           &nbsp; (<b>{{ shapefile_info.number_of_features|intcomma }}</b> geospatial
+          feature{{ shapefile_info.number_of_features|pluralize }})
+    </div>
+    {% endif %}
+
+   <!-- start panel --><div class="panel panel-default">
+    <div class="panel-heading">
+     <h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }}</h3>
+    </div>
+    <div class="panel-body" id="id_main_panel_content">
+		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->
-            {% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
+            {% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
+
+                {% include "gis_shapefiles/view_03_visualize_layer.html" %}
+
+            {% else %}{% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
 		    
 		        {% include "gis_shapefiles/view_04_style_layer.html" %}	
 		        
-            {% else %}{% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
-            
-                {% include "gis_shapefiles/view_03_visualize_layer.html" %}	                
-            
             {% else %}
 			
 			    {% include "gis_shapefiles/view_02a_shp_table.html" %}	
             
             {% endif %}{% endif %}
-            
+
 		{% endif %}
 		
 	    {% if is_logged_in and is_staff %}
     		<p>Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
-				{% if shapefile_set %}
-				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shapefile_set.id %}">Edit</a>
+				{% if shapefile_info %}
+				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shapefile_info.id %}">Edit</a>
 				{% endif %}
 			</p>
         {% endif %}
-        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+    </div><!-- end main panel content -->
+    </div><!-- end: panel -->
+    {% include "gis_shapefiles/shapefile_info_panel.html" %}
+    {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+
 </div>
 {% endblock %}

@@ -14,7 +14,7 @@
 				<ol>
 				{% for shp in existing_shapefiles %}
 						<li><a href="{% url 'view_shapefile' shp.md5 %}">{% if shp.dataset_name %}{{ shp.dataset_name }}:{% endif %} {{ shp }} </a> 
-								&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileset_change' shp.id %}">edit</a></li>			
+								&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shp.id %}">edit</a></li>
 				{% endfor %}
 				</ol>
 			{% endif %}

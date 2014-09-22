@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
-from geo_utils.json_field_reader import MessageHelperJSON
+from geo_utils.message_helper_json import MessageHelperJSON
 from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 

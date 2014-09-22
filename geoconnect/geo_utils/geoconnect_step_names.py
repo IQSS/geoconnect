@@ -1,7 +1,7 @@
 
-STEP1_EXAMINE = 'Examine'
-STEP2_VISUALIZE = 'Visualize'
-STEP3_STYLE = 'Style'
+STEP1_EXAMINE = '1. Examine Shapefile'
+STEP2_VISUALIZE = '2. Visualize Shapefile'
+STEP3_STYLE = '3. Style the Map Layer'
 
 GEOCONNECT_STEPS = (STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE)
 

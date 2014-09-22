@@ -1,8 +1,5 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">3. {{ GEOCONNECT_STEP_KEY }} the Map Layer</h3>
-  </div>
-  <div class="panel-body">
+
+<!-- content for id_main_panel_content -->
       {% if import_success_object %}
         Use the form below the map to style the layer. 
         &nbsp; <small><a href="{{ import_success_object.layer_link }}" target="_blank">(View on WorldMap)</a></small>	
@@ -17,6 +14,3 @@
       {% else %}
         <div class="alert alert-warning">Sorry!  An Error occurred! The Map Layer is not available</div>
       {% endif %}
-  </div><!-- end: panel body -->
-</div><!-- end: panel -->
-{% include "gis_shapefiles/shapefile_info_panel.html" %}

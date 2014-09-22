@@ -14,7 +14,7 @@ from django.conf import settings
 #from django.core.files.uploadedfile import SimpleUploadedFile
 from geo_utils.msg_util import *
 
-from apps.gis_shapefiles.models import ShapefileSet, SingleFileInfo
+from apps.gis_shapefiles.models import ShapefileInfo, SingleFileInfo
 from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
 
 #from apps.gis_shapefiles.views import view_choose_shapefile
@@ -55,15 +55,11 @@ def view_mapit_incoming_token64(request, dataverse_token):
     
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
         data_dict = jresp.get('data')
-        
+
         # ------------------------------------
         # FIX - when common dataverse_info object is in
         # ------------------------------------
-        #if data_dict.has_key('dataverse_name'):
-        #    data_dict['dv_name'] = data_dict.get('dataverse_name', 'dv name not found') 
-        #    data_dict.pop('dataverse_name')
-        # ------------------------------------
-        
+
         shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)#jresp.get('data'))
     
         if shp_md5 is None:
@@ -79,57 +75,3 @@ def view_mapit_incoming_token64(request, dataverse_token):
     
 
 
-#@login_required
-'''
-def view_mapit_incoming(request, dv_session_token):
-    """For miniverse testing
-    
-    Quick view that needs major error checking
-    
-    (1) receive token + callback url
-    (2) try url to retrieve metadata
-    (3) use metadata to retrieve the file
-    (4) create Shapefile Group object
-    """
-    # expects  ?token=
-    if not request.GET:
-        raise Http404('no token')
-    
-    if not request.GET.has_key('cb'):
-        raise Http404('no callback url')
-    
-    callback_url = request.GET['cb'] + dv_session_token    
-    msgt('callback_url: %s' % callback_url)
-    # Attach timeout/error check here!
-    r = requests.get(callback_url)
-    msg("resp: %s" % r.text)
-    msg("status: %s" % r.status_code)
-    jresp = r.json()
-    #return HttpResponse(dv_token)
-    
-    print jresp
-    #return HttpResponse(jresp)
-    
-    if jresp.has_key('status') and jresp['status'] == 'success':
-        if jresp.has_key('data'):
-            print '-' * 40
-            print jresp.get('data')
-            print '-' * 40
-            shp_md5 = get_shapefile_from_dv_api_info(dv_session_token, jresp.get('data'))
-        
-            if shp_md5 is None:
-                raise Exception('shp_md5 failure: %s' % shp_md5)
-
-            choose_shapefile_url =  reverse('view_shapefile_first_time'\
-                                            , kwargs={ 'shp_md5' : shp_md5 })
-                                        
-            return HttpResponseRedirect(choose_shapefile_url)
-       
-
-    """
-    Add error page!!
-    """
-    return HttpResponse(str(jresp))
-'''        
-
-     

@@ -278,8 +278,8 @@ def make_leaflet_page(geojson_files=[], output_dir='.', output_html_fname='leafl
     
     
 if __name__=='__main__':
-    from apps.gis_shapefiles.models import ShapefileSet
-    l = ShapefileSet.objects.filter(id=0)
+    from apps.gis_shapefiles.models import ShapefileInfo
+    l = ShapefileInfo.objects.filter(id=0)
     if l.count() == 0:
         msgx('no files in database')
     s = l[0]

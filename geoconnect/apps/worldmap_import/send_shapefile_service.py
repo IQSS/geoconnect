@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 
-from apps.gis_shapefiles.models import ShapefileSet
+from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
 from apps.worldmap_import.worldmap_importer import WorldMapImporter
 from apps.dv_notify.metadata_updater import MetadataUpdater
@@ -17,12 +17,12 @@ class SendShapefileService:
     
     def __init__(self, **kwargs):
         """
-        Constructor: send a ShapefileSet object, or a ShapefileSet object md5 attribute
+        Constructor: send a ShapefileInfo object, or a ShapefileInfo object md5 attribute
 
-        :param: shp_md5: str corresponding to a ShapefileSet object 
-        :param shapefile_set: ShapefileSet object
+        :param: shp_md5: str corresponding to a ShapefileInfo object
+        :param shapefile_info: ShapefileInfo object
         """
-        self.shapefile_set = None
+        self.shapefile_info = None
         self.has_err = False
         self.err_msgs = []
         self.import_attempt_obj = None      # WorldMapImportAttempt or None
@@ -30,13 +30,13 @@ class SendShapefileService:
         self.import_success_obj = None      # WorldMapImportSuccess or None
         self.import_failure_object = None   # WorldMapImportFail or None
         
-        if kwargs.has_key('shapefile_set'):
-            self.shapefile_set = kwargs['shapefile_set']
+        if kwargs.has_key('shapefile_info'):
+            self.shapefile_info = kwargs['shapefile_info']
         elif kwargs.has_key('shp_md5'):
-            self.shapefile_set = self.load_shapefile_from_md5(kwargs['shp_md5'])
+            self.shapefile_info = self.load_shapefile_from_md5(kwargs['shp_md5'])
         else:
-            logger.debug('SendShapefileService Constructor. shapefile_set or shp_md5 is required')
-            raise Exception('shapefile. shapefile_set or shp_md5 is required.')    
+            logger.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
+            raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
 
     
@@ -49,7 +49,7 @@ class SendShapefileService:
         :returns: boolean indicating whether process worked
         """
         
-        # (1) Does the self.shapefile_set have what it needs?  Mainly a legit zippped shapefile
+        # (1) Does the self.shapefile_info have what it needs?  Mainly a legit zippped shapefile
         #
         if not self.verify_shapefile():
             return False
@@ -89,10 +89,10 @@ class SendShapefileService:
     
     
     def load_shapefile_from_md5(self, shp_md5):
-        """Load a ShapefileSet based on an md5 attribute.
-         Set self.shapefile_set to the retrieved ShapefileSet 
+        """Load a ShapefileInfo based on an md5 attribute.
+         Set self.shapefile_info to the retrieved ShapefileInfo
         
-        :param: shp_md5: str corresponding to a ShapefileSet object 
+        :param: shp_md5: str corresponding to a ShapefileInfo object
         :returns: boolean 
         """
         if shp_md5 is None:
@@ -100,27 +100,27 @@ class SendShapefileService:
             return None
             
         try:
-            return ShapefileSet.objects.get(md5=shp_md5)
-        except ShapefileSet.DoesNotExist:
+            return ShapefileInfo.objects.get(md5=shp_md5)
+        except ShapefileInfo.DoesNotExist:
             self.add_err_msg('Sorry, the shapefile was not found')
             return None
     
     
     def verify_shapefile(self):
         """
-        Does the file specified by ShapefileSet "dv_file" exist?
+        Does the file specified by ShapefileInfo "dv_file" exist?
         
         :returns: boolean 
         """
-        if not self.shapefile_set:
+        if not self.shapefile_info:
             self.add_err_msg('verify_shapefile: The shapefile set is None')
             return False
         
-        if not self.shapefile_set.has_shapefile:
+        if not self.shapefile_info.has_shapefile:
             self.add_err_msg('verify_shapefile: This .zip does not contain a valid shapefile')
             return False
 
-        if not self.shapefile_set.is_dv_file_available():
+        if not self.shapefile_info.is_dv_file_available():
             self.add_err_msg('verify_shapefile: The file itself is not available.')
             return False
         
@@ -134,12 +134,12 @@ class SendShapefileService:
         
         :returns: boolean.  If True then the self.import_success_obj has been set
         """
-        if not self.shapefile_set:
-            self.add_err_msg('does_successful_import_already_exist: The shapefile_set is None')
+        if not self.shapefile_info:
+            self.add_err_msg('does_successful_import_already_exist: The shapefile_info is None')
             return False
             
         # Retrieve the lastest WorldMapImportAttempt, if it exists
-        wm_attempt = WorldMapImportAttempt.get_latest_attempt(self.shapefile_set)
+        wm_attempt = WorldMapImportAttempt.get_latest_attempt(self.shapefile_info)
         if not wm_attempt:
             return False
             
@@ -163,19 +163,19 @@ class SendShapefileService:
         :returns: boolean.  If True then the self.import_attempt_obj has been set
         
         """
-        if not self.shapefile_set:
-            self.add_err_msg('make_import_attempt_object: The shapefile_set is None')
+        if not self.shapefile_info:
+            self.add_err_msg('make_import_attempt_object: The shapefile_info is None')
             return False
 
-        zipped_shapefile_name = self.shapefile_set.get_dv_file_basename()
+        zipped_shapefile_name = self.shapefile_info.get_dv_file_basename()
         if not zipped_shapefile_name:
             self.add_err_msg('make_import_attempt_object: Shapefile basename was not found')
             return False
             
-        wm_attempt = WorldMapImportAttempt(gis_data_file=self.shapefile_set\
+        wm_attempt = WorldMapImportAttempt(gis_data_file=self.shapefile_info\
                                         , title=zipped_shapefile_name\
-                                        #, abstract='[place holder abstract for %s]' % self.shapefile_set.name\
-                                        , abstract=self.shapefile_set.get_abstract_for_worldmap() 
+                                        #, abstract='[place holder abstract for %s]' % self.shapefile_info.name\
+                                        , abstract=self.shapefile_info.get_abstract_for_worldmap()
                                         , shapefile_name=zipped_shapefile_name\
                                         )
         try:
@@ -192,8 +192,8 @@ class SendShapefileService:
         """
         Let's send this file over!
         """
-        if not self.shapefile_set:
-            self.add_err_msg('send_file_to_worldmap: The shapefile_set is None')
+        if not self.shapefile_info:
+            self.add_err_msg('send_file_to_worldmap: The shapefile_info is None')
             return False
         
         if not self.import_attempt_obj:
@@ -206,7 +206,7 @@ class SendShapefileService:
         # Instantiate the WorldMapImporter object and attempt the import
         #
         wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
-        worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, self.shapefile_set.get_dv_file_fullpath())
+        worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, self.shapefile_info.get_dv_file_fullpath())
         
         if not worldmap_response:
             self.add_err_msg('send_file_to_worldmap: worldmap_response was None!')
@@ -232,7 +232,9 @@ class SendShapefileService:
                                     )
         self.import_failure_object.save()
         
-    
+    def get_import_success_object(self):
+        return self.import_success_obj
+
     def process_worldmap_response(self):
         if not type(self.worldmap_response) is dict:
             self.add_err_msg('process_worldmap_response: worldmap_response is None')

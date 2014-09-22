@@ -1,30 +1,15 @@
 {% load humanize %}
-{% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
-    <!-- First time file is loaded, show a notification -->
-    <div class="alert alert-success alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-      File <b>{{ shapefile_set.datafile_label }}</b> loaded! 
-           &nbsp; (<b>{{ shapefile_set.number_of_features|intcomma }}</b> geospatial 
-          feature{{ shapefile_set.number_of_features|pluralize }})
-    </div>
-{% endif %}
 
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">1. {{ GEOCONNECT_STEP_KEY }} Shapefile</h3>
-  </div>
-  <div class="panel-body">
+<!-- content for id_main_panel_content -->
+
         The shapefile was successfully examined!
         
         <p>Press the button below to create a Map Layer:</p>
         
         <!-- send info to WorldMap API -->
-		&nbsp; <a href="{% url 'view_send_shapefile_to_worldmap' shapefile_set.md5 %}" class="btn btn-info btn-xs">Visualize on WorldMap</a> <small>(may take several seconds)</small><br />
-  </div><!-- end: panel body -->
-</div><!-- end: panel -->
-
-{% include "gis_shapefiles/shapefile_info_panel.html" %}
+		&nbsp; <a class="btn btn-info btn-xs" id="id_link_visualize_worldmap">Visualize on WorldMap</a>
+        <small>(may take several seconds)</small><br />
 
     
 	<script>
@@ -35,4 +20,12 @@
 	  	$('#btn_show_cols').html('show fields');
 	})
 	</script>
-	
+	<div style="display:none;" id="id_div_attempt_visualization_msg">
+            Attempting map visualization, this may take several seconds.
+        <br />
+                <img src="{{ STATIC_URL }}images/spinner.gif" alt="spinner" />
+        <br />
+                <a href="{{ WORLDMAP_SEVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="spinner" /></a>
+
+
+	</div>

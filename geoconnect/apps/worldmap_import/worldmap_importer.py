@@ -10,7 +10,7 @@ if __name__=='__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings")
 
 from geo_utils.key_checker import KeyChecker
-from geo_utils.json_field_reader import MessageHelperJSON
+from geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
 """
 try:

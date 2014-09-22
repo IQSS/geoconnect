@@ -1,10 +1,10 @@
 from django import forms
-from apps.gis_shapefiles.models import ShapefileSet
+from apps.gis_shapefiles.models import ShapefileInfo
 
 
-class ShapefileSetForm(forms.ModelForm):
+class ShapefileInfoForm(forms.ModelForm):
     class Meta:
-        model = ShapefileSet
+        model = ShapefileInfo
         fields = ['datafile_id', 'datafile_label', 'dv_user_email', 'dv_user_id', 'dv_username', 'dv_file']
 """
 

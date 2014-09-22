@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-
+from apps.gis_shapefiles.views_02_visualize import ViewAjaxVisualizeShapefile
 
 urlpatterns = patterns('apps.gis_shapefiles.views',
     url(r'^examine/$', 'view_examine_dataset', name="view_examine_dataset"),
@@ -26,6 +26,11 @@ urlpatterns += patterns('apps.gis_shapefiles.views_mapit',
 
     url(r'^map-it/(?P<dataverse_token>\w{64})/$', 'view_mapit_incoming_token64', name="view_mapit_incoming_token64"),
     
+)
+
+urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
+
+   url(r'^ajax-visualize/(?P<shp_md5>\w{1,32})/$', ViewAjaxVisualizeShapefile.as_view(), name="view_ajax_attempt_visualization"),
 )
 
 #urlpatterns += patterns('folium_maker.views',

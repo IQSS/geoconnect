@@ -6,7 +6,7 @@ from django.conf import settings
 
 from geo_utils.msg_util import *
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
-from apps.gis_shapefiles.models import ShapefileSet
+from apps.gis_shapefiles.models import ShapefileInfo
 # python manage.py test apps.gis_shapefiles.tests
 #
 class ShapefileBasicTests(TestCase):
@@ -23,7 +23,7 @@ class ShapefileBasicTests(TestCase):
                             , dv_user_id=5\
                             , dv_username='dv_username'\
                         )
-        self.shp_set = ShapefileSet(**shp_params)
+        self.shp_set = ShapefileInfo(**shp_params)
         # ['datafile_id', 'datafile_label', 'dv_user_email', 'dv_user_id', 'dv_username', 'dv_file']
 
 

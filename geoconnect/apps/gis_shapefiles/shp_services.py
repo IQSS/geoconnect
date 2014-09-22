@@ -4,7 +4,8 @@ import urllib2
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
-from apps.gis_shapefiles.models import ShapefileSet
+from apps.gis_shapefiles.models import ShapefileInfo
+from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess
 
 import logging
 logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_ch
 NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize', 'created']
 
 def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
-    """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileSet' object.  This function should only receive successful responses.
+    """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileInfo' object.  This function should only receive successful responses.
     
     :param shp_dict: dict containing response from the Dataverse API
     
@@ -61,7 +62,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     params_for_existing_check = dict(datafile_id=shp_dict.get('datafile_id', -1)\
                                     , dv_user_id=shp_dict.get('dv_user_id', -1)\
                                     )
-    existing_sets = ShapefileSet.objects.filter(**params_for_existing_check\
+    existing_sets = ShapefileInfo.objects.filter(**params_for_existing_check\
                                 ).values_list('md5', flat=True\
                                 ).order_by('created')
 
@@ -71,9 +72,9 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     print 'Existing set count: %s' % len(existing_sets)
     
     #------------------------------
-    # Existing ShapefileSet(s) found:
+    # Existing ShapefileInfo(s) found:
     #  (a) Update the dv_session_token
-    #  (b) Delete other groups ShapefileSet object for this datafile and user
+    #  (b) Delete other groups ShapefileInfo object for this datafile and user
     #  (c) Return the md5
     #------------------------------
     if len(existing_sets) > 0:
@@ -81,8 +82,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
 
         # Update the dv_session_token
         try:
-            shp_set = ShapefileSet.objects.get(md5=shp_md5)
-        except ShapefileSet.DoesNotExist:
+            shp_set = ShapefileInfo.objects.get(md5=shp_md5)
+        except ShapefileInfo.DoesNotExist:
             # serious error!
             return None
             
@@ -91,24 +92,39 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
         shp_set.save()
         
         if len(existing_sets) > 0:
-            ShapefileSet.objects.filter(md5__in=existing_sets).delete()   # delete older ShapefileSet(s)
+            ShapefileInfo.objects.filter(md5__in=existing_sets).delete()   # delete older ShapefileInfo(s)
         return shp_md5
 
     #------------------------------
-    # Make a new ShapefileSet
+    # Make a new ShapefileInfo
     #------------------------------
     if dv_session_token:
         shp_dict['dv_session_token'] = dv_session_token
-    shapefile_set = ShapefileSet(**shp_dict)
-    shapefile_set.save()
+    shapefile_info = ShapefileInfo(**shp_dict)
+    shapefile_info.save()
     
     # Download and attach file
     img_temp = NamedTemporaryFile(delete=True)
     img_temp.write(urllib2.urlopen(datafile_download_url).read())
     img_temp.flush()
 
-    shapefile_set.dv_file.save(datafile_filename, File(img_temp))
-    shapefile_set.save()           
+    shapefile_info.dv_file.save(datafile_filename, File(img_temp))
+    shapefile_info.save()
     
-    return shapefile_set.md5      
- 
+    return shapefile_info.md5
+
+def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
+    """
+    Given a ShapefileInfo object, check for and return a WorldMapImportSuccess object, if available
+
+    :param shapefile_info: ShapefileInfo object
+    :return: WorldMapImportSuccess object or None
+    """
+    assert(type(shapefile_info), ShapefileInfo)
+
+    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
+    if latest_import_attempt:
+        import_success_object = latest_import_attempt.get_success_info()
+        if type(import_success_object) is WorldMapImportSuccess:
+            return import_success_object
+    return None

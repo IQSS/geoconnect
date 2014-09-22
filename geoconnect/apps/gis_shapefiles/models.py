@@ -14,7 +14,7 @@ from geo_utils.json_field_reader import JSONFieldReader
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
-class ShapefileSet(GISDataFile):
+class ShapefileInfo(GISDataFile):
     """Expects a .zip file upload
     Modify in the future for shapefiles loaded separately
     """
@@ -72,7 +72,7 @@ class ShapefileSet(GISDataFile):
         return JSONFieldReader.get_json_string_as_python_val(self.column_info)
     
     def get_shp_fileinfo_obj(self):
-        l = SingleFileInfo.objects.filter(shapefile_set=self, extension='.shp')
+        l = SingleFileInfo.objects.filter(shapefile_info=self, extension='.shp')
         cnt = l.count()
         if cnt == 0:
             return None
@@ -80,7 +80,7 @@ class ShapefileSet(GISDataFile):
             return l[0]
         # cnt > 1
         selected_info = l[0]
-        SingleFileInfo.objects.exclude(id=l[0].id).filter(shapefile_set=self, extension='.shp').delete()  # delete others
+        SingleFileInfo.objects.exclude(id=l[0].id).filter(shapefile_info=self, extension='.shp').delete()  # delete others
         
         return selected_info
         
@@ -89,15 +89,15 @@ class ShapefileSet(GISDataFile):
         
     def save(self, *args, **kwargs):
         if not self.id:
-            super(ShapefileSet, self).save(*args, **kwargs)
+            super(ShapefileInfo, self).save(*args, **kwargs)
         self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
 
-        super(ShapefileSet, self).save(*args, **kwargs)
+        super(ShapefileInfo, self).save(*args, **kwargs)
     
     def __unicode__(self):
         if self.name:
             return self.name
-        return super(ShapefileSet, self).__unicode__()
+        return super(ShapefileInfo, self).__unicode__()
 
     class Meta:
         ordering = ('-modified', 'datafile_label')
@@ -109,7 +109,7 @@ class SingleFileInfo(TimeStampedModel):
     For a shapefile set, this is metadata on the individual files.
     """
     name = models.CharField(max_length=255)
-    shapefile_set = models.ForeignKey(ShapefileSet)
+    shapefile_info = models.ForeignKey(ShapefileInfo)
     extension= models.CharField(max_length=40, blank=True, help_text='auto-filled on save')
     filesize = models.IntegerField(help_text='in bytes')
     is_required_shapefile = models.BooleanField(default=False, help_text='auto-filled on save')

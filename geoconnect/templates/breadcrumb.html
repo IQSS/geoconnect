@@ -1,0 +1,10 @@
+<div style="padding:0 10px;">{% include "gis_shapefiles/link-back-to-dataverse.html" %}</div>
+<ol class="breadcrumb" style="margin-bottom:0;" id="id_breadcrumb">
+    {% for step in GEOCONNECT_STEPS %}
+        {% if GEOCONNECT_STEP_KEY == step %}
+            <li class="active"><span class="text-info"><strong>{{ step }}</strong></span></li>
+        {% else %}
+            <li><span class="text-muted">{{ step }}</span></li>
+        {% endif %}
+    {% endfor %}
+</ol>

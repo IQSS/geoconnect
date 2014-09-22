@@ -65,10 +65,10 @@ class GISExcelFile(GISDataFile):
         
     def save(self, *args, **kwargs):
         if not self.id:
-            super(ShapefileSet, self).save(*args, **kwargs)
+            super(ShapefileInfo, self).save(*args, **kwargs)
         self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
 
-        super(ShapefileSet, self).save(*args, **kwargs)
+        super(ShapefileInfo, self).save(*args, **kwargs)
     
     def __unicode__(self):
         if self.name:

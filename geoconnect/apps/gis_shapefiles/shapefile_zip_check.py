@@ -4,7 +4,7 @@ import zipfile
 import timeit
 import cStringIO
 
-from apps.gis_shapefiles.models import ShapefileSet, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS 
+from apps.gis_shapefiles.models import ShapefileInfo, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
 
 import logging
 #logger = logging.getLogger(__name__)
@@ -133,7 +133,7 @@ class ShapefileZipCheck:
             # log something!!
             return
     
-    def load_shapefile_from_open_zip(self, shapefile_basename, shapefile_set):
+    def load_shapefile_from_open_zip(self, shapefile_basename, shapefile_info):
         """
         Assumes that self.zip_obj has opened an archive that contains a valid shapefile set
         
@@ -151,8 +151,8 @@ class ShapefileZipCheck:
             logger.error(msg)            
             return (False, msg)
         
-        if shapefile_set is None:
-            msg = 'The ShapefileSet was not specified'
+        if shapefile_info is None:
+            msg = 'The ShapefileInfo was not specified'
             logger.error(msg)            
             return (False, msg)
 
@@ -172,26 +172,26 @@ class ShapefileZipCheck:
             return (False, msg)
         
         # #------------------------
-        shapefile_set.name = shapefile_basename
-        shapefile_set.save()
+        shapefile_info.name = shapefile_basename
+        shapefile_info.save()
 
         for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
             fname = name_to_extract + ext
             #logger.info('extracting: %s' % fname)
-            scratch_directory = shapefile_set.get_scratch_work_directory()
+            scratch_directory = shapefile_info.get_scratch_work_directory()
             self.zip_obj.extract(fname, scratch_directory)
             #logger.info('done: %s' % fname)
             sfi = SingleFileInfo(name=os.path.basename(fname)\
-                                , shapefile_set=shapefile_set\
+                                , shapefile_info=shapefile_info\
                                 , extension=ext\
                                 , filesize=0\
                                 , is_required_shapefile=True\
-                                , extracted_file_path=os.path.join(shapefile_set.get_scratch_work_directory(), fname)\
+                                , extracted_file_path=os.path.join(shapefile_info.get_scratch_work_directory(), fname)\
                                 )
             sfi.save()
 
-        extracted_shapefile_load_path = os.path.join(shapefile_set.get_scratch_work_directory(), name_to_extract)
-        shapefile_set.extracted_shapefile_load_path = extracted_shapefile_load_path
+        extracted_shapefile_load_path = os.path.join(shapefile_info.get_scratch_work_directory(), name_to_extract)
+        shapefile_info.extracted_shapefile_load_path = extracted_shapefile_load_path
 
         try:
            shp_reader = shapefile.Reader(extracted_shapefile_load_path + '.shp')
@@ -204,28 +204,28 @@ class ShapefileZipCheck:
             return (False, msg)
             
         # add number of shapes
-        shapefile_set.number_of_features = len(shp_reader.shapes())
+        shapefile_info.number_of_features = len(shp_reader.shapes())
 
-        if shapefile_set.number_of_features == 0:
+        if shapefile_info.number_of_features == 0:
             self.err_could_not_process_shapefile = False
             return (False, "This shapefile does not have any geospatial features")
 
 
         # add column names
-        shapefile_set.add_column_info(shp_reader.fields[1:])   
-        shapefile_set.add_column_names_using_fields(shp_reader.fields)
+        shapefile_info.add_column_info(shp_reader.fields[1:])
+        shapefile_info.add_column_names_using_fields(shp_reader.fields)
 
         # add bounding box
         #print 'add bounding box', shp_reader.bbox
 
         try:
-            shapefile_set.add_bounding_box(list(shp_reader.bbox))
+            shapefile_info.add_bounding_box(list(shp_reader.bbox))
         except:
-            shapefile_set.add_bounding_box('')
+            shapefile_info.add_bounding_box('')
 
-        shapefile_set.save()
+        shapefile_info.save()
 
-        #logger.info('ShapefileSet updated!')
+        #logger.info('ShapefileInfo updated!')
 
         return (True, None)
 
@@ -294,7 +294,7 @@ class ShapefileZipCheck:
             return (False, msg)
 
         # create a shapefile set
-        single_shapefile_set = ShapefileSet(name=name_to_extract\
+        single_shapefile_set = ShapefileInfo(name=name_to_extract\
                                             , shapefile_group=shp_group_obj\
                                             )    
         single_shapefile_set.save()
@@ -305,7 +305,7 @@ class ShapefileZipCheck:
             self.zip_obj.extract(fname, shp_group_obj.get_scratch_work_directory())
             logger.info('extracted: %s' % fname)
             sfi = SingleFileInfo(name=os.path.basename(fname)\
-                                , shapefile_set=single_shapefile_set\
+                                , shapefile_info=single_shapefile_set\
                                 , extension=ext\
                                 , filesize=0\
                                 , is_required_shapefile=True\
@@ -335,7 +335,7 @@ class ShapefileZipCheck:
         
         single_shapefile_set.save()
 
-        logger.info('new ShapefileSet saved')
+        logger.info('new ShapefileInfo saved')
         
         return (True, single_shapefile_set)
     '''

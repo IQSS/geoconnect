@@ -9,7 +9,8 @@ from apps.gis_basic_file.models import GISDataFile
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.dv_notify.models import KEY_UPDATES_TO_MATCH_DATAVERSE_API
 
-from geo_utils.json_field_reader import MessageHelperJSON, JSONFieldReader
+from geo_utils.json_field_reader import JSONFieldReader
+from geo_utils.message_helper_json import MessageHelperJSON
 
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
@@ -81,46 +82,46 @@ class WorldMapImportAttempt(TimeStampedModel):
     
     
     @staticmethod
-    def get_import_attempts(shapefile_set):
+    def get_import_attempts(shapefile_info):
         """
         Search for existing WorldMapImportAttempt objects where the params in DV_SHARED_ATTRIBUTES match
 
-        :param shapefile_set: ShapefileSet object
+        :param shapefile_info: ShapefileInfo object
         :returns: queryset -- either containing WorldMapImportAttempt objects or empty
         """
-        if shapefile_set is None:
+        if shapefile_info is None:
             return None
         
         lookup_params = {}
         for attr in DV_SHARED_ATTRIBUTES:
-            lookup_params[attr] = getattr(shapefile_set, attr)
+            lookup_params[attr] = getattr(shapefile_info, attr)
         
         return WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified')
         
 
     @staticmethod
-    def get_latest_attempt(shapefile_set):
+    def get_latest_attempt(shapefile_info):
         """
         Get the latest WorldMapImportAttempt object where the params in DV_SHARED_ATTRIBUTES match
         
-        :param shapefile_set: ShapefileSet object
+        :param shapefile_info: ShapefileInfo object
         :returns: latest WorldMapImportAttempt object or None.  "latest" means most recently modified date
         """
-        if shapefile_set is None:
+        if shapefile_info is None:
             return None
         
         lookup_params = {}
         for attr in DV_SHARED_ATTRIBUTES:
-            lookup_params[attr] = getattr(shapefile_set, attr)
+            lookup_params[attr] = getattr(shapefile_info, attr)
 
         latest_attempt = WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified').first()
         if not latest_attempt:
             return None
             
-        # If latest_attempt doesn't have a reference to the shapefile_set,
+        # If latest_attempt doesn't have a reference to the shapefile_info,
         # then make one 
         if not latest_attempt.gis_data_file:
-            latest_attempt.gis_data_file = shapefile_set
+            latest_attempt.gis_data_file = shapefile_info
             latest_attempt.save()
             
         # return the latest_attempt
@@ -251,9 +252,9 @@ class WorldMapImportSuccess(TimeStampedModel):
             data_dict['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
 
             try:
-                shapefile_set = self.import_attempt.gis_data_file.shapefileset
-                if shapefile_set.bounding_box:
-                    bbox = json.loads(shapefile_set.bounding_box)
+                shapefile_info = self.import_attempt.gis_data_file.shapefileset
+                if shapefile_info.bounding_box:
+                    bbox = json.loads(shapefile_info.bounding_box)
                     print 'bbox', bbox.__class__.__name__
                     data_dict.update({ 'bbox_min_lng' : bbox[0]
                         , 'bbox_min_lat' : bbox[1]
@@ -275,9 +276,9 @@ class WorldMapImportSuccess(TimeStampedModel):
             d['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
             d['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
             try:
-                shapefile_set = self.import_attempt.gis_data_file.shapefileset
-                if shapefile_set.bounding_box:
-                    bbox = json.loads(shapefile_set.bounding_box)
+                shapefile_info = self.import_attempt.gis_data_file.shapefileset
+                if shapefile_info.bounding_box:
+                    bbox = json.loads(shapefile_info.bounding_box)
                     print 'bbox', bbox.__class__.__name__
                     d.update({ 'bbox_min_lng' : bbox[0]
                         , 'bbox_min_lat' : bbox[1]
