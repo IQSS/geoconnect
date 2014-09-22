@@ -98,40 +98,21 @@ class ViewAjaxVisualizeShapefile(View):
 
         import_success_object = get_successful_worldmap_attempt_from_shapefile(shapefile_info)
         if import_success_object is not None:
-            return self.generate_json_success_response(request, shapefile_info, import_success_object)
+            # (2a) Previous attempt found!!
             msg('Previous attempt found!!')
-            # Previous attempt found!!
-            #
-            visualize_html = render_visualize_content_div(request, shapefile_info, import_success_object)
-            json_msg = MessageHelperJSON.get_json_msg(success=True
-                                            , msg='Success!'
-                                            , data_dict=dict(id_main_panel_content=visualize_html\
-                                                        , id_main_panel_title=STEP2_VISUALIZE\
-                                                        )\
-                                            )
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+            return self.generate_json_success_response(request, shapefile_info, import_success_object)
+
 
         # (3) Let's visualize this on WorldMap!
         #
         msgt('(3) Let\'s visualize this on WorldMap!')
         send_shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
         send_shp_service.send_shapefile_to_worldmap()
-
-        if send_shp_service.get_import_success_object() is not None:
+        import_success_object = send_shp_service.get_import_success_object()
+        if import_success_object is not None:
             msgt('(3a) It worked!')
             return self.generate_json_success_response(request, shapefile_info, import_success_object)
 
-            # (3a) It worked!
-            # Send back the results!
-            #
-            visualize_html = render_visualize_content_div(request, shapefile_info, send_shp_service.import_success_obj)
-            json_msg = MessageHelperJSON.get_json_msg(success=True
-                                            , msg='Success!'
-                                            , data_dict=dict(id_main_panel_content=visualize_html\
-                                                             , id_main_panel_title=STEP2_VISUALIZE\
-                                                         )\
-                                            )
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
         if send_shp_service.has_err:
             msgt('(3a) It worked!')
@@ -156,31 +137,3 @@ class ViewAjaxVisualizeShapefile(View):
 
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-
-""" logger.debug('Has an import been attempted?')
-    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
-
-    if latest_import_attempt:
-        logger.debug('latest_import_attempt: %s' % latest_import_attempt )
-        import_success_object = latest_import_attempt.get_success_info()
-        if import_success_object:
-            if just_made_visualize_attempt:
-                d['page_title'] = 'Visualize Shapefile'
-                d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
-            else:
-                d['page_title'] = 'Style Shapefile'
-                d[GEOCONNECT_STEP_KEY] = STEP3_STYLE
-
-            classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
-            #d['form_inline'] = True
-            d['classify_form'] = classify_form
-            d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
-
-        # (2) run the worldmap import
-
-
-        # (3) error
-
-
-        # (4) success
-"""
