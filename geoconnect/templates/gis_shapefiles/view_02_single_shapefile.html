@@ -3,7 +3,7 @@
 
 {% block extra_js %}
     {{ block.super }}
-   {% if  GEOCONNECT_STEP_KEY == STEP1_EXAMINE and not Err_Found %}
+   {% if  GEOCONNECT_STEP_KEY == STEP1_EXAMINE and not Dataverse_Connect_Err_Msg %}
         <script>
           {% include "gis_shapefiles/ajax_attempt_visualization.js" %}
         </script>
@@ -19,7 +19,7 @@
 {% block main_container %}
 <div class="pull-left" style="padding:0 20px;">
 
-	{% if Err_Found %}
+	{% if Err_Found or Dataverse_Connect_Err_Msg %}
 	    <!-- The shapefile didn't open at all, 
 	    failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
 	    or contained multiple shapefiles -->

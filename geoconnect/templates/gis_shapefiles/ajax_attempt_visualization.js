@@ -1,7 +1,6 @@
 
   function attempt_visualization(){
 
-
     $("#id_main_panel_content").html($("#id_div_attempt_visualization_msg").html());
 
         var attempt_to_visualize_url = '{% url 'view_ajax_attempt_visualization' shapefile_info.md5 %}';

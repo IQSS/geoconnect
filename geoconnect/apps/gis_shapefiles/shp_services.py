@@ -108,7 +108,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     # Download and attach file
     #------------------------------
     datafile_download_url = dataverse_info_dict.get('datafile_download_url', '')
-    datafile_filename = dataverse_info_dict.get('filename', '')
+    datafile_filename = dataverse_info_dict.get('datafile_label', '')
     
     img_temp = NamedTemporaryFile(delete=True)
     img_temp.write(urllib2.urlopen(datafile_download_url).read())
