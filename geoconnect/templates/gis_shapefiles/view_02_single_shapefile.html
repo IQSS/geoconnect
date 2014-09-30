@@ -3,7 +3,7 @@
 
 {% block extra_js %}
     {{ block.super }}
-   {% if  GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
+   {% if  GEOCONNECT_STEP_KEY == STEP1_EXAMINE and not Err_Found %}
         <script>
           {% include "gis_shapefiles/ajax_attempt_visualization.js" %}
         </script>
@@ -19,12 +19,12 @@
 {% block main_container %}
 <div class="pull-left" style="padding:0 20px;">
 
-		{% if Err_Found %}
-		    <!-- The shapefile didn't open at all, 
-		            failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
-		            or contained multiple shapefiles -->
-		    {% include "gis_shapefiles/view_02a_err_examine.html" %}
-		{% endif %}
+	{% if Err_Found %}
+	    <!-- The shapefile didn't open at all, 
+	    failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
+	    or contained multiple shapefiles -->
+		{% include "gis_shapefiles/view_02a_err_examine.html" %}
+	{% endif %}
 
     {% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
     <!-- First time file is loaded, show a notification -->
@@ -41,6 +41,9 @@
      <h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }}</h3>
     </div>
     <div class="panel-body" id="id_main_panel_content">
+       	{% if not shapefile_info %}
+            Please return to the dataverse.
+	    {% endif %}
 		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->
             {% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
@@ -68,7 +71,9 @@
         {% endif %}
     </div><!-- end main panel content -->
     </div><!-- end: panel -->
-    {% include "gis_shapefiles/shapefile_info_panel.html" %}
+    {% if shapefile_info %}
+        {% include "gis_shapefiles/shapefile_info_panel.html" %}
+    {% endif %}
     {% include "gis_shapefiles/link-back-to-dataverse.html" %}
 
 </div>

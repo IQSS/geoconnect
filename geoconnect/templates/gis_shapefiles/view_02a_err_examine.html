@@ -1,9 +1,23 @@
 <!-- START: overall 'if' check -->
 {% if Err_Found %}
+
+    {# <!-- ########    Initial Errors when trying to retrieve initial dataverse information ############   -->#}
+    {% if Dataverse_Connect_Err_Msg %}
+    <div class="alert-danger alert">
+        {% if FAILED_TO_RETRIEVE_DATAVERSE_FILE %}Sorry!  Failed to retrieve the file from the Dataverse.{% endif %}
+        {% if FAILED_TO_CONVERT_RESPONSE_TO_JSON %}Sorry!  Failed to read data from the Dataverse.{% endif %}
+        {% if FAILED_BAD_STATUS_CODE_FROM_WORLDMAP %}Sorry!  The Dataverse information was not converted properly.{% endif %}
+        
+            <br /><br /><small>{{ Dataverse_Connect_Err_Msg|linebreaks }}</small>
+    </div>
+    {% endif %}
+
+
+    {# <!-- ########    END: Initial Errors when trying to retrieve initial dataverse information ############   -->#}
+
     {% if Err_Msg %}
         <div class="alert-danger alert">Sorry!  Unable to open the shapefile.
-
-                <p>{{ Err_Msg }}</p>
+                <p>{{ Err_Msg|linebreaks }}</p>
         </div>
     {% endif %}
     {% if Err_Shapefile_Could_Not_Be_Opened %}

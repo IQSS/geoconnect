@@ -91,6 +91,8 @@ def view_shapefile_visualize_attempt(request, shp_md5):
     return view_shapefile(request, shp_md5, just_made_visualize_attempt=True)
 
 
+
+
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
     ## This logic shouldn't be here, factor it out similar to SendShapefileService

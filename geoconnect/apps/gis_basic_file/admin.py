@@ -1,51 +1,22 @@
 from django.contrib import admin
 from apps.gis_basic_file.models import GISDataFile
-from apps.gis_basic_file.forms import GISDataFileAdminForm
 
-"""
-class GISDataFileAdmin(admin.ModelAdmin):
-    save_on_top = True
-    search_fields = ('name',  )
-    list_filter = ('gis_file_type', 'dataset_name', )    
-    readonly_fields = ('modified', 'created', 'md5', 'test_view', 'gis_file_type')
-    list_display = ('name', 'dv_username', 'dataset_name', 'gis_file_type', 'test_view'  )
-admin.site.register(GISDataFile, GISDataFileAdmin)
-"""
+from dataverse_info.admin import DataverseInfoAdmin
 
-class GISDataFileAdmin(admin.ModelAdmin):
-    form = GISDataFileAdminForm
-    
-    save_on_top = True
-    search_fields = ['dv_username',  'datafile_label','dataset_name', 'dataverse_name', 'dv_file']
-    list_display = ['datafile_id', 'dv_username',  'datafile_label', 'dataset_name', 'dataverse_name', 'dv_file', 'modified']
-    list_filter = ['dv_username', 'dataverse_name', 'dataset_name']   
-    readonly_fields = ['modified', 'created', 'md5'\
-                    ,  'datafile_type', 'datafile_expected_md5_checksum']
-    fieldsets = [
-         ('DataFile Info', {
-                  'fields': (('datafile_id', 'datafile_label', )\
-                  , 'datafile_description'\
-                  , ('datafile_expected_md5_checksum', 'datafile_type'))
-              }),
-         ('Retrieved File', {
-                     'fields': ('dv_file', 'gis_scratch_work_directory' )
-          }),
-         ('Dataverse user', {
-               'fields': ('dv_user_email', ('dv_user_id', 'dv_username'))
-           }),
-           ('Owning dataverse', {
-               'fields': (('dataverse_name', 'dv_id'), )
-           }),
-           ('Dataset Info', {
-               'fields': (('dataset_name', 'dataset_id', 'dataset_version_id'),  'dataset_description')
-           }),
-           ('Session Info', {
-               'fields': ('dv_session_token', )
-           }),          
-           ('Read-Only Info', {
-               'fields': ('md5',('modified', 'created') )
-           }),
-       ]
-       
+class GISDataFileAdmin(DataverseInfoAdmin):
+    """
+    Use the ModelAdmin from DataverseInfoAdmin and extend it to include GISDataFile specific fields
+    """
+    search_fields =  DataverseInfoAdmin.search_fields + ['dv_file']
+    readonly_fields = DataverseInfoAdmin.readonly_fields + ['md5', 'dv_session_token']
+    list_display = DataverseInfoAdmin.list_display + ['dv_file'] 
+
+    # fieldsets: Use DataverseInfoAdmin fieldsets and add a GeoConnect specific row
+    #
+    fieldsets = [fs for fs in DataverseInfoAdmin.fieldsets]
+    geoconnect_fieldset = ('GeoConnect specific', {'fields': ['dv_session_token', 'dv_file', 'gis_scratch_work_directory']})
+    fieldsets.insert(-1, geoconnect_fieldset)   # second to last in admin
+
+# register the model
 admin.site.register(GISDataFile, GISDataFileAdmin)
 

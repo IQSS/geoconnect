@@ -1,66 +1,102 @@
+import json
 import os
-
 import requests
 
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-#from django.core.files.uploadedfile import SimpleUploadedFile
 from geo_utils.msg_util import *
 
-from apps.gis_shapefiles.models import ShapefileInfo, SingleFileInfo
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
+
 from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
 
-#from apps.gis_shapefiles.views import view_choose_shapefile
+from geo_utils.view_util import get_common_lookup
 
-from urllib import urlencode
-import json
-from django.http import Http404
-#import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
-import urllib, cStringIO
+FAILED_TO_RETRIEVE_DATAVERSE_FILE = 'FAILED_TO_RETRIEVE_DATAVERSE_FILE'
+FAILED_TO_CONVERT_RESPONSE_TO_JSON = 'FAILED_TO_CONVERT_RESPONSE_TO_JSON'
+FAILED_BAD_STATUS_CODE_FROM_WORLDMAP = 'FAILED_BAD_STATUS_CODE_FROM_WORLDMAP'
 
+
+def view_formatted_error_page(request, error_type, err_msg=None):
+
+    d = get_common_lookup(request)
+    d['page_title'] = 'Examine Shapefile'
+    d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
+    d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE 
+    
+    d['Err_Found'] = True
+    d[error_type] = True
+    d['Dataverse_Connect_Err_Msg'] = err_msg
+    
+    return render_to_response('gis_shapefiles/view_02_single_shapefile.html'\
+                                , d\
+                                , context_instance=RequestContext(request)\
+                            )
+     
 
 def view_mapit_incoming_token64(request, dataverse_token):
-    if not request.GET:
-        logger.error('view_mapit_incoming_token64: no get params')
-        raise Http404('no callback')
+    """
+    This needs to be re-factored
     
-    if not request.GET.has_key('cb'):
-        logger.error('view_mapit_incoming_token64: no callback parameter')
-        raise Http404('no callback url')
+    (1) Check incoming url for a callback key 'cb'
+    (2) Use the callback url to retrieve the DataverseInfo via a POST
+    """
+    assert(request.GET, not None)
+    assert(request.GET.has_key('cb'), True )
         
     callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))    
     
+    # Make a post request using the temporary token issued by WorldMap
+    #
     TOKEN_PARAM = { settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token }
     r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
+
     msgt(r.text)
     msg(r.status_code)
+
+    #   FIX: Add to error page
+    #
     if not r.status_code == 200:
-        logger.error('view_mapit_incoming_token64. status code: %s\nresponse: %s' % (r.status_code, r.text))
+        err_msg1 = 'Status code from dataverse: %s' % (r.status_code)
+        err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
+        logger.error(err_msg2)
+        return view_formatted_error_page(request\
+                                        , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
+                                        , err_msg1)
+                                        
         return HttpResponse("Sorry! Failed to retrieve Dataverse file")
 
+    #   FIX: Add to error page
+    #
     jresp = r.json()
     if not type(jresp) is dict:
-        logger.error('view_mapit_incoming_token64. Failed to convert response to JSON\nstatus code: %s\nresponse: %s' % (r.status_code, r.text))        
-        return HttpResponse("Sorry! Failed to convert response to JSON")
+        err_msg1 = 'Failed to convert response to JSON\nStatus code from dataverse: %s' % (r.status_code)
+        err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
+        logger.error(err_msg2)
+        return view_formatted_error_page(request\
+                                         , FAILED_TO_CONVERT_RESPONSE_TO_JSON\
+                                         , err_msg1)
+                                         
     
+    # How does the response look?  
+    # If it's OK:
+    #   (1) validate the DataverseInfo returned by Dataverse
+    #   (2) Create a ShapefileInfo object
+    #   (3) Download the dataverse file
+    #
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
         data_dict = jresp.get('data')
 
-        # ------------------------------------
-        # FIX - when common dataverse_info object is in
-        # ------------------------------------
-
-        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)#jresp.get('data'))
+        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
     
         if shp_md5 is None:
             raise Exception('shp_md5 failure: %s' % shp_md5)
@@ -69,9 +105,14 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                         , kwargs={ 'shp_md5' : shp_md5 })
                                     
         return HttpResponseRedirect(choose_shapefile_url)
-        #return HttpResponse("Good so far")
     
-    return HttpResponse("Good so far")
+    err_msg1 = 'Unsuccessful request to Dataverse\nStatus code from dataverse: %s\nStatus: %s' % (r.status_code, jresp.get('status', 'not found'))
+    err_msg2 = err_msg1 + '\nResponse: %s' % (r.text) 
+    logger.error(err_msg2)
+    return view_formatted_error_page(request\
+                                     , FAILED_BAD_STATUS_CODE_FROM_WORLDMAP\
+                                     , err_msg1)
+
     
 
 

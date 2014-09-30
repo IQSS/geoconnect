@@ -2,12 +2,26 @@
 
 from __future__ import absolute_import
 import json
-from os.path import join, normpath
+import sys
+from os.path import join, normpath, isdir
 
 from .base import *
 
 # Store uploaded files, logs, etc, etc
 TEST_SETUP_DIR = normpath(join(dirname(dirname(DJANGO_ROOT)), 'test_setup'))
+
+####################### DATAVERSE_INFO_REPOSITORY_PATH
+#
+# Path to additional repository: https://github.com/IQSS/shared-dataverse-information
+# Used for dataverse/worldmap communication.  Validate data passed via api, etc
+#
+DATAVERSE_INFO_REPOSITORY_PATH = '/Users/rmp553/Documents/iqss-git/shared-dataverse-information/'
+if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
+    raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
+sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
+####################### END: DATAVERSE_INFO_REPOSITORY_PATH
+
+
 STATIC_ROOT =join(TEST_SETUP_DIR, 'assets') # where files gathered and served from
 
 MEDIA_ROOT = join(TEST_SETUP_DIR, 'media' )

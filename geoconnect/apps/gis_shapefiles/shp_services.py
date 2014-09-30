@@ -4,6 +4,11 @@ import urllib2
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
+#from apps.gis_basic_file.forms import GISDataFileValidationForm
+from dataverse_info.forms import DataverseInfoValidationForm
+
+from geo_utils.msg_util import *
+
 from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess
 
@@ -11,99 +16,100 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-DV_API_REQ_KEYS = ['created', 'datafile_download_url', 'datafile_expected_md5_checksum', 'datafile_id', 'datafile_label', 'datafile_type', 'dataset_description', 'dataset_id', 'dataset_name', 'dataset_version_id', 'dv_id', 'dataverse_name', 'dv_user_email', 'dv_user_id', 'dv_username', 'filename', 'filesize', 'return_to_dataverse_url' ]
-NON_SHAPEFILE_SET_PARAMS = [ 'datafile_download_url', 'filename', 'filesize', 'created']
 
-def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
+def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileInfo' object.  This function should only receive successful responses.
-    
-    :param shp_dict: dict containing response from the Dataverse API
-    
-    example: {
-             'datafile_label': 'income_in_boston_gui_1.zip'
-            , 'dv_user_email': 'raman_prasad@harvard.ed'
-            , 'dv_username': 'raman'
-            , 'datafile_id': 1
-            , 'datafile_type': '--file-type--'
-            , 'datafile_expected_md5_checksum' : '1007330fd9c833d2aac518bbbb5354d9'
-            , 'dataset_description': ''
-            , 'filename': 'income_in_boston_gui_1.zip'
-            , 'has_gis_data': True
-            , 'dv_user_id': 1
-            , 'created': '2014-06-02 17:32:43.802018+00:00'
-            , 'dataset_version_id': 1
-            , 'dataset_id': 1
-            , 'dataset_name': 'Boston Income data'
-            , 'filesize': 498556\
-            , 'datafile_download_url' : 'http://127.0.0.1:8090/media/datafile/2014/06/02/boston_income.zip'
-            , 'return_to_dataverse_url' : http://localhost:8080/dataset.xhtml?id=245&versionId=26
-            }
     """
-    if shp_dict is None:
-        return None
+    assert(dv_session_token, not None)
+    assert(len(dv_session_token), not 0)
+    assert(type(dataverse_info_dict), dict)
 
-    if not all(rkey in shp_dict.keys() for rkey in DV_API_REQ_KEYS):
-        missing_keys = [rkey for rkey in DV_API_REQ_KEYS if rkey not in shp_dict.keys() ]
-        raise Exception('Not all keys found in %s' % missing_keys)
-
-    datafile_download_url = shp_dict.get('datafile_download_url', '')
-    datafile_filename = shp_dict.get('filename', '')
-    for non_essential_param in NON_SHAPEFILE_SET_PARAMS:
-        if shp_dict.has_key(non_essential_param):
-            shp_dict.pop(non_essential_param)
-    
-    for k in shp_dict.keys():
-        print '%s->%s' % (k, shp_dict[k])
-    
+    #------------------------------
+    # (1) Validate the data
+    #------------------------------
+    #dataverse_info_dict.update({'datafile_id':None})   # for testing
+    validation_form = DataverseInfoValidationForm(dataverse_info_dict)
+    if not validation_form.is_valid():
+        errs = [ '%s: %s' % (k, v) for k,v in validation_form.errors.items()]
+        print (errs)
+        raise Exception('\n'.join(errs))
     
     #------------------------------
-    # Check for existing shapefile sets based on the kwargs
+    # (2) Look for existing shapefiles in the database
+    #    ShapefileInfo objects are routinely deleted, but if file is already here, use it
     #------------------------------
-    params_for_existing_check = dict(datafile_id=shp_dict.get('datafile_id', -1)\
-                                    , dv_user_id=shp_dict.get('dv_user_id', -1)\
+    params_for_existing_check = dict(datafile_id=dataverse_info_dict.get('datafile_id', -1)\
+                                    , dv_user_id=dataverse_info_dict.get('dv_user_id', -1)\
                                     )
     existing_sets = ShapefileInfo.objects.filter(**params_for_existing_check\
-                                ).values_list('md5', flat=True\
+                                ).values_list('id', flat=True\
                                 ).order_by('created')
 
-    existing_sets = list(existing_sets)
+    existing_shapefile_info_ids = list(existing_sets)
+    msgt('existing_shapefile_info_ids: %s' % existing_shapefile_info_ids)
     
-    print '-' *40
-    print 'Existing set count: %s' % len(existing_sets)
+    # add dv_session_token token to dataverse_info_dict
+    #
+    dataverse_info_dict['dv_session_token'] = dv_session_token
     
     #------------------------------
-    # Existing ShapefileInfo(s) found:
-    #  (a) Update the dv_session_token
+    # (3) Existing ShapefileInfo(s) found:
+    #  (a) Update the ShapefileInfo object
     #  (b) Delete other groups ShapefileInfo object for this datafile and user
     #  (c) Return the md5
     #------------------------------
-    if len(existing_sets) > 0:
-        shp_md5 = existing_sets.pop()
-
-        # Update the dv_session_token
-        try:
-            shp_set = ShapefileInfo.objects.get(md5=shp_md5)
-        except ShapefileInfo.DoesNotExist:
-            # serious error!
-            return None
-            
-        shp_set.dv_session_token = dv_session_token
-        shp_set.return_to_dataverse_url = shp_dict.get('return_to_dataverse_url', '')
-        shp_set.save()
+    if len(existing_shapefile_info_ids) > 1:
         
+        # pop the last ShapefileInfo id off the list of existing_shapefile_info_ids
+        shp_id = existing_shapefile_info_ids.pop()
+
+        # delete the rest
         if len(existing_sets) > 0:
-            ShapefileInfo.objects.filter(md5__in=existing_sets).delete()   # delete older ShapefileInfo(s)
-        return shp_md5
+            ShapefileInfo.objects.filter(id__in=existing_shapefile_info_ids).delete()   # delete older ShapefileInfo(s)
+        
+    msgt('(4) Get or create a new ShapefileInfo object')
 
     #------------------------------
-    # Make a new ShapefileInfo
+    # (4) Get or create a new ShapefileInfo object
     #------------------------------
-    if dv_session_token:
-        shp_dict['dv_session_token'] = dv_session_token
-    shapefile_info = ShapefileInfo(**shp_dict)
-    shapefile_info.save()
+    try:
+        # Existing ShapefileInfo:
+        #   (1) Assume file is already saved
+        #   (2) update the data
+        #
+        shapefile_info = ShapefileInfo.objects.get(**params_for_existing_check)
+
+        for key, value in dataverse_info_dict.iteritems():
+            setattr(shapefile_info, key, value)
+        
+        # Save
+        shapefile_info.save()
+
+        if shapefile_info.dv_file:
+            return shapefile_info.md5
     
+        # But the file isn't there!!  Delete ShapefileInfo and make a new one
+        shapefile_info.delete()
+        
+    except ShapefileInfo.DoesNotExist:
+        pass
+    except:
+        raise Exception('Failed to Get or create a new ShapefileInfo object')
+
+    msg('new file')
+    
+    #------------------------------
+    # New shapefile info, create object and attach file
+    #------------------------------
+    shapefile_info = ShapefileInfo(**dataverse_info_dict)
+    shapefile_info.save()
+                
+    #------------------------------
     # Download and attach file
+    #------------------------------
+    datafile_download_url = dataverse_info_dict.get('datafile_download_url', '')
+    datafile_filename = dataverse_info_dict.get('filename', '')
+    
     img_temp = NamedTemporaryFile(delete=True)
     img_temp.write(urllib2.urlopen(datafile_download_url).read())
     img_temp.flush()
@@ -112,6 +118,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, shp_dict):
     shapefile_info.save()
     
     return shapefile_info.md5
+
 
 def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
     """
