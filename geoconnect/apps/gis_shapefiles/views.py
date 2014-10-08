@@ -16,7 +16,7 @@ from apps.gis_shapefiles.models import ShapefileInfo, WORLDMAP_MANDATORY_IMPORT_
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 
-from apps.worldmap_import.models import WorldMapImportAttempt
+from apps.worldmap_connect.models import WorldMapImportAttempt
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
@@ -73,7 +73,7 @@ def view_examine_dataset(request):
             return HttpResponse('saved')            
         else:
             d['Form_Err_Found'] = True
-            print shp_form.errors
+            #print shp_form.errors
             #return HttpResponse('blah - not valid')
     else:
         shp_form = ShapefileInfoForm

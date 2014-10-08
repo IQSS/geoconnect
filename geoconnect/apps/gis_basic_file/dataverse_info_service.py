@@ -5,17 +5,28 @@ See WorldMap model dataverse_info.models.DataverseInfo
 Translate the GISDataFile object into a dict that can be passed to the DataverseInfoValidationForm*
     * https://github.com/cga-harvard/cga-worldmap/blob/e8554beda280aefc02e0b75d10613272a4ca2786/src/GeoNodePy/geonode/dataverse_info/forms.py
 """
-from django.forms.models import model_to_dict
-from apps.gis_basic_file.models import GISDataFile
+#from django.forms.models import model_to_dict
+#from apps.gis_basic_file.models import GISDataFile
+from dataverse_info.forms import DataverseInfoValidationForm
 
-def format_gisbasicfile_for_worldmap(gis_file_obj):
-    if not type(GISDataFile):
-        raise TypeError('gis_file_obj is not a GISDataFile')
-        
-    return model_to_dict(gis_file_obj)
+
+def get_dataverse_info_dict(gis_data_file):
+    """
+    Convert a GISDataFile or ShapefileInfo object into a dict containing only DataverseInfo attributes
+    
+    GISDataFile and ShapefileInfo should always pass the DataverseInfoValidationForm
+    """
+    assert (gis_data_file.__class__.__name__ in ('GISDataFile', 'ShapefileInfo'), True)
+
+    f = DataverseInfoValidationForm(gis_data_file.__dict__)    
+    
+    if f.is_valid():
+        return f.cleaned_data
+    
+    raise Exception('Dataverse Info is not valid')
+    
 """
-f = GISDataFile.objects.all()[0]
-d = model_to_dict(f)
-for k, v in d.items():
-    print """   , %s='%s'""" % (k,v)
+from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
+from apps.gis_shapefiles.models import ShapefileInfo
+s = ShapefileInfo.objects.all()[0]
 """

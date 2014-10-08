@@ -9,8 +9,8 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
-from apps.worldmap_import.models import WorldMapImportSuccess
-from apps.worldmap_import.send_shapefile_service import SendShapefileService
+from apps.worldmap_connect.models import WorldMapImportSuccess
+from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 

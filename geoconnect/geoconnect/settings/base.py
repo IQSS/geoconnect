@@ -216,7 +216,7 @@ LOCAL_APPS = (
     'apps.style_layer_information',
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
-    'apps.worldmap_import',
+    'apps.worldmap_connect',
     #'folium_maker',     # quick experiment
 )
 

@@ -102,6 +102,8 @@ class ShapefileInfo(GISDataFile):
     class Meta:
         ordering = ('-modified', 'datafile_label')
         #unique_together = ('name', 'shapefile_group')
+        verbose_name = 'Shapefile Information'
+        verbose_name_plural = 'Shapefile Information'
 
 
 class SingleFileInfo(TimeStampedModel):

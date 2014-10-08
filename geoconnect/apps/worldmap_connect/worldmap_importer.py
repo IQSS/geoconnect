@@ -12,13 +12,7 @@ if __name__=='__main__':
 from geo_utils.key_checker import KeyChecker
 from geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
-"""
-try:
-    from test_token import WORLDMAP_TOKEN_FOR_DV, WORLDMAP_SERVER_URL
-except:
-    WORLDMAP_TOKEN_FOR_DV = 'fake-key'
-    WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
-"""
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,7 +23,7 @@ class WorldMapImporter:
     Attempts to create a WorldMap layer by sending over a shapefile and Dataverse related parameters 
 
     Uses the WorldMap API described here: 
-        https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
+        https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_connect.md
 
     This is meant to be run asynchronously, thus the 4 minute timeout
     """
@@ -75,7 +69,7 @@ class WorldMapImporter:
         :type fullpath_to_file: str or unicode
         
         :returns: python dict with keys for "success" as well as messages, meteadata, etc.  
-                see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
+                see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_connect.md
         :rtype: python dict
         """
         
@@ -102,7 +96,7 @@ class WorldMapImporter:
         key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        
         if not key_check_response.success:
             logger.error(key_check_response.err_msg + ' Info not in "layer_params"')
-            return self.get_result_msg(key_check_response.err_msg)
+            return self.get_result_msg(False, key_check_response.err_msg)
 
         #
         #   Prepare the actual file to send to WorldMap
@@ -116,16 +110,18 @@ class WorldMapImporter:
             logger.debug('import url: %s' % self.api_import_url)
             
             logger.debug('layer_params: %s' % layer_params)
-            req = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
-            wm_response_dict = req.json()
+            r = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
+            #logger.debug('req.data: %s' % req.data)
+            
+            wm_response_dict = r.json()
             logger.debug('response: %s' % wm_response_dict)
             if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
                 wm_response_dict.pop('success')
                 return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
                                 
             elif wm_response_dict.has_key('message'):
-                msg = wm_response_dict['message']
-                return self.get_result_msg(False, msgs)
+                err_msgs = wm_response_dict['message']
+                return self.get_result_msg(False, err_msgs)
                 
         except requests.exceptions.Timeout:
             return self.get_result_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
@@ -136,53 +132,16 @@ class WorldMapImporter:
         return self.get_result_msg(False, 'The import failed for an unknown reason')
         
          
-    def send_shapefile_to_worldmap2(self, title, abstract, fullpath_to_file, email):
-        """Alternative function for "send_shapefile_to_worldmap"
-        Prepares the python dictionary of layer_params and calls usual function for "send_shapefile_to_worldmap"
-        
-        :param title: Layer title
-        :type title: str or unicode
-        :param abstract: Layer title
-        :type abstract: str or unicode
-        :param fullpath_to_file: file name, including path, to shapfile in .zip format
-        :type fullpath_to_file: str or unicode
-        :param email: Email address of DV User
-        :type email: str or unicode in email format
-        
-        :returns: python dict with keys for "success" as well as messages, meteadata, etc.  
-                see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_import.md
-        :rtype: python dict
-        """
-        if title is None or len(title.strip())== 0:
-            return self.get_result_msg(False, 'A title is required')
-        if abstract is None or len(abstract.strip())== 0:
-            return self.get_result_msg(False, 'An abstract is required')
-        if email is None or len(email.strip())== 0:
-            return self.get_result_msg(False, 'An email is required')
-        if not os.path.isfile(fullpath_to_file):
-            return self.get_result_msg(False, 'This file does not exist: %s' % fullpath_to_file)
-            
-        shapefile_name = os.path.basename(fullpath_to_file)
-        params = {'title' : title\
-                , 'abstract' : abstract\
-                , 'email' : email\
-                , 'shapefile_name' : shapefile_name\
-                , 'geoconnect_token' : settings.WORLDMAP_TOKEN_FOR_DV\
-                }
-
-        return self.send_shapefile_to_worldmap(params, fullpath_to_file)
-        
+   
         
 if __name__ == '__main__':
     """
     f1 = '../scripts/worldmap_api/test_shps/blah.zip'
     wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
-    print( wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f1, 'raman_prasad@harvard.edu'))
     """
     f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
     wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
     
-    print (wmi.send_shapefile_to_worldmap2('St Louis income 1990', 'St. Louis data', f2, 'raman_prasad@harvard.edu'))
     #{u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_vqs', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_vqs', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_vqs'}
     """
     

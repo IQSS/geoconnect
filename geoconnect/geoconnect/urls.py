@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 
     url(r'^%sgeoconnect/'% URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
-    url(r'^%sworldmap/' % URL_PREFIX, include('apps.worldmap_import.urls')),
+    url(r'^%sworldmap/' % URL_PREFIX, include('apps.worldmap_connect.urls')),
 
     url(r'^%sclassify/' % URL_PREFIX, include('apps.classification.urls')),
 

@@ -63,8 +63,9 @@ def view_mapit_incoming_token64(request, dataverse_token):
     msgt(r.text)
     msg(r.status_code)
 
-    #   FIX: Add to error page
-    #
+    # ------------------------------
+    # Check if valid status code
+    # ------------------------------
     if not r.status_code == 200:
         err_msg1 = 'Status code from dataverse: %s' % (r.status_code)
         err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
@@ -75,8 +76,9 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                         
         return HttpResponse("Sorry! Failed to retrieve Dataverse file")
 
-    #   FIX: Add to error page
-    #
+    # ------------------------------
+    # Attempt to convert response to JSON
+    # ------------------------------
     jresp = r.json()
     if not type(jresp) is dict:
         err_msg1 = 'Failed to convert response to JSON\nStatus code from dataverse: %s' % (r.status_code)
@@ -85,14 +87,15 @@ def view_mapit_incoming_token64(request, dataverse_token):
         return view_formatted_error_page(request\
                                          , FAILED_TO_CONVERT_RESPONSE_TO_JSON\
                                          , err_msg1)
-                                         
-    
-    # How does the response look?  
+                                 
+    # ------------------------------
+    # Examine response
+    #
     # If it's OK:
     #   (1) validate the DataverseInfo returned by Dataverse
     #   (2) Create a ShapefileInfo object
     #   (3) Download the dataverse file
-    #
+    # ------------------------------
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
         data_dict = jresp.get('data')
 
@@ -106,6 +109,9 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                     
         return HttpResponseRedirect(choose_shapefile_url)
     
+    # ------------------------------
+    # Failed!
+    # ------------------------------
     err_msg1 = 'Unsuccessful request to Dataverse\nStatus code from dataverse: %s\nStatus: %s' % (r.status_code, jresp.get('status', 'not found'))
     err_msg2 = err_msg1 + '\nResponse: %s' % (r.text) 
     logger.error(err_msg2)

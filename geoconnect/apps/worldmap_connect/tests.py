@@ -1,26 +1,27 @@
 import unittest
 from django.test import TestCase
-from worldmap_importer import WorldMapImporter
+from apps.worldmap_connect.worldmap_importer import WorldMapImporter
 from StringIO import StringIO
+from os.path import dirname, realpath, join
 import os
 
-"""
-python manage.py test apps.worldmap_import.tests.WorldMapImporterTestCase.test_importer_rejects_bad_params_01
-"""
 
-try:
-    from test_token import WORLDMAP_SERVER_URL
-except:
-    WORLDMAP_SERVER_URL = 'http://worldmap-fake-url.harvard.edu'
+"""
+python manage.py test apps.worldmap_connect.tests.WorldMapImporterTestCase.test_importer_rejects_bad_params_01
+"""
+from django.conf import settings
+
+   
        
 class WorldMapImporterTestCase(TestCase):
     def setUp(self):
+        self.test_file_directory = join(dirname(realpath(__file__)), 'test_file')
         pass
         #Animal.objects.create(name="lion", sound="roar")
         #Animal.objects.create(name="cat", sound="meow")
 
-    def get_worldmap_importer_instance(self, timeout=None):
-        worldmap_server_url = WORLDMAP_SERVER_URL
+    def get_worldmap_connecter_instance(self, timeout=None):
+        worldmap_server_url = settings.WORLDMAP_SERVER_URL
         if timeout:
             return WorldMapImporter(worldmap_server_url, timeout)
         else:
@@ -33,94 +34,64 @@ class WorldMapImporterTestCase(TestCase):
                 , 'shapefile_name' : fname\
                 }
         return layer_params
-        
+    
+    def get_file_fullpath(self, fname):
+        return join(self.test_file_directory, fname)
+    
+    
+    #@unittest.skip('test_importer_rejects_bad_params_01')
     def test_importer_rejects_bad_params_01(self):
         """On the WorldMapImporter, check the function: send_shapefile_to_worldmap"""
+        
+        wmi = self.get_worldmap_connecter_instance()
+        
+        # Test params
+        #
         fname = 'blah.zip'
-        
-        
-        wmi = self.get_worldmap_importer_instance()
-        
-        # Test params missing shapefile_name
         layer_params = self.get_layer_test_params(fname)
-        layer_params.pop('shapefile_name')
+
+        # Try bad file path
+        #
         msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
-        print(msg)
-        print('-'*90)
-        self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": shapefile_name', 'success': False})
-        
+        self.assertEqual(msg, {'message': 'This file does not exist: blah.zip', 'success': False})
+
+        # Try with missing shapefile_name
+        #
+        layer_params.pop('shapefile_name')
+        fname_fullpath = self.get_file_fullpath(fname)
+        msg = wmi.send_shapefile_to_worldmap(layer_params, fname_fullpath)
+        self.assertEqual(msg, {'message': "The following required keys were missing: ['shapefile_name']", 'success': False})
+
         # Test params missing email
         layer_params = self.get_layer_test_params(fname)
         layer_params.pop('email')
-        msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
-        self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": email', 'success': False})
+        msg = wmi.send_shapefile_to_worldmap(layer_params, fname_fullpath)
+        print "error: [%s]" % msg
+        self.assertEqual(msg, {'message': "The following required keys were missing: ['email']", 'success': False})
 
         # Test params missing title
         layer_params = self.get_layer_test_params(fname)
         layer_params.pop('title')
-        msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
-        self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": title', 'success': False})
+        msg = wmi.send_shapefile_to_worldmap(layer_params, fname_fullpath)
+        self.assertEqual(msg, {'message': "The following required keys were missing: ['title']", 'success': False})
         
         # Test params missing abstract
         layer_params = self.get_layer_test_params(fname)
         layer_params.pop('abstract')
-        msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
-        self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": abstract', 'success': False})
+        msg = wmi.send_shapefile_to_worldmap(layer_params, fname_fullpath)
+        self.assertEqual(msg, {'message': "The following required keys were missing: ['abstract']", 'success': False})
         
         # Test params missing title, abstract, email
         layer_params = self.get_layer_test_params(fname)
         layer_params.pop('title')
         layer_params.pop('abstract')
         layer_params.pop('email')
-        msg = wmi.send_shapefile_to_worldmap(layer_params, fname)
-        self.assertEqual(msg, {'message': 'These parameters are missing from "layer_params": title, abstract, email', 'success': False})
-        
+        msg = wmi.send_shapefile_to_worldmap(layer_params, fname_fullpath)
+        self.assertEqual(msg, {'message': "The following required keys were missing: ['title', 'abstract', 'email']", 'success': False})
         
     
-        
-    def test_importer_rejects_bad_params_02(self):
-        """On the WorldMapImporter, check the function: send_shapefile_to_worldmap2"""
-        
-        f1 = 'blah.zip'
-        title = 'St Louis income 1990'
-        email = 'user@university.edu'
-        abstract = 'St. Louis data, long abstract regarding study, authors, etc. etc'
-        
-        wmi = self.get_worldmap_importer_instance()
-
-        # Test no title 1
-        msg = wmi.send_shapefile_to_worldmap2(None, abstract, f1, email)
-        self.assertEqual(msg, {'message': 'A title is required', 'success': False})
-
-        # Test no title 2
-        msg = wmi.send_shapefile_to_worldmap2('  ', abstract, f1, email)
-        self.assertEqual(msg, {'message': 'A title is required', 'success': False})
-        #self.assertEqual(cat.speak(), 'The cat says "meow"')
-
-        # Test no abstract 1
-        msg = wmi.send_shapefile_to_worldmap2(title, None, f1, email)
-        self.assertEqual(msg, {'message': 'An abstract is required', 'success': False})
-
-        # Test no abstract 2
-        msg = wmi.send_shapefile_to_worldmap2(title, ' ', f1, email)
-        self.assertEqual(msg, {'message': 'An abstract is required', 'success': False})
-
-        # Test no email
-        msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email='')
-        self.assertEqual(msg, {'message': 'An email is required', 'success': False})
     
-    def test_importer_rejects_nonexistent_file(self):
-        f1 = 'test-shape-file-blah.zip'
-        title = 'St Louis income 1990'
-        abstract = 'St. Louis data, long abstract regarding study, authors, etc. etc'
-        email = 'user@university.edu'
-        
-        wmi = self.get_worldmap_importer_instance()
-        
-        msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email)
-        self.assertEqual(msg,  {'message': 'This file does not exist: test-shape-file-blah.zip', 'success': False})
- 
-    #@unittest.skip("Skip test that requires running WorldMap server")
+    @unittest.skip("Skip test that requires running WorldMap server")
     def test_timeout_exception(self):
         """
         These tests actually call the WorldMap API, e.g., a server has to be available
@@ -133,7 +104,7 @@ class WorldMapImporterTestCase(TestCase):
         
         # Should reject a non .zip file
         #
-        wmi = self.get_worldmap_importer_instance()
+        wmi = self.get_worldmap_connecter_instance()
         msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email)
 
         err_msg = 'Unexpected error during upload: Saving is not implemented for extension .txt'
@@ -143,7 +114,7 @@ class WorldMapImporterTestCase(TestCase):
         #   Set request to 0.001 seconds to force timeout
         #
         f1 = os.path.join(current_dir, 'test_file', 'test_file01.zip')
-        wmi = self.get_worldmap_importer_instance(timeout=0.001)
+        wmi = self.get_worldmap_connecter_instance(timeout=0.001)
         msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email)
 
         err_msg = 'This request timed out.  (Time limit: 0.001 seconds(s))'
@@ -154,7 +125,7 @@ class WorldMapImporterTestCase(TestCase):
         #   Set .zip containing text file -- not a shapefile set
         #
         f1 = os.path.join(current_dir, 'test_file', 'test_file01.zip')
-        wmi = self.get_worldmap_importer_instance()
+        wmi = self.get_worldmap_connecter_instance()
         msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email)
         
         #return
@@ -167,7 +138,7 @@ class WorldMapImporterTestCase(TestCase):
         #   .zip contains correct shapefile set names -- but they are empty
         #
         f1 = os.path.join(current_dir, 'test_file', 'fail_shp.zip')
-        wmi = self.get_worldmap_importer_instance()
+        wmi = self.get_worldmap_connecter_instance()
         msg = wmi.send_shapefile_to_worldmap2(title, abstract, f1, email)
         
         err_msg_found3 = msg['message'].startswith('Unexpected error during upload: Could not save the layer')

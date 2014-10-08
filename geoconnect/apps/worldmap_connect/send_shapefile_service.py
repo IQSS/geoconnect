@@ -3,8 +3,10 @@ import logging
 from django.conf import settings
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
-from apps.worldmap_import.worldmap_importer import WorldMapImporter
+
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
+from apps.worldmap_connect.worldmap_importer import WorldMapImporter
+
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
 
@@ -38,7 +40,7 @@ class SendShapefileService:
             logger.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
-
+        assert(type(self.shapefile_info), ShapefileInfo)
     
     def send_shapefile_to_worldmap(self):
         """
@@ -53,16 +55,14 @@ class SendShapefileService:
         #
         if not self.verify_shapefile():
             return False
-            
+        
         # (2) Check if a successful import already exists (WorldMapImportSuccess), if it does, set the "self.import_success_obj"
         #
         if self.does_successful_import_already_exist():
-            print 'yes'
             return True
         elif self.has_err:      # This may have produced an error
             print 'err!'
             return False
-        
         # (3) Make a WorldMapImportAttempt object and set it to "self.import_attempt_obj"
         #
         if not self.make_import_attempt_object():
@@ -73,7 +73,7 @@ class SendShapefileService:
         #
         if not self.send_file_to_worldmap():
             return False
-            
+        
         # (5) Process the WorldMap response
         #
         if not self.process_worldmap_response():
@@ -83,6 +83,7 @@ class SendShapefileService:
             
             
     def add_err_msg(self, msg):
+        print (msg)
         self.has_err = True
         self.err_msgs.append(msg)
     
@@ -171,7 +172,7 @@ class SendShapefileService:
         if not zipped_shapefile_name:
             self.add_err_msg('make_import_attempt_object: Shapefile basename was not found')
             return False
-            
+        
         wm_attempt = WorldMapImportAttempt(gis_data_file=self.shapefile_info\
                                         , title=zipped_shapefile_name\
                                         #, abstract='[place holder abstract for %s]' % self.shapefile_info.name\
@@ -201,7 +202,8 @@ class SendShapefileService:
             return False
         
         # Prepare the parameters
-        layer_params = self.import_attempt_obj.get_params_for_worldmap_import(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DV)
+        layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DV)
+        print('send_file_to_worldmap 3')
 
         # Instantiate the WorldMapImporter object and attempt the import
         #
@@ -232,8 +234,10 @@ class SendShapefileService:
                                     )
         self.import_failure_object.save()
         
+        
     def get_import_success_object(self):
         return self.import_success_obj
+
 
     def process_worldmap_response(self):
         if not type(self.worldmap_response) is dict:

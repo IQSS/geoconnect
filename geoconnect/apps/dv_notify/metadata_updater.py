@@ -111,12 +111,12 @@ class MetadataUpdater:
         return self.get_result_msg(False, 'The import failed for an unknown reason')
        
     @staticmethod
-    def update_dataverse_with_metadata(worldmap_import_success_obj):
-        if worldmap_import_success_obj is None:
-            logger.error('worldmap_import_success_obj is None')
+    def update_dataverse_with_metadata(worldmap_connect_success_obj):
+        if worldmap_connect_success_obj is None:
+            logger.error('worldmap_connect_success_obj is None')
             return False
             
-        params_for_dv = worldmap_import_success_obj.get_params_for_dv_update()
+        params_for_dv = worldmap_connect_success_obj.get_params_for_dv_update()
         mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         resp_dict = mu.send_info_to_dataverse(params_for_dv)
         print ('>>>>>>>>>',resp_dict)
@@ -126,7 +126,7 @@ class MetadataUpdater:
     
 if __name__ == '__main__':
     #f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    from apps.worldmap_import.models import WorldMapImportSuccess
+    from apps.worldmap_connect.models import WorldMapImportSuccess
     
     if WorldMapImportSuccess.objects.count() > 0:
         success_obj = WorldMapImportSuccess.objects.all().order_by('-modified')[0]

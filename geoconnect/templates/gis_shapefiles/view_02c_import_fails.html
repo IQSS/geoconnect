@@ -8,7 +8,7 @@
 			</tr>
 		{% for fail_info in import_fail_list %}
 		<tr>
-			<td><a href="{% url 'admin:worldmap_import_worldmapimportattempt_change' fail_info.import_attempt.id %}">(admin)</a>
+			<td><a href="{% url 'admin:worldmap_connect_worldmapimportattempt_change' fail_info.import_attempt.id %}">(admin)</a>
 			    {{ fail_info.msg }}
 			    <br />{{ fail_info.orig_response }}</td>
 			<td>{{ fail_info.modified }}</td>

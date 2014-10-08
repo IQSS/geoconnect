@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
 
 class WorldMapImportFailInline(admin.TabularInline):
     model = WorldMapImportFail

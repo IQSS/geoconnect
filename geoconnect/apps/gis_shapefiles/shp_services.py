@@ -4,13 +4,12 @@ import urllib2
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
-#from apps.gis_basic_file.forms import GISDataFileValidationForm
 from dataverse_info.forms import DataverseInfoValidationForm
 
 from geo_utils.msg_util import *
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_import.models import WorldMapImportAttempt, WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportSuccess
 
 import logging
 logger = logging.getLogger(__name__)
@@ -85,7 +84,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
         # Save
         shapefile_info.save()
 
-        if shapefile_info.dv_file:
+        # If the file is still available, continue on
+        if shapefile_info.is_dv_file_available():
             return shapefile_info.md5
     
         # But the file isn't there!!  Delete ShapefileInfo and make a new one

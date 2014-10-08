@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django.db import models
 from hashlib import md5
 import json
@@ -5,7 +6,12 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from apps.core.models import TimeStampedModel
+
+from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
+
 from apps.gis_basic_file.models import GISDataFile
+#from dataverse_info.forms import DataverseInfoValidationForm
+
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.dv_notify.models import KEY_UPDATES_TO_MATCH_DATAVERSE_API
 
@@ -22,13 +28,13 @@ class WorldMapImportAttempt(TimeStampedModel):
     """
     Record the use of the WorldMap Import API.  This object records details including the DV user and file which will be sent to the WorldMap for import via API. 
     
-    The result of the API call will be saved in either a :model:`worldmap_import.WorldMapImportSuccess` or :model:`worldmap_import.WorldMapImportFail` object
+    The result of the API call will be saved in either a :model:`worldmap_connect.WorldMapImportSuccess` or :model:`worldmap_connect.WorldMapImportFail` object
     """
     title = models.CharField(max_length=255)
     abstract = models.TextField()
     shapefile_name = models.CharField(max_length=255)
 
-    gis_data_file = models.ForeignKey(GISDataFile, null=True, blank=True, on_delete=models.SET_NULL)  # ties back to user info
+    gis_data_file = models.ForeignKey(GISDataFile, null=True, blank=True, on_delete=models.CASCADE)  # ties back to user info
 
     import_success = models.BooleanField(default=False)
     
@@ -128,20 +134,20 @@ class WorldMapImportAttempt(TimeStampedModel):
         return latest_attempt
         
     
-    
-    def get_params_for_worldmap_import(self, geoconnect_token=None):
+    def get_params_for_worldmap_connect(self, geoconnect_token=None):
         """
         Prepare partial parameters to send WorldMap import request.
         
         Example of params:
-        {'title' : 'Boston Income'\
+              {   'title' : 'Boston Income'\
                 , 'abstract' : 'Shapefile containing Boston, MA income levels from 19xx'\
                 , 'email' : 'researcher@school.edu'\
                 , 'shapefile_name' : 'zipfile_name.zip'\
                 , 'geoconnect_token' : 'token-for-api-use'\
+                , 'dataverse_info' : {--DataverseInfo JSON--}
                 }
         Note: The "geoconnect_token" parameter is provided by the class calling the function.
-            At this point it is worldmap_import.WorldMapImporter.
+            At this point it is worldmap_connect.WorldMapImporter.
             if a geoconnect_token is not supplied, it will not be included in the params dict
             
         :param geoconnect_token: key used to access the WorldMap API
@@ -149,11 +155,26 @@ class WorldMapImportAttempt(TimeStampedModel):
         :returns: parameters formatted to call the WorldMap import API. 
         :rtype: dict
         """
+        print ('get_params_for_worldmap_connect')
         d = {}
         d['title'] = self.title
         d['abstract'] = self.abstract
         d['email'] = self.dv_user_email
         d['shapefile_name'] = self.shapefile_name
+        print ('get_params_for_worldmap_connect 2', d)
+        print '*'*10
+        
+        #f = DataverseInfoValidationForm(self.gis_data_file.__dict__)
+        #if f.is_valid():
+        #    dataverse_info = f.cleaned_data
+        #print ('get_params_for_worldmap_connect 3', dataverse_info)
+        # add dataverse info
+        dataverse_info_dict = get_dataverse_info_dict(self.gis_data_file)
+        if dataverse_info_dict is not None:
+            d.update(dataverse_info_dict)
+            #d['dataverse_info'] = get_dataverse_info_dict(self.gis_data_file)
+        
+        print 'hooray!'
         if geoconnect_token:
             d['geoconnect_token'] = geoconnect_token
         return d
@@ -316,7 +337,7 @@ from apps.gis_basic_file.models import *
 for g in GISDataFile.objects.all():
     dir(g)
 
-from apps.worldmap_import.models import *
+from apps.worldmap_connect.models import *
 for wis in WorldMapImportSuccess.objects.all():
     wis.dv_params()
 """

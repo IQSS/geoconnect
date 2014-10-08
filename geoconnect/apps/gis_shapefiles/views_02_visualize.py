@@ -6,8 +6,8 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_import.models import WorldMapImportSuccess
-from apps.worldmap_import.send_shapefile_service import SendShapefileService
+from apps.worldmap_connect.models import WorldMapImportSuccess
+from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
 
@@ -106,17 +106,20 @@ class ViewAjaxVisualizeShapefile(View):
         # (3) Let's visualize this on WorldMap!
         #
         msgt('(3) Let\'s visualize this on WorldMap!')
+
         send_shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
+
         send_shp_service.send_shapefile_to_worldmap()
+
         import_success_object = send_shp_service.get_import_success_object()
+
         if import_success_object is not None:
-            msgt('(3a) It worked!')
             return self.generate_json_success_response(request, shapefile_info, import_success_object)
 
-
+        
         if send_shp_service.has_err:
-            msgt('(3a) It worked!')
-
+            msgt('(3a) It didn\'t worked!')
+            msg(send_shp_service.err_msgs)
             # (3b) Uh oh!  Failed to visualize
             #
             err_note = "Sorry!  The shapefile mapping did not work.  Please return to the Dataverse. <br />%s" % '<br />'.join(send_shp_service.err_msgs)
