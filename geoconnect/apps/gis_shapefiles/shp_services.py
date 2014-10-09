@@ -37,7 +37,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     # quick hack for testing
     datafile_download_url = dataverse_info_dict.get('datafile_download_url', 'blah')
     if datafile_download_url.find('dvn-build') > -1 and datafile_download_url.find('https') == -1:
-        dataverse_info_dict['datafile_download_url' = datafile_download_url.replace('http', 'https')
+        dataverse_info_dict['datafile_download_url'] = datafile_download_url.replace('http', 'https')
         
     #------------------------------
     # (2) Look for existing shapefiles in the database
