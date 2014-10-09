@@ -55,6 +55,11 @@ def view_mapit_incoming_token64(request, dataverse_token):
         
     callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))    
     
+    # hack for testing until dvn-build is updated
+    #
+    if callback_url.find('dvn-build') > -1 and callback_url.find('https') == -1:
+        callback_url = callback_url.replace('http', 'https')
+    
     # Make a post request using the temporary token issued by WorldMap
     #
     TOKEN_PARAM = { settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token }
