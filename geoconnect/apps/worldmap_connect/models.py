@@ -1,7 +1,11 @@
 from __future__ import absolute_import
+
 from django.db import models
 from hashlib import md5
 import json
+
+from urlparse import urlparse
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
@@ -227,9 +231,36 @@ class WorldMapImportSuccess(TimeStampedModel):
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapImportSuccess, self).save(*args, **kwargs)
 
+    
+    def get_layer_url_base(self):
+        if not self.layer_link:
+            return None
+            
+        parsed_url = urlparse(self.layer_link)
+                        
+        return '%s://%s' % (parsed_url.scheme, parsed_url.netloc)
+    
+    def get_legend_img_url(self):
+        """
+        Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
+        """
+        if not self.layer_link:
+            return None
         
+        params = dict(request='GetLegendGraphic'\
+                    , format='image/png'\
+                    , width=20\
+                    , height=20\
+                    , layer=self.layer_name\
+                    , legend_options='fontAntiAliasing:true;fontSize:11;')
+        
+        param_str = '&'.join(['%s=%s' % (x[0], x[1]) for x in params.items() ])
+            
+        return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
 
+        #<img src="{{ import_success_object.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ import_success_object.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
         
+    
     def add_attribute_info(self, l=[]):
         if not type(l) is list:
             return 

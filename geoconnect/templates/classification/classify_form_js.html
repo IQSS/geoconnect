@@ -35,6 +35,14 @@
                    $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
                    $('#id_progress_bar').hide();    
                    
+                   // reload the legend
+                   dt_obj = new Date();
+                   {% if import_success_object %}
+                   var legend_url = "{{ import_success_object.get_legend_img_url|safe }}" + "&trefresh=" + dt_obj.getTime();
+                   //alert(legend_url);
+                   $("#legend_img").attr("src", legend_url);
+                   {% endif %}
+                   
                }else{
                    $('#simple_msg_div').show();
                    $('#simple_msg_div').empty().append(get_alert('danger', json_resp.message));
