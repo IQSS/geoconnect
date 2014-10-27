@@ -217,6 +217,7 @@ LOCAL_APPS = (
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
     'apps.worldmap_connect',
+    'apps.column_stats',
     #'folium_maker',     # quick experiment
 )
 
@@ -310,6 +311,6 @@ DV_DATAFILE_DIRECTORY = None
 BROKER_URL = 'django://'
 
 ########## WORLDMAP CONNECTION INFO
-
+WORLDMAP_TOKEN_NAME_FOR_DV = 'geoconnect_token'
 WORLDMAP_TOKEN_FOR_DV = None
 WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'

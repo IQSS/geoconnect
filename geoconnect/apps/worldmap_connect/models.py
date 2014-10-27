@@ -147,7 +147,7 @@ class WorldMapImportAttempt(TimeStampedModel):
                 , 'abstract' : 'Shapefile containing Boston, MA income levels from 19xx'\
                 , 'email' : 'researcher@school.edu'\
                 , 'shapefile_name' : 'zipfile_name.zip'\
-                , 'geoconnect_token' : 'token-for-api-use'\
+                , settings.WORLDMAP_TOKEN_NAME_FOR_DV : 'token-for-api-use'\
                 , 'dataverse_info' : {--DataverseInfo JSON--}
                 }
         Note: The "geoconnect_token" parameter is provided by the class calling the function.
@@ -180,7 +180,7 @@ class WorldMapImportAttempt(TimeStampedModel):
         
         print 'hooray!'
         if geoconnect_token:
-            d['geoconnect_token'] = geoconnect_token
+            d[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = geoconnect_token
         return d
     
     class Meta:

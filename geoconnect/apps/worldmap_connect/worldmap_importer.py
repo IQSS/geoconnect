@@ -28,7 +28,7 @@ class WorldMapImporter:
     This is meant to be run asynchronously, thus the 4 minute timeout
     """
     IMPORT_API_PATH = 'dvn/import'
-    REQUIRED_PARAM_KEYS = ['title', 'abstract', 'email', 'shapefile_name', 'geoconnect_token']
+    REQUIRED_PARAM_KEYS = ['title', 'abstract', 'email', 'shapefile_name', settings.WORLDMAP_TOKEN_NAME_FOR_DV]
     
     def __init__(self, worldmap_server_url, timeout_seconds=240, return_type_json=False):
         """
@@ -62,7 +62,7 @@ class WorldMapImporter:
                         , 'abstract' : 'Shapefile containing Boston, MA income levels from 19xx'\
                         , 'email' : 'researcher@school.edu'\
                         , 'shapefile_name' : 'zipfile_name.zip'\
-                        , 'geoconnect_token' : 'token-for-api-use'\
+                        , settings.WORLDMAP_TOKEN_NAME_FOR_DV : 'token-for-api-use'\
                         }
         :type layer_params: python dictionary
         :param fullpath_to_file: file name, including path, to shapfile in .zip format
@@ -90,7 +90,7 @@ class WorldMapImporter:
             return self.get_result_msg(False, err_msg)
         
         # Set the dv auth token
-        layer_params['geoconnect_token'] = settings.WORLDMAP_TOKEN_FOR_DV
+        layer_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DV
         
         # Check for required keys -- replace this with a form!!
         key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        
