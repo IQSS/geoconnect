@@ -23,9 +23,9 @@ class WorldMapImporterTestCase(TestCase):
     def get_worldmap_connecter_instance(self, timeout=None):
         worldmap_server_url = settings.WORLDMAP_SERVER_URL
         if timeout:
-            return WorldMapImporter(worldmap_server_url, timeout)
+            return WorldMapImporter(timeout)
         else:
-            return WorldMapImporter(worldmap_server_url)
+            return WorldMapImporter()
     
     def get_layer_test_params(self, fname):
         layer_params = {'title' : 'Boston Income'\

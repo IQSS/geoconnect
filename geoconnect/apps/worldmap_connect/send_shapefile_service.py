@@ -207,7 +207,7 @@ class SendShapefileService:
 
         # Instantiate the WorldMapImporter object and attempt the import
         #
-        wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
+        wmi = WorldMapImporter()
         worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, self.shapefile_info.get_dv_file_fullpath())
         
         if not worldmap_response:

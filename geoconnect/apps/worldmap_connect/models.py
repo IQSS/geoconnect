@@ -9,6 +9,8 @@ from urlparse import urlparse
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
+from django.conf import settings
+
 from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
@@ -178,7 +180,7 @@ class WorldMapImportAttempt(TimeStampedModel):
             d.update(dataverse_info_dict)
             #d['dataverse_info'] = get_dataverse_info_dict(self.gis_data_file)
         
-        print 'hooray!'
+        #print 'hooray!'
         if geoconnect_token:
             d[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = geoconnect_token
         return d

@@ -95,6 +95,7 @@ def view_classify_layer_form(request, import_success_md5):
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
     classify_url = classify_form.get_worldmap_classify_api_url()
+
     
     resp = requests.post(classify_url, data=classify_params, timeout=2)
     if resp.status_code == 200:
@@ -143,8 +144,8 @@ def view_classify_layer_form(request, import_success_md5):
                             , context_instance=RequestContext(request))
     #print form_content
     #return HttpResponse(form_content)
-    return render_to_response('classification/view_02_single_shapefile.html', d\
-                            , context_instance=RequestContext(request))
+    #return render_to_response('classification/view_02_single_shapefile.html', d\
+    #                        , context_instance=RequestContext(request))
                             
     
     

@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from apps.classification.models import ClassificationMethod, ColorRamp
+from apps.worldmap_connect.worldmap_api_url_helper import CLASSIFY_LAYER_API_PATH
 
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
 CLASSIFY_STRING_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True, is_string_usable=True) ]
@@ -141,7 +142,7 @@ class ClassifyLayerForm(forms.Form):
             return None
             
 
-        return '%s/dvn/classify-layer/' % (settings.WORLDMAP_SERVER_URL)
+        return CLASSIFY_LAYER_API_PATH
 
         #return '%s/dvn/classify-layer/%s/' % (settings.WORLDMAP_SERVER_URL, layer_name)
         

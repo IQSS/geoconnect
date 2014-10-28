@@ -13,6 +13,8 @@ from geo_utils.key_checker import KeyChecker
 from geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
 
+from apps.worldmap_connect.worldmap_api_url_helper import ADD_SHAPEFILE_API_PATH
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -27,20 +29,19 @@ class WorldMapImporter:
 
     This is meant to be run asynchronously, thus the 4 minute timeout
     """
-    IMPORT_API_PATH = 'dvn/import'
     REQUIRED_PARAM_KEYS = ['title', 'abstract', 'email', 'shapefile_name', settings.WORLDMAP_TOKEN_NAME_FOR_DV]
     
-    def __init__(self, worldmap_server_url, timeout_seconds=240, return_type_json=False):
+    def __init__(self, timeout_seconds=120, return_type_json=False):
         """
         :param worldmap_server_url: base server url, including http or https. e.g. http://worldmap.harvard.edu
         :type worldmap_server_url: str or unicode
         :param timeout_seconds: Optional. Number of seconds request is given until an exception is raised
         :type timeout_seconds: int or float
         """
-        self.api_import_url = os.path.join(worldmap_server_url, self.IMPORT_API_PATH)
+        self.api_import_url = ADD_SHAPEFILE_API_PATH
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
-    
+        print ('WorldMapImporter. init.  api_import_url', self.api_import_url)
     
     def get_result_msg(self, success=False, msg='', data_dict=None):
 
@@ -107,6 +108,7 @@ class WorldMapImporter:
         # Send the request to WorldMap
         #
         try:
+            print ('api url:', self.api_import_url)
             logger.debug('import url: %s' % self.api_import_url)
             
             logger.debug('layer_params: %s' % layer_params)
@@ -136,11 +138,9 @@ class WorldMapImporter:
         
 if __name__ == '__main__':
     """
-    f1 = '../scripts/worldmap_api/test_shps/blah.zip'
-    wmi = WorldMapImporter(WORLDMAP_SERVER_URL)
     """
     f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    wmi = WorldMapImporter(settings.WORLDMAP_SERVER_URL)
+    wmi = WorldMapImporter()
     
     #{u'layer_link': u'http://localhost:8000/data/geonode:poverty_1990_gfz_zip_vqs', u'worldmap_username': u'raman_prasad', u'layer_name': u'geonode:poverty_1990_gfz_zip_vqs', u'success': True, u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:poverty_1990_gfz_zip_vqs'}
     """
