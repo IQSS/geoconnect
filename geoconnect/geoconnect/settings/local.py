@@ -106,8 +106,8 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 ########## END GISFILE_SCRATCH_WORK_DIRECTORY
 
 ##### RETRIEVE WORLDMAP PARAMS
-worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
-#worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
+#worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
+worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
 worldmap_secrets_json = json.loads(open(worldmap_secrets_fname, 'r').read())
 
 ########## WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
