@@ -1,4 +1,10 @@
+import sys
+
 from dataverse_info.forms import CheckForExistingLayerFormBasic, CheckForDataverseUserLayersFormBasic
+
+from apps.worldmap_connect.worldmap_api_url_helper import GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH, GET_LAYER_INFO_BY_USER_API_PATH
+
+from geo_utils.message_helper_json import MessageHelperJSON
 
 """
 Functions that interact with the WorldMap API to:
@@ -28,28 +34,34 @@ def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
     try:
         logger.debug('get_dataverse_layer_info_by_user_and_file')
         
+        # Prepare the data
+        #
         data_params = f.cleaned_data
         data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DV
-        
-        worldmap_url = settings.WORLDMAP_SERVER_URL  + '/dvn-layer/get-existing-layer-info/'
-        
-        r = requests.post(worldmap_url\
+         
+        # Make the request
+        #       
+        r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
                         , data=data_params\
                         , timeout=30)
+                        
+        # Response looks good
+        #
+        if r.status_code == 200:
+            response_dict = r.json()
+            return MessageHelperJSON.get_dict_msg(success=True, msg='layer returned', data_dict=data_dict)
+            
+        # Response doesn't look good
+        #
+        err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+            
     except:
-        return None
-    """  
-        if request.status
-        wm_response_dict = r.json()
-        logger.debug('response: %s' % wm_response_dict)
-        if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
-            wm_response_dict.pop('success')
-            return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
-                            
-        elif wm_response_dict.has_key('message'):
-            err_msgs = wm_response_dict['message']
-            return self.get_result_msg(False, err_msgs)
-    """
-    return None
+        # Error with request
+        #
+        err_msg = "Unexpected error: %s" % sys.exc_info()[0]
+        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+            
+        
     
     

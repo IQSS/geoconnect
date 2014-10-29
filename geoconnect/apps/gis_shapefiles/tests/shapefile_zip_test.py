@@ -1,28 +1,40 @@
 from os.path import join, isdir, isfile #, dirname, abspath
 
-from django.test import TestCase
+import unittest
+import json
 
+from os.path import abspath, dirname, isfile, join
+
+from django.test import TestCase
 from django.conf import settings
 
 from geo_utils.msg_util import *
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from apps.gis_shapefiles.models import ShapefileInfo
+
 # python manage.py test apps.gis_shapefiles.tests
 #
+
 class ShapefileBasicTests(TestCase):
     #fixtures = ['polls_forms_testdata.json']
+    
+    def get_shp_params(self):
+        test_data_file = join( dirname(dirname(abspath(__file__)))\
+                                    , 'fixtures'\
+                                    , 'dataverse_info_test_fixtures_01.json'\
+                                )
+        if not isfile(test_data_file):
+                raise ValueError('File not found: %s' % test_data_file)
+
+        return json.loads(open(test_data_file, 'r').read())
+        
     
     def setUp(self):
         self.test_files_dirname = join(settings.PROJECT_TEST_FILES_DIR, 'shapefiles')
         if not isdir(self.test_files_dirname):
             raise IOError('Test directory not found: %s' % self.test_files_dirname)
 
-        shp_params = dict(datafile_id=1\
-                            , datafile_label='datafileName'\
-                            , dv_user_email='info@dataverse.org'\
-                            , dv_user_id=5\
-                            , dv_username='dv_username'\
-                        )
+        shp_params = self.get_shp_params()
         self.shp_set = ShapefileInfo(**shp_params)
         # ['datafile_id', 'datafile_label', 'dv_user_email', 'dv_user_id', 'dv_username', 'dv_file']
 
@@ -33,6 +45,7 @@ class ShapefileBasicTests(TestCase):
             raise IOError('Test file not found: %s' % fullpath)
         return fullpath
 
+    #@unittest.skip("skipping")
     def test_shapefile_check_bad_files(self):
         msgt('ShapefileBasicTests.test_shapefile_check_bad_files')
 
@@ -90,10 +103,12 @@ class ShapefileBasicTests(TestCase):
         (success, msg_or_shp_object) = zip_checker.load_shapefile_from_open_zip('buses', self.shp_set)
         self.assertEqual(success, False)
         self.assertEqual(msg_or_shp_object.startswith('Shapefile reader failed for file'), True)
+        
         #get_shapefile_setnames
         #self.assertEqual(zip_checker.err_msg, ShapefileZipCheck.ERR_MSG_NO_SHAPEFILES_IN_ZIP_ARCHIVE)
         #msg(zip_checker.err_msg)
 
+    #@unittest.skip("skip test_shapefile_good_file")
     def test_shapefile_good_file(self):
         msgt('ShapefileBasicTests.test_shapefile_good_file')
 

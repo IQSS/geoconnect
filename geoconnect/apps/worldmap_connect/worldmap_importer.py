@@ -46,7 +46,6 @@ class WorldMapImporter:
     def get_result_msg(self, success=False, msg='', data_dict=None):
 
         if type(data_dict) is dict:
-            print ('YES')
             d = MessageHelperJSON.get_dict_msg(success=success, msg=msg, data_dict=data_dict)
         else:        
             d = MessageHelperJSON.get_dict_msg(success=success, msg=msg)
@@ -115,15 +114,20 @@ class WorldMapImporter:
             r = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
             #logger.debug('req.data: %s' % req.data)
             
-            wm_response_dict = r.json()
-            logger.debug('response: %s' % wm_response_dict)
-            if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
-                wm_response_dict.pop('success')
-                return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
+            if r.status_code == 200:
+                wm_response_dict = r.json()
+                logger.debug('response: %s' % wm_response_dict)
+                if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
+                    wm_response_dict.pop('success')
+                    return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
                                 
-            elif wm_response_dict.has_key('message'):
-                err_msgs = wm_response_dict['message']
-                return self.get_result_msg(False, err_msgs)
+                elif wm_response_dict.has_key('message'):
+                    err_msgs = wm_response_dict['message']
+                    return self.get_result_msg(False, err_msgs)
+            else:
+                err_msg = "Request failed.  Status code: %s\n\n%s" % (r.status_code, r.text)
+                return self.get_result_msg(False, err_msg)
+                
                 
         except requests.exceptions.Timeout:
             return self.get_result_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
