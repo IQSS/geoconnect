@@ -90,7 +90,7 @@ class WorldMapImporter:
             return self.get_result_msg(False, err_msg)
         
         # Set the dv auth token
-        layer_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DV
+        layer_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
         
         # Check for required keys -- replace this with a form!!
         key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        

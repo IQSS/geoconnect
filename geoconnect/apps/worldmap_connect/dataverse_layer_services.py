@@ -37,7 +37,7 @@ def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
         # Prepare the data
         #
         data_params = f.cleaned_data
-        data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DV
+        data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
          
         # Make the request
         #       

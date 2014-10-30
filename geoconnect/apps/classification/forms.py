@@ -216,7 +216,7 @@ class ClassifyLayerForm(forms.Form):
                     , 'startColor' :  color_ramp_obj.start_color\
                     , 'endColor' :  color_ramp_obj.end_color\
                     , 'reverse' : False\
-                    , settings.WORLDMAP_TOKEN_NAME_FOR_DV : settings.WORLDMAP_TOKEN_FOR_DV\
+                    , settings.WORLDMAP_TOKEN_NAME_FOR_DV : settings.WORLDMAP_TOKEN_FOR_DATAVERSE\
                 }
         return params
         """

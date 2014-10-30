@@ -202,7 +202,7 @@ class SendShapefileService:
             return False
         
         # Prepare the parameters
-        layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DV)
+        layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
         print('send_file_to_worldmap 3')
 
         # Instantiate the WorldMapImporter object and attempt the import
