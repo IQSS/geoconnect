@@ -245,8 +245,8 @@ def view_shapefile(request, shp_md5, **kwargs):
     #get_successful_worldmap_attempt_from_shapefile(shapefile_info)
     if latest_import_attempt:
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
-        import_success_object = latest_import_attempt.get_success_info()
-        if import_success_object:
+        worldmap_layerinfo = latest_import_attempt.get_success_info()
+        if worldmap_layerinfo:
             if just_made_visualize_attempt:
                 d['page_title'] = 'Visualize Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
@@ -254,16 +254,16 @@ def view_shapefile(request, shp_md5, **kwargs):
                 d['page_title'] = 'Style Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
             
-            classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+            classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
             #d['form_inline'] = True
             d['classify_form'] = classify_form
             d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
             
                 
                     
-        d['import_success_object'] = import_success_object
+        d['worldmap_layerinfo'] = worldmap_layerinfo
         print(d)
-        logger.debug('import_success_object: %s' % d['import_success_object'] ) #WorldMapImportSuccess.objects.filter(import_attempt__gis_data_file=shapefile_info)
+        logger.debug('worldmap_layerinfo: %s' % d['worldmap_layerinfo'] ) #WorldMapLayerInfo.objects.filter(import_attempt__gis_data_file=shapefile_info)
         d['import_fail_list'] =latest_import_attempt.get_fail_info() 
         
         logger.debug('import_fail_list: %s' % d['import_fail_list'] ) 

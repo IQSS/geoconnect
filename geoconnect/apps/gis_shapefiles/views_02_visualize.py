@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_connect.models import WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
@@ -19,15 +19,15 @@ logger = logging.getLogger(__name__)
 
 from geo_utils.msg_util import *
 
-def render_visualize_content_div(request, shapefile_info, import_success_object):
+def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
 
     assert(request, type(HttpRequest))
     assert(shapefile_info, type(ShapefileInfo))
-    assert(import_success_object, type(WorldMapImportSuccess))
+    assert(worldmap_layerinfo, type(WorldMapLayerInfo))
 
     d = dict(shapefile_info=shapefile_info\
-            , import_success_object=import_success_object)
+            , worldmap_layerinfo=worldmap_layerinfo)
 
     return render_to_string('gis_shapefiles/view_03_visualize_layer.html'\
                     , d\
@@ -40,13 +40,13 @@ class ViewAjaxVisualizeShapefile(View):
 
     Return a JSON response
     """
-    def generate_json_success_response(self, request, shapefile_info, import_success_object):
+    def generate_json_success_response(self, request, shapefile_info, worldmap_layerinfo):
         """
         Return JSON message indicating successful visualization
 
         :param request: HttpRequest
         :param shapefile_info: ShapefileInfo
-        :param import_success_object: WorldMapImportSuccess
+        :param worldmap_layerinfo: WorldMapLayerInfo
         :return: { "success" : true
                     , "message" : "Success!"
                     , "data" : { "id_main_panel_content" : " ( map html ) "
@@ -56,9 +56,9 @@ class ViewAjaxVisualizeShapefile(View):
         """
         assert(request, type(HttpRequest))
         assert(shapefile_info, type(ShapefileInfo))
-        assert(import_success_object, type(WorldMapImportSuccess))
+        assert(worldmap_layerinfo, type(WorldMapLayerInfo))
         msg('render html')
-        visualize_html = render_visualize_content_div(request, shapefile_info, import_success_object)
+        visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
         msg('create  json_msg')
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                         , msg='Success!'
@@ -96,11 +96,11 @@ class ViewAjaxVisualizeShapefile(View):
         #
         msgt('(2) Check for a previous, successful visualization attempt')
 
-        import_success_object = get_successful_worldmap_attempt_from_shapefile(shapefile_info)
-        if import_success_object is not None:
+        worldmap_layerinfo = get_successful_worldmap_attempt_from_shapefile(shapefile_info)
+        if worldmap_layerinfo is not None:
             # (2a) Previous attempt found!!
             msg('Previous attempt found!!')
-            return self.generate_json_success_response(request, shapefile_info, import_success_object)
+            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
 
 
         # (3) Let's visualize this on WorldMap!
@@ -111,10 +111,10 @@ class ViewAjaxVisualizeShapefile(View):
 
         send_shp_service.send_shapefile_to_worldmap()
 
-        import_success_object = send_shp_service.get_import_success_object()
+        worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
 
-        if import_success_object is not None:
-            return self.generate_json_success_response(request, shapefile_info, import_success_object)
+        if worldmap_layerinfo is not None:
+            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
 
         
         if send_shp_service.has_err:

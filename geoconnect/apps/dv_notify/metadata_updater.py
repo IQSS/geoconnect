@@ -126,17 +126,17 @@ class MetadataUpdater:
     
 if __name__ == '__main__':
     #f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    from apps.worldmap_connect.models import WorldMapImportSuccess
+    from apps.worldmap_connect.models import WorldMapLayerInfo
     
-    if WorldMapImportSuccess.objects.count() > 0:
-        success_obj = WorldMapImportSuccess.objects.all().order_by('-modified')[0]
+    if WorldMapLayerInfo.objects.count() > 0:
+        success_obj = WorldMapLayerInfo.objects.all().order_by('-modified')[0]
         params = success_obj.get_params_for_dv_update()
         print('params to send: %s' % params)
 
         mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         print (mu.send_info_to_dataverse(params))
     else:
-        print('No WorldMapImportSuccess objects')
+        print('No WorldMapLayerInfo objects')
     
     
     

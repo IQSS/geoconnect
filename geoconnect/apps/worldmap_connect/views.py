@@ -9,7 +9,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
-from apps.worldmap_connect.models import WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
@@ -25,9 +25,9 @@ def show_import_success_params(request, import_success_id):
     Convenience method for reviewing the parameters
     """
     try:
-        wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
-    except WorldMapImportSuccess.DoesNotExist:
-        return HttpResponse('WorldMapImportSuccess object not found: %s' % import_success_id)
+        wm_success = WorldMapLayerInfo.objects.get(pk=import_success_id)
+    except WorldMapLayerInfo.DoesNotExist:
+        return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
 
     return HttpResponse('%s' % wm_success.get_data_dict())
 
@@ -37,9 +37,9 @@ def send_metadata_to_dataverse(request, import_success_id):
     Send metadata to dataverse: async this!!
     """
     try:
-        wm_success = WorldMapImportSuccess.objects.get(pk=import_success_id)
-    except WorldMapImportSuccess.DoesNotExist:
-        return HttpResponse('WorldMapImportSuccess object not found: %s' % import_success_id)
+        wm_success = WorldMapLayerInfo.objects.get(pk=import_success_id)
+    except WorldMapLayerInfo.DoesNotExist:
+        return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
     
     MetadataUpdater.update_dataverse_with_metadata(wm_success)
     if wm_success.import_attempt.gis_data_file:

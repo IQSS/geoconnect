@@ -1,10 +1,12 @@
 from __future__ import absolute_import
 
-from django.db import models
+from collections import OrderedDict
 from hashlib import md5
 import json
 
 from urlparse import urlparse
+
+from django.db import models
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -34,7 +36,7 @@ class WorldMapImportAttempt(TimeStampedModel):
     """
     Record the use of the WorldMap Import API.  This object records details including the DV user and file which will be sent to the WorldMap for import via API. 
     
-    The result of the API call will be saved in either a :model:`worldmap_connect.WorldMapImportSuccess` or :model:`worldmap_connect.WorldMapImportFail` object
+    The result of the API call will be saved in either a :model:`worldmap_connect.WorldMapLayerInfo` or :model:`worldmap_connect.WorldMapImportFail` object
     """
     title = models.CharField(max_length=255)
     abstract = models.TextField()
@@ -63,16 +65,16 @@ class WorldMapImportAttempt(TimeStampedModel):
         
     def get_success_info(self):
         """
-        Modify this to only retrieve the latest WorldMapImportSuccess object
+        Modify this to only retrieve the latest WorldMapLayerInfo object
 
-        :returns: latest WorldMapImportSuccess or None
+        :returns: latest WorldMapLayerInfo or None
         """
-        return self.worldmapimportsuccess_set.order_by('-modified').first()
+        return self.worldmaplayerinfo_set.order_by('-modified').first()
 
         
     def did_import_succeed(self):
         # find successful import attempts
-        if self.worldmapimportsuccess_set.count() > 0:
+        if self.worldmaplayerinfo_set.count() > 0:
             self.import_success = True
             self.save()
             return True
@@ -202,7 +204,7 @@ class WorldMapImportFail(TimeStampedModel):
         ordering = ('-modified',)
         
         
-class WorldMapImportSuccess(TimeStampedModel):
+class WorldMapLayerInfo(TimeStampedModel):
     """
     Record the results of a success WorldMap visualization.
     """
@@ -228,10 +230,10 @@ class WorldMapImportSuccess(TimeStampedModel):
     
     def save(self, *args, **kwargs):
         if not self.id:
-            super(WorldMapImportSuccess, self).save(*args, **kwargs)
+            super(WorldMapLayerInfo, self).save(*args, **kwargs)
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
-        super(WorldMapImportSuccess, self).save(*args, **kwargs)
+        super(WorldMapLayerInfo, self).save(*args, **kwargs)
 
     
     def get_layer_url_base(self):
@@ -249,18 +251,20 @@ class WorldMapImportSuccess(TimeStampedModel):
         if not self.layer_link:
             return None
         
-        params = dict(request='GetLegendGraphic'\
-                    , format='image/png'\
-                    , width=20\
-                    , height=20\
-                    , layer=self.layer_name\
-                    , legend_options='fontAntiAliasing:true;fontSize:11;')
+        params = (('request', 'GetLegendGraphic')\
+                   , ('format', 'image/png')\
+                   , ('width', 20)\
+                   , ('height', 20)\
+                   , ('layer', self.layer_name)\
+                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
+                )
+        print ('params:', params)
+        param_str = '&'.join(['%s=%s' % (k, v) for k, v in params ])
+        print ('\n\nparam_str:', param_str)
         
-        param_str = '&'.join(['%s=%s' % (x[0], x[1]) for x in params.items() ])
-            
         return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
 
-        #<img src="{{ import_success_object.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ import_success_object.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
+        #<img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
         
     
     def add_attribute_info(self, l=[]):
@@ -371,7 +375,7 @@ for g in GISDataFile.objects.all():
     dir(g)
 
 from apps.worldmap_connect.models import *
-for wis in WorldMapImportSuccess.objects.all():
+for wis in WorldMapLayerInfo.objects.all():
     wis.dv_params()
 """
     

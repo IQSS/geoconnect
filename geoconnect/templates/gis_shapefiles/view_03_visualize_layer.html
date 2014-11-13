@@ -1,5 +1,5 @@
 <!-- content for id_main_panel_content -->
-      {% if import_success_object %}
+      {% if worldmap_layerinfo %}
         A new Map Layer has been created!  
         
         <p>Press the button below to style the Map Layer:</p>
@@ -7,7 +7,7 @@
         <a href="{% url 'view_shapefile' shapefile_info.md5 %}" class="btn btn-info btn-xs">Style the Map Layer</a><br />&nbsp;
         
             <!-- WorldMap Layer in iframe -->
-            <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ import_success_object.embed_map_link }}"></iframe>
+            <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
             {% include "gis_shapefiles/import_debug_links.html" %}
 		   
       {% else %}

@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
 from geo_utils.message_helper_json import MessageHelperJSON
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ def view_classify_layer_form(request, import_success_md5):
     """
     Given a ClassifyLayerForm submission, return a JSON response
     
-    :param import_success_md5: str, md5 identifying a WorldMapImportSuccess object
+    :param import_success_md5: str, md5 identifying a WorldMapLayerInfo object
     :returns JSON response: JSON generated with the MessageHelperJSON.get_json_msg function
     """
     # Is it a POST?   
@@ -43,7 +43,7 @@ def view_classify_layer_form(request, import_success_md5):
         # technically a 405 error, but we want the JSON message to appear
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
     
-    # Is the WorldMapImportSuccess object md5 available?
+    # Is the WorldMapLayerInfo object md5 available?
     #
     if not import_success_md5:
         err_note = 'Sorry! The layer could not be identified.\n\nThe Styling option is not available.'
@@ -56,9 +56,9 @@ def view_classify_layer_form(request, import_success_md5):
     # Does the success object exist?
     #
     try: 
-        import_success_object = WorldMapImportSuccess.objects.get(md5=import_success_md5)
-    except WorldMapImportSuccess.DoesNotExist:
-        err_note = 'Sorry! The layer data could not be found.\n\nThe Styling option is not available. (WorldMapImportSuccess object not found)'
+        worldmap_layerinfo = WorldMapLayerInfo.objects.get(md5=import_success_md5)
+    except WorldMapLayerInfo.DoesNotExist:
+        err_note = 'Sorry! The layer data could not be found.\n\nThe Styling option is not available. (WorldMapLayerInfo object not found)'
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                                 , msg=err_note\
                                                 , data_dict=dict(div_content=format_major_error_message(err_note)))
@@ -70,13 +70,13 @@ def view_classify_layer_form(request, import_success_md5):
     
     # Is the form valid?
     #
-    classify_form = ClassifyLayerForm(request.POST, **dict(import_success_object=import_success_object))
+    classify_form = ClassifyLayerForm(request.POST, **dict(worldmap_layerinfo=worldmap_layerinfo))
 
     # Invalid forms are status=200 so caught by ajax
     # Form validation will replace the classification div on the page
     if not classify_form.is_valid():
         d.update( dict(classify_form=classify_form\
-                , import_success_object=import_success_object\
+                , worldmap_layerinfo=worldmap_layerinfo\
                 , error_msg='The form submission contains errors'\
                 ))
         form_content = render_to_string('classification/view_classify_form.html', d\
@@ -117,10 +117,10 @@ def view_classify_layer_form(request, import_success_md5):
         
         msg_params = classify_form.get_params_for_display()
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
-        #classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+        #classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
         success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
         d.update(dict(classify_form=classify_form\
-                , import_success_object=import_success_object\
+                , worldmap_layerinfo=worldmap_layerinfo\
                 , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
                 ))
                 
@@ -137,9 +137,9 @@ def view_classify_layer_form(request, import_success_md5):
     #                    )
     #    return HttpResponseRedirect(lnk)
     
-    classify_form = ClassifyLayerForm(**dict(import_success_object=import_success_object))
+    classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
     #d['form_inline'] = True
-    d = dict(classify_form=classify_form, import_success_object=import_success_object)
+    d = dict(classify_form=classify_form, worldmap_layerinfo=worldmap_layerinfo)
     form_content = render_to_string('classification/view_classify_form.html', d\
                             , context_instance=RequestContext(request))
     #print form_content

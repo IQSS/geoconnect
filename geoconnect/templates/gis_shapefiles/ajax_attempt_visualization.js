@@ -51,7 +51,7 @@ function submit_classify_form(){
             // Fade out classify button
             $('#id_frm_style_submit').addClass('disabled').html('Working...');
 
-           var classify_url = "{% url 'view_classify_layer_form' import_success_object.md5 %}";
+           var classify_url = "{% url 'view_classify_layer_form' worldmap_layerinfo.md5 %}";
            var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
 
               // console.log(json_resp);

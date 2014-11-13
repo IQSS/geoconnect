@@ -9,7 +9,7 @@ from dataverse_info.forms import DataverseInfoValidationForm
 from geo_utils.msg_util import *
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportSuccess
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapLayerInfo
 
 import logging
 logger = logging.getLogger(__name__)
@@ -128,16 +128,16 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
 
 def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
     """
-    Given a ShapefileInfo object, check for and return a WorldMapImportSuccess object, if available
+    Given a ShapefileInfo object, check for and return a WorldMapLayerInfo object, if available
 
     :param shapefile_info: ShapefileInfo object
-    :return: WorldMapImportSuccess object or None
+    :return: WorldMapLayerInfo object or None
     """
     assert(type(shapefile_info), ShapefileInfo)
 
     latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
     if latest_import_attempt:
-        import_success_object = latest_import_attempt.get_success_info()
-        if type(import_success_object) is WorldMapImportSuccess:
-            return import_success_object
+        worldmap_layerinfo = latest_import_attempt.get_success_info()
+        if type(worldmap_layerinfo) is WorldMapLayerInfo:
+            return worldmap_layerinfo
     return None

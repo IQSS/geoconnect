@@ -18,7 +18,7 @@
             // Fade out classify button
             $('#id_frm_style_submit').addClass('disabled').html('Working...');
             
-           var classify_url = "{% url 'view_classify_layer_form' import_success_object.md5 %}";
+           var classify_url = "{% url 'view_classify_layer_form' worldmap_layerinfo.md5 %}";
            var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
                
               // console.log(json_resp);
@@ -37,8 +37,8 @@
                    
                    // reload the legend
                    dt_obj = new Date();
-                   {% if import_success_object %}
-                   var legend_url = "{{ import_success_object.get_legend_img_url|safe }}" + "&trefresh=" + dt_obj.getTime();
+                   {% if worldmap_layerinfo %}
+                   var legend_url = "{{ worldmap_layerinfo.get_legend_img_url|safe }}" + "&trefresh=" + dt_obj.getTime();
                    //alert(legend_url);
                    $("#legend_img").attr("src", legend_url);
                    {% endif %}

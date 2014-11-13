@@ -47,22 +47,22 @@ class ClassifyLayerForm(forms.Form):
     # 
     
     def __init__(self, *args, **kwargs):
-        """Initialize using a WorldMapImportSuccess object
+        """Initialize using a WorldMapLayerInfo object
         
         """
         
-        import_success_object = kwargs.pop('import_success_object', None)
+        worldmap_layerinfo = kwargs.pop('worldmap_layerinfo', None)
         
-        if import_success_object is None:
-            raise Exception('ClassifyLayerForm does not have an import_success_object')
+        if worldmap_layerinfo is None:
+            raise Exception('ClassifyLayerForm does not have an worldmap_layerinfo')
             
         super(ClassifyLayerForm, self).__init__(*args, **kwargs)
 
-        raw_attribute_info = import_success_object.get_attribute_info()
+        raw_attribute_info = worldmap_layerinfo.get_attribute_info()
         attribute_choices = ClassifyLayerForm.format_attribute_choices_for_form(raw_attribute_info)
         
         self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices, widget=forms.Select(attrs=FIELD_CSS_ATTRS))
-        self.fields['layer_name'].initial = import_success_object.layer_name
+        self.fields['layer_name'].initial = worldmap_layerinfo.layer_name
         
     @staticmethod
     def format_attribute_choices_for_form(attr_info):

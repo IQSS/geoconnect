@@ -9,7 +9,7 @@ def format_worldmap_api_url(url_path):
     assert url_path is not None, "url path cannot be None"
     
     formatted_url = '/'.join(s for s in (settings.WORLDMAP_SERVER_URL.strip('/'), url_path.lstrip('/')))
-    print ('formatted_url: %s' % formatted_url)
+    #print ('formatted_url: %s' % formatted_url)
     return formatted_url
 
 

@@ -13,7 +13,7 @@
      "dataset_citation": "Privileged, Pete, 2014, \"social disorder\", http://dx.doi.org/10.5072/FK2/1383,  Root Dataverse,  DRAFT VERSION ", 
      "dataset_description": "", 
      "dataset_version_id": 362, 
-
+     "dataset_is_public": true,
     "dataverse_id": 1, 
     "dataverse_name": "Root", 
     "dataverse_installation_name": "Harvard Dataverse", 
