@@ -24,18 +24,9 @@ The functionality is spread across 3 systems: Dataverse, GeoConnect, and the Wor
 
 *In addition, Dataverse is undergoing a full rewrite and the API "security" mechanism between GeoConnect and Dataverse is "evolving."*
 
-### Dataverse APIs 
+### Dataverse APIs related to WorldMap
 
-#### dv01: Initiate "Map Data"
-
-```
-GET {{ dataverse_server }}/datafile/
-```
-
-WHEN: User presses the "Set-up/Map Data" button next to a Geospatial file.
-[<img src="docs/images/commute_-_Root_Dataverse.png" alt="Set-up/Map Data" />](
-!["Set-up/Map Data"](docs/images/commute_-_Root_Dataverse.png))
-WHAT: Dataverse generates a token related to that Dataverse and User
+#### API dv01: "Map Data"
 
 This 
 
