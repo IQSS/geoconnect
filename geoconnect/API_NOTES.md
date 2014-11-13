@@ -31,7 +31,7 @@ The functionality is spread across 3 systems: Dataverse, GeoConnect, and the Wor
 ```
 GET {{ dataverse_server }}/datafile/
 ```
-
+ 
 WHEN: User presses the "Set-up/Map Data" button next to a Geospatial file.
 [<img src="docs/images/commute_-_Root_Dataverse.png" alt="Set-up/Map Data" />](
 !["Set-up/Map Data"](docs/images/commute_-_Root_Dataverse.png))
