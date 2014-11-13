@@ -33,8 +33,9 @@ GET {{ dataverse_server }}/datafile/
 ```
  
 WHEN: User presses the "Set-up/Map Data" button next to a Geospatial file.
-[<img src="docs/images/commute_-_Root_Dataverse.png" alt="Set-up/Map Data" />](
-!["Set-up/Map Data"](docs/images/commute_-_Root_Dataverse.png))
+
+[<img src="docs/images/commute_-_Root_Dataverse.png" alt="Set-up/Map Data" width="200" />](docs/images/commute_-_Root_Dataverse.png)
+
 WHAT: Dataverse generates a token related to that Dataverse and User
 
 
