@@ -11,7 +11,7 @@ from django.conf import settings
 
 """
 127.0.0.1:8070/shapefile/test-embed/
-127.0.0.1:8000/dataverse-private-layer/view-private-layer/10e585652204ef3c60c1e289f157c3480cb8e7704bc2bf78903f71e8
+127.0.0.1:8000/dataverse-private-layer/view-private-layer/1e70f1ae8f9b43ff3e41870950e13e69c5ec14fab223930037a52cd6 
 """
 
 def view_test_embed(request):
