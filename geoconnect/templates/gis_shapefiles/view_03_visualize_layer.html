@@ -7,7 +7,14 @@
         <a href="{% url 'view_shapefile' shapefile_info.md5 %}" class="btn btn-info btn-xs">Style the Map Layer</a><br />&nbsp;
         
             <!-- WorldMap Layer in iframe -->
-            <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
+            {% if private_embed_url %}
+                <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ private_embed_url|safe }}"></iframe>
+                private: {{ private_embed_url }}
+            {% else %}
+                <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="{{ worldmap_layerinfo.embed_map_link|safe }}"></iframe>
+                public
+            {% endif %}
+            <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>
             {% include "gis_shapefiles/import_debug_links.html" %}
 		   
       {% else %}

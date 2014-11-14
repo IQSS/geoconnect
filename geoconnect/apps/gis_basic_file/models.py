@@ -37,7 +37,14 @@ class GISDataFile(DataverseInfo):
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
     
 
-    
+    def is_datafile_private(self):
+        """Is the datafile private on Dataverse?
+
+        return the opposite of "dataset_is_public"
+        """
+        return not self.dataset_is_public
+
+
     def is_dv_file_available(self):
         """Does the file actually exist in the dv_file specified path"""
         

@@ -31,3 +31,7 @@ GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH = format_worldmap_api_url('/dataverse-l
 #
 GET_LAYER_INFO_BY_USER_API_PATH = format_worldmap_api_url('/dataverse-layer/get-dataverse-user-layers/')
 
+
+#
+#
+GET_VIEW_PRIVATE_LAYER_URL = format_worldmap_api_url('dataverse-private-layer/request-private-layer-url/')

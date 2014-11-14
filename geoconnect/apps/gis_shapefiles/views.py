@@ -12,15 +12,15 @@ from django.conf import settings
 
 from apps.gis_shapefiles.forms import ShapefileInfoForm
 from apps.gis_shapefiles.models import ShapefileInfo, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
-from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
+#from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
+from apps.worldmap_connect.private_layer_service import get_private_worldmap_layer_link
+
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
-
 from geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
@@ -247,6 +247,13 @@ def view_shapefile(request, shp_md5, **kwargs):
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
         worldmap_layerinfo = latest_import_attempt.get_success_info()
         if worldmap_layerinfo:
+            if shapefile_info.is_datafile_private():
+                private_embed_url = get_private_worldmap_layer_link(worldmap_layerinfo)
+            else:
+                private_embed_url = None
+
+            d['private_embed_url'] = private_embed_url
+
             if just_made_visualize_attempt:
                 d['page_title'] = 'Visualize Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
@@ -264,7 +271,7 @@ def view_shapefile(request, shp_md5, **kwargs):
         d['worldmap_layerinfo'] = worldmap_layerinfo
         print(d)
         logger.debug('worldmap_layerinfo: %s' % d['worldmap_layerinfo'] ) #WorldMapLayerInfo.objects.filter(import_attempt__gis_data_file=shapefile_info)
-        d['import_fail_list'] =latest_import_attempt.get_fail_info() 
+        d['import_fail_list'] = latest_import_attempt.get_fail_info()
         
         logger.debug('import_fail_list: %s' % d['import_fail_list'] ) 
         #WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_info)

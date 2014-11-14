@@ -33,9 +33,9 @@ urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
    url(r'^ajax-visualize/(?P<shp_md5>\w{1,32})/$', ViewAjaxVisualizeShapefile.as_view(), name="view_ajax_attempt_visualization"),
 )
 
-urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
-    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
-)
+#urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
+#    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
+#)
 
 #urlpatterns += patterns('folium_maker.views',
 #    url(r'^folium-test/(?P<shp_md5>\w{32})/$', 'view_try_folium', name="view_try_folium"),

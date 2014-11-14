@@ -2,8 +2,16 @@ from django.contrib import admin
 from apps.gis_basic_file.models import GISDataFile
 
 from dataverse_info.admin import DataverseInfoAdmin
+from apps.worldmap_connect.models import WorldMapImportAttempt
+
+
+class WorldMapImportAttemptInline(admin.TabularInline):
+    model = WorldMapImportAttempt
+    extra = 0
 
 class GISDataFileAdmin(DataverseInfoAdmin):
+
+    inlines = [WorldMapImportAttemptInline]
     """
     Use the ModelAdmin from DataverseInfoAdmin and extend it to include GISDataFile specific fields
     """

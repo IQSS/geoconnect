@@ -17,10 +17,10 @@ class WorldMapLayerInfoInline(admin.TabularInline):
 class WorldMapImportAttemptAdmin(admin.ModelAdmin):
     inlines = (WorldMapLayerInfoInline, WorldMapImportFailInline)
     save_on_top = True
-    list_display = ('id', 'dv_username', 'title', 'shapefile_name', 'datafile_id', 'dataset_version_id', 'modified'  )
+    list_display = ('id', 'dv_username', 'title', 'shapefile_name', 'edit_shapefile', 'datafile_id', 'dataset_version_id', 'modified'  )
     search_fields = ('title', 'abstract', )
     list_filter = ('dv_username',  )    
-    readonly_fields = ('modified', 'created',)
+    readonly_fields = ('modified', 'created', 'edit_shapefile')
 admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 
 

@@ -58,11 +58,22 @@ class WorldMapImportAttempt(TimeStampedModel):
 
     def __unicode__(self):
         return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.dataset_version_id)
-    
+
+
+
+    def edit_shapefile(self):
+        if not self.gis_data_file:
+            return 'n/a'
+        edit_url = reverse('admin:gis_shapefiles_shapefileinfo_change', args=(self.gis_data_file.id,))
+        return '<a href="%s">edit GIS file info</a>' % edit_url
+    edit_shapefile.allow_tags = True
+
+
     def get_fail_info(self):
         fail_info_list = self.worldmapimportfail_set.all().order_by('-modified')
         return fail_info_list
-        
+
+
     def get_success_info(self):
         """
         Modify this to only retrieve the latest WorldMapLayerInfo object
@@ -224,7 +235,7 @@ class WorldMapLayerInfo(TimeStampedModel):
     
     class Meta:
         ordering = ('-modified',)
-        verbose_name = 'WorldMap Import Success'
+        verbose_name = 'WorldMapLayerInfo'
         verbose_name_plural = verbose_name
     
     
