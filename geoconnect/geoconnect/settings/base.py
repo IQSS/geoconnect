@@ -212,7 +212,8 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'apps.classification',       # used for styling WorldMap layers
+    'layer_classification',
+    #'apps.classification',       # used for styling WorldMap layers
     'apps.style_layer_information',
     'apps.gis_basic_file',
     'apps.gis_shapefiles',

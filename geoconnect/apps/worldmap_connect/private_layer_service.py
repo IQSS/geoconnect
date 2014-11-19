@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import requests
 
 from apps.worldmap_connect.models import WorldMapLayerInfo
-from apps.worldmap_connect.worldmap_api_url_helper import GET_VIEW_PRIVATE_LAYER_URL
+#from apps.worldmap_connect.worldmap_api_url_helper import GET_VIEW_PRIVATE_LAYER_URL
 from dataverse_info.forms_embed_layer import EmbedLayerForm
 from dataverse_info.forms_api_validate import SIGNATURE_KEY
 from dataverse_info.tests.msg_util import *
@@ -21,7 +21,7 @@ To display a private WorldMap layer
 127.0.0.1:8000/dataverse-private-layer/view-private-layer/1e70f1ae8f9b43ff3e41870950e13e69c5ec14fab223930037a52cd6 
 """
 
-def get_private_worldmap_layer_link(worldmap_info):
+def xget_private_worldmap_layer_link(worldmap_info):
     """
      {"message": "Success", "data": {"private_layer_url": "http://localhost:8000/dataverse-private-layer/view-private-layer/b3642470943c80e95866d222e0f587aa32d33d2f88bb8eca1a9a8f89"}, "success": true}
 
@@ -78,8 +78,7 @@ def get_private_worldmap_layer_link(worldmap_info):
     print ('ERROR!',  r.status_code)
     return None
 
-
-  
+ 
     #return HttpResponse(r.text)
     page_text = """<html><head></head><body>
     <iframe id="id_iframe_map" height="275" width="100%" min-width="900" src="http://127.0.0.1:8000/dataverse-private-layer/view-private-layer/4402dcbd015eda52b9e8b1f451217c6fd175a11ad6d1097f228c604c" xsrc="http://localhost:8000/maps/embed/?layer=geonode:transportation_to_work_v24_zip_mva"></iframe>
@@ -94,5 +93,6 @@ from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_connect.private_layer_service import get_private_worldmap_layer_link
 
 w = WorldMapLayerInfo.objects.all()[0]
+w
 get_private_worldmap_layer_link(w)
 """

@@ -16,7 +16,6 @@ from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 #from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
-from apps.worldmap_connect.private_layer_service import get_private_worldmap_layer_link
 
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
@@ -247,13 +246,7 @@ def view_shapefile(request, shp_md5, **kwargs):
         logger.debug('latest_import_attempt: %s' % latest_import_attempt )
         worldmap_layerinfo = latest_import_attempt.get_success_info()
         if worldmap_layerinfo:
-            if shapefile_info.is_datafile_private():
-                private_embed_url = get_private_worldmap_layer_link(worldmap_layerinfo)
-            else:
-                private_embed_url = None
-
-            d['private_embed_url'] = private_embed_url
-
+            
             if just_made_visualize_attempt:
                 d['page_title'] = 'Visualize Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE

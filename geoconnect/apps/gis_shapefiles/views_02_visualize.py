@@ -15,7 +15,6 @@ from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.json_field_reader import JSONFieldReader
 
 from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
-from apps.worldmap_connect.private_layer_service import get_private_worldmap_layer_link
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +27,8 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     assert(shapefile_info, type(ShapefileInfo))
     assert(worldmap_layerinfo, type(WorldMapLayerInfo))
 
-    if shapefile_info.is_datafile_private():
-        private_embed_url = get_private_worldmap_layer_link(worldmap_layerinfo)
-    else:
-        private_embed_url = None
-
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
-            , private_embed_url=private_embed_url
         )
 
 

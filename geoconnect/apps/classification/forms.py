@@ -11,7 +11,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
-from apps.classification.models import ClassificationMethod, ColorRamp
+#from apps.classification.models import ClassificationMethod, ColorRamp
+from layer_classification.models import ClassificationMethod, ColorRamp
+
 from apps.worldmap_connect.worldmap_api_url_helper import CLASSIFY_LAYER_API_PATH
 
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
@@ -21,6 +23,8 @@ COLOR_RAMP_CHOICES = [ (x.id, x.display_name) for x in ColorRamp.objects.filter(
 
 ATTRIBUTE_VALUE_DELIMITER = '|'
 FIELD_CSS_ATTRS = {'class':'form-control input-sm'} 
+
+print 'CLASSIFY_METHOD_CHOICES', CLASSIFY_METHOD_CHOICES
 
 class ClassifyLayerForm(forms.Form):
     """
@@ -54,7 +58,7 @@ class ClassifyLayerForm(forms.Form):
         worldmap_layerinfo = kwargs.pop('worldmap_layerinfo', None)
         
         if worldmap_layerinfo is None:
-            raise Exception('ClassifyLayerForm does not have an worldmap_layerinfo')
+            raise Exception('ClassifyLayerForm does not have a worldmap_layerinfo object')
             
         super(ClassifyLayerForm, self).__init__(*args, **kwargs)
 
@@ -63,6 +67,7 @@ class ClassifyLayerForm(forms.Form):
         
         self.fields['attribute'] = forms.ChoiceField(choices=attribute_choices, widget=forms.Select(attrs=FIELD_CSS_ATTRS))
         self.fields['layer_name'].initial = worldmap_layerinfo.layer_name
+        
         
     @staticmethod
     def format_attribute_choices_for_form(attr_info):

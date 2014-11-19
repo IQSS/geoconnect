@@ -7,17 +7,7 @@
             <!-- WorldMap Layer in iframe -->
             <div>
                 <div style="width:70%;float:left;">
-                    {% if private_embed_url %}
-                       <iframe id="id_iframe_map" height="275" width="100%" xmin-width="900" src="{{ private_embed_url }}"></iframe>
-                        <small><i>(This is a private map. <a href="{{ private_embed_url }}" target="_blank">private_embed_url</a>) </i></small>
-
-                    {% else %}
-                        <iframe id="id_iframe_map" height="275" width="100%" xmin-width="900" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
-                        public
-                    {% endif %}
-
-                    {#<iframe id="id_iframe_map" height="275" width="100%" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>#}
-
+                        <iframe id="id_iframe_map" height="275" width="100%" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
                 </div>
 
                 <div style="width:30%;float:left;text-align:center;">

@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from geo_utils.message_helper_json import MessageHelperJSON
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+#from classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 logger = logging.getLogger(__name__)
 
