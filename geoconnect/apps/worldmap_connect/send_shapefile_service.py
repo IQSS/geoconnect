@@ -114,6 +114,7 @@ class SendShapefileService:
         
         :returns: boolean 
         """
+        logger.debug('verify_shapefile')
         if not self.shapefile_info:
             self.add_err_msg('verify_shapefile: The shapefile set is None')
             return False
@@ -203,7 +204,8 @@ class SendShapefileService:
             return False
         
         # Prepare the parameters
-        layer_params = get_params_for_worldmap_connect(self.import_attempt_obj, settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
+        layer_params = get_params_for_worldmap_connect(self.import_attempt_obj\
+                                    , settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
 
         #layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
         logger.debug('send_file_to_worldmap 3')

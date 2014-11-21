@@ -151,7 +151,7 @@ class WorldMapImportAttempt(TimeStampedModel):
             
         # return the latest_attempt
         return latest_attempt
-        
+
     
     class Meta:
         ordering = ('-modified',)

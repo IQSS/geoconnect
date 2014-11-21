@@ -108,20 +108,21 @@ class ViewAjaxVisualizeShapefile(View):
 
         # (3) Let's visualize this on WorldMap!
         #
-        msgt('(3) Let\'s visualize this on WorldMap!')
+        logger.debug('(3) Let\'s visualize this on WorldMap!')
 
         send_shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
 
+        logger.debug('(3a) send_shapefile_to_worldmap')
         send_shp_service.send_shapefile_to_worldmap()
-
+        
+        logger.debug('(3b) get_worldmap_layerinfo')
         worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
 
         if worldmap_layerinfo is not None:
             return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
 
-        
         if send_shp_service.has_err:
-            msgt('(3a) It didn\'t worked!')
+            msgt('(3c) It didn\'t worked!')
             msg(send_shp_service.err_msgs)
             # (3b) Uh oh!  Failed to visualize
             #

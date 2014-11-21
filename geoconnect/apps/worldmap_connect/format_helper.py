@@ -72,8 +72,14 @@ f.is_valid()
 
 from shared_form_util.format_form_errors import format_errors_as_text
 f = ShapefileImportDataForm(dict(abstract='blah',dv_user_email='myemail'))
+errs = None
 if not f.is_valid():
-    format_errors_as_text(f)
+    errs = format_errors_as_text(f)
+
+
+    
+print (errs)
+
 """
 
 

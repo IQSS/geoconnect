@@ -14,6 +14,8 @@ from geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
 
 from apps.worldmap_connect.worldmap_api_url_helper import ADD_SHAPEFILE_API_PATH
+from shapefile_import.forms import ShapefileImportDataForm
+from shared_form_util.format_form_errors import format_errors_as_text
 
 import logging
 logger = logging.getLogger(__name__)
@@ -28,9 +30,7 @@ class WorldMapImporter:
         https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_connect.md
 
     This is meant to be run asynchronously, thus the 4 minute timeout
-    """
-    REQUIRED_PARAM_KEYS = ['title', 'abstract', 'email', 'shapefile_name', settings.WORLDMAP_TOKEN_NAME_FOR_DV]
-    
+    """    
     def __init__(self, timeout_seconds=120, return_type_json=False):
         """
         :param worldmap_server_url: base server url, including http or https. e.g. http://worldmap.harvard.edu
@@ -64,7 +64,7 @@ class WorldMapImporter:
                         , 'shapefile_name' : 'zipfile_name.zip'\
                         , settings.WORLDMAP_TOKEN_NAME_FOR_DV : 'token-for-api-use'\
                         }
-        :type layer_params: python dictionary
+        :type layer_params
         :param fullpath_to_file: file name, including path, to shapfile in .zip format
         :type fullpath_to_file: str or unicode
         
@@ -72,16 +72,19 @@ class WorldMapImporter:
                 see https://github.com/IQSS/geoconnect/blob/master/docs/api_worldmap_connect.md
         :rtype: python dict
         """
-        
-        #
-        #   (1) Make sure that the required parameters are there
-        #
-        logger.debug('send_shapefile_to_worldmap')
-        if not type(layer_params) is dict:  
-            err_msg = 'The shapefile metadata (title, abstract, etc.) was not found. '
-            logger.error(err_msg + 'layer_params is type: %s' % (layer_params.__class__.__name__) )
-            return self.get_result_msg(False, err_msg)
+        assert type(layer_params) is dict, "layer params must be a dict"
+        assert layer_params.has_key(settings.WORLDMAP_TOKEN_NAME_FOR_DV), "layer_params must have the key settings.WORLDMAP_TOKEN_NAME_FOR_DV"
 
+        logger.debug('send_shapefile_to_worldmap')
+
+        # This validation should be fine.
+        # The params are formatted using a ShapefileImportDataForm
+        #
+        validation_form = ShapefileImportDataForm(layer_params)
+        if not validation_form.is_valid():
+             form_errs_as_text = format_errors_as_text(validation_form)
+             raise ValueError('layer_parms did not pass validation: \n%s' % form_errs_as_text)
+        
         # Is the file available?
         #
         if fullpath_to_file is None or not os.path.isfile(fullpath_to_file):
@@ -89,25 +92,12 @@ class WorldMapImporter:
             logger.error(err_msg)
             return self.get_result_msg(False, err_msg)
         
-        # Set the dv auth token
-        layer_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
         
-        # Check for required keys -- replace this with a form!!
-        key_check_response = KeyChecker.has_required_keys(self.REQUIRED_PARAM_KEYS, layer_params)        
-        if not key_check_response.success:
-            logger.error(key_check_response.err_msg + ' Info not in "layer_params"')
-            return self.get_result_msg(False, key_check_response.err_msg)
-
-        #
-        #   Prepare the actual file to send to WorldMap
-        #
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
-
        
         # Send the request to WorldMap
         #
         try:
-            print ('api url:', self.api_import_url)
             logger.debug('import url: %s' % self.api_import_url)
             
             logger.debug('layer_params: %s' % layer_params)
