@@ -18,7 +18,7 @@ from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
 from apps.gis_basic_file.models import GISDataFile
-#from dataverse_info.forms import DataverseInfoValidationForm
+from shapefile_import.forms import ShapefileImportDataForm
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.dv_notify.models import KEY_UPDATES_TO_MATCH_DATAVERSE_API
@@ -152,51 +152,6 @@ class WorldMapImportAttempt(TimeStampedModel):
         # return the latest_attempt
         return latest_attempt
         
-    
-    def get_params_for_worldmap_connect(self, geoconnect_token=None):
-        """
-        Prepare partial parameters to send WorldMap import request.
-        
-        Example of params:
-              {   'title' : 'Boston Income'\
-                , 'abstract' : 'Shapefile containing Boston, MA income levels from 19xx'\
-                , 'email' : 'researcher@school.edu'\
-                , 'shapefile_name' : 'zipfile_name.zip'\
-                , settings.WORLDMAP_TOKEN_NAME_FOR_DV : 'token-for-api-use'\
-                , 'dataverse_info' : {--DataverseInfo JSON--}
-                }
-        Note: The "geoconnect_token" parameter is provided by the class calling the function.
-            At this point it is worldmap_connect.WorldMapImporter.
-            if a geoconnect_token is not supplied, it will not be included in the params dict
-            
-        :param geoconnect_token: key used to access the WorldMap API
-        :type geoconnect_token: string or None
-        :returns: parameters formatted to call the WorldMap import API. 
-        :rtype: dict
-        """
-        print ('get_params_for_worldmap_connect')
-        d = {}
-        d['title'] = self.title
-        d['abstract'] = self.abstract
-        d['email'] = self.dv_user_email
-        d['shapefile_name'] = self.shapefile_name
-        print ('get_params_for_worldmap_connect 2', d)
-        print '*'*10
-        
-        #f = DataverseInfoValidationForm(self.gis_data_file.__dict__)
-        #if f.is_valid():
-        #    dataverse_info = f.cleaned_data
-        #print ('get_params_for_worldmap_connect 3', dataverse_info)
-        # add dataverse info
-        dataverse_info_dict = get_dataverse_info_dict(self.gis_data_file)
-        if dataverse_info_dict is not None:
-            d.update(dataverse_info_dict)
-            #d['dataverse_info'] = get_dataverse_info_dict(self.gis_data_file)
-        
-        #print 'hooray!'
-        if geoconnect_token:
-            d[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = geoconnect_token
-        return d
     
     class Meta:
         ordering = ('-modified',)

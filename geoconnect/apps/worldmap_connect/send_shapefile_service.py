@@ -2,8 +2,10 @@ import logging
 
 from django.conf import settings
 
+
 from apps.gis_shapefiles.models import ShapefileInfo
 
+from apps.worldmap_connect.format_helper import get_params_for_worldmap_connect
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.worldmap_connect.worldmap_importer import WorldMapImporter
 
@@ -61,7 +63,6 @@ class SendShapefileService:
         if self.does_successful_import_already_exist():
             return True
         elif self.has_err:      # This may have produced an error
-            print 'err!'
             return False
         # (3) Make a WorldMapImportAttempt object and set it to "self.import_attempt_obj"
         #
@@ -83,7 +84,7 @@ class SendShapefileService:
             
             
     def add_err_msg(self, msg):
-        print (msg)
+        logger.error(msg)
         self.has_err = True
         self.err_msgs.append(msg)
     
@@ -202,8 +203,10 @@ class SendShapefileService:
             return False
         
         # Prepare the parameters
-        layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
-        print('send_file_to_worldmap 3')
+        layer_params = get_params_for_worldmap_connect(self.import_attempt_obj, settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
+
+        #layer_params = self.import_attempt_obj.get_params_for_worldmap_connect(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
+        logger.debug('send_file_to_worldmap 3')
 
         # Instantiate the WorldMapImporter object and attempt the import
         #
