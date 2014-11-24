@@ -1,0 +1,24 @@
+#!/bin/sh
+# ------------------------------------------
+# Update repository:
+#   - https://github.com/IQSS/shared-dataverse-information
+# ------------------------------------------
+cd /webapps/code/shared-dataverse-information
+git status
+git pull
+git status
+#
+# ------------------------------------------
+# Update repository:
+#   - https://github.com/IQSS/geoconnect
+# ------------------------------------------
+cd /webapps/code/geoconnect
+git status
+git pull
+git status
+# ------------------------------------------
+# Run post-build2 script
+#
+# ------------------------------------------
+scl enable python27 '/webapps/code/geoconnect/deploy/post-build2'
+echo "Done."
