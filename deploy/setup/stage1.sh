@@ -25,7 +25,8 @@ chown plaid /webapps/virtualenvs
 mkdir /webapps/code
 chown plaid /webapps/code
 
-su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
+#su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
+su plaid -l -s /bin/sh -c 'cd /webapps/code'
 cp /webapps/code/geoconnect/deploy/files/etc/sudoers.d/plaid /etc/sudoers.d
 chmod 640 /etc/sudoers.d/plaid
 
@@ -71,7 +72,7 @@ su plaid -l -s /bin/sh -c 'scl enable python27 "/webapps/code/geoconnect/deploy/
 #
 chown plaid:apache /webapps/data/geoconnect/sqlite/geoconnect.db3
 chmod 660 /webapps/data/geoconnect/sqlite/geoconnect.db3
-
+#
 service httpd start
 chkconfig httpd on
 # on HMDC VM, changed SELinux to "permissive" in /etc/selinux/config
