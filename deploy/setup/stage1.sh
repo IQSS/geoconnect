@@ -41,11 +41,20 @@ echo "Create general data directory"
 #
 mkdir -p /webapps/data/geoconnect
 chown apache /webapps/data/geoconnect
+
 #
 echo "Create data directory for sqlite db"
 mkdir -p /webapps/data/geoconnect/sqlite
 chown plaid:apache /webapps/data/geoconnect/sqlite
 chmod 775 /webapps/data/geoconnect/sqlite
+
+# Create a data directory for shapefiles (not on the web server path)
+echo "Create data directory for shapefiles (not on the web server path)"
+
+mkdir -p /webapps/data/geoconnect/geoconnect_files
+chown plaid:apache /webapps/data/geoconnect/geoconnect_files
+chmod 775 /webapps/data/geoconnect/geoconnect_files
+
 #
 # configure apache
 #
@@ -62,8 +71,8 @@ chown plaid /var/www/geoconnect
 # Create directory for uploaded files
 #
 # echo "Create data directory for uploaded files"
-mkdir -p /webapps/data/geoconnect/geoconnect_uploaded_files
-chown apache /webapps/data/geoconnect/geoconnect_uploaded_files
+#mkdir -p /webapps/data/geoconnect/geoconnect_uploaded_files
+#chown apache /webapps/data/geoconnect/geoconnect_uploaded_files
 #
 # run main setup script as "plaid" user with python 2.7
 #

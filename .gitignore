@@ -1,8 +1,10 @@
+.vagrant/*
 deploy/old/
 geoconnect/geoconnect/settings/worldmap_secrets*.json
+geoconnect/geoconnect/settings/geoconnect_secrets*.json
 geoconnect/geoconnect/config/laptop.py
-geoconnect/geoconnect/config/prod.py
-geoconnect/geoconnect/settings/prod*.py
+#geoconnect/geoconnect/config/prod.py
+#geoconnect/geoconnect/settings/prod*.py
 geoconnect/geoconnect/geoconnect /settings/local.py
 scripts/geojson/*.html
 geoconnect/static/test_geojson*

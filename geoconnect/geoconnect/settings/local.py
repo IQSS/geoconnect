@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 import json
 import sys
-from os.path import join, normpath, isdir
+from os.path import join, normpath, isdir, isfile
 
 from .base import *
 
@@ -107,16 +107,19 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 
 ##### RETRIEVE WORLDMAP PARAMS
 # dev worldmap on AWS
-worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
+# RETRIEVE WORLDMAP JSON INFO
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
+if not isfile(WORLDMAP_SECRETS_FNAME):
+    raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)
 
-# local on laptop
-#worldmap_secrets_fname = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
-worldmap_secrets_json = json.loads(open(worldmap_secrets_fname, 'r').read())
+try:
+    WORLDMAP_SECRETS_JSON = json.loads(open(WORLDMAP_SECRETS_FNAME, 'r').read())
+except:
+    raise Exception('Could not parse worldmap_secrets_fname JSON file: %s' % WORLDMAP_SECRETS_FNAME)
 
-########## WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
-#
-WORLDMAP_TOKEN_FOR_DATAVERSE = worldmap_secrets_json['WORLDMAP_TOKEN_FOR_DATAVERSE']
-WORLDMAP_SERVER_URL = worldmap_secrets_json['WORLDMAP_SERVER_URL']
+
+WORLDMAP_TOKEN_FOR_DATAVERSE = WORLDMAP_SECRETS_JSON['WORLDMAP_TOKEN_FOR_DATAVERSE']
+WORLDMAP_SERVER_URL = WORLDMAP_SECRETS_JSON['WORLDMAP_SERVER_URL']
 ##########  END WORLDMAP TOKEN / SERVER
 
 ########## DATAVERSE_SERVER_URL
