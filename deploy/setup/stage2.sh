@@ -17,6 +17,7 @@ workon geoconnect
 # Install requirements (pip)
 echo "Install requirements (pip)"
 cd /webapps/code/geoconnect
+pip install numpy
 pip install -r requirements/production.txt
 #
 # Validate settings file
