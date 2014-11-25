@@ -12,6 +12,10 @@ rpm -Uvh http://dl.fedoraproject.org/pub/epel/6Server/x86_64/epel-release-6-8.no
 yum install -y httpd mod_wsgi ack elinks libjpeg-turbo-devel
 rpm --import http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/os/RPM-GPG-KEY-sl
 yum install -y http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/external_products/softwarecollections/yum-conf-softwarecollections-1.0-1.el6.noarch.rpm
+#
+# For compiling matplotlib
+echo "gcc-c++"
+yum install gcc-c++
 yum install -y python27
 echo "Setting up Django app with Python 2.7"
 echo "Installing pip for Python 2.7"

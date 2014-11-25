@@ -19,7 +19,7 @@ SITEURL = "http://dvnweb-vm7.hmdc.harvard.edu"
 
 # RETRIEVE WORLDMAP JSON INFO
 GEOCONNECT_SECRETS_FNAME = join( dirname(abspath(__file__)), "geoconnect_secrets_prod.json")
-if not isfile(worldmap_secrets_fname):
+if not isfile(GEOCONNECT_SECRETS_FNAME):
     raise Exception('Geoconnect settings JSON file not found: %s' % GEOCONNECT_SECRETS_FNAME)
 
 try:
