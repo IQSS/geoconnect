@@ -246,7 +246,7 @@ class WorldMapLayerInfo(TimeStampedModel):
     def update_dataverse(self):
         if not self.id:
             return 'n/a'
-        lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id', self.id})
+        lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id': self.id})
         print '*******************', lnk
         return lnk
         return '<a href="%s">update dataverse</a>' % lnk

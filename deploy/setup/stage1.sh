@@ -52,12 +52,36 @@ mkdir -p /webapps/data/geoconnect/sqlite
 chown plaid:apache /webapps/data/geoconnect/sqlite
 chmod 775 /webapps/data/geoconnect/sqlite
 
-# Create a data directory for shapefiles (not on the web server path)
+# Create a data directory for files (not on the web server path)
 echo "Create data directory for shapefiles (not on the web server path)"
 
 mkdir -p /webapps/data/geoconnect/geoconnect_files
 chown plaid:apache /webapps/data/geoconnect/geoconnect_files
 chmod 775 /webapps/data/geoconnect/geoconnect_files
+
+#
+echo "data directory for logs"
+#
+mkdir -p /webapps/data/geoconnect/geoconnect_files/logs
+chown plaid:apache /webapps/data/geoconnect/geoconnect_files/logs
+chmod 775 /webapps/data/geoconnect/geoconnect_files/logs
+
+#
+echo "data directory for shapefiles"
+#
+mkdir -p /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
+chown plaid:apache /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
+chmod 775 /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
+
+
+#
+echo "data directory for scratch work"
+#
+mkdir -p /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
+chown plaid:apache /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
+chmod 775 /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
+
+
 
 #
 # configure apache
@@ -89,3 +113,4 @@ chmod 660 /webapps/data/geoconnect/sqlite/geoconnect.db3
 service httpd start
 chkconfig httpd on
 # on HMDC VM, changed SELinux to "permissive" in /etc/selinux/config
+# reboot
