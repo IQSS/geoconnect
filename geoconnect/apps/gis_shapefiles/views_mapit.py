@@ -50,8 +50,8 @@ def view_mapit_incoming_token64(request, dataverse_token):
     (1) Check incoming url for a callback key 'cb'
     (2) Use the callback url to retrieve the DataverseInfo via a POST
     """
-    assert(request.GET, not None)
-    assert(request.GET.has_key('cb'), True )
+    assert request.GET is not None, "request.GET cannot be None"
+    assert request.GET.has_key('cb') is True, "request.GET must have key 'cb' for the callback url"
         
     callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))    
     

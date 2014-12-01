@@ -5,6 +5,9 @@
 # i.e. scl enable python27 "path/to/this/script.sh"
 # See also http://developerblog.redhat.com/2013/02/14/setting-up-django-and-python-2-7-on-red-hat-enterprise-6-the-easy-way/
 
+# if running from command line, run:
+# scl enable python27 bash
+
 #source /usr/bin/virtualenvwrapper.sh # python 2.6 version
 source /opt/rh/python27/root/usr/bin/virtualenvwrapper.sh
 #

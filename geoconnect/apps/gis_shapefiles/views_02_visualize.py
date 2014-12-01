@@ -23,9 +23,9 @@ from geo_utils.msg_util import *
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
 
-    assert(request, type(HttpRequest))
-    assert(shapefile_info, type(ShapefileInfo))
-    assert(worldmap_layerinfo, type(WorldMapLayerInfo))
+    #assert type(request) is HttpRequest, "request must be a HttpRequest object"
+    assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
+    assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
@@ -57,9 +57,10 @@ class ViewAjaxVisualizeShapefile(View):
                         }
                 }
         """
-        assert(request, type(HttpRequest))
-        assert(shapefile_info, type(ShapefileInfo))
-        assert(worldmap_layerinfo, type(WorldMapLayerInfo))
+        #assert type(request) is HttpRequest, "request must be a HttpRequest object"
+        assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
+        assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
+
         msg('render html')
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
         msg('create  json_msg')

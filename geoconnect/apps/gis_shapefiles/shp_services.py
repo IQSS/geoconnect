@@ -19,9 +19,8 @@ logger = logging.getLogger(__name__)
 def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileInfo' object.  This function should only receive successful responses.
     """
-    assert(dv_session_token, not None)
-    assert(len(dv_session_token), not 0)
-    assert(type(dataverse_info_dict), dict)
+    assert dv_session_token is not None, "dv_session_token cannot be None"
+    assert type(dataverse_info_dict) is dict, "dataverse_info_dict must be type 'dict'"
 
     #------------------------------
     # (1) Validate the data
@@ -133,7 +132,7 @@ def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
     :param shapefile_info: ShapefileInfo object
     :return: WorldMapLayerInfo object or None
     """
-    assert(type(shapefile_info), ShapefileInfo)
+    assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
 
     latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
     if latest_import_attempt:

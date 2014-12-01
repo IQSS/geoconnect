@@ -29,6 +29,12 @@ chown plaid /webapps/virtualenvs
 mkdir /webapps/code
 chown plaid /webapps/code
 
+# Pull down shared-dataverse-information repository
+#
+cd /webapps/code
+git clone https://github.com/IQSS/shared-dataverse-information.git
+#
+
 su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
 #su plaid -l -s /bin/sh -c 'cd /webapps/code'
 cp /webapps/code/geoconnect/deploy/files/etc/sudoers.d/plaid /etc/sudoers.d
@@ -63,8 +69,8 @@ chmod 775 /webapps/data/geoconnect/geoconnect_files
 echo "data directory for logs"
 #
 mkdir -p /webapps/data/geoconnect/geoconnect_files/logs
-chown plaid:apache /webapps/data/geoconnect/geoconnect_files/logs
-chmod 775 /webapps/data/geoconnect/geoconnect_files/logs
+chown -R plaid:apache /webapps/data/geoconnect/geoconnect_files/logs
+chmod -R 775 /webapps/data/geoconnect/geoconnect_files/logs
 
 #
 echo "data directory for shapefiles"
