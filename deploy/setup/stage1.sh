@@ -29,8 +29,8 @@ chown plaid /webapps/virtualenvs
 mkdir /webapps/code
 chown plaid /webapps/code
 
-#su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
-su plaid -l -s /bin/sh -c 'cd /webapps/code'
+su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
+#su plaid -l -s /bin/sh -c 'cd /webapps/code'
 cp /webapps/code/geoconnect/deploy/files/etc/sudoers.d/plaid /etc/sudoers.d
 chmod 640 /etc/sudoers.d/plaid
 

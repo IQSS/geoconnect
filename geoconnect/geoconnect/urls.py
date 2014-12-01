@@ -20,7 +20,7 @@ urlpatterns = patterns('',
 
     url(r'^%sclassify/' % URL_PREFIX, include('apps.classification.urls')),
 
-    url(r'^%scol-stats/' % URL_PREFIX, include('apps.column_stats.urls')),
+    #url(r'^%scol-stats/' % URL_PREFIX, include('apps.column_stats.urls')),
 
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 

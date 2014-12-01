@@ -16,6 +16,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "deploy/setup/stage1.sh"
 
   # from your laptop, access Apache running on the VM at http://localhost:8000
-  config.vm.network "forwarded_port", guest: 80, host: 8000
+  config.vm.network "forwarded_port", guest: 80, host: 8070
 
 end
