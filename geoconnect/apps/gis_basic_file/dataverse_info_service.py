@@ -6,7 +6,7 @@ Translate the GISDataFile object into a dict that can be passed to the Dataverse
     * https://github.com/cga-harvard/cga-worldmap/blob/e8554beda280aefc02e0b75d10613272a4ca2786/src/GeoNodePy/geonode/dataverse_info/forms.py
 """
 #from django.forms.models import model_to_dict
-#from apps.gis_basic_file.models import GISDataFile
+from apps.gis_basic_file.models import GISDataFile
 from dataverse_info.forms import DataverseInfoValidationForm
 
 
