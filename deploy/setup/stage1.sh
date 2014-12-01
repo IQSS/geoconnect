@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Setting up geoconnect.org"
+echo "---Setting up geoconnect.org"
 # Platform for
 # Lightweight
 # Applications from
@@ -14,16 +14,16 @@ rpm --import http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/os/RPM-G
 yum install -y http://ftp.scientificlinux.org/linux/scientific/6.4/x86_64/external_products/softwarecollections/yum-conf-softwarecollections-1.0-1.el6.noarch.rpm
 #
 # For compiling matplotlib
-echo "gcc-c++"
+echo "---gcc-c++"
 yum install gcc-c++
 yum install -y python27
-echo "Setting up Django app with Python 2.7"
-echo "Installing pip for Python 2.7"
+echo "---Setting up Django app with Python 2.7"
+echo "---Installing pip for Python 2.7"
 scl enable python27 "easy_install pip"
-echo "Install virtualenvwrapper"
+echo "---Install virtualenvwrapper"
 scl enable python27 "pip install virtualenvwrapper"
 
-echo "Setup virtualenv directory"
+echo "---Setup virtualenv directory"
 mkdir -p /webapps/virtualenvs
 chown plaid /webapps/virtualenvs
 mkdir /webapps/code
@@ -47,33 +47,33 @@ chmod 440 /webapps/code/geoconnect/geoconnect/geoconnect/settings/secret_setting
 #
 # Create directory for sqlite db
 #
-echo "Create general data directory"
+echo "---Create general data directory"
 #
 mkdir -p /webapps/data/geoconnect
 chown apache /webapps/data/geoconnect
 
 #
-echo "Create data directory for sqlite db"
+echo "---Create data directory for sqlite db"
 mkdir -p /webapps/data/geoconnect/sqlite
 chown plaid:apache /webapps/data/geoconnect/sqlite
 chmod 775 /webapps/data/geoconnect/sqlite
 
 # Create a data directory for files (not on the web server path)
-echo "Create data directory for shapefiles (not on the web server path)"
+echo "---Create data directory for shapefiles (not on the web server path)"
 
 mkdir -p /webapps/data/geoconnect/geoconnect_files
 chown plaid:apache /webapps/data/geoconnect/geoconnect_files
 chmod 775 /webapps/data/geoconnect/geoconnect_files
 
 #
-echo "data directory for logs"
+echo "---data directory for logs"
 #
 mkdir -p /webapps/data/geoconnect/geoconnect_files/logs
 chown -R plaid:apache /webapps/data/geoconnect/geoconnect_files/logs
 chmod -R 775 /webapps/data/geoconnect/geoconnect_files/logs
 
 #
-echo "data directory for shapefiles"
+echo "---data directory for shapefiles"
 #
 mkdir -p /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
 chown plaid:apache /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
@@ -81,7 +81,7 @@ chmod 775 /webapps/data/geoconnect/geoconnect_files/dv_datafile_directory
 
 
 #
-echo "data directory for scratch work"
+echo "---data directory for scratch work"
 #
 mkdir -p /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
 chown plaid:apache /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
@@ -92,19 +92,19 @@ chmod 775 /webapps/data/geoconnect/geoconnect_files/gis_scratch_work
 #
 # configure apache
 #
-echo "Configure Apache"
+echo "---Configure Apache"
 cp /webapps/code/geoconnect/deploy/vagrant-centos-geoconnect.conf /etc/httpd/conf.d/geoconnect.conf
 chown plaid /etc/httpd/conf.d/geoconnect.conf
 cp -a /etc/sysconfig/httpd /etc/sysconfig/httpd.orig
 cp /webapps/code/geoconnect/deploy/files/etc/sysconfig/httpd /etc/sysconfig/httpd
 #
-echo "Create /var/www directory owned by plaid"
+echo "---Create /var/www directory owned by plaid"
 mkdir /var/www/geoconnect
 chown plaid /var/www/geoconnect
 #
 # Create directory for uploaded files
 #
-# echo "Create data directory for uploaded files"
+# echo "---Create data directory for uploaded files"
 #mkdir -p /webapps/data/geoconnect/geoconnect_uploaded_files
 #chown apache /webapps/data/geoconnect/geoconnect_uploaded_files
 #
@@ -113,8 +113,17 @@ chown plaid /var/www/geoconnect
 su plaid -l -s /bin/sh -c 'scl enable python27 "/webapps/code/geoconnect/deploy/setup/stage2.sh"'
 # Permissions for database
 #
+echo "--Update database permission file"
 chown plaid:apache /webapps/data/geoconnect/sqlite/geoconnect.db3
 chmod 660 /webapps/data/geoconnect/sqlite/geoconnect.db3
+#
+#
+echo "--Update log file permissions"
+chown plaid:apache /webapps/data/geoconnect/geoconnect_files/logs/*.log
+chmod 660 /webapps/data/geoconnect/geoconnect_files/logs/*.log
+
+#
+#
 #
 service httpd start
 chkconfig httpd on

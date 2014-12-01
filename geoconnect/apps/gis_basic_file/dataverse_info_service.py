@@ -16,7 +16,7 @@ def get_dataverse_info_dict(gis_data_file):
     
     GISDataFile and ShapefileInfo should always pass the DataverseInfoValidationForm
     """
-    assert (gis_data_file.__class__.__name__ in ('GISDataFile', 'ShapefileInfo'), True)
+    assert isinstance(gis_data_file, GISDataFile), "gis_data_file must be a GISDataFile object. (Note: A ShapefileInfo is also a GISDataFile object)"
 
     f = DataverseInfoValidationForm(gis_data_file.__dict__)    
     
