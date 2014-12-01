@@ -115,12 +115,12 @@ su plaid -l -s /bin/sh -c 'scl enable python27 "/webapps/code/geoconnect/deploy/
 #
 echo "--Update database permission file"
 chown plaid:apache /webapps/data/geoconnect/sqlite/geoconnect.db3
-chmod 660 /webapps/data/geoconnect/sqlite/geoconnect.db3
+chmod 770 /webapps/data/geoconnect/sqlite/geoconnect.db3
 #
 #
 echo "--Update log file permissions"
 chown plaid:apache /webapps/data/geoconnect/geoconnect_files/logs/*.log
-chmod 660 /webapps/data/geoconnect/geoconnect_files/logs/*.log
+chmod 770 /webapps/data/geoconnect/geoconnect_files/logs/*.log
 
 #
 #
