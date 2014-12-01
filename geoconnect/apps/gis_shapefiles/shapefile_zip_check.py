@@ -81,6 +81,7 @@ class ShapefileZipCheck:
         # zip object
         self.zip_obj = None
 
+        self.potential_shapefile_sets = {}
 
         if zip_input is None:
             self.err_detected = True
@@ -101,8 +102,7 @@ class ShapefileZipCheck:
         else:
             self.zip_input = zip_input
         
-        self.potential_shapefile_sets = {}
-    
+
 
     def has_potential_shapefiles(self):
         if len(self.potential_shapefile_sets) == 0:
