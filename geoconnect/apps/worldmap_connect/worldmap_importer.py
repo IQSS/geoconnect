@@ -97,33 +97,49 @@ class WorldMapImporter:
        
         # Send the request to WorldMap
         #
+        logger.debug('import url: %s' % self.api_import_url)
+        logger.debug('layer_params: %s' % layer_params)
+
+
+        r = None
         try:
-            logger.debug('import url: %s' % self.api_import_url)
-            
-            logger.debug('layer_params: %s' % layer_params)
-            r = requests.post(self.api_import_url, data=layer_params, files=shp_file_param, timeout=self.timeout_seconds)
-            #logger.debug('req.data: %s' % req.data)
-            
-            if r.status_code == 200:
-                wm_response_dict = r.json()
-                logger.debug('response: %s' % wm_response_dict)
-                if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
-                    wm_response_dict.pop('success')
-                    return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
-                                
-                elif wm_response_dict.has_key('message'):
-                    err_msgs = wm_response_dict['message']
-                    return self.get_result_msg(False, err_msgs)
-            else:
-                err_msg = "Request failed.  Status code: %s\n\n%s" % (r.status_code, r.text)
-                return self.get_result_msg(False, err_msg)
-                
-                
+            r = requests.post(self.api_import_url\
+                              , data=layer_params\
+                              , files=shp_file_param\
+                              , timeout=self.timeout_seconds\
+                            )
+        except requests.exceptions.ConnectionError as e:
+            err_msg = """<br /><p><b>Details for administrator:</b> Could not contact the
+                    WorldMap server: %s</p><p>%s</p>"""\
+                                % (self.api_import_url, e.message)
+            logger.error(err_msg)
+            return self.get_result_msg(False, err_msg)
+
         except requests.exceptions.Timeout:
-            return self.get_result_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
-        except:
-            return self.get_result_msg(False, 'Sorry! The request failed')
-            
+            err_msg = """Sorry! This request to the WorldMap server failed.
+                    <p><b>Details for administrator:</b> Request to url %s timed out after %s seconds.</p>
+                    <p>%s</p>"""\
+                    % (self.api_import_url, self.timeout_seconds, e.message)
+
+            logger.error(err_msg)
+            return self.get_result_msg(False, err_msg)
+
+        if r.status_code == 200:
+            wm_response_dict = r.json()
+            logger.debug('response: %s' % wm_response_dict)
+            if wm_response_dict.get('success', False) is True and wm_response_dict.get('data') is not None:
+                wm_response_dict.pop('success')
+                return self.get_result_msg(True, '', data_dict=wm_response_dict.get('data'))
+
+            elif wm_response_dict.has_key('message'):
+                err_msgs = wm_response_dict['message']
+                return self.get_result_msg(False, err_msgs)
+        else:
+            err_msg = "Request failed.  Status code: %s\n\n%s" % (r.status_code, r.text)
+            return self.get_result_msg(False, err_msg)
+                
+                
+
             
         return self.get_result_msg(False, 'The import failed for an unknown reason')
         

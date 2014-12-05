@@ -8,7 +8,7 @@
         {% if FAILED_TO_CONVERT_RESPONSE_TO_JSON %}Sorry!  Failed to read data from the Dataverse.{% endif %}
         {% if FAILED_BAD_STATUS_CODE_FROM_WORLDMAP %}Sorry!  The Dataverse information was not converted properly.{% endif %}
         
-            <br /><br /><small>{{ Dataverse_Connect_Err_Msg|linebreaks }}</small>
+            <br /><br /><small>{{ Dataverse_Connect_Err_Msg|safe|linebreaks }}</small>
     </div>
     {% endif %}
 

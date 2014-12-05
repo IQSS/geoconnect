@@ -40,9 +40,17 @@ su plaid -l -s /bin/sh -c 'cd /webapps/code && cp -r /git/geoconnect .'
 cp /webapps/code/geoconnect/deploy/files/etc/sudoers.d/plaid /etc/sudoers.d
 chmod 640 /etc/sudoers.d/plaid
 
-cp /git/geoconnect/geoconnect/geoconnect/settings/secret_settings_prod.json /webapps/code/geoconnect/geoconnect/geoconnect/settings/geoconnect_settings_prod.json
-chown plaid:apache /webapps/code/geoconnect/geoconnect/geoconnect/settings/secret_settings_prod.json
-chmod 440 /webapps/code/geoconnect/geoconnect/geoconnect/settings/secret_settings_prod.json
+# GeoConnect settings stored in JSON
+#
+cp /git/geoconnect/geoconnect/geoconnect/settings/geoconnect_secrets_prod.json /webapps/code/geoconnect/geoconnect/geoconnect/settings/geoconnect_secrets_prod.json
+chown plaid:apache /webapps/code/geoconnect/geoconnect/geoconnect/settings/geoconnect_secrets_prod.json
+chmod 440 /webapps/code/geoconnect/geoconnect/geoconnect/settings/geoconnect_secrets_prod.json
+
+# Worldmap settings stored in JSON
+#
+cp /git/geoconnect/geoconnect/geoconnect/settings/worldmap_secrets_dev.json /webapps/code/geoconnect/geoconnect/geoconnect/settings/worldmap_secrets_dev.json
+chown plaid:apache /webapps/code/geoconnect/geoconnect/geoconnect/settings/worldmap_secrets_dev.json
+chmod 440 /webapps/code/geoconnect/geoconnect/geoconnect/settings/worldmap_secrets_dev.json
 
 #
 # Create directory for sqlite db

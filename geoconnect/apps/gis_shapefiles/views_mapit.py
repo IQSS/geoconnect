@@ -63,10 +63,23 @@ def view_mapit_incoming_token64(request, dataverse_token):
     # Make a post request using the temporary token issued by WorldMap
     #
     TOKEN_PARAM = { settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token }
-    r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
 
-    msgt(r.text)
-    msg(r.status_code)
+    """
+    #http://127.0.0.1:8070/shapefile/map-it/fe1b5f64adcbf2c2c4742fe5eaa0dd6887f410d02317361d9c999c2d4cdaa63e/?cb=http%3A%2F%2Flocalhost%3A8010%2Fapi%2Fworldmap%2Fdatafile%2F
+    """
+    try:
+        r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
+    except requests.exceptions.ConnectionError as e:
+
+        err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
+                                % (callback_url, e.message)
+        logger.error(err_msg)
+        return view_formatted_error_page(request\
+                                        , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
+                                        , err_msg)
+
+    #msgt(r.text)
+    #msg(r.status_code)
 
     # ------------------------------
     # Check if valid status code
@@ -79,7 +92,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                         , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
                                         , err_msg1)
                                         
-        return HttpResponse("Sorry! Failed to retrieve Dataverse file")
+        #return HttpResponse("Sorry! Failed to retrieve Dataverse file")
 
     # ------------------------------
     # Attempt to convert response to JSON

@@ -41,9 +41,22 @@ def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
          
         # Make the request
         #       
-        r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
-                        , data=data_params\
-                        , timeout=30)
+        try:
+            r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
+                            , data=data_params\
+                            , timeout=30)
+        except requests.exceptions.ConnectionError as e:
+
+            err_msg = """Sorry! Failed to retrieve data from the WorldMap.
+                        <p><b>Details for administrator:</b> Could not contact the
+                        WorldMap server: %s</p><p>%s</p>"""\
+                                    % (GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH, e.message)
+            logger.error(err_msg)
+            return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
+        #r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
+        #                , data=data_params\
+        #                , timeout=30)
                         
         # Response looks good
         #

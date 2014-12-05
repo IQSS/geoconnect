@@ -104,6 +104,13 @@ class MetadataUpdater:
                 
         except requests.exceptions.Timeout:
             return self.get_result_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
+        except requests.exceptions.ConnectionError as e:
+
+            err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
+                                % (self.api_update_url, e.message)
+            logger.error(err_msg)
+            return self.get_result_msg(False, err_msg)
+
         #except:
         #    return self.get_result_msg(False, 'Sorry! The request failed')
             
