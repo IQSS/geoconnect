@@ -113,8 +113,14 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     # Download and attach file
     #------------------------------
     datafile_download_url = dataverse_info_dict.get('datafile_download_url', '')
+
+    # Add session token.  Gives permission to download/retrieve the file
+    #   - http://localhost:8080/api/access/datafile/FILEID?key=YOURAPIKEY
+    #
+    datafile_download_url = '%s?key=%s' % (datafile_download_url, dv_session_token)
+    #msg('datafile_download_url: %s' % datafile_download_url)
     datafile_filename = dataverse_info_dict.get('datafile_label', '')
-    
+
     img_temp = NamedTemporaryFile(delete=True)
     img_temp.write(urllib2.urlopen(datafile_download_url).read())
     img_temp.flush()
