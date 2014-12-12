@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+  {# leave it blank #}
+{% endblock %}
+
+{% block main_container %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default xs">
+          <div class="panel-heading">Geoconnect</div>
+          <div class="panel-body">
+              This application acts as an intermediary to visualize 
+              <a href="http://dataverse.org">Dataverse</a> files on the <a  href="http://worldmap.harvard.edu/">WorldMap</a>.
+              <br /><br />
+               <a href="http://dataverse.org"><img src="{{ STATIC_URL }}images/dataverse_project_logo.png" alt="The Dataverse Project" width="150" /></a>
+                  &nbsp;&nbsp;
+                  <a  href="http://worldmap.harvard.edu/"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" xclass="img-responsive" /></a>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

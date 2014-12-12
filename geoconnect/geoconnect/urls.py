@@ -10,7 +10,10 @@ URL_PREFIX = '' #'geo/'
 
 urlpatterns = patterns('',
     # Examples:
+
+    url(r'^$', 'apps.content_pages.views.view_home', name="view_home"),
     # url(r'^$', 'geoconnect.views.home', name='home'),
+
     # url(r'^blog/', include('blog.urls')),
     url(r'^%sshapefile/' % URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
