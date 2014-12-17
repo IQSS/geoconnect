@@ -1,9 +1,7 @@
-from os.path import join, isdir, isfile #, dirname, abspath
+from os.path import abspath, dirname, isfile, join, isdir
 
 import unittest
 import json
-
-from os.path import abspath, dirname, isfile, join
 
 from django.test import TestCase
 from django.conf import settings
