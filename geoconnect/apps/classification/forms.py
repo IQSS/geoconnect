@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 #from apps.classification.models import ClassificationMethod, ColorRamp
-from layer_classification.models import ClassificationMethod, ColorRamp
+from shared_dataverse_information.layer_classification.models import ClassificationMethod, ColorRamp
 
 from apps.worldmap_connect.worldmap_api_url_helper import CLASSIFY_LAYER_API_PATH
 

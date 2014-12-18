@@ -7,7 +7,7 @@ Translate the GISDataFile object into a dict that can be passed to the Dataverse
 """
 #from django.forms.models import model_to_dict
 from apps.gis_basic_file.models import GISDataFile
-from dataverse_info.forms import DataverseInfoValidationForm
+from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
 
 
 def get_dataverse_info_dict(gis_data_file):

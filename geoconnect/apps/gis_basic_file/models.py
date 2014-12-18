@@ -12,7 +12,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from apps.core.models import TimeStampedModel
 
-from dataverse_info.models import DataverseInfo
+from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
 dv_file_system_storage = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)

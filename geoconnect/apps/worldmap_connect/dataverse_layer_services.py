@@ -1,6 +1,6 @@
 import sys
 
-from dataverse_info.forms import CheckForExistingLayerFormBasic, CheckForDataverseUserLayersFormBasic
+from shared_dataverse_information.dataverse_info.forms import CheckForExistingLayerFormBasic, CheckForDataverseUserLayersFormBasic
 
 from apps.worldmap_connect.worldmap_api_url_helper import GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH, GET_LAYER_INFO_BY_USER_API_PATH
 

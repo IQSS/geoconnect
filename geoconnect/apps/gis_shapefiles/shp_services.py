@@ -4,7 +4,7 @@ import urllib2
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
-from dataverse_info.forms import DataverseInfoValidationForm
+from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
 
 from geo_utils.msg_util import *
 

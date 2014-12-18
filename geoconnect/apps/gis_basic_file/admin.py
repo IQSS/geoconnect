@@ -1,7 +1,7 @@
 from django.contrib import admin
 from apps.gis_basic_file.models import GISDataFile
 
-from dataverse_info.admin import DataverseInfoAdmin
+from shared_dataverse_information.dataverse_info.admin import DataverseInfoAdmin
 from apps.worldmap_connect.models import WorldMapImportAttempt
 
 

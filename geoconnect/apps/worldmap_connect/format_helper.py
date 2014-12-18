@@ -8,8 +8,8 @@ from django.conf import settings
 from apps.worldmap_connect.models import WorldMapLayerInfo, WorldMapImportAttempt
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
-from shared_form_util.format_form_errors import format_errors_as_text
-from shapefile_import.forms import ShapefileImportDataForm
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
+from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
 logger = logging.getLogger(__name__)
 

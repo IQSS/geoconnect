@@ -212,7 +212,9 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'layer_classification',
+    'shared_dataverse_information.layer_classification',
+    'shared_dataverse_information.shapefile_import',
+    #'dataverse_info',
     #'apps.classification',       # used for styling WorldMap layers
     'apps.content_pages',
     'apps.style_layer_information',
