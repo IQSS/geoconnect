@@ -8,14 +8,16 @@ import sys
 
 from .base import *
 
+"""
 DATAVERSE_INFO_REPOSITORY_PATH = '/webapps/code/shared-dataverse-information'
 if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
     raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
 sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
+"""
 
 SITENAME = "geoconnect"
 
-SITEURL = "http://dvnweb-vm7.hmdc.harvard.edu"
+SITEURL = "http://geoconnect.datascience.iq.harvard.edu"
 
 # RETRIEVE WORLDMAP JSON INFO
 GEOCONNECT_SECRETS_FNAME = join( dirname(abspath(__file__)), "geoconnect_secrets_prod.json")

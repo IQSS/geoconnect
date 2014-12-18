@@ -30,7 +30,7 @@ path.append(DJANGO_ROOT)
 # Path to additional repository: https://github.com/IQSS/shared-dataverse-information
 # Used for dataverse/worldmap communication.  Validate data passed via api, etc
 #
-DATAVERSE_INFO_REPOSITORY_PATH = '/home/ubuntu/code/shared-dataverse-information'
+#DATAVERSE_INFO_REPOSITORY_PATH = '/home/ubuntu/code/shared-dataverse-information'
 ####################### END: DATAVERSE_INFO_REPOSITORY_PATH
 
 

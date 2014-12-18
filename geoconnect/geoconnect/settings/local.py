@@ -21,7 +21,7 @@ if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
     raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
 sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
 """
-"####################### END: DATAVERSE_INFO_REPOSITORY_PATH
+####################### END: DATAVERSE_INFO_REPOSITORY_PATH
 
 
 STATIC_ROOT =join(TEST_SETUP_DIR, 'assets') # where files gathered and served from
