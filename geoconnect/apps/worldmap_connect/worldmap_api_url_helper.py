@@ -17,6 +17,11 @@ def format_worldmap_api_url(url_path):
 #
 ADD_SHAPEFILE_API_PATH = format_worldmap_api_url('/dataverse/import/')
 
+# shapefile import API
+#
+CHECK_FOR_EXISTING_LAYER_API_PATH = format_worldmap_api_url('/dataverse/check-for-existing-layer/')
+
+
 # classify layer API
 #
 CLASSIFY_LAYER_API_PATH = format_worldmap_api_url('/dataverse/classify-layer/')

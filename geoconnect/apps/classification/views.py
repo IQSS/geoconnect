@@ -97,8 +97,18 @@ def view_classify_layer_form(request, import_success_md5):
 
     classify_url = classify_form.get_worldmap_classify_api_url()
 
-    
-    resp = requests.post(classify_url, data=classify_params, timeout=2)
+
+    resp = None
+    try:
+        resp = requests.post(classify_url, data=classify_params, timeout=2)
+    except requests.exceptions.ConnectionError as e:
+        err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
+                                % (classify_url, e.message)
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.<br />%s' % err_msg)
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
     if resp.status_code == 200:
         json_resp = resp.json()
         
