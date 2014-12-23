@@ -7,7 +7,7 @@ import json
 from urlparse import urlparse
 
 from django.db import models
-
+from django import forms
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
@@ -19,9 +19,9 @@ from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
 from apps.gis_basic_file.models import GISDataFile
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
+from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
+from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm, GeoconnectToDataverseMapLayerMetadataValidationForm
 
-from apps.dv_notify.metadata_updater import MetadataUpdater
-from apps.dv_notify.models import KEY_UPDATES_TO_MATCH_DATAVERSE_API
 
 from geo_utils.json_field_reader import JSONFieldReader
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -170,20 +170,17 @@ class WorldMapImportFail(TimeStampedModel):
         ordering = ('-modified',)
         
         
-class WorldMapLayerInfo(TimeStampedModel):
+class WorldMapLayerInfo(MapLayerMetadata):
     """
     Record the results of a success WorldMap visualization.
+
+    Inherit from shared_dataverse_information.map_layer_metadata.models.MapLayerMetadata
     """
     import_attempt = models.ForeignKey(WorldMapImportAttempt)
 
-    worldmap_username = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
-    layer_name = models.CharField(max_length=255)
-    layer_link = models.URLField()
-    embed_map_link = models.URLField(blank=True)
-
-    attribute_info = models.TextField(blank=True, help_text='JSON list of attributes')
-    
     # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
     
@@ -251,7 +248,9 @@ class WorldMapLayerInfo(TimeStampedModel):
         return lnk
         return '<a href="%s">update dataverse</a>' % lnk
     update_dataverse.allow_tags = True 
-    
+
+
+
     def dv_params(self):
         if not self.id:
             return 'n/a'
@@ -264,76 +263,35 @@ class WorldMapLayerInfo(TimeStampedModel):
     
 
     
-    def get_data_dict(self):
-        data_dict = { 'worldmap_username' : self.worldmap_username\
-                        , 'layer_name' : self.layer_name\
-                        , 'layer_link' : self.layer_link\
-                        , 'embed_map_link' : self.embed_map_link\
-                    }
-        
-        if self.import_attempt.gis_data_file:
-            data_dict['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
-            data_dict['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
+    def get_data_dict(self, json_format=False):
+        """
+        Used for processing model data.
+        """
+        f = MapLayerMetadataValidationForm(self.__dict__)
+        if not f.is_valid():
+            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
-            try:
-                shapefile_info = self.import_attempt.gis_data_file.shapefileset
-                if shapefile_info.bounding_box:
-                    bbox = json.loads(shapefile_info.bounding_box)
-                    print 'bbox', bbox.__class__.__name__
-                    data_dict.update({ 'bbox_min_lng' : bbox[0]
-                        , 'bbox_min_lat' : bbox[1]
-                        , 'bbox_max_lng' : bbox[2]
-                        , 'bbox_max_lat' : bbox[3]
-                        })
-            except:
-                pass
-                
-        return data_dict
-        
-        
+        if not json_format:
+            return f.cleaned_data
+
+        try:
+            return json.dumps(f.cleaned_data)
+        except:
+            raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
+
+
+
     def get_params_for_dv_update(self):
-        #['datafile_id', 'layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'bbox_min_lng', 'bbox_min_lat', 'bbox_max_lng', 'bbox_max_lat', 'dv_session_token']
-        d = self.get_data_dict()
-
-
-        if self.import_attempt and self.import_attempt.gis_data_file:
-            d['datafile_id'] = self.import_attempt.gis_data_file.datafile_id
-            d['dv_session_token'] = self.import_attempt.gis_data_file.dv_session_token
-            try:
-                shapefile_info = self.import_attempt.gis_data_file.shapefileset
-                if shapefile_info.bounding_box:
-                    bbox = json.loads(shapefile_info.bounding_box)
-                    print 'bbox', bbox.__class__.__name__
-                    d.update({ 'bbox_min_lng' : bbox[0]
-                        , 'bbox_min_lat' : bbox[1]
-                        , 'bbox_max_lng' : bbox[2]
-                        , 'bbox_max_lat' : bbox[3]
-                        })
-            except:
-                pass
-                
-        
-        for old_key, new_key in KEY_UPDATES_TO_MATCH_DATAVERSE_API.items():
-            if d.has_key(old_key):
-                d[new_key] = d.get(old_key) # add new key name
-                d.pop(old_key)  # pop off the old key name
-        print (d)
-        return d
-        
-
-
-    def get_as_json_message(self):
         """
-        Return something like:
-        {"message": "", "data": {"layer_link": "http://localhost:8000/data/geonode:income_in_boston_gui_5_zip_q5v", "worldmap_username": "raman_prasad", "layer_name": "geonode:income_in_boston_gui_5_zip_q5v", "embed_map_link": "http://localhost:8000/maps/embed/?layer=geonode:income_in_boston_gui_5_zip_q5v"}, "success": true}    
+        Format data to send to the Dataverse
         """
-        data_dict = self.get_data_dict()
+        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.__dict__)
+        if not f.is_valid():
+            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
-        return MessageHelperJSON.get_json_msg(success=True, msg='', data_dict=data_dict)
+        return f.format_data_for_dataverse_api(self.import_attempt.gis_data_file.dv_session_token)
+       
 
-    def __unicode__(self):
-        return '%s' % self.import_attempt
-    
 
 """
 from apps.gis_basic_file.models import *

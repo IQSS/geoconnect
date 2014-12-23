@@ -2,12 +2,14 @@ import logging
 
 from django.conf import settings
 
+from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 from apps.gis_shapefiles.models import ShapefileInfo
 
 from apps.worldmap_connect.format_helper import get_params_for_worldmap_connect
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.worldmap_connect.worldmap_importer import WorldMapImporter
+
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
@@ -262,9 +264,29 @@ class SendShapefileService:
         if wm_data is None:
             self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but no layer data found')
             return False
-        
-        
+
         logger.debug('wm_data: %s' % wm_data)
+
+        # Use form from MapLayerMetadata object to check results
+        #
+        f = WorldMapToGeoconnectMapLayerMetadataValidationForm(wm_data)
+        if not f.is_valid():
+            self.record_worldmap_failure(self.worldmap_response, 'Validation of WorldMap response failed.  Errors:\n%s' % f.errors)
+            #print f.errors
+            return False
+
+        logger.debug('\nData valid')
+
+        self.worldmap_layerinfo_object = WorldMapLayerInfo(**f.cleaned_data)
+        self.worldmap_layerinfo_object.import_attempt=self.import_attempt_obj
+        self.worldmap_layerinfo_object.save()
+        logger.debug('WorldMapLayerInfo saved')
+
+        self.import_attempt_obj.import_success = True
+        self.import_attempt_obj.save()
+        logger.debug('AttemptObject updated')
+
+        '''
         try:
             # Success!  Create a WorldMapLayerInfo object
             #
@@ -287,7 +309,7 @@ class SendShapefileService:
             logger.debug('--- Failed to save worldmap data\n%s ---' % wm_data)
             self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but GeoConnect failed to save results')
             return False
-
+        '''
         # Separate this into another async. task!
         # Send message back to the Dataverse -- to update metadata
         #

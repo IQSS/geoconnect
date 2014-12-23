@@ -7,9 +7,8 @@ if __name__=='__main__':
     sys.path.append(DJANGO_ROOT)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'geoconnect.settings.local'
 
-from django import forms
 from django.utils.translation import ugettext_lazy as _
-
+from django import forms
 from django.conf import settings
 #from apps.classification.models import ClassificationMethod, ColorRamp
 from shared_dataverse_information.layer_classification.models import ClassificationMethod, ColorRamp

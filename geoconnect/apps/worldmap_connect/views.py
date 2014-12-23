@@ -9,9 +9,9 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
+
 from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
-
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
 import logging
@@ -25,11 +25,12 @@ def show_import_success_params(request, import_success_id):
     Convenience method for reviewing the parameters
     """
     try:
-        wm_success = WorldMapLayerInfo.objects.get(pk=import_success_id)
+        worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=import_success_id)
     except WorldMapLayerInfo.DoesNotExist:
-        return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
+        raise Http404('WorldMapLayerInfo object not found: %s' % import_success_id)
 
-    return HttpResponse('%s' % wm_success.get_data_dict())
+    return HttpResponse('%s' % worldmap_layer_info.get_data_dict(json_format=True))
+
 
 #@login_required
 def send_metadata_to_dataverse(request, import_success_id):
@@ -37,14 +38,14 @@ def send_metadata_to_dataverse(request, import_success_id):
     Send metadata to dataverse: async this!!
     """
     try:
-        wm_success = WorldMapLayerInfo.objects.get(pk=import_success_id)
+        worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=import_success_id)
     except WorldMapLayerInfo.DoesNotExist:
         return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
     
-    MetadataUpdater.update_dataverse_with_metadata(wm_success)
-    if wm_success.import_attempt.gis_data_file:
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
+    if worldmap_layer_info.import_attempt.gis_data_file:
         lnk = reverse('view_shapefile'\
-                    , kwargs={ 'shp_md5' : wm_success.import_attempt.gis_data_file.md5 }\
+                    , kwargs={ 'shp_md5' : worldmap_layer_info.import_attempt.gis_data_file.md5 }\
                     )
         return HttpResponseRedirect(lnk)
     return HttpResponse('metadata sent')
