@@ -12,7 +12,8 @@ from django.contrib.auth.decorators import login_required
 from geo_utils.message_helper_json import MessageHelperJSON
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
-#from classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +111,9 @@ def view_classify_layer_form(request, import_success_md5):
 
 
     if resp.status_code == 200:
-        json_resp = resp.json()
-        
+        #json_resp = resp.json()
+
+        # convert response to JSON
         try:
             json_resp = resp.json()
         except:
@@ -119,14 +121,31 @@ def view_classify_layer_form(request, import_success_md5):
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')            
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
+        #   Classification Failed
+        #
         if json_resp.get("success") is False:
             logger.error('Worldmap call returned success = false: %s' % resp.text)
             user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)            
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-        
+        #   Looks good, save the update attributed information
+        #
+        f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
+        if not f_val.is_valid():
+            logger.error('Classify return data failed validation: %s' % f_val.errors)
+            user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' \
+                            % json_resp.get('message', f_val.errors)
+            json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
+            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+        #   Update the WorldMapLayerInfo object's attribute info
+        #
+        worldmap_layerinfo.add_attribute_info(f_val.cleaned_data['attribute_info'])
+        worldmap_layerinfo.save()
+
         msg_params = classify_form.get_params_for_display()
+
         #msg_params.pop('geoconnect_token', None) # don't want this in the template
         #classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
         success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
