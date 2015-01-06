@@ -13,7 +13,7 @@ from geo_utils.key_checker import KeyChecker
 from geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
 
-from apps.worldmap_connect.worldmap_api_url_helper import ADD_SHAPEFILE_API_PATH
+from shared_dataverse_information.worldmap_api_helper.url_helper import ADD_SHAPEFILE_API_PATH
 
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text

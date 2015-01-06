@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import requests
 
 from apps.worldmap_connect.models import WorldMapLayerInfo
-#from apps.worldmap_connect.worldmap_api_url_helper import GET_VIEW_PRIVATE_LAYER_URL
+#from shared_dataverse_information.worldmap_api_helper.url_helper import GET_VIEW_PRIVATE_LAYER_URL
 from shared_dataverse_information.dataverse_info.forms_embed_layer import EmbedLayerForm
 from shared_dataverse_information.dataverse_info.forms_api_validate import SIGNATURE_KEY
 from shared_dataverse_information.dataverse_info.tests.msg_util import *

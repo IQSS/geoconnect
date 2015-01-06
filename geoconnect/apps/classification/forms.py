@@ -13,7 +13,7 @@ from django.conf import settings
 #from apps.classification.models import ClassificationMethod, ColorRamp
 from shared_dataverse_information.layer_classification.models import ClassificationMethod, ColorRamp
 
-from apps.worldmap_connect.worldmap_api_url_helper import CLASSIFY_LAYER_API_PATH
+from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH
 
 CLASSIFY_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True) ]
 CLASSIFY_STRING_METHOD_CHOICES = [ (x.id, x.display_name) for x in ClassificationMethod.objects.filter(active=True, is_string_usable=True) ]
