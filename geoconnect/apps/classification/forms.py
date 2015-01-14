@@ -50,8 +50,8 @@ class ClassifyLayerForm(forms.Form):
     # 
     
     def __init__(self, *args, **kwargs):
-        """Initialize using a WorldMapLayerInfo object
-        
+        """
+        Initialize using a WorldMapLayerInfo object
         """
         
         worldmap_layerinfo = kwargs.pop('worldmap_layerinfo', None)

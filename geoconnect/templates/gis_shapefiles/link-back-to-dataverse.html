@@ -1,4 +1,9 @@
 <!-- start: back to dataverse button -->
+
+{% comment %}
+<a href="javascript:window.close();" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+{% endcomment %}
+
 {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% else %}

@@ -119,10 +119,8 @@ class MetadataUpdater:
 
     @staticmethod
     def update_dataverse_with_metadata(worldmap_layer_info):
-        if worldmap_layer_info is None:
-            logger.error('worldmap_layer_info is None')
-            return False
-            
+        assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
+    
         #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
         mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         resp_dict = mu.send_info_to_dataverse(worldmap_layer_info)

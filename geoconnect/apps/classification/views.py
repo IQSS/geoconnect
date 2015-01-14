@@ -10,8 +10,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
 from geo_utils.message_helper_json import MessageHelperJSON
+
+from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 
@@ -35,8 +38,9 @@ def view_classify_layer_form(request, import_success_md5):
     :param import_success_md5: str, md5 identifying a WorldMapLayerInfo object
     :returns JSON response: JSON generated with the MessageHelperJSON.get_json_msg function
     """
+    # --------------------------------------------------------------
     # Is it a POST?   
-    #
+    # --------------------------------------------------------------
     if not request.POST:
         err_note = 'A POST request must be used to classify the layer.'
         json_msg = MessageHelperJSON.get_json_msg(success=False\
@@ -45,8 +49,9 @@ def view_classify_layer_form(request, import_success_md5):
         # technically a 405 error, but we want the JSON message to appear
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
     
+    # --------------------------------------------------------------
     # Is the WorldMapLayerInfo object md5 available?
-    #
+    # --------------------------------------------------------------
     if not import_success_md5:
         err_note = 'Sorry! The layer could not be identified.\n\nThe Styling option is not available.'
         json_msg = MessageHelperJSON.get_json_msg(success=False\
@@ -55,8 +60,9 @@ def view_classify_layer_form(request, import_success_md5):
         # technically a 400 error, but we want the JSON message to appear
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
          
+    # --------------------------------------------------------------
     # Does the success object exist?
-    #
+    # --------------------------------------------------------------
     try: 
         worldmap_layerinfo = WorldMapLayerInfo.objects.get(md5=import_success_md5)
     except WorldMapLayerInfo.DoesNotExist:
@@ -70,12 +76,15 @@ def view_classify_layer_form(request, import_success_md5):
 
     d = { 'ATTRIBUTE_VALUE_DELIMITER' :ATTRIBUTE_VALUE_DELIMITER }
     
+    # --------------------------------------------------------------
     # Is the form valid?
-    #
+    # --------------------------------------------------------------
     classify_form = ClassifyLayerForm(request.POST, **dict(worldmap_layerinfo=worldmap_layerinfo))
 
+    # --------------------------------------------------------------
     # Invalid forms are status=200 so caught by ajax
     # Form validation will replace the classification div on the page
+    # --------------------------------------------------------------
     if not classify_form.is_valid():
         d.update( dict(classify_form=classify_form\
                 , worldmap_layerinfo=worldmap_layerinfo\
@@ -102,6 +111,7 @@ def view_classify_layer_form(request, import_success_md5):
     resp = None
     try:
         resp = requests.post(classify_url, data=classify_params, timeout=2)
+        print ('classify_params', classify_params)
     except requests.exceptions.ConnectionError as e:
         err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
                                 % (classify_url, e.message)
@@ -113,7 +123,9 @@ def view_classify_layer_form(request, import_success_md5):
     if resp.status_code == 200:
         #json_resp = resp.json()
 
+        # --------------------------------------------------------------
         # convert response to JSON
+        # --------------------------------------------------------------        
         try:
             json_resp = resp.json()
         except:
@@ -121,16 +133,18 @@ def view_classify_layer_form(request, import_success_md5):
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')            
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
+        # --------------------------------------------------------------
         #   Classification Failed
-        #
+        # --------------------------------------------------------------
         if json_resp.get("success") is False:
             logger.error('Worldmap call returned success = false: %s' % resp.text)
             user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)            
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
+        # --------------------------------------------------------------
         #   Looks good, save the update attributed information
-        #
+        # --------------------------------------------------------------
         f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
         if not f_val.is_valid():
             logger.error('Classify return data failed validation: %s' % f_val.errors)
@@ -139,10 +153,22 @@ def view_classify_layer_form(request, import_success_md5):
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
+        # --------------------------------------------------------------
         #   Update the WorldMapLayerInfo object's attribute info
-        #
+        # --------------------------------------------------------------
         worldmap_layerinfo.add_attribute_info(f_val.cleaned_data['attribute_info'])
         worldmap_layerinfo.save()
+
+
+        # --------------------------------------------------------------
+        #   Update the Dataverse metadata -- so that the new icon will be refreshed
+        # --------------------------------------------------------------
+        
+        # Is all this needed, or should there be an API call to only update the image?    
+        MetadataUpdater.update_dataverse_with_metadata(worldmap_layerinfo)
+        
+        #
+        #
 
         msg_params = classify_form.get_params_for_display()
 
@@ -156,6 +182,8 @@ def view_classify_layer_form(request, import_success_md5):
                 
         form_content = render_to_string('classification/view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
+                                
+                                
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                             , msg='Success!'
                                             , data_dict={'div_content':form_content}\
