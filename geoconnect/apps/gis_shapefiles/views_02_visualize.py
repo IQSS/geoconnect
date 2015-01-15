@@ -62,11 +62,12 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
             , classify_form=classify_form\
-            , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER
+            , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
+            , show_visualize_success_msg=True\
         )
     
     #d['classify_form'] = classify_form
-    d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
+    #d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
     
     return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
                     , d\
@@ -97,7 +98,8 @@ class ViewAjaxVisualizeShapefile(View):
         :return: { "success" : true
                     , "message" : "Success!"
                     , "data" : { "id_main_panel_content" : " ( map html ) "
-                            , "id_main_panel_title" : "Step 2. Visualize Shapefile"
+                            , "id_main_panel_title" : "( title panel html)"
+                            , "id_breadcrumb" : "(breadcrumb html)"
                         }
                 }
         """
