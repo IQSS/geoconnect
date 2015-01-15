@@ -73,6 +73,10 @@ button.btn.dropdown-toggle span.glyphicon {margin-right:.3em;}
 #breadcrumbNavBlock div.ui-tree.ui-widget-content span.ui-treenode-content span.ui-icon.ui-tree-toggler.ui-icon-triangle-1-s {background-position: -72px -16px;}
 #breadcrumbNavBlock div.ui-tree.ui-widget-content span.ui-treenode-content span.ui-icon.ui-tree-toggler.ui-icon-triangle-1-e {background-position: -35px -16px;}
 
+.spacer {
+    margin-top: 40px; 
+}
+
 /* -------- DATAVERSE -------- */
 form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget,
 form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget tr, 

@@ -94,17 +94,20 @@ def view_shapefile_visualize_attempt(request, shp_md5):
 
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
-    ## This logic shouldn't be here, factor it out similar to SendShapefileService
     """
     Retrieve and view a :model:`gis_shapefiles.ShapefileInfo` object
 
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
     :template:`gis_shapefiles/view_02_single_shapefile.html`
     """
+    logger.debug('-' * 40)
     logger.debug('view_shapefile')
 
     first_time_notify = kwargs.get('first_time_notify', False)
+    logger.debug('first_time_notify: %s' % first_time_notify)
+
     just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
+    logger.debug('just_made_visualize_attempt: %s' % just_made_visualize_attempt)
 
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'

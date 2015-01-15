@@ -14,7 +14,6 @@
    }
    
    function submit_classify_form(){
-       
             // Fade out classify button
             $('#id_frm_style_submit').addClass('disabled').html('Working...');
             
@@ -26,7 +25,6 @@
                if ((json_resp.data)&&(json_resp.data.div_content)){
                  $( "#div_classify_form" ).html(json_resp.data.div_content);
                  $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-                 
                }
            })
            .done(function(json_resp) {
@@ -115,6 +113,7 @@
    }
    
    $(document).ready(function() {
+        //alert('buttons bound');
         $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
         $( "#id_attribute" ).on( "change", check_attribute );     
         check_attribute();   

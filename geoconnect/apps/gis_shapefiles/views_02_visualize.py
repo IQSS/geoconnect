@@ -9,7 +9,9 @@ from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+
+from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.json_field_reader import JSONFieldReader
@@ -20,6 +22,16 @@ logger = logging.getLogger(__name__)
 
 from geo_utils.msg_util import *
 
+
+def render_breadcrumb_div_for_style_step():
+
+    d = {   'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
+            , 'GEOCONNECT_STEPS' : GEOCONNECT_STEPS\
+         }
+    return render_to_string('breadcrumb.html'\
+                    , d\
+                    )
+    
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
 
@@ -27,15 +39,29 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
     assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
+    classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
+
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
+            , classify_form=classify_form\
+            , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER
         )
-
-
-    return render_to_string('gis_shapefiles/view_03_visualize_layer.html'\
+    
+    #d['classify_form'] = classify_form
+    d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
+    
+    return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
                     , d\
                     , context_instance=RequestContext(request)\
                     )
+
+    # -----------------------------
+    # Without classify form:
+    # -----------------------------
+    #d = dict(shapefile_info=shapefile_info\
+    #        , worldmap_layerinfo=worldmap_layerinfo\
+    #    )
+    #return render_to_string('gis_shapefiles/view_03_visualize_layer.html'\
 
 
 class ViewAjaxVisualizeShapefile(View):
@@ -58,16 +84,19 @@ class ViewAjaxVisualizeShapefile(View):
                 }
         """
         #assert type(request) is HttpRequest, "request must be a HttpRequest object"
-        assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-        assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
+        assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
+        assert  (worldmap_layerinfo, WorldMapLayerInfo), "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
         msg('render html')
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
+        breadcrumb_html = render_breadcrumb_div_for_style_step()
         msg('create  json_msg')
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                         , msg='Success!'
                                         , data_dict=dict(id_main_panel_content=visualize_html\
-                                                    , id_main_panel_title=STEP2_VISUALIZE\
+                                                    #, id_main_panel_title=STEP2_VISUALIZE\
+                                                    , id_main_panel_title=STEP3_STYLE\
+                                                    , id_breadcrumb=breadcrumb_html
                                                     )\
                                         )
         msg('send  json_msg')

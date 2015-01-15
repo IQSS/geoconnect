@@ -28,16 +28,6 @@ urlpatterns += patterns('apps.gis_shapefiles.views_mapit',
     
 )
 
-"""
-urlpatterns += patterns('apps.gis_shapefiles.views_mapit_onestep',
-    #url(r'^map-it/(?P<dv_session_token>\w{32})/$', 'view_mapit_incoming', name="view_mapit_incoming"),
-
-    #url(r'^map-it/(?P<dataset_id>\d{1,10})/$', 'view_mapit_incoming_no_token', name="view_mapit_incoming_no_token"),
-
-    url(r'^map-it-1-step/(?P<dataverse_token>\w{64})/$', 'view_mapit_incoming_one_step', name="view_mapit_incoming_one_step"),
-    
-)
-"""
 
 urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
 

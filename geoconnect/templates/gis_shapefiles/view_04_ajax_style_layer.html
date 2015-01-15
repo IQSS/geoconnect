@@ -1,6 +1,8 @@
 
 <!-- content for id_main_panel_content -->
       {% if worldmap_layerinfo %}
+        {% include "classification/classify_form_dynamic_js.html" %}
+
         Use the form below the map to style the layer. 
         &nbsp; <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>	
         

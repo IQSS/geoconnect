@@ -8,12 +8,14 @@
           {% include "gis_shapefiles/ajax_attempt_visualization.js" %}
         </script>
    {% endif %}
-
+ {% comment %}
     {% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
         {% if classify_form %}
-            {% include "classification/classify_form_js.html" %}
+            {% include "classification/classify_form_dynamic_js.html" %}
         {% endif %}
     {% endif %}
+  {% endcomment %}
+
 {% endblock %}
 
 {% block main_container %}
@@ -38,7 +40,7 @@
 
    <!-- start panel --><div class="panel panel-default">
     <div class="panel-heading">
-     <h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }}</h3>
+     <h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }} </h3>
     </div>
     <div class="panel-body" id="id_main_panel_content">
        	{% if not shapefile_info %}
@@ -48,11 +50,11 @@
             <!-- We have a shapefile here -->
             {% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
 
-                {% include "gis_shapefiles/view_03_visualize_layer.html" %}
+                {#% include "gis_shapefiles/view_03_visualize_layer.html" %#}
 
             {% else %}{% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
 		    
-		        {% include "gis_shapefiles/view_04_style_layer.html" %}	
+		        {% include "gis_shapefiles/view_04_ajax_style_layer.html" %}	
 		        
             {% else %}
 			
@@ -71,8 +73,9 @@
         {% endif %}
     </div><!-- end main panel content -->
     </div><!-- end: panel -->
+    
     {% if shapefile_info %}
-        {% include "gis_shapefiles/shapefile_info_panel.html" %}
+        {#% include "gis_shapefiles/shapefile_info_panel.html" %#}
     {% endif %}
     {% include "gis_shapefiles/link-back-to-dataverse.html" %}
 
