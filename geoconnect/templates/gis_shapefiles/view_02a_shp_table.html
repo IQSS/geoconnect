@@ -15,14 +15,13 @@
 <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
 
 <div class="row spacer"></div>
-<div class="row spacer"></div>
-<!-- Return to dataverse button -->
-{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
-    <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-default btn-md"><span class="glyphicon"></span>Cancel</a>
-{% else %}
-    <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default btn-md"><span class="glyphicon"></span>Cancel</a>
-{% endif %}    
-        
+
+<div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
+    <div class="col-xs-6">
+        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+    </div>
+</div>
+
     {% comment %}
         The shapefile was successfully examined!
         <p>Press the button below to create a Map Layer:</p>
