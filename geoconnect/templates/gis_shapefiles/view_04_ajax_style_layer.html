@@ -10,7 +10,7 @@
         </div>
         {% endif %}
 
-        Use the form below to the map to style it.
+        Use the form below the map to style it.
         &nbsp; <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>	
         
             <!-- WorldMap Layer in iframe -->
@@ -21,7 +21,7 @@
 
                 <div style="width:30%;float:left;text-align:center;">
                     <h4>Legend</h4>
-                    <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" />
+                    <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
 
                    {# <img src="http://107.22.231.227/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=geonode:income_in_boston_gui_1_zip_z2m&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A12%3B">#}
                 </div>
