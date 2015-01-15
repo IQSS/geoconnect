@@ -254,7 +254,7 @@ def view_shapefile(request, shp_md5, **kwargs):
                 d['page_title'] = 'Visualize Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
             else:
-                d['page_title'] = 'Style Shapefile'
+                d['page_title'] = 'Style Map'
                 d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
             
             classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))

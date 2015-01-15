@@ -23,19 +23,37 @@ logger = logging.getLogger(__name__)
 from geo_utils.msg_util import *
 
 
+"""
+Handle AJAX requests to Visualize a Layer
+
+- Upon successful visualizations, several pieces of the page are update including
+    - page title
+    - breadcrumb
+    - main content panel
+"""
+
 def render_breadcrumb_div_for_style_step():
 
     d = {   'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
             , 'GEOCONNECT_STEPS' : GEOCONNECT_STEPS\
          }
-    return render_to_string('breadcrumb.html'\
-                    , d\
-                    )
+    return render_to_string('breadcrumb.html', d)
+
     
+def render_main_panel_title_for_style_step(shapefile_info):
+    
+    assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
+
+    d = {   'shapefile_info' : shapefile_info\
+            , 'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
+        }
+    return render_to_string('gis_shapefiles/view_02_main_panel_title.html', d)
+    
+
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
 
-    #assert type(request) is HttpRequest, "request must be a HttpRequest object"
+    #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
     assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
@@ -90,12 +108,14 @@ class ViewAjaxVisualizeShapefile(View):
         msg('render html')
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
         breadcrumb_html = render_breadcrumb_div_for_style_step()
+        main_title_panel_html=render_main_panel_title_for_style_step(shapefile_info)
+        
         msg('create  json_msg')
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                         , msg='Success!'
                                         , data_dict=dict(id_main_panel_content=visualize_html\
                                                     #, id_main_panel_title=STEP2_VISUALIZE\
-                                                    , id_main_panel_title=STEP3_STYLE\
+                                                    , id_main_panel_title=main_title_panel_html\
                                                     , id_breadcrumb=breadcrumb_html
                                                     )\
                                         )

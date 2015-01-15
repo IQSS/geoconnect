@@ -40,7 +40,7 @@
 
    <!-- start panel --><div class="panel panel-default">
     <div class="panel-heading">
-     <h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }} </h3>
+      {% include "gis_shapefiles/view_02_main_panel_title.html" %}
     </div>
     <div class="panel-body" id="id_main_panel_content">
        	{% if not shapefile_info %}

@@ -24,7 +24,8 @@
                     }
                     // title update
                     if (json_resp.data.hasOwnProperty('id_main_panel_title')){
-                         $("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
+                         //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
+                         $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
                     }                    
                     // breadcrumb update
                     if(json_resp.data.hasOwnProperty('id_breadcrumb')){
