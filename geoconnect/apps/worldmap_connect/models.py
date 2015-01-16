@@ -20,7 +20,9 @@ from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 from apps.gis_basic_file.models import GISDataFile
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
-from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm, GeoconnectToDataverseMapLayerMetadataValidationForm
+from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm\
+                                                , GeoconnectToDataverseMapLayerMetadataValidationForm\
+                                                , GeoconnectToDataverseDeleteMapLayerMetadataForm
 
 
 from geo_utils.json_field_reader import JSONFieldReader
@@ -279,7 +281,15 @@ class WorldMapLayerInfo(MapLayerMetadata):
         except:
             raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
 
+    
+    def get_params_for_dv_delete_layer_metadata(self):
 
+        f = GeoconnectToDataverseDeleteMapLayerMetadataForm({ 'dv_session_token' : self.import_attempt.gis_data_file.dv_session_token})
+        if not f.is_valid():
+            raise forms.ValidationError('WorldMapLayerInfo DELETE params did not validate: %s' % f.errors)
+        
+        return f.format_for_dataverse_api()
+        
 
     def get_params_for_dv_update(self):
         """

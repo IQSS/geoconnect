@@ -15,6 +15,10 @@ from geo_utils.message_helper_json import MessageHelperJSON
 
 from django import forms
 from django.conf import settings
+
+from shared_dataverse_information.dataverse_info.url_helper import get_api_url_update_map_metadata, get_api_url_delete_metadata
+#from apps.gis_shapefiles.models import WorldMapLayerInfo
+
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
 import logging
@@ -33,7 +37,7 @@ class MetadataUpdater:
         
         :param dv_metadata_params: dict containing information necessary for contacting dataverse
         """
-        self.api_update_url = dataverse_server_url + settings.DATAVERSE_METADATA_UPDATE_API_PATH
+        self.dataverse_server_url = dataverse_server_url
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
     
@@ -51,6 +55,51 @@ class MetadataUpdater:
         return MessageHelperJSON.get_json_msg_from_dict(d) 
     
     
+    def delete_metadata_from_dataverse(self, worldmap_layer_info):
+        """
+        Delete map layer metadata from the Dataverse
+        
+        returns (True, None)
+            or (False, 'error message of some type')
+        """
+        assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
+        
+
+        params = worldmap_layer_info.get_params_for_dv_delete_layer_metadata()
+        api_delete_metadata_url = get_api_url_delete_metadata(self.dataverse_server_url)
+        
+        print ('params to send: %s' % params)
+        print ('-' * 40)
+        print ('update url: %s' % api_delete_metadata_url)
+        print ('-' * 40)
+        print ('payload: %s' % json.dumps(params))
+        print ('-' * 40)
+        
+        req = None
+        try:
+            req = requests.post(api_delete_metadata_url, data=json.dumps(params), timeout=self.timeout_seconds)
+        except requests.exceptions.Timeout:
+            return (False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
+
+        except requests.exceptions.ConnectionError as e:
+
+            err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
+                                % (api_delete_metadata_url, e.message)
+            logger.error(err_msg)
+            return (False, err_msg)
+
+        if not req.status_code == 200:
+                
+            print ('request text: %s' % req.text)
+                
+            logger.error('Metadata delete failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
+                
+            return (False, 'Sorry! The update failed.')
+   
+        return (True, None)# 'Delete success')
+        
+        
+    
     def send_info_to_dataverse(self, worldmap_layer_info):
         """
         Go through the process of sending params to dataverse
@@ -58,31 +107,31 @@ class MetadataUpdater:
         :returns: JSON with "success" flag and either error or data
         :rtype: JSON string
         """
-        assert type(worldmap_layer_info) is WorldMapLayerInfo, "worldmap_layer_info must be a WorldMapLayerInfo object"
+        assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
 
         logger.info('send_params_to_dataverse')
         print('1) send_params_to_dataverse')
 
         dv_metadata_params = worldmap_layer_info.get_params_for_dv_update()
+        api_update_url = get_api_url_update_map_metadata(self.dataverse_server_url)
 
         print ('params to send: %s' % dv_metadata_params)
         print ('-' * 40)
-        print ('update url: %s' % self.api_update_url)
+        print ('update url: %s' % api_update_url)
         print ('-' * 40)
         print ('payload: %s' % json.dumps(dv_metadata_params))
         print ('-' * 40)
 
-
         req = None
         try:
-            req = requests.post(self.api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
+            req = requests.post(api_update_url, data=json.dumps(dv_metadata_params), timeout=self.timeout_seconds)
         except requests.exceptions.Timeout:
             return self.get_result_msg(False, 'This request timed out.  (Time limit: %s seconds(s))' % self.timeout_seconds)
 
         except requests.exceptions.ConnectionError as e:
 
             err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
-                                % (self.api_update_url, e.message)
+                                % (api_update_url, e.message)
             logger.error(err_msg)
             return self.get_result_msg(False, err_msg)
 
@@ -109,13 +158,23 @@ class MetadataUpdater:
         else:
             return self.get_result_msg(False, 'The import failed for an unknown reason')
 
-        #    return self.get_result_msg(False, 'The update failed.')
-                
 
-        #except:
-        #    return self.get_result_msg(False, 'Sorry! The request failed')
-            
-            
+
+    @staticmethod
+    def delete_map_metadata_from_dataverse(worldmap_layer_info):
+        assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
+
+        #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
+        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+        resp_dict = mu.delete_metadata_from_dataverse(worldmap_layer_info)
+        print ('>>>>>>>>>',resp_dict)
+        if resp_dict is tuple:
+            return resp_dict[0]
+        #if resp_dict.get('success', False) is True:
+        #    return True
+        #return False
+
+
 
     @staticmethod
     def update_dataverse_with_metadata(worldmap_layer_info):

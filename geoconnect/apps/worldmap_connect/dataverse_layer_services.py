@@ -15,6 +15,9 @@ Functions that interact with the WorldMap API to:
 """
 logger = logging.getLogger(__name__)
 
+
+#def delete_map_layer
+
 """
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
 url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
@@ -34,13 +37,15 @@ def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
     try:
         logger.debug('get_dataverse_layer_info_by_user_and_file')
         
+        #--------------------------------------
         # Prepare the data
-        #
+        #--------------------------------------
         data_params = f.cleaned_data
         data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
          
+        #--------------------------------------
         # Make the request
-        #       
+        #--------------------------------------
         try:
             r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
                             , data=data_params\
@@ -58,14 +63,16 @@ def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
         #                , data=data_params\
         #                , timeout=30)
                         
+        #--------------------------------------
         # Response looks good
-        #
+        #--------------------------------------
         if r.status_code == 200:
             response_dict = r.json()
             return MessageHelperJSON.get_dict_msg(success=True, msg='layer returned', data_dict=data_dict)
             
+        #--------------------------------------
         # Response doesn't look good
-        #
+        #--------------------------------------
         err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
             

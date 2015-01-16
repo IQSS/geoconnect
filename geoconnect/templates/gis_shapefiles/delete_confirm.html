@@ -1,4 +1,4 @@
-<!-- Modal -->
+<!-- Start: Modal Delete Map -->
 <div class="modal fade" id="delete_repo_confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content  text-center">
@@ -9,13 +9,22 @@
     <div class="modal-body pagination-centered">
             <p class="alert alert-danger" xrole="alert">
                This will permanently DELETE the map
-               <br />However, you can make another map in the future.
+               <br />(However, you can make another map in the future.)
             </p>
-        <form action="{#% url 'delete-map' %#}" method="POST">
-              <label style="font-weight:normal;"><input type="checkbox">
-                  I understand the consequences</label>
-            <br />
-            <button type="submit" class="btn btn-danger" data-disable-invalid>Delete this map</button> 
+        <form action="{% url 'view_delete_map' %}" method="POST">
+            {% if delete_form %}
+                {% csrf_token %}
+                {% for f in delete_form %}
+                    {{ f }}
+                    {% if not f.is_hidden %}
+                          {{ f.label }}
+                          {% if f.errors %}
+                            <p span="text-danger">{{ f.errors }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <p><br /><button type="submit" class="btn btn-danger" data-disable-invalid  disabled="disabled" id="id_delete_map_button">Delete this map</button></p> 
         </form>
       </div>
       <div class="modal-footer text-left">
@@ -24,28 +33,4 @@
     </div>
   </div>
 </div>
-
-<!--
-<div id="delete_repo_confirm" style="display:none">
-
-  <h2 class="facebox-header">Are you ABSOLUTELY sure?</h2>
-
-  <div class="facebox-alert">
-    Unexpected bad things will happen if you don't read this!
-  </div>
-
-  <p>This action <strong>CANNOT</strong> be undone. This will permanently delete the <strong>raprasad/to-delete</strong> repository, wiki, issues, and comments, and remove all collaborator associations.</p>
-
-
-  <p>Please type in the name of the repository to confirm.</p>
-
-  <form accept-charset="UTF-8" action="/raprasad/to-delete/settings/delete" class="js-normalize-submit" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="_method" type="hidden" value="delete" /><input name="authenticity_token" type="hidden" value="R11bCHsckeEPBEaR33OA4QCVrNYvxe0mG7UExx4Na/QK9uH1I8ieIFikgzIn8XrjwgxM02ZSBDukyLS+XZJMZQ==" /></div>
-    <p>
-      <input type="text" class="input-block" autofocus required
-             pattern="to\-delete|raprasad/to\-delete"
-             aria-label="Type in the name of the repository to confirm that you want to delete this repository.">
-    </p>
-    <button type="submit" class="button button-block danger" data-disable-invalid>I understand the consequences, delete this repository</button>
-</form>
-</div>
--->
+<!-- End: Modal Delete Map -->

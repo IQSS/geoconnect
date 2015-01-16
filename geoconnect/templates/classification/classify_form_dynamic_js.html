@@ -9,9 +9,48 @@
 </style>
 <script>
    
+    //-------------------------------
+   /* START: Delete map form related */
+   //-------------------------------
+
+   //-------------------------------
+   // show modal dialog with delete form
+   //-------------------------------
    function show_delete_form(){
        $('#delete_repo_confirm').show();
    }
+   
+   //-------------------------------
+   // Activate/Disable Delete button based on checkbox
+   //-------------------------------
+   function toggle_delete_button(){
+       if ($('#id_delete_map_button').length < 1) {
+          return;
+       }
+       if($("#id_confirmation").is(':checked')){
+           $('#id_delete_map_button').removeAttr("disabled");
+       }else{
+           $('#id_delete_map_button').attr( "disabled", "disabled" );
+       }
+   }
+   
+   //-------------------------------
+   // Confirmation checkbox for Delete map form 
+   //   - on click, toggle ability to press delete button
+   //-------------------------------
+   function bind_delete_confirmation(){
+       if ($('#id_confirmation').length < 1) {
+          return;
+       }
+       //$('#id_frm_style_submit').removeClass('disabled').html('Style Layer');
+       $( "#id_confirmation" ).change( "change", toggle_delete_button );
+   }
+   
+
+   //-------------------------------
+   /* END: Delete map form related */
+   //-------------------------------
+   
    function get_alert(alert_type, err_msg){
         return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
    }
@@ -121,5 +160,6 @@
         $( "#id_attribute" ).on( "change", check_attribute );     
         
         check_attribute();   
+        bind_delete_confirmation();
    });
  </script>
