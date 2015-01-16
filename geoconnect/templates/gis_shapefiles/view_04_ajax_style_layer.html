@@ -1,6 +1,7 @@
 
 <!-- content for id_main_panel_content -->
       {% if worldmap_layerinfo %}
+        {% include "gis_shapefiles/delete_confirm.html" %}  
         {% include "classification/classify_form_dynamic_js.html" %}
 
         {% if show_visualize_success_msg %}
@@ -34,8 +35,10 @@
                     {% include "gis_shapefiles/link-back-to-dataverse.html" %}
                     
                 </div>
-                <div class="col-xs-6 text-right"><a href="javascript:alert('delete function');">(Delete this Map)</a></div>
+                <div class="col-xs-6 text-right"><a data-toggle="modal" data-target="#delete_repo_confirm" xhref="javascript:show_delete_form();">(Delete this Map)</a></div>
+                
             </div>
       {% else %}
         <div class="alert alert-warning">Sorry!  An Error occurred! The Map Layer is not available</div>
       {% endif %}
+

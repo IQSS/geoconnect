@@ -9,6 +9,9 @@
 </style>
 <script>
    
+   function show_delete_form(){
+       $('#delete_repo_confirm').show();
+   }
    function get_alert(alert_type, err_msg){
         return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
    }
@@ -116,6 +119,7 @@
         //alert('buttons bound');
         $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
         $( "#id_attribute" ).on( "change", check_attribute );     
+        
         check_attribute();   
    });
  </script>

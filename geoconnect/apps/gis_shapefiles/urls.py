@@ -34,6 +34,10 @@ urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
    url(r'^ajax-visualize/(?P<shp_md5>\w{1,32})/$', ViewAjaxVisualizeShapefile.as_view(), name="view_ajax_attempt_visualization"),
 )
 
+#urlpatterns += patterns('apps.gis_shapefiles.views_delete',
+
+#    url(r'^delete-map/(?P<shp_md5>\w{32})/$', 'view_delete_map', name="view_delete_map"),
+#)
 #urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
 #    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
 #)
@@ -48,11 +52,3 @@ urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
 #    url(r'^shp/(?P<shp_md5>\w{32})/(?P<field_name>\w{1,200})/(?P<column_index>\d{1,7})/$', #'view_field_stats', name="view_field_stats"),
 #)
 
-
-"""
-urlpatterns += patterns('gis_shapefiles.views_import',
-
-    url(r'^examine-callback-url/$', 'view_shapefile_callback', name="view_shapefile_callback"),
-    
-)
-"""
