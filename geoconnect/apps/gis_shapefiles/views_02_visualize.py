@@ -5,6 +5,8 @@ from django.views.generic import View
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
+from django.conf import settings
+
 from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
@@ -33,6 +35,15 @@ Handle AJAX requests to Visualize a Layer
     - breadcrumb
     - main content panel
 """
+
+
+def render_ajax_basic_err_msg(err_note):
+
+    d = {   'DATAVERSE_SERVER_URL' : settings.DATAVERSE_SERVER_URL\
+            , 'ERR_NOTE' : err_note\
+         }
+    return render_to_string('gis_shapefiles/view_02_ajax_basic_err.html', d)
+
 
 def render_breadcrumb_div_for_style_step():
 
@@ -142,10 +153,12 @@ class ViewAjaxVisualizeShapefile(View):
         try:
             shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
         except ShapefileInfo.DoesNotExist:
-            err_note = "Sorry!  The shapefile was not found.  Please return to the Dataverse."
+            err_note = "Sorry!  The shapefile was not found."
+            err_note_html = render_ajax_basic_err_msg(err_note)
+            
             json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note)
+                                 , data_dict=dict(id_main_panel_content=err_note_html)
             )
             logger.error('Shapefile not found for hash: %s' % shp_md5)
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -177,28 +190,42 @@ class ViewAjaxVisualizeShapefile(View):
         logger.debug('(3b) get_worldmap_layerinfo')
         worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
 
+        # ------------------------
+        # It worked!
+        # ------------------------
         if worldmap_layerinfo is not None:
             return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
 
+
+        # -------------------------------
+        # Failed with known error
+        # -------------------------------
         if send_shp_service.has_err:
             msgt('(3c) It didn\'t worked!')
             msg(send_shp_service.err_msgs)
             # (3b) Uh oh!  Failed to visualize
             #
-            err_note = "Sorry!  The shapefile mapping did not work.  Please return to the Dataverse. <br />%s" % '<br />'.join(send_shp_service.err_msgs)
+            err_note = "Sorry!  The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
+            
+            err_note_html = render_ajax_basic_err_msg(err_note)
             json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note)
+                                 , data_dict=dict(id_main_panel_content=err_note_html)
             )
+            
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
-        # (4) Unanticipated error
+        # -------------------------------
+        # Failed with unanticipated error
+        # -------------------------------
         msgt('(4) Unanticipated error')
         err_note = "Sorry!  An error occurred.  A message was sent to the administrator."
+        err_note_html = render_ajax_basic_err_msg(err_note)
+        
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note)
+                                 , data_dict=dict(id_main_panel_content=err_note_html)
             )
 
         return HttpResponse(status=200, content=json_msg, content_type="application/json")

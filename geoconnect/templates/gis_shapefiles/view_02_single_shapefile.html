@@ -45,6 +45,7 @@
     <div class="panel-body" id="id_main_panel_content">
        	{% if not shapefile_info %}
             Please return to the dataverse.
+            {% include "gis_shapefiles/link-back-to-dataverse.html" %}
 	    {% endif %}
 		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->

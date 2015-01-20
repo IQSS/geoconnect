@@ -1,36 +1,38 @@
 <!-- start: back to dataverse button -->
 
 
-<script>
-function return_to_dataverse(){
-    if (window.parent != window.top) {
-        opener.location.reload(); // refresh geoconnect
-        window.open('','_self').close();   // Close geoconnect and return to dataverse
-    }else{
-        window.open('','_self').close();   // Close geoconnect and return to dataverse
-        {% comment %}
-        {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
-            window.location.href = '{{ shapefile_info.return_to_dataverse_url }}';
-        {% else %}
-            window.location.href = '{{ DATAVERSE_SERVER_URL }}';
-        {% endif %}    
-        {% endcomment %}
-    }
-}
-</script>
-<a href="javascript:return_to_dataverse();" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-<!-- end: back to the dataverse button -->
 
 
-{% comment %}
 {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% else %}
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% endif %}
-{% endcomment %}
+{% comment %}{% endcomment %}
+
 
 {% comment %}
 <a href="javascript:window.close();" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% endcomment %}
 
+
+{% comment %}
+<script>
+function return_to_dataverse(){
+    if (window.opener) {
+        alert('has parent');
+        //opener.location.reload(); // refresh geoconnect
+        window.opener.location.reload(false);   // refresh dataverse / cross-scripting issues!
+        window.open('','_self').close();   // Close geoconnect and return to dataverse
+    }else{
+        {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
+            window.location.href = '{{ shapefile_info.return_to_dataverse_url }}';
+        {% else %}
+            window.location.href = '{{ DATAVERSE_SERVER_URL }}';
+        {% endif %}    
+    }
+}
+</script>
+<a href="javascript:return_to_dataverse();" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+<!-- end: back to the dataverse button -->
+{% endcomment %}

@@ -286,6 +286,18 @@ class SendShapefileService:
         self.import_attempt_obj.save()
         logger.debug('AttemptObject updated')
 
+        # Send message back to the Dataverse -- to update metadata
+        #
+        # Round-trip example, break into separate process with 
+        #   MetadataUpdateFail, MetadataUpdateSuccess objects
+        try:
+            MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo_object)
+        except:
+            self.record_worldmap_failure(self.worldmap_response, 'Error.  Layer created and saved BUT update to dataverse failed')
+            return False
+            
+        return True
+
         '''
         try:
             # Success!  Create a WorldMapLayerInfo object
@@ -310,18 +322,6 @@ class SendShapefileService:
             self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but GeoConnect failed to save results')
             return False
         '''
-        # Separate this into another async. task!
-        # Send message back to the Dataverse -- to update metadata
-        #
-        # Round-trip example, break into separate process with 
-        #   MetadataUpdateFail, MetadataUpdateSuccess objects
-        try:
-            MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo_object)
-        except:
-            self.record_worldmap_failure(self.worldmap_response, 'Error.  Layer created and saved BUT update to dataverse failed')
-            return False
-            
-        return True
 
 
 
