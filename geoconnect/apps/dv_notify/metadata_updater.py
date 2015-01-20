@@ -12,6 +12,7 @@ if __name__=='__main__':
 
 #from geo_utils.key_checker import KeyChecker
 from geo_utils.message_helper_json import MessageHelperJSON
+from geo_utils.msg_util import *
 
 from django import forms
 from django.conf import settings
@@ -88,15 +89,19 @@ class MetadataUpdater:
             logger.error(err_msg)
             return (False, err_msg)
 
-        if not req.status_code == 200:
-                
-            print ('request text: %s' % req.text)
-                
-            logger.error('Metadata delete failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
-                
+        msgt('text: %s' % req.text)
+        msgt('status code: %s' % req.status_code)
+        if req.status_code == 404:
+            return (False, "The Dataverse delete API was not available")# 'Delete success')
+            
+        if req.status_code == 200:
+            return (True, None)# 'Delete success')
+        
+        else:        
+            logger.error('Metadata delete failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))    
             return (False, 'Sorry! The update failed.')
    
-        return (True, None)# 'Delete success')
+        
         
         
     
@@ -164,15 +169,9 @@ class MetadataUpdater:
     def delete_map_metadata_from_dataverse(worldmap_layer_info):
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
 
-        #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
         mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        resp_dict = mu.delete_metadata_from_dataverse(worldmap_layer_info)
-        print ('>>>>>>>>>',resp_dict)
-        if resp_dict is tuple:
-            return resp_dict[0]
-        #if resp_dict.get('success', False) is True:
-        #    return True
-        #return False
+        return mu.delete_metadata_from_dataverse(worldmap_layer_info)
+        
 
 
 

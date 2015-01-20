@@ -7,11 +7,13 @@ from django.template import RequestContext
 
 from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_connect.models import WorldMapLayerInfo
+
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
 
 from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.json_field_reader import JSONFieldReader
@@ -57,11 +59,16 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
     assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
+    delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
+                                        , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
+                                    )
     classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
+
 
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
             , classify_form=classify_form\
+            , delete_form=delete_form\
             , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
             , show_visualize_success_msg=True\
         )

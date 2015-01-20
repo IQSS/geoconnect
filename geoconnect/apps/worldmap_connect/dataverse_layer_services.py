@@ -30,14 +30,33 @@ logger = logging.getLogger(__name__)
 
 
 def delete_map_layer(gis_data_file, worldmap_layer_info):
+    """
+    Delete a Layer from the WorldMap, using the WorldMap API
     
+    returns (True, None)
+        or (False, 'error message of some type')
+    """
     assert isinstance(gis_data_file, GISDataFile), "gis_data_file must be a GISDataFile object"
     assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
     
+    #--------------------------------------
+    # Does the GISDataFile object correspond 
+    #    to the WorldMapLayerInfo object?
+    #--------------------------------------
+    if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
+        if not gis_data_file == worldmap_layer_info.import_attempt.gis_data_file:
+            err_msg = """Error the GISDataFile does not correspond to the WorldMapLayerInfo object."""
+            logger.error(err_msg)
+            return (False, err_msg)
+
+
+    #--------------------------------------
+    # Prepare params for WorldMAP API call
+    #--------------------------------------
     data_params = get_dataverse_info_dict(gis_data_file)
     data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
-    
-
+    print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
+    print ("data_params: %s" % data_params)
     try:
          r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\
@@ -49,25 +68,26 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
                     WorldMap server: %s</p><p>%s</p>"""\
                                 % (DELETE_LAYER_API_PATH, e.message)
         logger.error(err_msg)
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return (False, err_msg)
 
     print (r.text)
     print (r.status_code)
 
     #--------------------------------------
-    # Response looks good
+    # Check Response
     #--------------------------------------
     if r.status_code == 200:
+        
         response_dict = r.json()
-        return MessageHelperJSON.get_dict_msg(success=True, msg='layer returned')
-
-    print (r.text)
-    print (r.status_code)
+        return (True, None)
+    
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
     err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
-    return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+    logger.error(err_msg)
+    
+    return (False, err_msg)
     
     
 
@@ -144,8 +164,8 @@ from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
 from apps.gis_basic_file.models import GISDataFile
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
-gis_data_file = GISDataFile.objects.get(pk=2)
-worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=6)
+gis_data_file = GISDataFile.objects.get(pk=3)
+worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=1)
 
 delete_map_layer(gis_data_file, worldmap_layer_info)
 

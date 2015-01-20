@@ -1,13 +1,16 @@
 import logging
 
 from django.shortcuts import render_to_response
-
 from django.http import HttpResponseRedirect, HttpResponse, Http404
+
+from geo_utils.msg_util import *
 
 from apps.worldmap_connect.form_delete import DeleteMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
-
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
+
+logger = logging.getLogger(__name__)
+
 
 
 def view_delete_map(request):
@@ -35,19 +38,23 @@ def view_delete_map(request):
         # -----------------------------------
         # Delete map from WorldMap
         # -----------------------------------
-        delete_map_layer(gis_data_file, worldmap_layer_info)
-        ###  TO DO: HERE
-        
-        # -----------------------------------
-        # Delete metadata from dataverse
-        # -----------------------------------
-        (success, err_msg_or_None) = MetadataUpdater.delete_map_metadata_from_dataverse(worldmap_layer_info)
+        (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
         if not success:
             logger.error("Faild to delete Map Metadata from Dataverse: %s" % err_msg_or_None)
+            return HttpResponse('WorldMap delete api failed')
+            
+        # -----------------------------------
+        # Delete metadata from dataverse
+        # -----------------------------------        
+        (success, err_msg_or_None) = MetadataUpdater.delete_map_metadata_from_dataverse(worldmap_layer_info)
+        
+        if success is False:
+            logger.error("Faild to delete Map Metadata from Dataverse: %s" % err_msg_or_None)
+            return HttpResponse('Dataverse delete api failed')
             
         
-        return HttpResponse('%s' % worldmap_layer_info)
-        return HttpResponse('valid form')
+        #return HttpResponse('%s' % worldmap_layer_info)
+        return HttpResponse('Deleted!')
 
     """
     try:
