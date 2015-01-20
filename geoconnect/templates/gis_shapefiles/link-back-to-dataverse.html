@@ -4,17 +4,17 @@
 <script>
 function return_to_dataverse(){
     if (window.parent != window.top) {
-        console.log('close window to show parent');
         opener.location.reload(); // refresh geoconnect
-        console.log('parent reloaded');
         window.open('','_self').close();   // Close geoconnect and return to dataverse
     }else{
-        console.log('use url');
+        window.open('','_self').close();   // Close geoconnect and return to dataverse
+        {% comment %}
         {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
             window.location.href = '{{ shapefile_info.return_to_dataverse_url }}';
         {% else %}
             window.location.href = '{{ DATAVERSE_SERVER_URL }}';
         {% endif %}    
+        {% endcomment %}
     }
 }
 </script>
