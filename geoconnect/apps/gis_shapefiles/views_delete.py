@@ -2,12 +2,17 @@ import logging
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.template import RequestContext
+
+from django.conf import settings
 
 from geo_utils.msg_util import *
+from geo_utils.view_util import get_common_lookup
 
 from apps.worldmap_connect.form_delete import DeleteMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
+
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +22,12 @@ def view_delete_map(request):
     """
     Attempt to delete a dataverse-created WorldMap layer
     """
-    
-    #return HttpResponse('delete')
     if not request.POST:
         raise Http404('Delete Not Found.')
+
+    d = get_common_lookup(request)
+    d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
+    d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
     
     # Check the delete request
     #
@@ -28,43 +35,54 @@ def view_delete_map(request):
     
 
     if not f.is_valid():
-        return HttpResponse('invalid form')
-
-    else:
-
-        gis_data_file = f.get_gis_data_file_object()
-        worldmap_layer_info = f.get_worldmap_layer_info()
+        d['ERROR_FOUND'] = True
+        d['FAILED_TO_VALIDATE'] = True
+        return render_to_response('gis_shapefiles/view_delete_layer.html', d\
+                                 , context_instance=RequestContext(request))
         
-        # -----------------------------------
-        # Delete map from WorldMap
-        # -----------------------------------
-        (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
-        if not success:
-            logger.error("Faild to delete Map Metadata from Dataverse: %s" % err_msg_or_None)
-            return HttpResponse('WorldMap delete api failed')
-            
-        # -----------------------------------
-        # Delete metadata from dataverse
-        # -----------------------------------        
-        (success, err_msg_or_None) = MetadataUpdater.delete_map_metadata_from_dataverse(worldmap_layer_info)
+    gis_data_file = f.get_gis_data_file_object()
+    worldmap_layer_info = f.get_worldmap_layer_info()
+    
+    # -----------------------------------
+    # Delete map from WorldMap
+    # -----------------------------------
+    (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
+    if success is False:
+        logger.error("Faild to delete WORLDMAP layer: %s" % err_msg_or_None)
         
-        if success is False:
-            logger.error("Faild to delete Map Metadata from Dataverse: %s" % err_msg_or_None)
-            return HttpResponse('Dataverse delete api failed')
-            
+        if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
+            pass
+        else:
+            d['ERROR_FOUND'] = True
+            d['WORLDMAP_DATA_DELETE_FAILURE'] = True
+            d['ERR_MSG'] = err_msg_or_None
+            return render_to_response('gis_shapefiles/view_delete_layer.html', d\
+                                     , context_instance=RequestContext(request))
         
-        #return HttpResponse('%s' % worldmap_layer_info)
-        return HttpResponse('Deleted!')
+     
+    # -----------------------------------
+    # Delete metadata from dataverse
+    # -----------------------------------
+    '''
+    (success2, err_msg_or_None2) = MetadataUpdater.delete_map_metadata_from_dataverse(worldmap_layer_info)
+    if success2 is False:
+        logger.error("Faild to delete Map Metadata from Dataverse: %s" % err_msg_or_None)
 
-    """
-    try:
-        shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
-        d['shapefile_info'] = shapefile_info
+        d['ERROR_FOUND'] = True
+        d['DATAVERSE_DATA_DELETE_FAILURE'] = True
+        d['ERR_MSG'] = err_msg_or_None2
+        return render_to_response('gis_shapefiles/view_delete_layer.html', d\
+                                     , context_instance=RequestContext(request))
+    '''
+    
+    worldmap_layer_info.delete()
+    
+    d['DELETE_SUCCESS']  = True
+    d['gis_data_file'] = gis_data_file
+    
+    return render_to_response('gis_shapefiles/view_delete_layer.html', d\
+                            , context_instance=RequestContext(request))
 
-        except ShapefileInfo.DoesNotExist:
-        logger.error('Shapefile not found for hash: %s' % shp_md5)
-        raise Http404('Shapefile not found.')
-    """
 '''
 python manage.py shell
 
