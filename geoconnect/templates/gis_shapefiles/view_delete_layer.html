@@ -53,7 +53,7 @@
         <div class="panel-body">
             <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
 
-            <br /> {% include "gis_shapefiles/link-back-to-dataverse.html" %}</p>
+            <br /><br />or  {% include "gis_shapefiles/link-back-to-dataverse.html" %}</p>
             
             <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
             
