@@ -5,9 +5,11 @@
 
 {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+{% else %}{% if gis_data_file and gis_data_file.return_to_dataverse_url %}
+        <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
 {% else %}
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-{% endif %}
+{% endif %}{% endif %}
 {% comment %}{% endcomment %}
 
 
