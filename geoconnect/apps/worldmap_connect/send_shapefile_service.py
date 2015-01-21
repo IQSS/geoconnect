@@ -44,7 +44,7 @@ class SendShapefileService:
             logger.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
-        assert type(self.shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
+        assert isinstance(self.shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
     
     def send_shapefile_to_worldmap(self):
         """
