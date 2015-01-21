@@ -37,10 +37,11 @@ Handle AJAX requests to Visualize a Layer
 """
 
 
-def render_ajax_basic_err_msg(err_note):
+def render_ajax_basic_err_msg(err_note, shapefile_info=None):
 
     d = {   'DATAVERSE_SERVER_URL' : settings.DATAVERSE_SERVER_URL\
             , 'ERR_NOTE' : err_note\
+            , 'shapefile_info' : shapefile_info\
          }
     return render_to_string('gis_shapefiles/view_02_ajax_basic_err.html', d)
 
@@ -207,7 +208,7 @@ class ViewAjaxVisualizeShapefile(View):
             #
             err_note = "Sorry!  The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
             
-            err_note_html = render_ajax_basic_err_msg(err_note)
+            err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
             json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
                                  , data_dict=dict(id_main_panel_content=err_note_html)
@@ -221,7 +222,7 @@ class ViewAjaxVisualizeShapefile(View):
         # -------------------------------
         msgt('(4) Unanticipated error')
         err_note = "Sorry!  An error occurred.  A message was sent to the administrator."
-        err_note_html = render_ajax_basic_err_msg(err_note)
+        err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
         
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
