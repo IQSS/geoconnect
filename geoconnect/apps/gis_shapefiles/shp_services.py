@@ -88,7 +88,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
         
         # Save
         shapefile_info.save()
-
+        msg('shapefile info saved')
+        
         # If the file is still available, continue on
         if shapefile_info.is_dv_file_available():
             return shapefile_info.md5
@@ -118,11 +119,21 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     #   - http://localhost:8080/api/access/datafile/FILEID?key=YOURAPIKEY
     #
     datafile_download_url = '%s?key=%s' % (datafile_download_url, dv_session_token)
-    #msg('datafile_download_url: %s' % datafile_download_url)
+    msg('datafile_download_url: %s' % datafile_download_url)
     datafile_filename = dataverse_info_dict.get('datafile_label', '')
 
     img_temp = NamedTemporaryFile(delete=True)
-    img_temp.write(urllib2.urlopen(datafile_download_url).read())
+    
+    try:
+        img_temp.write(urllib2.urlopen(datafile_download_url).read())
+    except urllib2.HTTPError as e:
+        shapefile_info.delete() # clear shapefile
+        raise Exception('Failed to download shapefile. HTTPError: %s \n\nurl: %s' % (e.msg, datafile_download_url))
+        
+        #msg(dir(e))
+        #msg('HTTP ERROR!: %s' % e.msg)
+        #msg('HTTP ERROR!: %s' % e.msg)
+        #msgx('blah')
     img_temp.flush()
 
     shapefile_info.dv_file.save(datafile_filename, File(img_temp))
