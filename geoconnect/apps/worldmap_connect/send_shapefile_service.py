@@ -197,6 +197,7 @@ class SendShapefileService:
         """
         Let's send this file over!
         """
+        logger.debug('send_file_to_worldmap')
         if not self.shapefile_info:
             self.add_err_msg('send_file_to_worldmap: The shapefile_info is None')
             return False
@@ -247,6 +248,8 @@ class SendShapefileService:
 
 
     def process_worldmap_response(self):
+        logger.debug('process_worldmap_response')
+
         if not type(self.worldmap_response) is dict:
             self.add_err_msg('process_worldmap_response: worldmap_response is None')
             return False

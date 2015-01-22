@@ -31,6 +31,12 @@
                     if(json_resp.data.hasOwnProperty('id_breadcrumb')){
                         $( "#id_breadcrumb" ).replaceWith(json_resp.data.id_breadcrumb);
                     }
+                    // hide initial alert message
+                    if ($("#id-first-time-alert").length>0) {
+                       $("#id-first-time-alert").hide();
+                    }
+                    
+                    
               }else{
                   if (json_resp.data.hasOwnProperty('id_main_panel_content')){
                       $("#id_main_panel_content").html(json_resp.data.id_main_panel_content);
