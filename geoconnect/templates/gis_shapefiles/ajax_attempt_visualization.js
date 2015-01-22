@@ -96,7 +96,7 @@ function submit_classify_form(){
            })
            .always(function() {
                 // Restore classify button
-                $('#id_frm_style_submit').removeClass('disabled').html('Style Layer');
+                $('#id_frm_style_submit').removeClass('disabled').html('Style Map');
                 $( "#id_attribute" ).on( "change", check_attribute );
 
                //bind_form_submit_button();
