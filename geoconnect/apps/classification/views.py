@@ -158,9 +158,11 @@ def view_classify_layer_form(request, import_success_md5):
         #   Update the WorldMapLayerInfo object's attribute info
         # --------------------------------------------------------------
         worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
-        #msgt('attribute info updated: %s' % f_val.cleaned_data['attribute_info'])
         worldmap_layerinfo.save()
 
+
+        # Refresh the classify form with the latest WorldMap parameter information
+        classify_form = ClassifyLayerForm(request.POST, **dict(worldmap_layerinfo=worldmap_layerinfo))
 
         # --------------------------------------------------------------
         #   Update the Dataverse metadata -- so that the new icon will be refreshed
