@@ -28,4 +28,13 @@ class JSONFieldReader:
            return json.dumps(python_val)    # python list or dict -> JSON string
        except:
            return ''
- 
+
+    @staticmethod
+    def is_string_convertible_json(val):
+        assert val is not None, 'val cannot be None'
+
+        try:
+            json.loads(val)
+        except:
+            return False
+        return True

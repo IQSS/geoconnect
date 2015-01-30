@@ -231,10 +231,17 @@ class WorldMapLayerInfo(MapLayerMetadata):
 
         #<img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
         
-    
+    def add_attribute_info_as_json_string(self, json_string):
+        assert json_string is not None, "json_string cannot be None"
+
+        if not JSONFieldReader.is_string_convertible_json(json_string):
+            raise TypeError('Could not convert JSON to python: %s' % json_string)
+
+        self.attribute_info = json_string
+
+
     def add_attribute_info(self, l=[]):
-        if not type(l) is list:
-            return 
+        assert isinstance(l, list), "l must be a list.  Found class/type (%s/%s)" % (l.__class__.__name__, type(l))
 
         self.attribute_info = JSONFieldReader.get_python_val_as_json_string(l)
 
@@ -246,10 +253,8 @@ class WorldMapLayerInfo(MapLayerMetadata):
         if not self.id:
             return 'n/a'
         lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id': self.id})
-        print '*******************', lnk
         return lnk
-        return '<a href="%s">update dataverse</a>' % lnk
-    update_dataverse.allow_tags = True 
+    update_dataverse.allow_tags = True
 
 
 

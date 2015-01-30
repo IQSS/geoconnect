@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
 from geo_utils.message_helper_json import MessageHelperJSON
+from geo_utils.msg_util import *
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
@@ -156,7 +157,8 @@ def view_classify_layer_form(request, import_success_md5):
         # --------------------------------------------------------------
         #   Update the WorldMapLayerInfo object's attribute info
         # --------------------------------------------------------------
-        worldmap_layerinfo.add_attribute_info(f_val.cleaned_data['attribute_info'])
+        worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
+        #msgt('attribute info updated: %s' % f_val.cleaned_data['attribute_info'])
         worldmap_layerinfo.save()
 
 
