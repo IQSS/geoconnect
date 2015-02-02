@@ -13,6 +13,7 @@ from apps.worldmap_connect.models import WorldMapLayerInfo
 from shared_dataverse_information.dataverse_info.forms import CheckForExistingLayerFormBasic, CheckForDataverseUserLayersFormBasic
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
+from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
 from shared_dataverse_information.worldmap_api_helper.url_helper import GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
                                                         , GET_LAYER_INFO_BY_USER_API_PATH\
                                                         , DELETE_LAYER_API_PATH
@@ -32,7 +33,9 @@ logger = logging.getLogger(__name__)
 def delete_map_layer(gis_data_file, worldmap_layer_info):
     """
     Delete a Layer from the WorldMap, using the WorldMap API
-    
+
+    note: both API sender and recipient functions use the DataverseInfoValidationFormWithKey
+
     returns (True, None)
         or (False, 'error message of some type')
     """
@@ -53,8 +56,17 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     #--------------------------------------
     # Prepare params for WorldMAP API call
     #--------------------------------------
+
     data_params = get_dataverse_info_dict(gis_data_file)
-    data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
+    api_prep_form = DataverseInfoValidationFormWithKey(data_params)
+    if not api_prep_form.is_valid():
+        err_msg = """Error.  Validation failed. (DataverseInfoValidationFormWithKey)"""
+        logger.error(err_msg)
+        return (False, err_msg)
+
+    data_params = api_prep_form.get_api_params_with_signature()
+
+    #data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
     print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
     print ("data_params: %s" % data_params)
     try:
