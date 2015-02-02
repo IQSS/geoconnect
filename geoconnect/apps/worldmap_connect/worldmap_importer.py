@@ -63,7 +63,6 @@ class WorldMapImporter:
                         , 'abstract' : 'Shapefile containing Boston, MA income levels from 19xx'\
                         , 'email' : 'researcher@school.edu'\
                         , 'shapefile_name' : 'zipfile_name.zip'\
-                        , settings.WORLDMAP_TOKEN_NAME_FOR_DV : 'token-for-api-use'\
                         }
         :type layer_params
         :param fullpath_to_file: file name, including path, to shapfile in .zip format
@@ -74,7 +73,6 @@ class WorldMapImporter:
         :rtype: python dict
         """
         assert type(layer_params) is dict, "layer params must be a dict"
-        assert layer_params.has_key(settings.WORLDMAP_TOKEN_NAME_FOR_DV), "layer_params must have the key settings.WORLDMAP_TOKEN_NAME_FOR_DV"
 
         logger.debug('send_shapefile_to_worldmap')
 

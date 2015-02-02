@@ -92,7 +92,6 @@ def view_shapefile_visualize_attempt(request, shp_md5):
 
 
 
-
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
     """

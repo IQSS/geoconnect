@@ -13,7 +13,7 @@ from shared_dataverse_information.shapefile_import.forms import ShapefileImportD
 
 logger = logging.getLogger(__name__)
 
-def get_params_for_worldmap_connect(wm_import_attempt, geoconnect_token=None):
+def get_params_for_worldmap_connect(wm_import_attempt):
     """
     Use the ShapefileImportDataForm to prepare parameters for the WorldMap import request.
 
@@ -27,7 +27,7 @@ def get_params_for_worldmap_connect(wm_import_attempt, geoconnect_token=None):
     """
     logger.debug('get_params_for_worldmap_connect')
 
-    assert type(wm_import_attempt) is WorldMapImportAttempt, "wm_import_attempt must be a WorldMapImportAttempt object"
+    assert isinstance(wm_import_attempt, WorldMapImportAttempt), "wm_import_attempt must be a WorldMapImportAttempt object"
     assert wm_import_attempt.gis_data_file is not None, "wm_import_attempt.gis_data_file cannot be None"
 
     # Prepare initial data
@@ -40,9 +40,11 @@ def get_params_for_worldmap_connect(wm_import_attempt, geoconnect_token=None):
         form_errs_as_text = format_errors_as_text(f)
         raise ValueError('WorldMapImportAttempt does not have correct params for ShapefileImportDataForm: \n%s' % form_errs_as_text)
     
-    # Add basic data clenaed by ShapefileImportDataForm
-    #     
-    params_dict = f.cleaned_data
+    # Add basic data cleaned by ShapefileImportDataForm
+    #
+    #   Note: The parameters from this call include a signature key
+    #
+    params_dict = f.get_api_params_with_signature()
     
     # Add dataverse info to the params_dict
     #
@@ -51,11 +53,6 @@ def get_params_for_worldmap_connect(wm_import_attempt, geoconnect_token=None):
         raise ValueError('Failed to format DataverseInfo params using wm_import_attempt.gis_data_file')
         
     params_dict.update(dataverse_info_dict)
-
-    # (optional) Add the WorldMap shared token value
-    #
-    if geoconnect_token is not None:
-        params_dict[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = geoconnect_token
 
     # Return the parameters
     #

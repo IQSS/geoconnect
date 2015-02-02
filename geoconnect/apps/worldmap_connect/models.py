@@ -15,10 +15,7 @@ from django.conf import settings
 
 from apps.core.models import TimeStampedModel
 
-from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
-
 from apps.gis_basic_file.models import GISDataFile
-from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm\
                                                 , GeoconnectToDataverseMapLayerMetadataValidationForm\

@@ -122,10 +122,10 @@ def view_mapit_incoming_token64(request, dataverse_token):
         if shp_md5 is None:
             raise Exception('shp_md5 failure: %s' % shp_md5)
 
-        choose_shapefile_url =  reverse('view_shapefile_first_time'\
+        view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
                                         , kwargs={ 'shp_md5' : shp_md5 })
                                     
-        return HttpResponseRedirect(choose_shapefile_url)
+        return HttpResponseRedirect(view_shapefile_first_time_url)
     
     # ------------------------------
     # Failed!
