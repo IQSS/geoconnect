@@ -14,7 +14,7 @@ from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
 
-from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from shared_dataverse_information.layer_classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -74,7 +74,8 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
                                         , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
                                     )
-    classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
+
+    classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
 
 
     d = dict(shapefile_info=shapefile_info\

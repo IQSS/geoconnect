@@ -245,7 +245,11 @@ class WorldMapLayerInfo(MapLayerMetadata):
     def get_attribute_info(self):
         return JSONFieldReader.get_json_string_as_python_val(self.attribute_info)
     
-    
+    def get_dict_for_classify_form(self):
+
+        return dict(layer_name=self.layer_name\
+                , raw_attribute_info=self.get_attribute_info())
+
     def update_dataverse(self):
         if not self.id:
             return 'n/a'

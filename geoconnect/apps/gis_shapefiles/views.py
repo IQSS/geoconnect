@@ -17,7 +17,7 @@ from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
 
-from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from shared_dataverse_information.layer_classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
@@ -257,7 +257,8 @@ def view_shapefile(request, shp_md5, **kwargs):
                 d['page_title'] = 'Style Map'
                 d[GEOCONNECT_STEP_KEY] = STEP3_STYLE 
             
-            classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
+            classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
+
             delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
                                                 , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
                                             )

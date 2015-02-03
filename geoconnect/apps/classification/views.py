@@ -14,7 +14,8 @@ from geo_utils.msg_util import *
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
-from apps.classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+
+from shared_dataverse_information.layer_classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
@@ -80,7 +81,7 @@ def view_classify_layer_form(request, import_success_md5):
     # --------------------------------------------------------------
     # Is the form valid?
     # --------------------------------------------------------------
-    classify_form = ClassifyLayerForm(request.POST, **dict(worldmap_layerinfo=worldmap_layerinfo))
+    classify_form = ClassifyLayerForm(request.POST, **worldmap_layerinfo.get_dict_for_classify_form())
 
     # --------------------------------------------------------------
     # Invalid forms are status=200 so caught by ajax
@@ -162,7 +163,7 @@ def view_classify_layer_form(request, import_success_md5):
 
 
         # Refresh the classify form with the latest WorldMap parameter information
-        classify_form = ClassifyLayerForm(request.POST, **dict(worldmap_layerinfo=worldmap_layerinfo))
+        classify_form = ClassifyLayerForm(request.POST, **worldmap_layerinfo.get_dict_for_classify_form())
 
         # --------------------------------------------------------------
         #   Update the Dataverse metadata -- so that the new icon will be refreshed
@@ -176,8 +177,6 @@ def view_classify_layer_form(request, import_success_md5):
 
         msg_params = classify_form.get_params_for_display()
 
-        #msg_params.pop('geoconnect_token', None) # don't want this in the template
-        #classify_form = ClassifyLayerForm(**dict(worldmap_layerinfo=worldmap_layerinfo))
         success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
         d.update(dict(classify_form=classify_form\
                 , worldmap_layerinfo=worldmap_layerinfo\
