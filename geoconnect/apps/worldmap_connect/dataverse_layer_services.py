@@ -11,12 +11,10 @@ from apps.gis_basic_file.models import GISDataFile
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
-from shared_dataverse_information.dataverse_info.forms import CheckForDataverseUserLayersFormBasic
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
 from shared_dataverse_information.worldmap_api_helper.url_helper import GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
-                                                        , GET_LAYER_INFO_BY_USER_API_PATH\
                                                         , DELETE_LAYER_API_PATH
 
 from geo_utils.message_helper_json import MessageHelperJSON
