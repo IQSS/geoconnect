@@ -10,11 +10,12 @@ from django.conf import settings
 from apps.gis_basic_file.models import GISDataFile
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
-from shared_dataverse_information.dataverse_info.forms import CheckForExistingLayerFormBasic, CheckForDataverseUserLayersFormBasic
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
+from shared_dataverse_information.dataverse_info.forms import CheckForDataverseUserLayersFormBasic
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
-from shared_dataverse_information.worldmap_api_helper.url_helper import GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
+from shared_dataverse_information.worldmap_api_helper.url_helper import GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                                                         , GET_LAYER_INFO_BY_USER_API_PATH\
                                                         , DELETE_LAYER_API_PATH
 
@@ -82,8 +83,8 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
         logger.error(err_msg)
         return (False, err_msg)
 
-    print (r.text)
-    print (r.status_code)
+    #print (r.text)
+    #print (r.status_code)
 
     #--------------------------------------
     # Check Response
@@ -108,65 +109,71 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
 url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
 """
-def get_dataverse_layer_info_by_user_and_file(dv_user_id, datafile_id):
+def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, datafile_id):
     """
-    Retrieve layer information or None
+    Retrieve layer information using dataverse_installation_name and datafile_id
     """
-    assert type(dv_user_id) is int, "dv_user_id must be an integer"
-    assert type(datafile_id) is int, "dv_file_id must be an integer"
+    assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
+    assert isinstance(datafile_id, int), "dv_file_id must be an integer"
     
-    data = dict(dv_user_id=dv_user_id, datafile_id=datafile_id)
-    f = CheckForExistingLayerFormBasic(**data)
+    params = dict(dataverse_installation_name=dataverse_installation_name, datafile_id=datafile_id)
+    f = CheckForExistingLayerForm(params)
     if not f.is_valid():
-        return None
-    
-    try:
-        logger.debug('get_dataverse_layer_info_by_user_and_file')
-        
-        #--------------------------------------
-        # Prepare the data
-        #--------------------------------------
-        data_params = f.cleaned_data
-        data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
-         
-        #--------------------------------------
-        # Make the request
-        #--------------------------------------
-        try:
-            r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
-                            , data=data_params\
-                            , timeout=30)
-        except requests.exceptions.ConnectionError as e:
-
-            err_msg = """Sorry! Failed to retrieve data from the WorldMap.
-                        <p><b>Details for administrator:</b> Could not contact the
-                        WorldMap server: %s</p><p>%s</p>"""\
-                                    % (GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH, e.message)
-            logger.error(err_msg)
-            return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
-
-        #r = requests.post(GET_LAYER_INFO_BY_USER_AND_FILE_API_PATH\
-        #                , data=data_params\
-        #                , timeout=30)
-                        
-        #--------------------------------------
-        # Response looks good
-        #--------------------------------------
-        if r.status_code == 200:
-            response_dict = r.json()
-            return MessageHelperJSON.get_dict_msg(success=True, msg='layer returned', data_dict=data_dict)
-            
-        #--------------------------------------
-        # Response doesn't look good
-        #--------------------------------------
-        err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+        err_msg = """Sorry! Failed to validate the request to retrieve WorldMap layer metadata."""
+        logger.error(err_msg + "  Validation failure for CheckForExistingLayerForm.  Errors: %s" % f.errors)
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
-            
+
+    
+    logger.debug('get_dataverse_layer_info_by_user_and_file')
+        
+    #--------------------------------------
+    # Prepare the data
+    #--------------------------------------
+    data_params = f.get_api_params_with_signature()
+    #print ('data_params: %s' % data_params)
+
+    #--------------------------------------
+    # Make the request
+    #--------------------------------------
+    try:
+        r = requests.post(GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
+                        , data=data_params\
+                        , timeout=30)
+    except requests.exceptions.ConnectionError as e:
+
+        err_msg = """Sorry! Failed to retrieve data from the WorldMap.
+                    <p><b>Details for administrator:</b> Could not contact the
+                    WorldMap server: %s</p><p>%s</p>"""\
+                                % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH, e.message)
+        logger.error(err_msg)
+        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
     except:
         # Error with request
         #
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
+
+    #--------------------------------------
+    # Response looks good
+    #--------------------------------------
+    if r.status_code == 200:
+        try:
+            response_dict = r.json()
+        except:
+            err_msg = "Failed to convert response to JSON."
+            logger.error(err_msg + "Status code: 200.\nResponse text: %s" % r.text)
+            return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
+        return response_dict
+
+    #--------------------------------------
+    # Response doesn't look good
+    #--------------------------------------
+    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+    return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
             
         
 """
@@ -181,5 +188,13 @@ worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=1)
 
 delete_map_layer(gis_data_file, worldmap_layer_info)
 
-"""    
+"""
+"""
+python manage.py shell
+
+from apps.worldmap_connect.dataverse_layer_services import *
+
+get_layer_info_by_dv_installation_and_file('Harvard Dataverse', 9)
+
+"""
     
