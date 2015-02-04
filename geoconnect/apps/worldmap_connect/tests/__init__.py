@@ -1,2 +1,3 @@
-# import the tests
-from apps.worldmap_connect.tests.old_test import *
+'''
+python manage.py test apps.worldmap_connect
+'''
