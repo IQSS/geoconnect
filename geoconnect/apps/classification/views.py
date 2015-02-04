@@ -119,7 +119,8 @@ def view_classify_layer_form(request, import_success_md5):
 
     classify_params = api_form.get_api_params_with_signature()
 
-    #msg('classify_params: %s' % classify_params)
+
+    msgt('classify_params: %s' % classify_params)
 
     classify_url = classify_form.get_worldmap_classify_api_url()
 
@@ -150,100 +151,76 @@ def view_classify_layer_form(request, import_success_md5):
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
+    # RESPONSE CODE IS 200
 
-    if resp.status_code == 200:
-        #json_resp = resp.json()
-
-        # --------------------------------------------------------------
-        # convert response to JSON
-        # --------------------------------------------------------------        
-        try:
-            json_resp = resp.json()
-        except:
-            logger.error('Worldmap call did not parse into valid json: %s' % resp.text)
-            json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')            
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-        # --------------------------------------------------------------
-        #   Classification Failed
-        # --------------------------------------------------------------
-        if json_resp.get("success") is False:
-            logger.error('Worldmap call returned success = false: %s' % resp.text)
-            user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
-            json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)            
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-        # --------------------------------------------------------------
-        #   Looks good, save the update attributed information
-        # --------------------------------------------------------------
-        f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
-        if not f_val.is_valid():
-            logger.error('Classify return data failed validation: %s' % f_val.errors)
-            user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' \
-                            % json_resp.get('message', f_val.errors)
-            json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-        # --------------------------------------------------------------
-        #   Update the WorldMapLayerInfo object's attribute info
-        # --------------------------------------------------------------
-        worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
-        worldmap_layerinfo.save()
-
-
-        # Refresh the classify form with the latest WorldMap parameter information
-        classify_form = ClassifyLayerForm(request.POST, **worldmap_layerinfo.get_dict_for_classify_form())
-
-        # --------------------------------------------------------------
-        #   Update the Dataverse metadata -- so that the new icon will be refreshed
-        # --------------------------------------------------------------
-        
-        # Is all this needed, or should there be an API call to only update the image?    
-        MetadataUpdater.update_dataverse_with_metadata(worldmap_layerinfo)
-        
-        #
-        #
-
-        msg_params = classify_form.get_params_for_display()
-
-        success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
-        d.update(dict(classify_form=classify_form\
-                , worldmap_layerinfo=worldmap_layerinfo\
-                , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
-                ))
-                
-        form_content = render_to_string('classification/view_classify_form.html', d\
-                                , context_instance=RequestContext(request))
-                                
-                                
-        json_msg = MessageHelperJSON.get_json_msg(success=True
-                                            , msg='Success!'
-                                            , data_dict={'div_content':form_content}\
-                                            )            
+    # --------------------------------------------------------------
+    # convert response to JSON
+    # --------------------------------------------------------------        
+    try:
+        json_resp = resp.json()
+    except:
+        logger.error('Worldmap call did not parse into valid json: %s' % resp.text)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')            
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    # --------------------------------------------------------------
+    #   Classification Failed
+    # --------------------------------------------------------------
+    if json_resp.get("success") is False:
+        logger.error('Worldmap call returned success = false: %s' % resp.text)
+        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)            
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    # --------------------------------------------------------------
+    #   Validate the response
+    # --------------------------------------------------------------
+    f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
+    if not f_val.is_valid():
+        logger.error('Classify return data failed validation: %s' % f_val.errors)
+        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' \
+                        % json_resp.get('message', f_val.errors)
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+    # --------------------------------------------------------------
+    #   Looks good, update the WorldMapLayerInfo's attribute info
+    # --------------------------------------------------------------
+    worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
+    worldmap_layerinfo.save()
+
+
+    # --------------------------------------------------------------
+    # Refresh the classify form with the latest WorldMap parameter information
+    # --------------------------------------------------------------
+    classify_form = ClassifyLayerForm(request.POST, **worldmap_layerinfo.get_dict_for_classify_form())
+
+    # --------------------------------------------------------------
+    # Update the Dataverse metadata -- so that the new icon will be refreshed
+    # --------------------------------------------------------------
     
-    #    lnk = reverse('view_shapefile'\
-    #                    , kwargs=dict(shp_md5=shapefile_md5)\
-    #                    )
-    #    return HttpResponseRedirect(lnk)
+    # Is all this needed, or should there be an API call to only update the image?    
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_layerinfo)
+    
+    #
+    #
 
-    classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
+    msg_params = classify_form.get_params_for_display()
 
-    #d['form_inline'] = True
-    d = dict(classify_form=classify_form, worldmap_layerinfo=worldmap_layerinfo)
+    success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
+    d.update(dict(classify_form=classify_form\
+            , worldmap_layerinfo=worldmap_layerinfo\
+            , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
+            ))
+            
     form_content = render_to_string('classification/view_classify_form.html', d\
                             , context_instance=RequestContext(request))
-    #print form_content
-    #return HttpResponse(form_content)
-    #return render_to_response('classification/view_02_single_shapefile.html', d\
-    #                        , context_instance=RequestContext(request))
                             
-    
-    
-    print (resp.status_code)
-    print (resp.text)
-    return HttpResponse('Fail out: %s<pre>%s</pre>' % (resp.status_code, resp.text))
-    #wm_response_dict = resp.json() #print()
-    #print(wm_response_dict)
-    return HttpResponse('post: %s<br />%s' % (request.POST.keys(), classify_url))
-    
+                            
+    json_msg = MessageHelperJSON.get_json_msg(success=True
+                                        , msg='Success!'
+                                        , data_dict={'div_content':form_content}\
+                                        )            
+    return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+  

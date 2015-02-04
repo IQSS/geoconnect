@@ -5,10 +5,6 @@ Run tests for the WorldMap Shapefile import API
 # To run all tests from command line:
 # -------------------------------------------
 
-    python manage.py test apps.worldmap_connect.tests.test_shapefile_import
-
-        or 
-    
     python manage.py test apps.worldmap_connect.tests.test_shapefile_import.TestWorldMapShapefileImport
     
 # -------------------------------------------
@@ -19,12 +15,14 @@ Run tests for the WorldMap Shapefile import API
     python manage.py test apps.worldmap_connect.tests.test_shapefile_import.TestWorldMapShapefileImport.test02_good_shapefile_import
 python manage.py test 
     
-    apps.worldmap_connect.tests.test_shapefile_import.TestWorldMapShapefileImport.test03_delete_shapefile_from_worldmap
+python manage.py test   apps.worldmap_connect.tests.test_shapefile_import.TestWorldMapShapefileImport.test03_delete_shapefile_from_worldmap
 
 """
 from os.path import abspath, dirname, isfile, join, isdir
 import requests
 import json
+
+from unittest import skip
 
 #   Base test class
 #
@@ -50,6 +48,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
         msgt('........ set up 2 ................')
 
     
+    #@skip("skipping")
     def test01_bad_shapefile_imports(self):
         
         #-----------------------------------------------------------
@@ -225,9 +224,6 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
         # prep file
         files = {'file': open( self.test_shapefile_name, 'rb')}
 
-        # add token
-        test_shapefile_info.update(self.get_worldmap_token_dict())
-
         #   Test WorldMap shapefile import API but dataverse_info is missing
         #
         msg('api url: %s' % api_url)
@@ -286,6 +282,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
                         % (expected_err, r.text)\
                     )
     
+    #@skip("skipping")
     def test02_good_shapefile_import(self):
 
         #-----------------------------------------------------------
@@ -359,7 +356,8 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
                 )
 
                 
-    def test03_delete_shapefile_from_worldmap(self):
+    #@skip("skipping")
+    def test03_bad_delete_shapefile_from_worldmap(self):
         #-----------------------------------------------------------
         msgt("--- Delete shapefile ---")
         #-----------------------------------------------------------
@@ -474,9 +472,10 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
         expected_msg = 'Existing layer not found.'
         self.assertEqual(json_resp.get('message'), expected_msg, 'Message should be "%s"' % expected_msg)
         
+    def test04_good_delete_shapefile_from_worldmap(self):
         
         #-----------------------------------------------------------
-        msgn("(3d) Send delete request - Good parameters")
+        msgn("(4a) Send delete request - Good parameters")
         #-----------------------------------------------------------        
         api_prep_form = DataverseInfoValidationFormWithKey(self.dataverse_test_info)
         self.assertTrue(api_prep_form.is_valid()\
@@ -497,7 +496,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
 
 
         #-----------------------------------------------------------
-        msgn("(3e) Examine JSON result from WorldMap shapefile delete API")
+        msgn("(4b) Examine JSON result from WorldMap shapefile delete API")
         #-----------------------------------------------------------
         try:
             json_resp = r.json()

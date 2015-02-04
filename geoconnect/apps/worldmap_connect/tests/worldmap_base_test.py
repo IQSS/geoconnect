@@ -54,25 +54,24 @@ class WorldMapBaseTest(TestCase):
         assert isfile(self.test_bad_file), '"Bad"" test shapefile not found: %s' % self.test_bad_file
     
     
+    '''
+    # Replaced with Forms that include a SIGNATURE_KEY
     def get_worldmap_token_dict(self):
         """
         Return the Worldmap token used for making API calls
         """
         global WORLMAP_TOKEN_NAME, WORLDMAP_TOKEN_VALUE
         return { WORLMAP_TOKEN_NAME : WORLDMAP_TOKEN_VALUE }
-    
-
+    '''
+    '''
+    # Replaced with Forms that include a SIGNATURE_KEY
     def get_worldmap_random_token_dict(self, token_length=64):
         """
         Return a "bad" Worldmap token used for making API calls
         """
         t = ''.join(random.SystemRandom().choice(string.uppercase + string.digits) for _ in xrange(token_length))
         return { WORLMAP_TOKEN_NAME : t }
-
-    
-    def runTest(self):
-        msg('runTest')
-        
+    '''
 
     def tearDown(self):
         pass
