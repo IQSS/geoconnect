@@ -120,7 +120,7 @@ def view_classify_layer_form(request, import_success_md5):
     classify_params = api_form.get_api_params_with_signature()
 
 
-    msgt('classify_params: %s' % classify_params)
+    #msgt('classify_params: %s' % classify_params)
 
     classify_url = classify_form.get_worldmap_classify_api_url()
 
