@@ -13,14 +13,15 @@ import json
 # API path(s) are here
 #
 from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH\
-                , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH
+                , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
+                , GET_CLASSIFY_ATTRIBUTES_API_PATH
 
 
 # Validation forms from https://github.com/IQSS/shared-dataverse-information
 #
 from shared_dataverse_information.worldmap_api_helper.forms_api_validate import SIGNATURE_KEY
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
-from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm
+from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm, LayerAttributeRequestForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 
 from geo_utils.msg_util import *
@@ -36,7 +37,7 @@ class TestWorldMapClassification(WorldMapBaseTest):
         #msgt('........ set up 2 ................')
         
         self.existing_layer_name = None
-
+        return
         # Add a shapefile - also a test
         shp_import = TestWorldMapShapefileImport('test02_good_shapefile_import')
         shp_import.setUp()
@@ -45,10 +46,12 @@ class TestWorldMapClassification(WorldMapBaseTest):
     def tearDown(self):
         super(TestWorldMapClassification, self).tearDown()              #super().__init__(x,y)
 
+        return
         # Remove the shapefile - also a test
         shp_import = TestWorldMapShapefileImport('test04_good_delete_shapefile_from_worldmap')
         shp_import.setUp()
         shp_import.test04_good_delete_shapefile_from_worldmap()
+
 
 
     def test01_good_classification(self):
@@ -174,6 +177,57 @@ class TestWorldMapClassification(WorldMapBaseTest):
         self.assertTrue(f_metadata_check.is_valid(), "Validation failed for WorldMapToGeoconnectMapLayerMetadataValidationForm. Errors: %s" % f_metadata_check.errors)
         
         
+        #-----------------------------------------------------------
+        msgn("(1h) Retrieve classification params")
+        #-----------------------------------------------------------        
+        f_attrs = LayerAttributeRequestForm(dict(layer_name=self.existing_layer_name))
+        self.assertTrue(f_attrs.is_valid(), 'ClassifyRequestDataForm did not validate. Errors:\n %s' % f_attrs.errors)
         
+        retrieve_attribute_params = f_attrs.get_api_params_with_signature()
+        msgt('retrieve_attribute_params: %s' % retrieve_attribute_params)
+        self.assertTrue(retrieve_attribute_params.has_key(SIGNATURE_KEY)\
+                        , 'classify_params did not have SIGNATURE_KEY: "%s"' % SIGNATURE_KEY)
+
+        #-----------------------------------------------------------
+        msgn("(1i) Make classification param request")
+        #-----------------------------------------------------------
+        try:
+            r = requests.post(GET_CLASSIFY_ATTRIBUTES_API_PATH, data=retrieve_attribute_params)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        print r.status_code
+        self.assertEquals(r.status_code, 200, "Expected status code of 200 but received '%s'" % r.status_code)
+
+        try:
+            json_resp = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response text to JSON. Text:\n%s" % r.text)
+
+        self.assertTrue(json_resp.has_key('success'), 'JSON should have key "success".  But found keys: %s' % json_resp.keys())
+        self.assertEqual(json_resp.get('success'), True, "'success' value should be 'True'")
+
+        self.assertTrue(json_resp.has_key('data'), 'JSON should have key "success".  But found keys: %s' % json_resp.keys())
         
+        attribute_data = json_resp.get('data', None)
+        self.assertTrue(attribute_data is not None, "attribute_data was None")
+        
+        print attribute_data
+        self.assertEqual(len(attribute_data), 54, "Should be 54 attributes but found only %s" % len(attribute_data))
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 
