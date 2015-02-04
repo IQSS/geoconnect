@@ -23,7 +23,7 @@ WORLDMAP_TOKEN_VALUE = settings.WORLDMAP_TOKEN_FOR_DATAVERSE    #load_settings_d
 class WorldMapBaseTest(TestCase):
 
     def setUp(self):
-        msgt('........ set up 1 ................')
+        msgt('........ set up 1 (base) ................')
         
         # Create database
         #

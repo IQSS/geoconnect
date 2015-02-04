@@ -33,20 +33,20 @@ class TestWorldMapClassification(WorldMapBaseTest):
 
     def setUp(self):
         super(TestWorldMapClassification, self).setUp()              #super().__init__(x,y)
-        msgt('........ set up 2 ................')
+        #msgt('........ set up 2 ................')
         
         self.existing_layer_name = None
 
         # Add a shapefile - also a test
-        shp_import = TestWorldMapShapefileImport()
+        shp_import = TestWorldMapShapefileImport('test02_good_shapefile_import')
         shp_import.setUp()
         shp_import.test02_good_shapefile_import()
         
     def tearDown(self):
         super(TestWorldMapClassification, self).tearDown()              #super().__init__(x,y)
-        
+
         # Remove the shapefile - also a test
-        shp_import = TestWorldMapShapefileImport()
+        shp_import = TestWorldMapShapefileImport('test04_good_delete_shapefile_from_worldmap')
         shp_import.setUp()
         shp_import.test04_good_delete_shapefile_from_worldmap()
 

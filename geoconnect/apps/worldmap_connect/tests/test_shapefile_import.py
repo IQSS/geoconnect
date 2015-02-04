@@ -45,7 +45,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
 
     def setUp(self):
         super(TestWorldMapShapefileImport, self).setUp()              #super().__init__(x,y)
-        msgt('........ set up 2 ................')
+        #msgt('........ set up 2 ................')
 
     
     #@skip("skipping")
