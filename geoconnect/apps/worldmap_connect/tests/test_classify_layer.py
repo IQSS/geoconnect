@@ -138,6 +138,8 @@ class TestWorldMapClassification(WorldMapBaseTest):
                         		, 'method': 'jenks'\
                         		}
         
+        initial_classify_params.update(self.dataverse_test_info)
+        
         f_classify = ClassifyRequestDataForm(initial_classify_params)
         self.assertTrue(f_classify.is_valid(), 'ClassifyRequestDataForm did not validate. Errors:\n %s' % f_classify.errors)
         
@@ -148,7 +150,7 @@ class TestWorldMapClassification(WorldMapBaseTest):
 
                         
         #-----------------------------------------------------------
-        msgn("(1f) Make classification request")
+        msgn("(1g) Make classification request")
         #-----------------------------------------------------------
         try:
             r = requests.post(api_classify_layer_url, data=classify_params)
@@ -163,7 +165,7 @@ class TestWorldMapClassification(WorldMapBaseTest):
         self.assertEquals(r.status_code, 200, "Expected status code of 200 but received '%s'" % r.status_code)
         
         #-----------------------------------------------------------
-        msgn("(1g) Convert response to JSON")
+        msgn("(1h) Convert response to JSON")
         #-----------------------------------------------------------
         try:
             json_resp = r.json()
@@ -178,16 +180,18 @@ class TestWorldMapClassification(WorldMapBaseTest):
         
         
         #-----------------------------------------------------------
-        msgn("(1h) Retrieve classification params")
+        msgn("(1i) Retrieve classification params")
         #-----------------------------------------------------------        
-        f_attrs = LayerAttributeRequestForm(dict(layer_name=self.existing_layer_name))
+        params_for_attr_request = self.dataverse_test_info
+        params_for_attr_request['layer_name'] = self.existing_layer_name
+        f_attrs = LayerAttributeRequestForm(params_for_attr_request)
         self.assertTrue(f_attrs.is_valid(), 'ClassifyRequestDataForm did not validate. Errors:\n %s' % f_attrs.errors)
         
         retrieve_attribute_params = f_attrs.get_api_params_with_signature()
         msgt('retrieve_attribute_params: %s' % retrieve_attribute_params)
         self.assertTrue(retrieve_attribute_params.has_key(SIGNATURE_KEY)\
                         , 'classify_params did not have SIGNATURE_KEY: "%s"' % SIGNATURE_KEY)
-
+        
         #-----------------------------------------------------------
         msgn("(1i) Make classification param request")
         #-----------------------------------------------------------

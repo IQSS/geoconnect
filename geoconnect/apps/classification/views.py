@@ -109,7 +109,13 @@ def view_classify_layer_form(request, import_success_md5):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg='The layer styling form contains errors (code: 2)')            
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-
+    #----------------------------------------------------------
+    # Prepare params for classify request against WorldMap API
+    #
+    #----------------------------------------------------------
+    check_for_existing_layer_params = worldmap_layerinfo.get_params_to_check_for_existing_layer_metadata()
+    initial_classify_params.update(check_for_existing_layer_params)
+    
     api_form = ClassifyRequestDataForm(initial_classify_params)
     if not api_form.is_valid():
         logger.error('Validation failed with ClassifyRequestDataForm.  Errors: %s' % api_form.errors)
@@ -118,9 +124,6 @@ def view_classify_layer_form(request, import_success_md5):
 
 
     classify_params = api_form.get_api_params_with_signature()
-
-
-    #msgt('classify_params: %s' % classify_params)
 
     classify_url = classify_form.get_worldmap_classify_api_url()
 
@@ -141,7 +144,10 @@ def view_classify_layer_form(request, import_success_md5):
             logger.error('Worldmap classification failed. Status code: %s\nText;%s' % (resp.status_code, resp.text))
             json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
+        
+        dashes('x')
+        msg(json_resp)
+        dashes('x')
         logger.error('Worldmap classification failed. Status code: %s\nText;%s' % (resp.status_code, json_resp))
         err_msg = json_resp.get('message', None)
         if err_msg is None:

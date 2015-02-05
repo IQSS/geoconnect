@@ -20,10 +20,11 @@ from shared_dataverse_information.map_layer_metadata.models import MapLayerMetad
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm\
                                                 , GeoconnectToDataverseMapLayerMetadataValidationForm\
                                                 , GeoconnectToDataverseDeleteMapLayerMetadataForm
-
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 
 from geo_utils.json_field_reader import JSONFieldReader
 from geo_utils.message_helper_json import MessageHelperJSON
+from geo_utils.msg_util import *
 
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
@@ -287,6 +288,18 @@ class WorldMapLayerInfo(MapLayerMetadata):
         except:
             raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
 
+    
+    def get_params_to_check_for_existing_layer_metadata(self):
+
+        assert self.import_attempt is not None, "self.import_attempt cannot be None"
+        assert self.import_attempt.gis_data_file is not None, "self.gis_data_file cannot be None"
+        
+        f = CheckForExistingLayerForm(self.import_attempt.gis_data_file.__dict__)
+        if not f.is_valid():
+            raise forms.ValidationError('CheckForExistingLayerForm params did not validate: %s' % f.errors)
+
+        return f.cleaned_data
+        
     
     def get_params_for_dv_delete_layer_metadata(self):
 

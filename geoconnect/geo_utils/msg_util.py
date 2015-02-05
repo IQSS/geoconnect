@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 
 def msg(s): print(s)
-def dashes(): msg(40*'-')
+def dashes(d='-'): msg(40*d)
 def msgd(s): dashes(); msg(s)
 def msgt(s): dashes(); msg(s); dashes()
 def msgn(m): msg('\n'); msg(m); dashes()
