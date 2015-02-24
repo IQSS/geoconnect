@@ -125,7 +125,7 @@ class ViewAjaxVisualizeShapefile(View):
         """
         #assert type(request) is HttpRequest, "request must be a HttpRequest object"
         assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
-        assert  (worldmap_layerinfo, WorldMapLayerInfo), "worldmap_layerinfo must be a WorldMapLayerInfo object"
+        assert isinstance(worldmap_layerinfo, WorldMapLayerInfo), "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
         msg('render html')
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
