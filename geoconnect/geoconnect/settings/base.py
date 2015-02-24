@@ -218,6 +218,7 @@ LOCAL_APPS = (
     #'apps.classification',       # used for styling WorldMap layers
     'apps.content_pages',
     'apps.style_layer_information',
+    'apps.registered_dataverse',
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
     'apps.worldmap_connect',

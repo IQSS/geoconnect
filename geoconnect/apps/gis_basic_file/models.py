@@ -12,6 +12,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from apps.core.models import TimeStampedModel
 
+from apps.registered_dataverse.models import RegisteredDataverse
 from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
@@ -22,6 +23,12 @@ class GISDataFile(DataverseInfo):
     This object stores information describing a geospatial Dataverse File
     For continuity between GeoConnect and WorldMap, both project use the DataverseInfo model
     """
+    
+    #
+    # RegisteredDataverse - Used for calls back to Dataverse API
+    #
+    registered_dataverse = models.ForeignKey(RegisteredDataverse)
+    
     # session token
     # Token used to make requests of the Dataverse api; may expire, be refreshed
     #
@@ -44,6 +51,12 @@ class GISDataFile(DataverseInfo):
         """
         return not self.dataset_is_public
 
+    def get_dataverse_server_url(self):
+        if not self.registered_dataverse:
+            return None
+            
+        return self.registered_dataverse.dataverse_url
+        
 
     def is_dv_file_available(self):
         """Does the file actually exist in the dv_file specified path"""

@@ -5,6 +5,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
+from apps.registered_dataverse.registered_dataverse_helper import find_registered_dataverse
 
 from geo_utils.msg_util import *
 
@@ -100,13 +101,20 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     except ShapefileInfo.DoesNotExist:
         pass
     except:
-        raise Exception('Failed to Get or create a new ShapefileInfo object')
+        raise Exception('Failed retrieve an existing ShapefileInfo object')
 
     msg('new file')
     
     #------------------------------
     # New shapefile info, create object and attach file
     #------------------------------
+    
+    registered_dataverse = find_registered_dataverse(dataverse_info_dict['return_to_dataverse_url'])
+    if registered_dataverse is None:
+        raise Exception('This data was not sent by a registered dataverse.  URL for dataset: %s'\
+                                % dataverse_info_dict['return_to_dataverse_url'])
+    dataverse_info_dict['registered_dataverse'] = registered_dataverse
+    
     shapefile_info = ShapefileInfo(**dataverse_info_dict)
     shapefile_info.save()
                 

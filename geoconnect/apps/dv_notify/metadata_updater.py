@@ -180,7 +180,9 @@ class MetadataUpdater:
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
     
         #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
-        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+        #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+        mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+        
         resp_dict = mu.send_info_to_dataverse(worldmap_layer_info)
         print ('>>>>>>>>>',resp_dict)
         if resp_dict.get('success', False) is True:

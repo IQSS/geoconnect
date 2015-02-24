@@ -63,7 +63,8 @@ def view_delete_map(request):
         
     # At this point, the layer no longer exists on WorldMap
     #
-    worldmap_layer_info.delete()
+    worldmap_layer_info.import_attempt.delete()
+    #worldmap_layer_info.delete()
      
     # -----------------------------------
     # Delete metadata from dataverse

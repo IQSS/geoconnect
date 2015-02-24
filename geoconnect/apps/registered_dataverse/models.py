@@ -15,12 +15,16 @@ class RegisteredDataverse(TimeStampedModel):
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.dataverse_url)
 
+
     def save(self, *args, **kwargs):
 
         while self.dataverse_url.endswith('/'):
             self.dataverse_url = self.dataverse_url[:-1]
 
+        self.dataverse_url = self.dataverse_url.lower()
+        
         super(RegisteredDataverse, self).save(*args, **kwargs)
+        
 
     class Meta:
         ordering = ('name',)

@@ -42,7 +42,7 @@ class WorldMapImportAttempt(TimeStampedModel):
     abstract = models.TextField()
     shapefile_name = models.CharField(max_length=255)
 
-    gis_data_file = models.ForeignKey(GISDataFile, null=True, blank=True, on_delete=models.CASCADE)  # ties back to user info
+    gis_data_file = models.ForeignKey(GISDataFile, on_delete=models.CASCADE)  # ties back to user info
 
     import_success = models.BooleanField(default=False)
     
@@ -59,7 +59,11 @@ class WorldMapImportAttempt(TimeStampedModel):
     def __unicode__(self):
         return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.dataset_version_id)
 
-
+    
+    def get_dataverse_server_url(self):
+        assert self.gis_data_file is not None, "For WorldMapImportAttempt's get_dataverse_server_url() self.gis_data_file cannot be None"
+        
+        return self.gis_data_file.get_dataverse_server_url()
 
     def edit_shapefile(self):
         if not self.gis_data_file:
@@ -198,6 +202,12 @@ class WorldMapLayerInfo(MapLayerMetadata):
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapLayerInfo, self).save(*args, **kwargs)
 
+    
+    def get_dataverse_server_url(self):
+        assert self.import_attempt is not None, "self.import_attempt cannot be None, when calling WorldMapLayerInfo 'get_dataverse_server_url'"
+        
+        return self.import_attempt.get_dataverse_server_url()
+    
     
     def get_layer_url_base(self):
         if not self.layer_link:
