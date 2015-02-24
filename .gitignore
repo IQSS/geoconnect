@@ -1,3 +1,4 @@
+geoconnect/apps/gis_tabular/tests/server_credentials.json
 .vagrant/*
 deploy/old/
 geoconnect/geoconnect/settings/worldmap_secrets*.json

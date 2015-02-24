@@ -14,7 +14,7 @@ from msg_util import *
 """
 Load up the server and username
 """
-GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_creds.json')
+GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_credentials.json')
 assert isfile(GEONODE_CREDS_FNAME), 'Server credentials file not found: %s' % GEONODE_CREDS_FNAME
 try:
     GEONODE_CREDS_JSON = json.loads(open(GEONODE_CREDS_FNAME, 'r').read())
