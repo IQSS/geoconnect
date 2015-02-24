@@ -10,8 +10,8 @@ class WorldMapImportFailInline(admin.TabularInline):
     
 class WorldMapLayerInfoInline(admin.TabularInline):
     model = WorldMapLayerInfo
-    readonly_fields = ('modified', 'created', 'update_dataverse', 'dv_params')
-    fields = ('layer_name', 'layer_link', 'worldmap_username', 'dv_params', 'modified', 'created')
+    readonly_fields = ('modified', 'created', 'update_dataverse',  'dv_params')
+    fields = ('layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'dv_params', 'modified', 'created')
     extra = 0
     
 class WorldMapImportAttemptAdmin(admin.ModelAdmin):
