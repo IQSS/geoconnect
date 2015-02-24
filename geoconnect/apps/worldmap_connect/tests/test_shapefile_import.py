@@ -380,9 +380,11 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
                             )
         except requests.exceptions.ConnectionError as e:
             msgx('Connection error: %s' % e.message)
+            return
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
-        
+            return
+            
         self.assertEqual(r.status_code, 400, "Expected status code 400 but received '%s'" % r.status_code)
         
         try:
