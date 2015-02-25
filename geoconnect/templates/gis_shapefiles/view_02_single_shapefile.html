@@ -50,7 +50,7 @@
             {% include "gis_shapefiles/link-back-to-dataverse.html" %}
         {% else }{% if Err_Found %}
             {% include "gis_shapefiles/link-back-to-dataverse.html" %}
-	    {% endif %}{% endf %}
+	    {% endif %}{% endif %}
 	    
 		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->
