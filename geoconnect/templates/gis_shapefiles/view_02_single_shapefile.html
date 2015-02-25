@@ -28,8 +28,8 @@
 		{% include "gis_shapefiles/view_02a_err_examine.html" %}
 	{% endif %}
 
-    {% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
-        {% if not Err_Found %}
+    {% if not Err_Found %}
+        {% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
     <!-- First time file is loaded, show a notification -->
     <div id="id-first-time-alert" class="alert alert-success alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -48,10 +48,7 @@
        	{% if not shapefile_info %}
             Please return to the dataverse.
             {% include "gis_shapefiles/link-back-to-dataverse.html" %}
-        {% else }{% if Err_Found %}
-            {% include "gis_shapefiles/link-back-to-dataverse.html" %}
-	    {% endif %}{% endif %}
-	    
+	    {% endif %}
 		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->
             {% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
@@ -80,6 +77,10 @@
     </div><!-- end main panel content -->
     </div><!-- end: panel -->
     
- 
+    {% if shapefile_info %}
+        {#% include "gis_shapefiles/shapefile_info_panel.html" %#}
+    {% endif %}
+    {#% include "gis_shapefiles/link-back-to-dataverse.html" %#}
+
 </div>
 {% endblock %}
