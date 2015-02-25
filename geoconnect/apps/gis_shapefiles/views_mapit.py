@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 FAILED_TO_RETRIEVE_DATAVERSE_FILE = 'FAILED_TO_RETRIEVE_DATAVERSE_FILE'
 FAILED_TO_CONVERT_RESPONSE_TO_JSON = 'FAILED_TO_CONVERT_RESPONSE_TO_JSON'
 FAILED_BAD_STATUS_CODE_FROM_WORLDMAP = 'FAILED_BAD_STATUS_CODE_FROM_WORLDMAP'
-
+FAILED_NOT_A_REGISTERED_DATAVERSE = 'FAILED_NOT_A_REGISTERED_DATAVERSE'
 
 def view_formatted_error_page(request, error_type, err_msg=None):
 
@@ -117,8 +117,14 @@ def view_mapit_incoming_token64(request, dataverse_token):
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
         data_dict = jresp.get('data')
 
-        shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
-    
+        try:
+            shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
+        except Exception as e:
+            err_msg1 = e.message
+            return view_formatted_error_page(request\
+                                             , FAILED_NOT_A_REGISTERED_DATAVERSE\
+                                             , err_msg1)
+            
         if shp_md5 is None:
             raise Exception('shp_md5 failure: %s' % shp_md5)
 
