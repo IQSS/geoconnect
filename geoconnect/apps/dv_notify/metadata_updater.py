@@ -169,7 +169,9 @@ class MetadataUpdater:
     def delete_map_metadata_from_dataverse(worldmap_layer_info):
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
 
-        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+        #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+        mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+        
         return mu.delete_metadata_from_dataverse(worldmap_layer_info)
         
 
