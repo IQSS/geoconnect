@@ -44,7 +44,7 @@ class TabularTest:
         self.geonode_username = username
         self.geonode_password = pw
         
-        self.login_url =  self.base_url + "/account/login/"
+        self.login_url =  self.base_url + "/accounts/login/"
         self.datatable_upload_url  = self.base_url + '/datatables/api/upload'
         self.shp_layer_upload_url = self.base_url + '/layers/upload'
         

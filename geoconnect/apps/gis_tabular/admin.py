@@ -2,6 +2,8 @@ from django.contrib import admin
 from apps.gis_basic_file.admin import GISDataFileAdmin
 
 from apps.gis_tabular.models import GeoType, TabularFileInfo
+from apps.gis_tabular.models import SimpleTabularTest   # for testing
+
 from apps.gis_tabular.admin_forms import TabularInfoAdminForm
 
 from geo_utils.admin_util import make_changelist_updates
@@ -11,7 +13,13 @@ class GeoTypeAdmin(admin.ModelAdmin):
     """Information may be updated via the WorldMap JoinTypes API"""
     list_display = ('name', 'sort_order', 'description', 'slug')
     save_on_top = True
-admin.site.register(GeoType, GeoTypeAdmin)
+
+
+class SimpleTabularTestAdmin(admin.ModelAdmin):
+    """For testing"""
+
+    list_display = ('name', 'test_page', 'dv_file', 'delimiter')
+    save_on_top = True
 
 
 class TabularFileInfoAdmin(GISDataFileAdmin):
@@ -38,4 +46,8 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
                     })\
                  ] + fs
         return fs   
+
+
+admin.site.register(GeoType, GeoTypeAdmin)
 admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
+admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)

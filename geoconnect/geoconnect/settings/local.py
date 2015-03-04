@@ -59,11 +59,6 @@ DATABASES = {
 ########## END DATABASE CONFIGURATION
 
 
-########## LOCAL: ADDITIONAL INSTALLED_APPS
-INSTALLED_APPS += ('apps.gis_tabular', )
-########## END LOCAL: ADDITIONAL INSTALLED_APPS
-
-
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
@@ -76,6 +71,7 @@ CACHES = {
 ########## TOOLBAR CONFIGURATION
 # See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
 INSTALLED_APPS += (
+    'apps.gis_tabular',
     'debug_toolbar',
     #'djcelery',
     #'kombu.transport.django', 
@@ -115,9 +111,9 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 ##### RETRIEVE WORLDMAP PARAMS
 # dev worldmap on AWS
 # RETRIEVE WORLDMAP JSON INFO
-WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
+#WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod.json")
-#WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
 if not isfile(WORLDMAP_SECRETS_FNAME):
     raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)
 

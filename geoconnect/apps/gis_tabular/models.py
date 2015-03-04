@@ -31,11 +31,11 @@ class GeoType(models.Model):
     class Meta:
         ordering = ('sort_order', 'name')
 
-class SimpleTabular(TimeStampedModel):
+class SimpleTabularTest(TimeStampedModel):
     
     name = models.CharField(max_length=255, blank=True)        #   file basename
     
-    tab_file = models.FileField(upload_to='tab_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
+    dv_file = models.FileField(upload_to='tab_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
 
     delimiter = models.CharField(max_length=10, default=",")
     
@@ -54,8 +54,19 @@ class SimpleTabular(TimeStampedModel):
         
     def __unicode__(self):
         return self.name
-    
-    
+
+    def test_page(self):
+        if not self.id:
+            return 'n/a'
+        lnk = reverse('view_test_1', kwargs=dict(tabular_id=self.id))
+        return '<a href="%s" target="_blank">test page</a>' % lnk
+    test_page.allow_tags=True
+
+    class Meta:
+        verbose_name = 'GIS Simple Tabular (for dev)'
+        verbose_name_plural = verbose_name
+
+
 class TabularFileInfo(GISDataFile):
     """
     Tabular File Information.  

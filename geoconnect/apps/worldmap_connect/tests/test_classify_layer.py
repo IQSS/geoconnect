@@ -46,7 +46,6 @@ class TestWorldMapClassification(WorldMapBaseTest):
     def tearDown(self):
         super(TestWorldMapClassification, self).tearDown()              #super().__init__(x,y)
 
-        
         # Remove the shapefile - also a test
         shp_import = TestWorldMapShapefileImport('test04_good_delete_shapefile_from_worldmap')
         shp_import.setUp()
@@ -55,6 +54,7 @@ class TestWorldMapClassification(WorldMapBaseTest):
 
 
     def test01_good_classification(self):
+
         # Note: This has to be imported AFTER WorldMapBaseTest setUp creates a test table
         #
         

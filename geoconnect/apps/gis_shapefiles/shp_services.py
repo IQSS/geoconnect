@@ -5,6 +5,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
+from shared_dataverse_information.dataverse_info.models import TABULAR_TYPES
 from apps.registered_dataverse.registered_dataverse_helper import find_registered_dataverse
 
 from geo_utils.msg_util import *
@@ -35,17 +36,25 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     
     
     # quick hack for testing
-    datafile_download_url = dataverse_info_dict.get('datafile_download_url', '--datafile_download_url not avail--')
-    if datafile_download_url.find('dvn-build') > -1 and datafile_download_url.find('https') == -1:
-        dataverse_info_dict['datafile_download_url'] = datafile_download_url.replace('http', 'https')
+    #
+    #datafile_download_url = dataverse_info_dict.get('datafile_download_url', '--datafile_download_url not avail--')
+    #if datafile_download_url.find('dvn-build') > -1 and datafile_download_url.find('https') == -1:
+    #    dataverse_info_dict['datafile_download_url'] = datafile_download_url.replace('http', 'https')
         
     #------------------------------
-    # (2) Look for existing shapefiles in the database
-    #    ShapefileInfo objects are routinely deleted, but if file is already here, use it
+    # (2) Look for existing Dataverse files in the database
+    #    ShapefileInfo and TabularFileInfo objects are routinely deleted, but if file is already here, use it
     #------------------------------
     params_for_existing_check = dict(datafile_id=dataverse_info_dict.get('datafile_id', -1)\
                                     , dv_user_id=dataverse_info_dict.get('dv_user_id', -1)\
                                     )
+
+    #
+    #   BRANCH OUT HERE TO HANDLE TABULAR VS SHAPEFILES
+    #
+    #
+
+
     existing_sets = ShapefileInfo.objects.filter(**params_for_existing_check\
                                 ).values_list('id', flat=True\
                                 ).order_by('created')
