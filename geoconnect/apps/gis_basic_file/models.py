@@ -60,9 +60,16 @@ class GISDataFile(DataverseInfo):
 
     def is_dv_file_available(self):
         """Does the file actually exist in the dv_file specified path"""
-        
-        if isfile(self.get_dv_file_fullpath()):
-            return True
+        fullpath = self.get_dv_file_fullpath()
+        if fullpath is None:
+            return False
+
+        try:
+            if isfile(fullpath):
+                return True
+        except IOError:
+            return False
+
         return False
 
     def get_dv_file_basename(self):
@@ -74,9 +81,13 @@ class GISDataFile(DataverseInfo):
     def get_dv_file_fullpath(self):
         if not self.dv_file:
             return None
-            
-        return self.dv_file.file.name
-        
+
+        try:
+            return self.dv_file.file.name
+        except IOError:
+            return None
+
+
     def get_scratch_work_directory(self):
         """Return the full path of the scratch working directory.  
         Creates directory if it doesn't exist """
