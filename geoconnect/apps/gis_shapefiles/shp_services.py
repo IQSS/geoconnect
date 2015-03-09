@@ -125,14 +125,15 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
         # If the file is still available, return it
         if shapefile_info.is_dv_file_available():
             return True, shapefile_info.md5
-    
-        # But the file isn't there!!  Delete ShapefileInfo and make a new one
-        shapefile_info.delete()
+        else:
+            # But the file isn't there!!  Delete ShapefileInfo and make a new one
+            shapefile_info.delete()
         
     except ShapefileInfo.DoesNotExist:
         pass
-    except:
-        return False, ErrResultMsg(None, 'Failed retrieve an existing ShapefileInfo object')
+    #except:
+    #    msg('Failed to retrieve an existing ShapefileInfo object -- so create a new one')
+    #    #return False, ErrResultMsg(None, 'Failed to retrieve an existing ShapefileInfo object')
 
     msg('new file')
     
