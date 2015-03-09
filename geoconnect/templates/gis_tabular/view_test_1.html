@@ -1,1 +1,42 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+</style>
+{% endblock %}
+
 tabular id: {{ tabular_id }}
+{% block main_container %}
+Preview of first {{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}
+<div id="table-wrapper">
+    <div id="table-scroll">
+<table class="table table-bordered table-hover table-condensed">
+    <thead>
+        {% for col in tab_file_stats.column_names %}
+        <th>{{ col }}</th>
+        {% endfor %}
+    </thead>
+    <tbody>
+        {% for row in tab_file_stats.preview_rows %}
+            <tr>
+            {% for val in row %}
+                <td>{{ val }}</td>
+            {% empty %}
+            (No rows to display)
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+</div>
+
+{% endblock %}

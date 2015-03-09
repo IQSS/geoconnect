@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^%sshapefile/' % URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
-    url(r'^%sgeoconnect/'% URL_PREFIX, include('apps.gis_shapefiles.urls')),
+    #url(r'^%sgeoconnect/'% URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
     url(r'^%sworldmap/' % URL_PREFIX, include('apps.worldmap_connect.urls')),
 

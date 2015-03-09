@@ -21,7 +21,7 @@ class TabFileStats(object):
         self.delimiter = b','    #delim
         self.tabular_info = tabular_info
 
-        self.header_row = []
+        self.column_names = []
         self.num_rows = 0
         self.num_cols = 0
         self.preview_rows = []
@@ -44,18 +44,21 @@ class TabFileStats(object):
                             )
 
     def collect_stats(self):
+        global NUM_PREVIEW_ROWS
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
         print 'self.delimiter', self.delimiter, len(self.delimiter)
         with open(self.fname, 'rU') as f:
             reader = csv.reader(f, delimiter=self.delimiter, skipinitialspace=True)
-            self.header_row = next(reader)
-            self.num_cols = len(self.header_row)
+            self.column_names = next(reader)
+            self.num_cols = len(self.column_names)
 
             try:
                 for row in reader:
                     self.num_rows += 1
+                    if self.num_rows <= NUM_PREVIEW_ROWS:
+                        self.preview_rows.append(row)
             except csv.Error as e:
                 logger.error('Error reading file: %s\nLine: %d\nMessage: %s' \
                                 % (filename, reader.line_num, e))
@@ -75,10 +78,10 @@ class TabFileStats(object):
         self.tabular_info.num_columns = self.num_cols
 
         if hasattr(self.tabular_info, "add_column_names"):
-            self.tabular_info.add_column_names(self.header_row)
+            self.tabular_info.add_column_names(self.column_names)
         else:
             try:
-                json_header = json.dumps(self.header_row)
+                json_header = json.dumps(self.column_names)
                 self.tabular_info.column_names = json_header
             except:
                 sys.exit(0)

@@ -35,13 +35,14 @@ def show_import_success_params(request, import_success_id):
 #@login_required
 def send_metadata_to_dataverse(request, import_success_id):
     """
-    Send metadata to dataverse: async this!!
+    Retrieve WorldMapLayerInfo and send it to the Dataverse
     """
     try:
         worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=import_success_id)
     except WorldMapLayerInfo.DoesNotExist:
         return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
-    
+
+
     MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
     if worldmap_layer_info.import_attempt.gis_data_file:
         lnk = reverse('view_shapefile'\

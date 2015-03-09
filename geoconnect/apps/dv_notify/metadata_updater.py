@@ -169,6 +169,8 @@ class MetadataUpdater:
     def delete_map_metadata_from_dataverse(worldmap_layer_info):
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
 
+        logger.info("delete_map_metadata_from_dataverse")
+
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
         
@@ -180,13 +182,13 @@ class MetadataUpdater:
     @staticmethod
     def update_dataverse_with_metadata(worldmap_layer_info):
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), '"worldmap_layer_info" must be a WorldMapLayerInfo object.'
-    
+
+        logger.info("update_dataverse_with_metadata")
         #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
         
         resp_dict = mu.send_info_to_dataverse(worldmap_layer_info)
-        print ('>>>>>>>>>',resp_dict)
         if resp_dict.get('success', False) is True:
             return True
         return False

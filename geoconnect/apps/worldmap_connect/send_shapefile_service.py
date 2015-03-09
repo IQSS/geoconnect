@@ -81,9 +81,14 @@ class SendShapefileService:
         #
         if not self.process_worldmap_response():
             return False
-        
+
+        # (6) Update Dataverse with new WorldMap info
+        if not self.update_dataverse_with_worldmap_info():
+            return False
+
         return True
-            
+
+
             
     def add_err_msg(self, msg):
         logger.error(msg)
@@ -252,15 +257,17 @@ class SendShapefileService:
             self.add_err_msg('process_worldmap_response: worldmap_response is None')
             return False
 
+        # ------------------------------------------------------
         #  Sanity check: Was the import marked as successful?
-        #
+        # ------------------------------------------------------
         import_success = self.worldmap_response.get('success', False)
         if not import_success:
             self.record_worldmap_failure(self.worldmap_response)
             return False
         
+        # ------------------------------------------------------
         #  Sanity check: Did the import response have data?
-        #
+        # ------------------------------------------------------
         wm_data = self.worldmap_response.get('data', None)
         if wm_data is None:
             self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but no layer data found')
@@ -268,8 +275,9 @@ class SendShapefileService:
 
         logger.debug('wm_data: %s' % wm_data)
 
+        # ------------------------------------------------------
         # Use form from MapLayerMetadata object to check results
-        #
+        # ------------------------------------------------------
         f = WorldMapToGeoconnectMapLayerMetadataValidationForm(wm_data)
         if not f.is_valid():
             self.record_worldmap_failure(self.worldmap_response, 'Validation of WorldMap response failed.  Errors:\n%s' % f.errors)
@@ -278,6 +286,9 @@ class SendShapefileService:
 
         logger.debug('\nData valid')
 
+        # ------------------------------------------------------
+        # Create and Save a new WorldMapLayerInfo object
+        # ------------------------------------------------------
         self.worldmap_layerinfo_object = WorldMapLayerInfo(**f.cleaned_data)
         self.worldmap_layerinfo_object.import_attempt=self.import_attempt_obj
         self.worldmap_layerinfo_object.save()
@@ -287,10 +298,21 @@ class SendShapefileService:
         self.import_attempt_obj.save()
         logger.debug('AttemptObject updated')
 
-        # Send message back to the Dataverse -- to update metadata
-        #
-        # Round-trip example, break into separate process with 
-        #   MetadataUpdateFail, MetadataUpdateSuccess objects
+        return True
+
+
+    def update_dataverse_with_worldmap_info(self):
+        """
+        Send WorldMap JSON data back to the Dataverse
+        """
+        logger.debug("update_dataverse_with_worldmap_info: %s" % self.worldmap_layerinfo_object  )
+        if self.worldmap_layerinfo_object is None:
+            logger.warn("Attempted to send Worldmap info to Dataverse when 'worldmap_layerinfo_object' was None")
+            return False
+
+        assert isinstance(self.worldmap_layerinfo_object, WorldMapLayerInfo), \
+            "self.worldmap_layerinfo_object must be a WorldMapLayerInfo object.  Found: %s" % self.worldmap_layerinfo_object.__class__.__name__
+
         try:
             MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo_object)
         except:
