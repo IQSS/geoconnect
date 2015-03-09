@@ -121,8 +121,8 @@ def view_mapit_incoming_token64(request, dataverse_token):
 
         if not success:
             return view_formatted_error_page(request\
-                                             , FAILED_NOT_A_REGISTERED_DATAVERSE\
-                                             , shp_md5_or_err_msg)
+                                             , shp_md5_or_err_msg.err_type\
+                                             , shp_md5_or_err_msg.err_msg)
 
         view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
                                         , kwargs={ 'shp_md5' : shp_md5_or_err_msg })

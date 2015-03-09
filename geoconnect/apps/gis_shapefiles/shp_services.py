@@ -53,7 +53,9 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     #-------------------------------------------------
     registered_dataverse = find_registered_dataverse(dataverse_info_dict['return_to_dataverse_url'])
     if registered_dataverse is None:
-        return False, ErrResultMsg(FAILED_NOT_A_REGISTERED_DATAVERSE, form_errs)
+        return False, ErrResultMsg(FAILED_NOT_A_REGISTERED_DATAVERSE\
+                        , "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
+                    )
 
     # quick hack for testing
     #
