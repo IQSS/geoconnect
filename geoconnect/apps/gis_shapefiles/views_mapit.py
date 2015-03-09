@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 FAILED_TO_RETRIEVE_DATAVERSE_FILE = 'FAILED_TO_RETRIEVE_DATAVERSE_FILE'
 FAILED_TO_CONVERT_RESPONSE_TO_JSON = 'FAILED_TO_CONVERT_RESPONSE_TO_JSON'
 FAILED_BAD_STATUS_CODE_FROM_WORLDMAP = 'FAILED_BAD_STATUS_CODE_FROM_WORLDMAP'
-FAILED_NOT_A_REGISTERED_DATAVERSE = 'FAILED_NOT_A_REGISTERED_DATAVERSE'
 
 def view_formatted_error_page(request, error_type, err_msg=None):
 
@@ -34,7 +33,8 @@ def view_formatted_error_page(request, error_type, err_msg=None):
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE 
     
     d['Err_Found'] = True
-    d[error_type] = True
+    if error_type is not None:
+        d[error_type] = True
     d['Dataverse_Connect_Err_Msg'] = err_msg
     
     return render_to_response('gis_shapefiles/view_02_single_shapefile.html'\
@@ -117,19 +117,15 @@ def view_mapit_incoming_token64(request, dataverse_token):
     if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
         data_dict = jresp.get('data')
 
-        try:
-            shp_md5 = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
-        except Exception as e:
-            err_msg1 = e.message
+        success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
+
+        if not success:
             return view_formatted_error_page(request\
                                              , FAILED_NOT_A_REGISTERED_DATAVERSE\
-                                             , err_msg1)
-            
-        if shp_md5 is None:
-            raise Exception('shp_md5 failure: %s' % shp_md5)
+                                             , shp_md5_or_err_msg)
 
         view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
-                                        , kwargs={ 'shp_md5' : shp_md5 })
+                                        , kwargs={ 'shp_md5' : shp_md5_or_err_msg })
                                     
         return HttpResponseRedirect(view_shapefile_first_time_url)
     

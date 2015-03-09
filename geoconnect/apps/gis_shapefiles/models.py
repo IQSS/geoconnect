@@ -90,7 +90,8 @@ class ShapefileInfo(GISDataFile):
     def save(self, *args, **kwargs):
         if not self.id:
             super(ShapefileInfo, self).save(*args, **kwargs)
-        self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
+        #self.md5 = md5('%s%s' % (self.id, self.name, self.dataverse_instal)).hexdigest()
+        self.md5 = md5('%s%s%s' % (self.id, self.datafile_id, self.dataverse_installation_name)).hexdigest()
 
         super(ShapefileInfo, self).save(*args, **kwargs)
     

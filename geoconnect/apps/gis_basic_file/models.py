@@ -101,7 +101,7 @@ class GISDataFile(DataverseInfo):
         if not self.id:
             super(GISDataFile, self).save(*args, **kwargs)
 
-        self.md5 = md5('%s%s%s' % (self.id, self.dv_user_id, self.datafile_id)).hexdigest()
+        self.md5 = md5('%s%s%s' % (self.id, self.datafile_id, self.dataverse_installation_name)).hexdigest()
         super(GISDataFile, self).save(*args, **kwargs)
 
 
