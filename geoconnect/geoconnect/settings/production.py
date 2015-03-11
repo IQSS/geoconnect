@@ -217,6 +217,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'apps': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
             },
     }
 
