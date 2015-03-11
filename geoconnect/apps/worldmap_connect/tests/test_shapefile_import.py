@@ -253,7 +253,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
 
         # add dv info
         test_shapefile_info.update(self.dataverse_test_info)
-        #test_shapefile_info['datafile_id'] = 4001
+        test_shapefile_info['datafile_id'] = 4001999
         
     
         # prep file        
@@ -319,6 +319,8 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
 
         msg(r.status_code)
         msg(r.text)
+
+        open('/Users/rmp553/Desktop/page_out.html', 'w').write(r.text)
 
         #   Expect HTTP 200 - success
         #

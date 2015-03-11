@@ -4,7 +4,7 @@
     "datafile_expected_md5_checksum": "e16c3b5c43781343ad6dfa180f176d7c", 
     "datafile_download_url": "http://localhost:8080/api/access/datafile/1388", 
     "datafile_filesize": 225975, 
-    "datafile_id": 1388, 
+    "datafile_id": 123456,
     "datafile_label": "social_disorder_in_boston_abc123.zip", 
 
     "dataset_id": 1383, 
@@ -16,7 +16,7 @@
 
     "dataverse_id": 1, 
     "dataverse_name": "Root", 
-    "dataverse_installation_name": "Harvard Dataverse", 
+    "dataverse_installation_name": "http://test-shapefile-dataverse",
     "dataverse_description": "The root dataverse.", 
 
     "dv_user_id": 1, 
