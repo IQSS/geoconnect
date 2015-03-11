@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 import json
 import sys
+from os import makedirs
 from os.path import join, normpath, isdir, isfile
 
 from .base import *
@@ -138,7 +139,9 @@ DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DA
 
 
 ########## LOGGING
-
+GEOLOG_DIRNAME = join(TEST_SETUP_DIR, 'logs')
+if not isfile(GEOLOG_DIRNAME):
+    makedirs(GEOLOG_DIRNAME)
 LOGGING = {
     'version': 1,
     'formatters': {
@@ -158,7 +161,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': join(TEST_SETUP_DIR, 'logs', 'geolog.log'),
+            'filename': join(GEOLOG_DIRNAME, 'geolog.log'),
             'formatter': 'simple'
             },
         },
