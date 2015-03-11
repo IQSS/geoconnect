@@ -17,5 +17,13 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
 ![geoconnect screenshot](geoconnect/static/images/screenshot_inspect_shapefile.png?raw=true "Inspect Shapefile")
 
 
+### Install
 
+
+1. Download repository
+1. cd into repository directory.  ```cd geoconnect```
+1. run pip install.  
+  - Local install: ```pip install -r requirements/local.txt```
+1. update the settings.py file
+```
 	
