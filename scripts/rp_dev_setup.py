@@ -6,23 +6,23 @@ Start up Terminals for dev environment
 CMD_DICT =dict(\
     run_geoserver="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;paver start_geoserver"\
 
-    , run_geonode="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;paver start_geoserver"\
+    , run_geonode="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;django-admin.py runserver  --settings=geonode.settings"\
     , run_geoconnect="cd /Users/rmp553/Documents/iqss-git/geoconnect/geoconnect;workon geoconnect;python manage.py runserver 8070"
 
     , shell_worldmap="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy/geonode;workon cga-worldmap;python manage.py shell --settings=geonode.settings"
 
-    , run_tester_tabular="cd Documents/iqss-git/geoconnect-tester/tabular-api/code/;workon geo-test;"
-    , run_tester_shape="cd Documents/iqss-git/geoconnect-tester/geoconnect_tester/;workon geo-test;"
+    , run_tester_tabular="cd Documents/iqss-git/geoconnect-tester/tabular-api/code/;workon geo-tester;"
+    , run_tester_shape="cd Documents/iqss-git/geoconnect-tester/geoconnect_tester/;workon geo-tester;mate Documents/iqss-git/geoconnect-tester/geoconnect_tester/"
 
-    , charm_worldmap='charm /Users/rmp553/Documents/github-worldmap/cga-worldmap/'
-    , charm_geoconnect='charm /Users/rmp553/Documents/iqss-git/geoconnect'
-    , charm_shared_dv='charm /Users/rmp553/Documents/iqss-git/shared-dataverse-information'
+    , edit_worldmap='charm /Users/rmp553/Documents/github-worldmap/cga-worldmap/'
+    , edit_geoconnect='charm /Users/rmp553/Documents/iqss-git/geoconnect'
+    , edit_shared_dv='mate /Users/rmp553/Documents/iqss-git/shared-dataverse-information'
               )
 
 CMDS_ALL = CMD_DICT.keys()
-CMDS_TEST = ('charm_shared_dv',)
-CMDS_GEOCONNECT = ('run_geoconnect', 'charm_geoconnect', 'charm_shared_dv' )
-CMDS_WORLDMAP = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'charm_worldmap', 'charm_shared_dv' )
+CMDS_TEST = ('edit_shared_dv',)
+CMDS_GEOCONNECT = ('run_geoconnect', 'edit_geoconnect', 'edit_shared_dv' )
+CMDS_WORLDMAP = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'edit_worldmap', 'edit_shared_dv' , 'run_tester_tabular')
 
 
 def build_subprocess_cmd_list(cmd_name, cmd_str, close_window=False):
@@ -65,6 +65,7 @@ if __name__=='__main__':
     #run_terminals(CMDS_TEST)
     #run_terminals(CMDS_GEOCONNECT)
     run_terminals(CMDS_WORLDMAP)
+    #run_terminals(['run_tester_tabular', 'run_geonode'])
 
 """
 osascript -e 'tell app "Terminal"
