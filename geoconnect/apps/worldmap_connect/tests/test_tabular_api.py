@@ -1,8 +1,7 @@
 """
-Run tests for the WorldMap Shapefile import API
+Run tests for the WorldMap Tabular API
 
-python manage.py test apps.worldmap_connect.tests.test_classify_layer.TestWorldMapClassification
-
+python manage.py test apps.worldmap_connect.tests.test_tabular_api.TestWorldMapTabularAPI
 """
 
 import json
@@ -16,25 +15,19 @@ from django.test import TestCase
 #
 from shared_dataverse_information.worldmap_api_helper.url_helper import ADD_SHAPEFILE_API_PATH, DELETE_LAYER_API_PATH
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
-from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
+#from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
+from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH\
                 , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                 , GET_CLASSIFY_ATTRIBUTES_API_PATH
 
-
-# Validation forms from https://github.com/IQSS/shared-dataverse-information
-#
-#from shared_dataverse_information.worldmap_api_helper.forms_api_validate import SIGNATURE_KEY
-#from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
-#from shared_dataverse_information.layer_classification.forms_api import ClassifyRequestDataForm, LayerAttributeRequestForm
-#from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
+from apps.worldmap_connect.tests.tabular_test_helper import TabularTest
 
 from geo_utils.msg_util import *
 
-from worldmap_base_test import WorldMapBaseTest
 
 
 def setUpModule():
@@ -87,6 +80,8 @@ class TestWorldMapTabularAPI(TestCase):
         assert isfile(cls.tab_shp_ma_tigerlines_fname), "Test shapefile not found: %s" % self.tab_shp_ma_tigerlines_fname
 
         cls.existing_layer_name = 'boohoo'
+        cls.existing_layer_data = 'boohoo existing_layer_data'
+        cls.layer_attribute_info = 'boohoo layer_attribute_info'
 
         cls.upload_ma_tigerlines_shapefile()
 
@@ -153,9 +148,12 @@ class TestWorldMapTabularAPI(TestCase):
         assert f.is_valid(), 'Validation failed using WorldMapToGeoconnectMapLayerMetadataValidationForm. Errors: %s' % f.errors
 
         # Retrieve layer_name
-        cls.existing_layer_name = rjson.get('data', {}).get('layer_name', None)
         cls.existing_layer_data = rjson.get('data', {})
-        cls.layer_attribute_info = rjson.get('data', {}).get('attribute_info', None)
+        cls.existing_layer_name = cls.existing_layer_data.get('layer_name', None)
+        cls.layer_attribute_info = json.loads(cls.existing_layer_data.get('attribute_info', None))
+
+        print 'cls.layer_attribute_info', cls.layer_attribute_info, cls.layer_attribute_info.__class__.__name__
+
 
         # Make sure layer_name is valid
         assert cls.existing_layer_name is not None, 'self.existing_layer_name cannot be None'
@@ -187,13 +185,70 @@ class TestWorldMapTabularAPI(TestCase):
         msgn('Layer deleted: %s\n%s' % (r.status_code, r.text))
 
 
-    def test_it(self):
-        msgt('------------ TEST IT ------------')
-        msg('existing_layer_name: %s' % self.existing_layer_name)
-        msg('layer_attribute_info: %s' % self.layer_attribute_info)
+    def is_attribute_in_ma_layer(self, attr_name):
+        if attr_name is None:
+            return False
+
+        print 'layer_attribute_info.__class__.__name__', self.layer_attribute_info.__class__.__name__
+        print 'layer_attribute_info.__class__.__name__', self.layer_attribute_info
+        for attr_dict in self.layer_attribute_info:
+            print attr_dict, attr_dict.__class__
+            if attr_dict.get('name', None) == attr_name:
+                return True
+        return False
+
+    def test_01_upload_join_boston_income(self):
+
+        msgt('(1) test_01_upload_join_boston_income')
+
+        fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
+        assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
+
+        layer_attribute_name = 'TRACTCE'
+        self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name)\
+                    , "Attribute '%s' not found in layer '%s'" % (layer_attribute_name, self.existing_layer_name))
+
+        params = {
+            'title' : 'Boston Income',
+            'layer_typename' : self.existing_layer_name,  # Join Target
+            'layer_attribute': layer_attribute_name, # underlying layer - attribute
+            'table_attribute': 'tract', # data table - attribute
+        }
+
+        tr = TabularTest()
+        tr.login_for_cookie()
+
+        try:
+            r = tr.upload_datatable_and_join_to_layer(params, fname_to_upload)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.status_code)
+        msg(r.text)
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
 
 
-    #@skip("skipping")
+        msg(rjson)
+
+        f = TableJoinResultForm(rjson)
+        self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
+
+
+        # api/(?P<dt_id>\d+)/remove
+
+        #{u'tablejoin_id': 5, u'matched_record_count': 114, u'join_layer_typename': u'geonode:join_ma_tigerlines_zip_clq_boston_income', u'join_layer_id': u'91', u'unmatched_records_list': u'000501,000702,010101,010202,010401,050100,051100,060300,070100,070400,071200,080400,080800,000801,010102,010201,010402,020100,020300,050900,060100,060500,061100,071100,080600,081000,110200,120102,090900,091000,092100,100602,110100,110300,110402,110602,120101,120200,120300,130401,140103,140104', u'layer_typename': u'geonode:join_ma_tigerlines_zip_clq_boston_income', u'join_layer_url': u'/data/geonode:join_ma_tigerlines_zip_clq_boston_income', u'layer_join_attribute': u'TRACTCE', u'table_name': u'boston_income', u'tablejoin_view_name': u'join_ma_tigerlines_zip_clq_boston_income', u'unmatched_record_count': 42, u'table_join_attribute': u'tract'}
+
+
+    @skip("skipping")
     def test_it2(self):
         msgt('------------ TEST IT 2------------')
         msg('Still got it? existing_layer_name: %s' % self.existing_layer_name)
