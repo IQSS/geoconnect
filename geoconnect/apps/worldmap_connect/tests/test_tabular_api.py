@@ -366,7 +366,66 @@ class TestWorldMapTabularAPI(TestCase):
         #msg(r.text)
         #msg(r.status_code)
 
-    #@skip('skipping test_02_upload_join_boston_income')
+    def test_04_non_existent_tablejoin(self):
+
+        #-----------------------------------------------------------
+        msgn("(4) TableJoin - try to see details and delete with bad id")
+        #-----------------------------------------------------------
+        table_join_id = 8723552 # test will fail is this id exists
+
+        #-----------------------------------------------------------
+        msgn("(4a) Try to view with bad id")
+        #-----------------------------------------------------------
+        api_tj_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(table_join_id))
+        msg('api_tj_detail_url: %s' % api_tj_detail_url)
+
+        self.login_for_cookie()
+
+        try:
+            r = self.client.get(api_tj_detail_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.text)
+        msg('status_code: %s' % r.status_code)
+
+
+        if r.status_code==404:
+            msg('(success) TableJoin id not found')
+        else:
+            self.assertTrue(False\
+                   , "Should receive 404 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+        #-----------------------------------------------------------
+        msgn("(4b) Try to delete with bad id")
+        #-----------------------------------------------------------
+        api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(table_join_id))
+        msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
+
+        self.login_for_cookie()
+
+        try:
+            r = self.client.get(api_del_tablejoin_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.text)
+        msg('status_code: %s' % r.status_code)
+
+
+        if r.status_code==404:
+            msg('(success) TableJoin id not found')
+        else:
+            self.assertTrue(False\
+                   , "Should receive 404 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+    @skip('skipping test_02_upload_join_boston_income')
     def test_02_upload_join_boston_income(self):
 
         msgt('(2) Good Upload and Join - Delete TableJoin (test_02_upload_join_boston_income)')
