@@ -385,7 +385,10 @@ class TestWorldMapTabularAPI(TestCase):
             'table_attribute': 'tract', # data table - attribute
         }
 
+
+        #-----------------------------------------------------------
         msgn('(2a) Upload table and join layer')
+        #-----------------------------------------------------------
         self.login_for_cookie()
 
         files = {'uploaded_file': open(fname_to_upload,'rb')}
@@ -413,11 +416,15 @@ class TestWorldMapTabularAPI(TestCase):
         except:
             self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
 
-        #msg(rjson)
+        msg(rjson)
 
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
+        #-----------------------------------------------------------
+        # Pull out table_id and tablejoin_id
+        #   for detail and delete tests
+        #-----------------------------------------------------------
         table_id = f.cleaned_data.get('table_id', None)
         self.assertTrue(table_id is not None\
                 , "table_id should not be None. cleaned form data: %s" % f.cleaned_data)
@@ -451,8 +458,34 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
+
         #-----------------------------------------------------------
-        msgn('(2c) Delete DataTable')
+        msgn('(2c) TableJoin Detail')
+        #-----------------------------------------------------------
+        api_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(tablejoin_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('TableJoin detail: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+        #-----------------------------------------------------------
+        msgn('(2d) Delete DataTable')
         #-----------------------------------------------------------
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
         msg('api_del_url: %s' % api_del_url)
@@ -478,36 +511,35 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-        return
-        """
+
+
         #-----------------------------------------------------------
-        msgn('(2d) TableJoin Detail')
+        msgn('(2e) TableJoin Delete')
         #-----------------------------------------------------------
         
-        api_del_url = self.delete_datatable_url.replace('{{table.id}}', str(table_id))
-        msg('api_del_url: %s' % api_del_url)
+        api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
+        msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
         self.login_for_cookie()
 
         try:
-            r = self.client.get(api_del_url)
+            r = self.client.get(api_del_tablejoin_url)
         except requests.exceptions.ConnectionError as e:
             msgx('Connection error: %s' % e.message)
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
-        #msg(r.status_code)
-        #msg(r.text)
+        msg(r.text)
+        msg('status_code: %s' % r.status_code)
 
         self.assertTrue(r.status_code==200\
                         , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
         if r.status_code==200:
-            msg('DataTable deleted: %s' % r.text)
+            msg('TableJoin deleted: %s' % r.text)
         else:
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-        """
 
         # api/(?P<dt_id>\d+)/remove
 
