@@ -24,10 +24,25 @@ from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY
                 , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                 , GET_CLASSIFY_ATTRIBUTES_API_PATH
 
-from apps.worldmap_connect.tests.tabular_test_helper import TabularTest
 
 from geo_utils.msg_util import *
 
+
+# --------------------------------------------------
+# Load up the Worldmap server url and username
+# --------------------------------------------------
+GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_creds.json')
+assert isfile(GEONODE_CREDS_FNAME), 'Server credentials file not found: %s' % GEONODE_CREDS_FNAME
+try:
+    GEONODE_CREDS_JSON = json.loads(open(GEONODE_CREDS_FNAME, 'r').read())
+except:
+    raise Exception('Could not parse tabular credentials JSON file: %s' % 'server_creds.json')
+
+GEONODE_SERVER = GEONODE_CREDS_JSON['SERVER_URL']
+GEONODE_USERNAME = GEONODE_CREDS_JSON['USERNAME']
+GEONODE_PASSWORD = GEONODE_CREDS_JSON['PASSWORD']
+
+#INPUT_DIR = join('..', 'input')
 
 
 def setUpModule():
@@ -44,11 +59,9 @@ class TestWorldMapTabularAPI(TestCase):
     existing_layer_name = None
     existing_layer_data = None
     layer_attribute_info = None
-    #@classmethod
-    #def setUpClass(cls):
-    #    print "setUpClass"
-    #    b = "Setup Class variable"
-
+    
+    URL_ID_ATTR = 'URL_ID'
+    
     @classmethod
     def tearDownClass(cls):
         msg('+++ tearDownClass +++')
@@ -87,6 +100,51 @@ class TestWorldMapTabularAPI(TestCase):
 
     #def tearDown(self):
     #    msg('tearDown')    #cls.delete_ma_tigerlines_shapefile()
+    def setUp(self):
+        global GEONODE_SERVER, GEONODE_USERNAME, GEONODE_PASSWORD
+        self.client = requests.session()
+        self.base_url = GEONODE_SERVER
+
+        self.geonode_username = GEONODE_USERNAME
+        self.geonode_password = GEONODE_PASSWORD
+
+        #self.login_url =  self.base_url + "/account/login/" # GeoNode
+        self.login_url =  self.base_url + "/accounts/login/" # WorldMap
+        self.csv_upload_url  = self.base_url + '/datatables/api/upload'
+        #self.shp_layer_upload_url = self.base_url + '/layers/upload'
+        self.join_datatable_url = self.base_url + '/datatables/api/join'
+        self.upload_and_join_datatable_url = self.base_url + '/datatables/api/upload_and_join'
+        self.upload_lat_lng_url = self.base_url + '/datatables/api/upload_lat_lon'
+
+        self.datatable_detail = self.base_url + '/datatables/api/%s' % self.URL_ID_ATTR
+        self.delete_datatable_url = self.base_url + '/datatables/api/%s/remove' % self.URL_ID_ATTR
+
+        self.tablejoin_detail = self.base_url + '/datatables/api/join/%s' % self.URL_ID_ATTR
+        self.delete_tablejoin_url = self.base_url + '/datatables/api/join/%s/remove' % self.URL_ID_ATTR
+
+
+    def login_for_cookie(self):
+
+        msg('login_for_cookie: %s' % self.login_url)
+
+        # Retrieve the CSRF token first
+        self.client.get(self.login_url)  # sets the cookie
+        csrftoken = self.client.cookies['csrftoken']
+
+        login_data = dict(username=self.geonode_username\
+                        , password=self.geonode_password\
+                        , csrfmiddlewaretoken=csrftoken\
+                        )
+        #headers=dict(Referer=URL)
+        r = self.client.post(self.login_url\
+                            , data=login_data\
+                            , headers={"Referer": self.login_url}\
+                            #, headers={"Referer": "test-client"}\
+                            )
+
+        #print r.text
+        self.assertTrue(r.status_code==200\
+            , "Login for cookie failed.  Rcvd status code: %s\nText: %s" % (r.status_code, r.text))
 
 
     @classmethod
@@ -197,9 +255,121 @@ class TestWorldMapTabularAPI(TestCase):
                 return True
         return False
 
-    def test_01_upload_join_boston_income(self):
 
-        msgt('(1) test_01_upload_join_boston_income')
+    @skip('skipping test_01_datatable_fail_tests')
+    def test_01_datatable_fail_tests(self):
+
+        msgt('(1) test_01_datatable_fail_tests')
+
+        # --------------------------------
+        # Initial test params
+        # --------------------------------
+        layer_attribute_name = 'TRACTCE'
+        fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
+        assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
+
+        params = {
+            'title' : 'Boston Income',
+            'layer_typename' : self.existing_layer_name,  # Join Target
+            'layer_attribute': layer_attribute_name, # underlying layer - attribute
+            'table_attribute': 'tract', # data table - attribute
+        }
+
+        #-----------------------------------------------------------
+        msgn('(1a) Fail with no file')
+        #-----------------------------------------------------------
+        self.login_for_cookie()
+
+        try:
+            r = self.client.post(self.upload_and_join_datatable_url\
+                                        , data=params\
+            #                            , files=files\
+                                    )
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+
+        self.assertTrue(r.status_code==400, "Status code should be 400.  Found: %s" % r.status_code)
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
+
+        self.assertTrue(rjson.has_key('success')\
+                        , "JSON 'success' attribute not found in JSON result: %s" % rjson)
+
+        self.assertTrue(rjson.get('success', None) is False\
+                        , "JSON 'success' attribute should be 'false'. Found: %s" % rjson)
+
+        self.assertTrue(rjson.has_key('data')\
+                        , "JSON 'data' attribute not found in JSON result: %s" % rjson)
+
+        self.assertTrue(rjson.get('data', {}).has_key('uploaded_file')\
+                        , "JSON 'data' attribute have an 'uploaded_file' key. Found: %s" % rjson)
+
+        self.assertTrue(r.text.find('This field is required.') > -1\
+                        , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
+
+        #-----------------------------------------------------------
+        msgn('(1b) Fail with blank title')
+        #-----------------------------------------------------------
+
+
+        params2 = params.copy()
+        params2['title'] = ''
+
+        self.login_for_cookie()
+
+        files = {'uploaded_file': open(fname_to_upload,'rb')}
+        try:
+            r = self.client.post(self.upload_and_join_datatable_url\
+                                        , data=params\
+                                        , files=files\
+                                    )
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+
+        msg(r.text)
+        msg(r.status_code)
+
+        self.assertTrue(r.status_code==400, "Status code should be 400.  Found: %s" % r.status_code)
+        return
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
+
+        msg(r.text)
+        msg(r.status_code)
+        self.assertTrue(rjson.has_key('success')\
+                        , "JSON 'success' attribute not found in JSON result: %s" % rjson)
+
+        self.assertTrue(rjson.get('success', None) is False\
+                        , "JSON 'success' attribute should be 'false'. Found: %s" % rjson)
+
+        self.assertTrue(rjson.has_key('data')\
+                        , "JSON 'data' attribute not found in JSON result: %s" % rjson)
+
+        #self.assertTrue(rjson.get('data', {}).has_key('uploaded_file')\
+        #                , "JSON 'data' attribute have an 'uploaded_file' key. Found: %s" % rjson)
+
+        #self.assertTrue(r.text.find('This field is required.') > -1\
+        #                , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
+        #msg(r.text)
+        #msg(r.status_code)
+
+    #@skip('skipping test_02_upload_join_boston_income')
+    def test_02_upload_join_boston_income(self):
+
+        msgt('(2) Good Upload and Join (test_02_upload_join_boston_income)')
 
         fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
         assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
@@ -215,20 +385,27 @@ class TestWorldMapTabularAPI(TestCase):
             'table_attribute': 'tract', # data table - attribute
         }
 
-        tr = TabularTest()
-        tr.login_for_cookie()
+        msgn('(2a) Upload table and join layer')
+        self.login_for_cookie()
 
+        files = {'uploaded_file': open(fname_to_upload,'rb')}
         try:
-            r = tr.upload_datatable_and_join_to_layer(params, fname_to_upload)
+            r = self.client.post(self.upload_and_join_datatable_url\
+                                        , data=params\
+                                        , files=files\
+                                    )
         except requests.exceptions.ConnectionError as e:
             msgx('Connection error: %s' % e.message)
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
         msg(r.status_code)
-        msg(r.text)
+        #msg(r.text)
 
-        self.assertTrue(r.status_code==200\
+        if r.status_code == 200:
+            msg('DataTable uploaded and joined!')
+        else:
+            self.assertTrue(False\
                         , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
         try:
@@ -236,12 +413,101 @@ class TestWorldMapTabularAPI(TestCase):
         except:
             self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
 
-
-        msg(rjson)
+        #msg(rjson)
 
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
+        table_id = f.cleaned_data.get('table_id', None)
+        self.assertTrue(table_id is not None\
+                , "table_id should not be None. cleaned form data: %s" % f.cleaned_data)
+
+        tablejoin_id = f.cleaned_data.get('tablejoin_id', None)
+        self.assertTrue(tablejoin_id is not None\
+                , "tablejoin_id should not be None. cleaned form data: %s" % f.cleaned_data)
+
+
+        #-----------------------------------------------------------
+        msgn('(2b) DataTable Detail')
+        #-----------------------------------------------------------
+        api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('DataTable detail: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        #-----------------------------------------------------------
+        msgn('(2c) Delete DataTable')
+        #-----------------------------------------------------------
+        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
+        msg('api_del_url: %s' % api_del_url)
+
+        self.login_for_cookie()
+        r = None
+        try:
+            r = self.client.get(api_del_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        #msg(r.status_code)
+        #msg(r.text)
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('DataTable deleted: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        return
+        """
+        #-----------------------------------------------------------
+        msgn('(2d) TableJoin Detail')
+        #-----------------------------------------------------------
+        
+        api_del_url = self.delete_datatable_url.replace('{{table.id}}', str(table_id))
+        msg('api_del_url: %s' % api_del_url)
+
+        self.login_for_cookie()
+
+        try:
+            r = self.client.get(api_del_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        #msg(r.status_code)
+        #msg(r.text)
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('DataTable deleted: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+        """
 
         # api/(?P<dt_id>\d+)/remove
 

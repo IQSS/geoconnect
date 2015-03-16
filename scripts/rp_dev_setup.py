@@ -63,8 +63,8 @@ def run_terminals(cmd_list):
 
 if __name__=='__main__':
     #run_terminals(CMDS_TEST)
-    #run_terminals(CMDS_GEOCONNECT)
-    run_terminals(CMDS_WORLDMAP)
+    run_terminals(CMDS_GEOCONNECT)
+    #run_terminals(CMDS_WORLDMAP)
     #run_terminals(['run_tester_tabular', 'run_geonode'])
     #run_terminals(['edit_geoconnect', ])
 
