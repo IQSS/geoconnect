@@ -369,7 +369,7 @@ class TestWorldMapTabularAPI(TestCase):
     #@skip('skipping test_02_upload_join_boston_income')
     def test_02_upload_join_boston_income(self):
 
-        msgt('(2) Good Upload and Join (test_02_upload_join_boston_income)')
+        msgt('(2) Good Upload and Join - Delete TableJoin (test_02_upload_join_boston_income)')
 
         fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
         assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
@@ -483,40 +483,10 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-
         #-----------------------------------------------------------
-        msgn('(2d) Delete DataTable')
+        msgn('(2e) TableJoin Delete -- also deletes TableJoin')
         #-----------------------------------------------------------
-        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
-        msg('api_del_url: %s' % api_del_url)
 
-        self.login_for_cookie()
-        r = None
-        try:
-            r = self.client.get(api_del_url)
-        except requests.exceptions.ConnectionError as e:
-            msgx('Connection error: %s' % e.message)
-        except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
-
-        #msg(r.status_code)
-        #msg(r.text)
-
-        self.assertTrue(r.status_code==200\
-                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
-        if r.status_code==200:
-            msg('DataTable deleted: %s' % r.text)
-        else:
-            self.assertTrue(False\
-                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
-
-
-        #-----------------------------------------------------------
-        msgn('(2e) TableJoin Delete')
-        #-----------------------------------------------------------
-        
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
@@ -541,9 +511,154 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-        # api/(?P<dt_id>\d+)/remove
+      
 
-        #{u'tablejoin_id': 5, u'matched_record_count': 114, u'join_layer_typename': u'geonode:join_ma_tigerlines_zip_clq_boston_income', u'join_layer_id': u'91', u'unmatched_records_list': u'000501,000702,010101,010202,010401,050100,051100,060300,070100,070400,071200,080400,080800,000801,010102,010201,010402,020100,020300,050900,060100,060500,061100,071100,080600,081000,110200,120102,090900,091000,092100,100602,110100,110300,110402,110602,120101,120200,120300,130401,140103,140104', u'layer_typename': u'geonode:join_ma_tigerlines_zip_clq_boston_income', u'join_layer_url': u'/data/geonode:join_ma_tigerlines_zip_clq_boston_income', u'layer_join_attribute': u'TRACTCE', u'table_name': u'boston_income', u'tablejoin_view_name': u'join_ma_tigerlines_zip_clq_boston_income', u'unmatched_record_count': 42, u'table_join_attribute': u'tract'}
+
+
+    @skip('skipping test_03_upload_join_boston_income')
+    def test_03_upload_join_boston_income(self):
+
+        msgt('(3) Good Upload and Join - Delete DataTable (test_03_upload_join_boston_income)')
+
+        fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
+        assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
+
+        layer_attribute_name = 'TRACTCE'
+        self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name)\
+                    , "Attribute '%s' not found in layer '%s'" % (layer_attribute_name, self.existing_layer_name))
+
+        params = {
+            'title' : 'Boston Income',
+            'layer_typename' : self.existing_layer_name,  # Join Target
+            'layer_attribute': layer_attribute_name, # underlying layer - attribute
+            'table_attribute': 'tract', # data table - attribute
+        }
+
+
+        #-----------------------------------------------------------
+        msgn('(3a) Upload table and join layer')
+        #-----------------------------------------------------------
+        self.login_for_cookie()
+
+        files = {'uploaded_file': open(fname_to_upload,'rb')}
+        try:
+            r = self.client.post(self.upload_and_join_datatable_url\
+                                        , data=params\
+                                        , files=files\
+                                    )
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.status_code)
+        #msg(r.text)
+
+        if r.status_code == 200:
+            msg('DataTable uploaded and joined!')
+        else:
+            self.assertTrue(False\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+
+        msg(rjson)
+
+        f = TableJoinResultForm(rjson)
+        self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
+
+        #-----------------------------------------------------------
+        # Pull out table_id and tablejoin_id
+        #   for detail and delete tests
+        #-----------------------------------------------------------
+        table_id = f.cleaned_data.get('table_id', None)
+        self.assertTrue(table_id is not None\
+                , "table_id should not be None. cleaned form data: %s" % f.cleaned_data)
+
+        tablejoin_id = f.cleaned_data.get('tablejoin_id', None)
+        self.assertTrue(tablejoin_id is not None\
+                , "tablejoin_id should not be None. cleaned form data: %s" % f.cleaned_data)
+
+
+        #-----------------------------------------------------------
+        msgn('(3b) DataTable Detail')
+        #-----------------------------------------------------------
+        api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('DataTable detail: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+        #-----------------------------------------------------------
+        msgn('(3c) TableJoin Detail')
+        #-----------------------------------------------------------
+        api_detail_url = self.tablejoin_detail.replace(self.URL_ID_ATTR, str(tablejoin_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('TableJoin detail: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+        #-----------------------------------------------------------
+        msgn('(3d) Delete DataTable')
+        #-----------------------------------------------------------
+        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
+        msg('api_del_url: %s' % api_del_url)
+
+        self.login_for_cookie()
+        r = None
+        try:
+            r = self.client.get(api_del_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        #msg(r.status_code)
+        #msg(r.text)
+
+        self.assertTrue(r.status_code==200\
+                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+        if r.status_code==200:
+            msg('DataTable deleted: %s' % r.text)
+        else:
+            self.assertTrue(False\
+                   , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
     @skip("skipping")
