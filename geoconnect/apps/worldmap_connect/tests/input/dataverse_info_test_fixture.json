@@ -15,12 +15,12 @@
      "dataset_version_id": 362, 
 
     "dataverse_id": 1, 
-    "dataverse_name": "Root", 
-    "dataverse_installation_name": "http://test-shapefile-dataverse",
-    "dataverse_description": "The root dataverse.", 
+    "dataverse_name": "Root",
+    "dataverse_installation_name": "http://localhost:8000",
+    "dataverse_description": "The test dataverse.",
 
     "dv_user_id": 1, 
     "dv_user_email": "dvuser@harvard.edu", 
     "dv_username": "Pete Privileged", 
-    "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=1383&versionId362"
+    "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=1383&versionId=362"
 }

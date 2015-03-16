@@ -308,6 +308,10 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
         #   Test WorldMap shapefile import API
         #
         msg('api url: %s' % api_url)
+        #r = requests.post(api_url\
+        #                    , data=test_shapefile_info\
+        #                    , files=files)
+
         try:
             r = requests.post(api_url\
                             , data=test_shapefile_info\
@@ -321,7 +325,7 @@ class TestWorldMapShapefileImport(WorldMapBaseTest):
         msg(r.text)
 
         open('/Users/rmp553/Desktop/page_out.html', 'w').write(r.text)
-
+        #return
         #   Expect HTTP 200 - success
         #
         self.assertEqual(r.status_code, 200, "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))

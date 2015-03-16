@@ -29,7 +29,7 @@ def build_subprocess_cmd_list(cmd_name, cmd_str, close_window=False):
 
     close_line = ''
     if close_window:
-        close_line = '''delay 4
+        close_line = '''delay 5
 close front window without saving
 '''
 
@@ -57,7 +57,7 @@ def run_terminals(cmd_list):
         if cmd_name.startswith('run_') or cmd_name.startswith('shell_'):
             sublist = build_subprocess_cmd_list(cmd_name, CMD_DICT[cmd_name])
         else:
-            sublist = build_subprocess_cmd_list(cmd_name, CMD_DICT[cmd_name], close_window=True)
+            sublist = build_subprocess_cmd_list(cmd_name, CMD_DICT[cmd_name])#, close_window=True)
 
         subprocess.call(sublist)
 
@@ -66,6 +66,7 @@ if __name__=='__main__':
     #run_terminals(CMDS_GEOCONNECT)
     run_terminals(CMDS_WORLDMAP)
     #run_terminals(['run_tester_tabular', 'run_geonode'])
+    #run_terminals(['edit_geoconnect', ])
 
 """
 osascript -e 'tell app "Terminal"

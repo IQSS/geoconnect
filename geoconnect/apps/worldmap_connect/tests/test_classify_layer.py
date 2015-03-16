@@ -172,6 +172,8 @@ class TestWorldMapClassification(WorldMapBaseTest):
         except:
             self.assertTrue(False, "Failed to convert response text to JSON. Text:\n%s" % r.text)
 
+        print 'json_resp: %s' % json_resp
+
         self.assertTrue(json_resp.has_key('success'), 'JSON should have key "success".  But found keys: %s' % json_resp.keys())
         self.assertEqual(json_resp.get('success'), True, "'success' value should be 'True'")
 
