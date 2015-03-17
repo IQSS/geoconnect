@@ -19,7 +19,9 @@ from shared_dataverse_information.worldmap_api_helper.url_helper import ADD_SHAP
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 #from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
-from shared_dataverse_information.worldmap_datatables.forms import TableJoinResultForm
+from shared_dataverse_information.worldmap_datatables.forms import DataTableUploadForm,\
+        TableJoinResultForm,\
+        TableUploadAndJoinRequestForm
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH\
@@ -70,12 +72,12 @@ class TestWorldMapTabularAPI(TestCase):
     
     @classmethod
     def tearDownClass(cls):
-        msg('>> tearDownClass')
+        msg('\n>> tearDownClass')
         cls.delete_ma_tigerlines_shapefile()
 
     @classmethod
     def setUpClass(cls):
-        msg('>>> setUpClass')
+        msg('\n>>> setUpClass')
 
         # Verify/load MA tigerlines test info
         #
@@ -281,6 +283,26 @@ class TestWorldMapTabularAPI(TestCase):
         return False
 
 
+    def get_join_datatable_params(self, **kwargs):
+
+        params = dict(title='Boston Income',
+                      abstract='(abstract)',
+                      table_attribute='tract',
+
+                      layer_typename=self.existing_layer_name,
+                      layer_attribute='TRACTCE',
+
+                      delimiter=',',
+                      no_header_row=False,
+                      new_table_owner=None)
+
+        for key in TableUploadAndJoinRequestForm().fields.keys():
+            if kwargs.get(key, None) is not None:
+                params[key] = kwargs[key]
+
+        return params
+
+
     @skip('skipping test_01_datatable_fail_tests')
     def test_01_datatable_fail_tests(self):
 
@@ -289,14 +311,11 @@ class TestWorldMapTabularAPI(TestCase):
         # --------------------------------
         # Initial test params
         # --------------------------------
-        layer_attribute_name = 'TRACTCE'
         fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
         assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
 
-        params = dict(title='Boston Income',
-                      layer_typename=self.existing_layer_name,
-                      layer_attribute=layer_attribute_name,
-                      table_attribute='tract')
+        params = self.get_join_datatable_params()
+
 
         # -----------------------------------------------------------
         msgn('(1a) Fail with no file')
@@ -338,9 +357,8 @@ class TestWorldMapTabularAPI(TestCase):
         msgn('(1b) Fail with blank title')
         # -----------------------------------------------------------
 
+        params2 = self.get_join_datatable_params(title='')
 
-        params2 = params.copy()
-        params2['title'] = ''
 
         self.login_for_cookie()
 
@@ -457,12 +475,7 @@ class TestWorldMapTabularAPI(TestCase):
         self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name)\
                     , "Attribute '%s' not found in layer '%s'" % (layer_attribute_name, self.existing_layer_name))
 
-        params = {
-            'title' : 'Boston Income',
-            'layer_typename' : self.existing_layer_name,  # Join Target
-            'layer_attribute': layer_attribute_name, # underlying layer - attribute
-            'table_attribute': 'tract', # data table - attribute
-        }
+        params = self.get_join_datatable_params()
 
 
         # -----------------------------------------------------------
@@ -486,19 +499,21 @@ class TestWorldMapTabularAPI(TestCase):
         if r.status_code == 200:
             msg('DataTable uploaded and joined!')
         else:
-            self.assertTrue(False\
-                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+            self.assertTrue(False,
+                    "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
         try:
             rjson = r.json()
         except:
             self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
 
         msg(rjson)
 
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
+        #return
         # -----------------------------------------------------------
         # Pull out table_id and tablejoin_id
         #   for detail and delete tests
@@ -606,17 +621,17 @@ class TestWorldMapTabularAPI(TestCase):
         msg('status_code: %s' % r.status_code)
 
         self.assertTrue(r.status_code==401,
-            "Expected status code 401, not: %s\nError: %s" % (r.status_code, r.text))
+            "Expected status code 401, not: %s.  MAKE SURE YOU HAVE A 'pubuser' WITHOUT DELETE PERMISSIONS.\nError: %s" %
+            (r.status_code, r.text))
 
         try:
             rjson = r.json()
         except:
             self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
 
-        self.assertTrue(r.text.find('not permitted to delete this TableJoin object') > -1
-            , "Expected to find that user not permitted in response: %s" % r.text)
-
-
+        expected_msg = "not permitted to delete this TableJoin object"
+        self.assertTrue(r.text.find(expected_msg) > -1
+            , "Expected message not found: '%s'\nActual response: %s" % (expected_msg, r.text))
 
         # -----------------------------------------------------------
         msgn('(2g) TableJoin Delete -- also deletes TableJoin')
@@ -649,7 +664,10 @@ class TestWorldMapTabularAPI(TestCase):
 
     #@skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
+        """
+        Upload DataTable, Join it to a Layer, and Delete it
 
+        """
         msgt('(3) Good Upload and Join - Delete DataTable (test_03_upload_join_boston_income)')
 
         fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
@@ -657,13 +675,10 @@ class TestWorldMapTabularAPI(TestCase):
 
         layer_attribute_name = 'TRACTCE'
         self.assertTrue(self.is_attribute_in_ma_layer(layer_attribute_name),
-              "Attribute '%s' not found in layer '%s'"
-                % (layer_attribute_name, self.existing_layer_name))
+                        "Attribute '%s' not found in layer '%s'"
+                          % (layer_attribute_name, self.existing_layer_name))
 
-        params = dict(title = 'Boston Income',
-                    layer_typename = self.existing_layer_name,  # Join Target
-                    layer_attribute = layer_attribute_name, # underlying layer - attribute
-                    table_attribute = 'tract')  # data table - attribute
+        params = self.get_join_datatable_params()
 
 
         # -----------------------------------------------------------
@@ -759,8 +774,64 @@ class TestWorldMapTabularAPI(TestCase):
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
+       # -----------------------------------------------------------
+        msgn('(3d) Delete DataTable with Bad ID')
         # -----------------------------------------------------------
-        msgn('(3d) Delete DataTable')
+        bad_table_id = 4239458
+        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(bad_table_id))
+        msg('api_del_url: %s' % api_del_url)
+
+        self.login_for_cookie()
+        r = None
+        try:
+            r = self.client.get(api_del_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+
+        self.assertTrue(r.status_code == 404
+                        , "Should receive 404 message.  Received: %s\n%s" % (r.status_code, r.text))
+
+
+
+        # -----------------------------------------------------------
+        msgn('(3e) Delete DataTable with Bad Username')
+        # -----------------------------------------------------------
+        api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
+        msg('api_del_url: %s' % api_del_url)
+
+        #self.login_for_cookie(username='pubuser')
+        #self.login_for_cookie(**dict(custom_username='pubuser', refresh_session=True))
+        self.login_for_cookie(custom_username='pubuser', refresh_session=True)
+
+        try:
+            r = self.client.get(api_del_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        self.assertTrue(r.status_code==401,
+            "Expected status code 401, not: %s. MAKE SURE YOU HAVE A 'pubuser' WITHOUT DELETE PERMISSIONS.\nError: %s" % (r.status_code, r.text))
+
+        msg(r.text)
+        msg(r.status_code)
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
+
+        expected_msg = "You are not permitted to delete this DataTable object"
+        self.assertTrue(r.text.find(expected_msg) > -1
+            , "Expected message not found: '%s'\nActual response: %s" % (expected_msg, r.text))
+
+
+
+        # -----------------------------------------------------------
+        msgn('(3f) Delete DataTable')
         # -----------------------------------------------------------
         api_del_url = self.delete_datatable_url.replace(self.URL_ID_ATTR, str(table_id))
         msg('api_del_url: %s' % api_del_url)
