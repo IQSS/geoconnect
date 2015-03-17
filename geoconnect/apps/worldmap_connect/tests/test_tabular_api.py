@@ -5,6 +5,7 @@ python manage.py test apps.worldmap_connect.tests.test_tabular_api.TestWorldMapT
 """
 
 import json
+import sys
 from os.path import realpath, dirname, isfile, join, isdir
 import requests
 from unittest import skip
@@ -25,7 +26,7 @@ from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY
                 , GET_CLASSIFY_ATTRIBUTES_API_PATH
 
 
-from geo_utils.msg_util import *
+from geo_utils.msg_util import msg, msgt, msgn, msgx
 
 
 # --------------------------------------------------
@@ -64,15 +65,12 @@ class TestWorldMapTabularAPI(TestCase):
     
     @classmethod
     def tearDownClass(cls):
-        msg('+++ tearDownClass +++')
+        msg('>> tearDownClass')
         cls.delete_ma_tigerlines_shapefile()
 
     @classmethod
     def setUpClass(cls):
-        msg('+++ setUpClass +++')
-        #super(TestWorldMapTabularAPI, self).setUp()              #super().__init__(x,y)
-
-
+        msg('>>> setUpClass')
 
         # Verify/load MA tigerlines test info
         #
@@ -90,7 +88,8 @@ class TestWorldMapTabularAPI(TestCase):
         # Verify that test shapefile exists (good file)
         #
         cls.tab_shp_ma_tigerlines_fname = join(cls.TEST_FILE_DIR, 'tab_shp_ma_tigerlines.zip')
-        assert isfile(cls.tab_shp_ma_tigerlines_fname), "Test shapefile not found: %s" % self.tab_shp_ma_tigerlines_fname
+        assert isfile(cls.tab_shp_ma_tigerlines_fname),\
+             "Test shapefile not found: %s" % self.tab_shp_ma_tigerlines_fname
 
         cls.existing_layer_name = 'boohoo'
         cls.existing_layer_data = 'boohoo existing_layer_data'
@@ -98,10 +97,10 @@ class TestWorldMapTabularAPI(TestCase):
 
         cls.upload_ma_tigerlines_shapefile()
 
-    #def tearDown(self):
-    #    msg('tearDown')    #cls.delete_ma_tigerlines_shapefile()
+
     def setUp(self):
         global GEONODE_SERVER, GEONODE_USERNAME, GEONODE_PASSWORD
+
         self.client = requests.session()
         self.base_url = GEONODE_SERVER
 
@@ -123,26 +122,48 @@ class TestWorldMapTabularAPI(TestCase):
         self.delete_tablejoin_url = self.base_url + '/datatables/api/join/%s/remove' % self.URL_ID_ATTR
 
 
-    def login_for_cookie(self):
+    def refresh_session(self):
+        """
+        Start a new requests.session()
+        """
+        self.client = requests.session()
+
+
+    def login_for_cookie(self, **kwargs):
 
         msg('login_for_cookie: %s' % self.login_url)
 
+
+        # -----------------------------------------
+        # Set username
+        # -----------------------------------------
+        if kwargs.get('custom_username', None) is not None:
+            username = kwargs['custom_username']
+        else:
+            username = self.geonode_username
+
+        # -----------------------------------------
+        # Refresh session
+        # -----------------------------------------
+        if kwargs.get('refresh_session', None) is True:
+            self.refresh_session()
+
+        # -----------------------------------------
         # Retrieve the CSRF token first
+        # -----------------------------------------
         self.client.get(self.login_url)  # sets the cookie
         csrftoken = self.client.cookies['csrftoken']
 
-        login_data = dict(username=self.geonode_username\
-                        , password=self.geonode_password\
-                        , csrfmiddlewaretoken=csrftoken\
+
+        login_data = dict(username=username
+                        , password=self.geonode_password
+                        , csrfmiddlewaretoken=csrftoken
                         )
-        #headers=dict(Referer=URL)
-        r = self.client.post(self.login_url\
-                            , data=login_data\
-                            , headers={"Referer": self.login_url}\
-                            #, headers={"Referer": "test-client"}\
+        r = self.client.post(self.login_url
+                            , data=login_data
+                            , headers={"Referer": self.login_url}
                             )
 
-        #print r.text
         self.assertTrue(r.status_code==200\
             , "Login for cookie failed.  Rcvd status code: %s\nText: %s" % (r.status_code, r.text))
 
@@ -185,8 +206,8 @@ class TestWorldMapTabularAPI(TestCase):
                             , files=files)
         except requests.exceptions.ConnectionError as e:
             msgx('Connection error: %s' % e.message)
-        except:
-            msgx("Unexpected error: %s" % sys.exc_info()[0])
+        except Exception, e:
+            msgx("Unexpected error: %s" % e)
 
         msg(r.status_code)
         msg('%s (truncated) ...' % r.text[:50])
@@ -240,7 +261,7 @@ class TestWorldMapTabularAPI(TestCase):
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
         assert r.status_code == 200, "Expected status code 200 but received '%s'" % r.status_code
-        msgn('Layer deleted: %s\n%s' % (r.status_code, r.text))
+        msg('Layer deleted: %s\n%s' % (r.status_code, r.text))
 
 
     def is_attribute_in_ma_layer(self, attr_name):
@@ -299,24 +320,24 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
             return
 
-        self.assertTrue(rjson.has_key('success')\
-                        , "JSON 'success' attribute not found in JSON result: %s" % rjson)
+        self.assertTrue('success' in rjson
+            , "JSON 'success' attribute not found in JSON result: %s" % rjson)
 
-        self.assertTrue(rjson.get('success', None) is False\
-                        , "JSON 'success' attribute should be 'false'. Found: %s" % rjson)
+        self.assertTrue(rjson.get('success', None) is False
+            , "JSON 'success' attribute should be 'false'. Found: %s" % rjson)
 
-        self.assertTrue(rjson.has_key('data')\
-                        , "JSON 'data' attribute not found in JSON result: %s" % rjson)
+        self.assertTrue('data' in rjson
+            , "JSON 'data' attribute not found in JSON result: %s" % rjson)
 
-        self.assertTrue(rjson.get('data', {}).has_key('uploaded_file')\
-                        , "JSON 'data' attribute have an 'uploaded_file' key. Found: %s" % rjson)
+        self.assertTrue(rjson.get('data', {}).has_key('uploaded_file')
+            , "JSON 'data' attribute have an 'uploaded_file' key. Found: %s" % rjson)
 
-        self.assertTrue(r.text.find('This field is required.') > -1\
-                        , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
+        self.assertTrue(r.text.find('This field is required.') > -1
+            , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         msgn('(1b) Fail with blank title')
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
 
 
         params2 = params.copy()
@@ -366,6 +387,7 @@ class TestWorldMapTabularAPI(TestCase):
         #msg(r.text)
         #msg(r.status_code)
 
+    #@skip('test_04_non_existent_tablejoin')
     def test_04_non_existent_tablejoin(self):
 
         #-----------------------------------------------------------
@@ -425,7 +447,7 @@ class TestWorldMapTabularAPI(TestCase):
                    , "Should receive 404 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
-    @skip('skipping test_02_upload_join_boston_income')
+    #@skip('skipping test_02_upload_join_boston_income')
     def test_02_upload_join_boston_income(self):
 
         msgt('(2) Good Upload and Join - Delete TableJoin (test_02_upload_join_boston_income)')
@@ -462,7 +484,6 @@ class TestWorldMapTabularAPI(TestCase):
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
         msg(r.status_code)
-        #msg(r.text)
 
         if r.status_code == 200:
             msg('DataTable uploaded and joined!')
@@ -542,14 +563,71 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-        #-----------------------------------------------------------
-        msgn('(2e) TableJoin Delete -- also deletes TableJoin')
+
+       #-----------------------------------------------------------
+        msgn('(2d) TableJoin Delete (Fail: nonexistent username)')
         #-----------------------------------------------------------
 
         api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
         msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
 
-        self.login_for_cookie()
+        self.login_for_cookie(**dict(custom_username='user-456-doesnt-exist', refresh_session=True))
+
+        try:
+            r = self.client.get(api_del_tablejoin_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg('status_code: %s' % r.status_code)
+
+        self.assertTrue(r.status_code==200,\
+            "Expected status code 200, not: %s\nError: %s" % (r.status_code, r.text))
+
+        self.assertTrue(r.text.find('<form method="post" action="/accounts/login/">') > -1\
+                                , "Expected to be redirected to login page")
+
+
+        #-----------------------------------------------------------
+        msgn('(2e) TableJoin Delete (Fail: User w/o perms)')
+        #-----------------------------------------------------------
+
+        api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
+        msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
+
+        self.login_for_cookie(**dict(custom_username='pubuser', refresh_session=True))
+
+        try:
+            r = self.client.get(api_del_tablejoin_url)
+        except requests.exceptions.ConnectionError as e:
+            msgx('Connection error: %s' % e.message)
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg('status_code: %s' % r.status_code)
+
+        self.assertTrue(r.status_code==401,
+            "Expected status code 401, not: %s\nError: %s" % (r.status_code, r.text))
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False, "Failed to convert response to JSON: %s" % r.text)
+
+        self.assertTrue(r.text.find('not permitted to delete this TableJoin object') > -1
+            , "Expected to find that user not permitted in response: %s" % r.text)
+
+
+
+        #-----------------------------------------------------------
+        msgn('(2g) TableJoin Delete -- also deletes TableJoin')
+        #-----------------------------------------------------------
+
+        api_del_tablejoin_url = self.delete_tablejoin_url.replace(self.URL_ID_ATTR, str(tablejoin_id))
+        msg('api_del_tablejoin_url: %s' % api_del_tablejoin_url)
+
+        self.login_for_cookie(**dict(refresh_session=True))
 
         try:
             r = self.client.get(api_del_tablejoin_url)
@@ -561,9 +639,6 @@ class TestWorldMapTabularAPI(TestCase):
         msg(r.text)
         msg('status_code: %s' % r.status_code)
 
-        self.assertTrue(r.status_code==200\
-                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
         if r.status_code==200:
             msg('TableJoin deleted: %s' % r.text)
         else:
@@ -574,7 +649,7 @@ class TestWorldMapTabularAPI(TestCase):
 
 
 
-    @skip('skipping test_03_upload_join_boston_income')
+    #@skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
 
         msgt('(3) Good Upload and Join - Delete DataTable (test_03_upload_join_boston_income)')
@@ -657,9 +732,6 @@ class TestWorldMapTabularAPI(TestCase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
-        self.assertTrue(r.status_code==200\
-                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
         if r.status_code==200:
             msg('DataTable detail: %s' % r.text)
         else:
@@ -682,13 +754,10 @@ class TestWorldMapTabularAPI(TestCase):
         except:
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
-        self.assertTrue(r.status_code==200\
-                        , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
-
         if r.status_code==200:
             msg('TableJoin detail: %s' % r.text)
         else:
-            self.assertTrue(False\
+            self.assertTrue(False
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
@@ -710,7 +779,7 @@ class TestWorldMapTabularAPI(TestCase):
         #msg(r.status_code)
         #msg(r.text)
 
-        self.assertTrue(r.status_code==200\
+        self.assertTrue(r.status_code==200
                         , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
         if r.status_code==200:
