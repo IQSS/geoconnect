@@ -303,7 +303,7 @@ class TestWorldMapTabularAPI(TestCase):
         return params
 
 
-    @skip('skipping test_01a_fail_upload_join_with_no_file')
+    #@skip('skipping test_01a_fail_upload_join_with_no_file')
     def test_01a_fail_upload_join_with_no_file(self):
 
         msgt('(1) test_01_datatable_fail_tests')
@@ -358,7 +358,7 @@ class TestWorldMapTabularAPI(TestCase):
                 "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
 
-    @skip('skipping test_01b_fail_upload_join_with_blank_title')
+    #@skip('skipping test_01b_fail_upload_join_with_blank_title')
     def test_01b_fail_upload_join_with_blank_title(self):
         # -----------------------------------------------------------
         msgn('(1b) Fail with blank title')
@@ -411,7 +411,7 @@ class TestWorldMapTabularAPI(TestCase):
                         , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
 
-    @skip('test_04_non_existent_tablejoin')
+    #@skip('test_04_non_existent_tablejoin')
     def test_04_non_existent_tablejoin(self):
 
         # -----------------------------------------------------------
@@ -669,7 +669,7 @@ class TestWorldMapTabularAPI(TestCase):
 
 
 
-    @skip('skipping test_03_upload_join_boston_income')
+    #@skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
         """
         Upload DataTable, Join it to a Layer, and Delete it
@@ -865,7 +865,7 @@ class TestWorldMapTabularAPI(TestCase):
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
-    @skip("skipping")
+    #@skip("skipping")
     def test_it2(self):
         msgt('------------ TEST IT 2------------')
         msg('Still got it? existing_layer_name: %s' % self.existing_layer_name)
