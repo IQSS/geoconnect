@@ -303,8 +303,8 @@ class TestWorldMapTabularAPI(TestCase):
         return params
 
 
-    @skip('skipping test_01_datatable_fail_tests')
-    def test_01_datatable_fail_tests(self):
+    @skip('skipping test_01a_fail_upload_join_with_no_file')
+    def test_01a_fail_upload_join_with_no_file(self):
 
         msgt('(1) test_01_datatable_fail_tests')
 
@@ -329,6 +329,9 @@ class TestWorldMapTabularAPI(TestCase):
         except Exception as e:
             msgx("Unexpected error: %s" % str(e))
 
+        msgn(r.status_code)
+        msgn(r.text)
+
         self.assertTrue(r.status_code == 400,
                 "Status code should be 400.  Found: %s" % r.status_code)
 
@@ -337,6 +340,7 @@ class TestWorldMapTabularAPI(TestCase):
         except:
             self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
             return
+
 
         self.assertTrue('success' in rjson,
                 "JSON 'success' attribute not found in JSON result: %s" % rjson)
@@ -353,12 +357,16 @@ class TestWorldMapTabularAPI(TestCase):
         self.assertTrue(r.text.find('This field is required.') > -1,
                 "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
+
+    @skip('skipping test_01b_fail_upload_join_with_blank_title')
+    def test_01b_fail_upload_join_with_blank_title(self):
         # -----------------------------------------------------------
         msgn('(1b) Fail with blank title')
         # -----------------------------------------------------------
+        fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
+        assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
 
-        params2 = self.get_join_datatable_params(title='')
-
+        params = self.get_join_datatable_params(title='')
 
         self.login_for_cookie()
 
@@ -366,7 +374,7 @@ class TestWorldMapTabularAPI(TestCase):
         try:
             r = self.client.post(self.upload_and_join_datatable_url,
                                     data=params,
-                                    files=file)
+                                    files=files)
         except RequestsConnectionError as e:
             msgx('Connection error: %s' % e.message); return
         except:
@@ -378,7 +386,7 @@ class TestWorldMapTabularAPI(TestCase):
 
         self.assertTrue(r.status_code == 400, "Status code should be 400.  Found: %s" % r.status_code)
 
-        return
+
         try:
             rjson = r.json()
         except:
@@ -396,15 +404,14 @@ class TestWorldMapTabularAPI(TestCase):
         self.assertTrue(rjson.has_key('data'),
                 "JSON 'data' attribute not found in JSON result: %s" % rjson)
 
-        #self.assertTrue(rjson.get('data', {}).has_key('uploaded_file')\
-        #                , "JSON 'data' attribute have an 'uploaded_file' key. Found: %s" % rjson)
+        self.assertTrue(rjson.get('data', {}).has_key('title')\
+                        , "JSON 'data' attribute have an 'file' key. Found: %s" % rjson)
 
-        #self.assertTrue(r.text.find('This field is required.') > -1\
-        #                , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
-        #msg(r.text)
-        #msg(r.status_code)
+        self.assertTrue(r.text.find('This field is required.') > -1\
+                        , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
-    #@skip('test_04_non_existent_tablejoin')
+
+    @skip('test_04_non_existent_tablejoin')
     def test_04_non_existent_tablejoin(self):
 
         # -----------------------------------------------------------
@@ -662,7 +669,7 @@ class TestWorldMapTabularAPI(TestCase):
 
 
 
-    #@skip('skipping test_03_upload_join_boston_income')
+    @skip('skipping test_03_upload_join_boston_income')
     def test_03_upload_join_boston_income(self):
         """
         Upload DataTable, Join it to a Layer, and Delete it
