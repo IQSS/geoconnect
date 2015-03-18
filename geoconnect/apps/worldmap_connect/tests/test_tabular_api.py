@@ -20,9 +20,11 @@ from shared_dataverse_information.shapefile_import.forms import ShapefileImportD
 #from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
 from shared_dataverse_information.worldmap_datatables.forms import DataTableUploadForm,\
+        DataTableResponseForm,\
         TableJoinResultForm,\
         TableUploadAndJoinRequestForm
 from shared_dataverse_information.map_layer_metadata.forms import WorldMapToGeoconnectMapLayerMetadataValidationForm
+
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import CLASSIFY_LAYER_API_PATH\
                 , GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
@@ -69,7 +71,43 @@ class TestWorldMapTabularAPI(TestCase):
     layer_attribute_info = None
     
     URL_ID_ATTR = 'URL_ID'
-    
+
+
+    #@skip('(not a real test) test_grab_detail')
+    def test_grab_detail(self):
+        msgn('(not a real test) test_grab_detail')
+        """
+        Working on changing datatable detail response
+        """
+        table_id = 39
+        api_detail_url = self.datatable_detail.replace(self.URL_ID_ATTR, str(table_id))
+
+        self.login_for_cookie()
+
+        r = None
+        try:
+            r = self.client.get(api_detail_url)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+        msg(r.text)
+        msg(r.status_code)
+        self.assertTrue(r.status_code == 200,
+                "Expected status code of 200.  Received: %s\n%s" % (r.status_code, r.text))
+
+        rjson = r.json()
+
+        self.assertTrue('data' in rjson,
+                        "'data' key not found in rjson. Found: %s" % rjson)
+
+        f = DataTableResponseForm(rjson['data'])
+
+        self.assertTrue(f.is_valid(), "DataTableResponseForm validation failed: %s" % f.errors)
+
+
+
     @classmethod
     def tearDownClass(cls):
         msg('\n>> tearDownClass')
@@ -303,7 +341,7 @@ class TestWorldMapTabularAPI(TestCase):
         return params
 
 
-    #@skip('skipping test_01a_fail_upload_join_with_no_file')
+    @skip('skipping test_01a_fail_upload_join_with_no_file')
     def test_01a_fail_upload_join_with_no_file(self):
 
         msgt('(1) test_01_datatable_fail_tests')
@@ -358,7 +396,7 @@ class TestWorldMapTabularAPI(TestCase):
                 "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
 
-    #@skip('skipping test_01b_fail_upload_join_with_blank_title')
+    @skip('skipping test_01b_fail_upload_join_with_blank_title')
     def test_01b_fail_upload_join_with_blank_title(self):
         # -----------------------------------------------------------
         msgn('(1b) Fail with blank title')
@@ -410,8 +448,60 @@ class TestWorldMapTabularAPI(TestCase):
         self.assertTrue(r.text.find('This field is required.') > -1\
                         , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
 
+    @skip('skipping test_01c_fail_upload_join_with_blank_abstract')
+    def test_01c_fail_upload_join_with_blank_abstract(self):
+        # -----------------------------------------------------------
+        msgn('(1c) Fail with blank title')
+        # -----------------------------------------------------------
+        fname_to_upload = join(self.TEST_FILE_DIR, 'boston-income.csv')
+        assert isfile(fname_to_upload), "File not found: %s" % fname_to_upload
 
-    #@skip('test_04_non_existent_tablejoin')
+        params = self.get_join_datatable_params(abstract='')
+
+        self.login_for_cookie()
+
+        files = {'uploaded_file': open(fname_to_upload,'rb')}
+        try:
+            r = self.client.post(self.upload_and_join_datatable_url,
+                                    data=params,
+                                    files=files)
+        except RequestsConnectionError as e:
+            msgx('Connection error: %s' % e.message); return
+        except:
+            msgx("Unexpected error: %s" % sys.exc_info()[0])
+
+
+        msg(r.text)
+        msg(r.status_code)
+
+        self.assertTrue(r.status_code == 400, "Status code should be 400.  Found: %s" % r.status_code)
+
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
+
+        msg(r.text)
+        msg(r.status_code)
+        self.assertTrue('success' in rjson,
+                "JSON 'success' attribute not found in JSON result: %s" % rjson)
+
+        self.assertTrue(rjson.get('success', None) is False,
+                "JSON 'success' attribute should be 'false'. Found: %s" % rjson)
+
+        self.assertTrue(rjson.has_key('data'),
+                "JSON 'data' attribute not found in JSON result: %s" % rjson)
+
+        self.assertTrue(rjson.get('data', {}).has_key('abstract')\
+                        , "JSON 'data' attribute have an 'file' key. Found: %s" % rjson)
+
+        self.assertTrue(r.text.find('This field is required.') > -1\
+                        , "Response text should have error of 'This field is required.'  Found: %s" % rjson)
+
+
+    @skip('test_04_non_existent_tablejoin')
     def test_04_non_existent_tablejoin(self):
 
         # -----------------------------------------------------------
@@ -502,12 +592,13 @@ class TestWorldMapTabularAPI(TestCase):
             msgx("Unexpected error: %s" % sys.exc_info()[0])
 
         msg(r.status_code)
+        msg(r.text)
 
         if r.status_code == 200:
             msg('DataTable uploaded and joined!')
         else:
             self.assertTrue(False,
-                    "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+                "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
         try:
             rjson = r.json()
@@ -520,7 +611,7 @@ class TestWorldMapTabularAPI(TestCase):
         f = TableJoinResultForm(rjson)
         self.assertTrue(f.is_valid(), "Validation failed with TableJoinResultForm: %s" % f.errors)
 
-        #return
+
         # -----------------------------------------------------------
         # Pull out table_id and tablejoin_id
         #   for detail and delete tests
@@ -558,6 +649,18 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False,
                 "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
+
+        self.assertTrue('data' in rjson,
+                        "'data' key not found in rjson. Found: %s" % rjson)
+
+        f = DataTableResponseForm(rjson['data'])
+        self.assertTrue(f.is_valid(), "DataTableResponseForm validation failed: %s" % f.errors)
 
         # -----------------------------------------------------------
         msgn('(2c) TableJoin Detail')
@@ -665,7 +768,7 @@ class TestWorldMapTabularAPI(TestCase):
             self.assertTrue(False,
                     "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
-      
+
 
 
 
@@ -757,6 +860,19 @@ class TestWorldMapTabularAPI(TestCase):
         else:
             self.assertTrue(False\
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
+            return
+
+        try:
+            rjson = r.json()
+        except:
+            self.assertTrue(False,  "Failed to convert response text to JSON. Text:\n%s" % r.text)
+            return
+
+        self.assertTrue('data' in rjson,
+                        "'data' key not found in rjson. Found: %s" % rjson)
+
+        f = DataTableResponseForm(rjson['data'])
+        self.assertTrue(f.is_valid(), "DataTableResponseForm validation failed: %s" % f.errors)
 
 
         # -----------------------------------------------------------
@@ -865,7 +981,7 @@ class TestWorldMapTabularAPI(TestCase):
                    , "Should receive 200 message.  Received: %s\n%s" % (r.status_code, r.text))
 
 
-    #@skip("skipping")
+    @skip("skipping")
     def test_it2(self):
         msgt('------------ TEST IT 2------------')
         msg('Still got it? existing_layer_name: %s' % self.existing_layer_name)
