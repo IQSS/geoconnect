@@ -67,11 +67,11 @@ def run_terminals(cmd_list):
         subprocess.call(sublist)
 
 if __name__=='__main__':
-    #run_terminals(CMS_GEO_TEST_WORLDMAP)
+    run_terminals(CMS_GEO_TEST_WORLDMAP)
     #run_terminals(CMDS_GEOCONNECT)
     #run_terminals(CMDS_WORLDMAP)
     #run_terminals(['run_tester_tabular', 'run_geonode'])
-    run_terminals(['edit_geoconnect', ])
+    #run_terminals(['edit_geoconnect', ])
 
 """
 osascript -e 'tell app "Terminal"

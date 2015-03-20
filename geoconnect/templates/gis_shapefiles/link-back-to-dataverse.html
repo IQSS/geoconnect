@@ -1,6 +1,7 @@
 <!-- start: back to dataverse button -->
 {% if worldmap_layerinfo %}
-    <a data-toggle="modal" data-target="#save_map_confirm" class="btn btn-xs btn-success">Return to the Dataverse</a>
+    <form id="frm_update_dv">{% csrf_token %}</form>
+    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">Return to the Dataverse</a>
 
 {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>

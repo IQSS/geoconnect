@@ -38,6 +38,13 @@ urlpatterns += patterns('apps.gis_shapefiles.views_delete',
 
     url(r'^delete-map/$', 'view_delete_map', name="view_delete_map"),
 )
+
+urlpatterns += patterns('apps.dv_notify.views',
+
+   url(r'^notify-dv-of-map/(?P<worldmapinfo_md5>\w{1,32})/$', 'view_ajax_notify_dv_of_map', name="view_ajax_notify_dv_of_map"),
+)
+
+
 #urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
 #    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
 #)

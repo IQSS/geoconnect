@@ -46,6 +46,44 @@
        //$('#id_frm_style_submit').removeClass('disabled').html('Style Map');
        $( "#id_confirmation" ).change( "change", toggle_delete_button );
    }
+
+    function get_update_sv_url(){
+        {% if worldmap_layerinfo %}
+           return "{% url 'view_ajax_notify_dv_of_map' worldmap_layerinfo.md5 %}";
+        {% else %}
+            return "";
+        {% endif %}
+    }
+
+    /**
+     *  Update WM info in DV
+     */
+    function update_map_info_on_dv(){
+
+        update_dv_url = get_update_sv_url();
+        //console.log('update_dv_url: ' + update_dv_url);
+        if (update_dv_url==""){
+            return;
+        }
+       // if (up)
+        var jqxhr = $.post(update_dv_url, $('#frm_update_dv').serialize(), function(json_resp) {
+            // don't need a response for user
+            //   console.log(json_resp);
+        })
+    }
+
+    /**
+     *  Bind "Return to Dataverse" button to "update_map_info_on_dv"
+     */
+    function bind_return_btn_to_dv_update(){
+        // id="btn-return-to-dv"
+        if ($('#id_btn_return_to_dv').length < 1) {
+          return;
+       }
+       $( "#id_btn_return_to_dv" ).on( "click", update_map_info_on_dv );
+
+    }
+
    
 
    //-------------------------------
@@ -162,5 +200,6 @@
         
         check_attribute();   
         bind_delete_confirmation();
+        bind_return_btn_to_dv_update();
    });
  </script>

@@ -32,7 +32,7 @@ def show_import_success_params(request, import_success_id):
     return HttpResponse('%s' % worldmap_layer_info.get_data_dict(json_format=True))
 
 
-#@login_required
+@login_required
 def send_metadata_to_dataverse(request, import_success_id):
     """
     Retrieve WorldMapLayerInfo and send it to the Dataverse
