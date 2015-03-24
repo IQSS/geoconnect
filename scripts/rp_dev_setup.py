@@ -1,15 +1,25 @@
+import sys
 import subprocess
+from collections import OrderedDict
 """
 Start up Terminals for dev environment
 """
 
-CMD_DICT =dict(\
-    run_geoserver="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;paver start_geoserver"\
+CMD_DICT =dict(
+    run_geoserver="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;paver start_geoserver"
 
-    , run_geonode="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;django-admin.py runserver  --settings=geonode.settings"\
+    , run_geonode="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap;workon cga-worldmap;django-admin.py runserver  --settings=geonode.settings"
     
     , run_geoconnect="cd /Users/rmp553/Documents/iqss-git/geoconnect/geoconnect;workon geoconnect;python manage.py runserver 8070"
 
+    # Dataverse
+    , run_dataverse_solr="cd Documents/solr-4.6.0/example/;java -jar start.jar"
+    , shell_dataverse="cd NetBeansProjects/dataverse"
+    , open_netbeans='open "/Applications/NetBeans/NetBeans 8.0.1.app"'
+    , open_pgadmin3='open /Applications/pgAdmin3.app'
+    , shell_query_counter='cd Documents/iqss-git/glassfish-query-counter/scripts/;python count_queries.py'
+    
+    # WorldMap
     , shell_worldmap="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy/geonode;workon cga-worldmap;python manage.py shell --settings=geonode.settings"
 
     , run_tester_tabular="cd Documents/iqss-git/geoconnect-tester/tabular-api/code/;workon geo-tester;"
@@ -18,13 +28,18 @@ CMD_DICT =dict(\
     , edit_worldmap='charm /Users/rmp553/Documents/github-worldmap/cga-worldmap/'
     , edit_geoconnect='charm /Users/rmp553/Documents/iqss-git/geoconnect'
     , edit_shared_dv='charm /Users/rmp553/Documents/iqss-git/shared-dataverse-information'
-              )
+ )
 
-CMDS_ALL = CMD_DICT.keys()
-CMDS_TEST = ('edit_shared_dv',)
-CMDS_GEOCONNECT = ('run_geoconnect', 'edit_geoconnect', 'edit_shared_dv' )
-CMDS_WORLDMAP = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'edit_worldmap', 'edit_shared_dv' )
-CMS_GEO_TEST_WORLDMAP = CMDS_WORLDMAP + ('run_geoconnect', 'edit_geoconnect')
+def get_command_lookup():
+    
+    cmds = OrderedDict()
+    cmds['GeoConnect (Run/Edit)'] = ('run_geoconnect', 'edit_geoconnect', 'edit_shared_dv' )
+    cmds['WorldMap (Run/Edit)'] = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'edit_worldmap', 'edit_shared_dv' )
+    cmds['Dataverse (Run/Edit)'] = ( 'run_dataverse_solr', 'open_pgadmin3', 'shell_dataverse', 'open_netbeans', 'shell_query_counter')
+    cmds['GEO Test WorldMap'] = cmds['WorldMap (Run/Edit)'] + ('run_geoconnect', 'edit_geoconnect')
+    #cmds['Dataverse (Run/Edit)'] = ('open_netbeans',)
+    
+    return cmds
 
 def format_title(t):
     assert t is not None, 't cannot be None'
@@ -67,7 +82,39 @@ def run_terminals(cmd_list):
         subprocess.call(sublist)
 
 if __name__=='__main__':
-    run_terminals(CMS_GEO_TEST_WORLDMAP)
+    args = sys.argv
+    if not len(args)==2:
+        option_list = []
+        for cnt, key in enumerate(get_command_lookup().keys(), 1):
+            option_list.append('%d - %s' % (cnt, key))
+        
+        print """
+------------------------------
+Open Development Windows
+------------------------------
+
+Please choose an option: 
+
+%s
+
+------------------------------
+""" % ('\n'.join(option_list))
+    else:
+        chosen_opt = args[1]
+        assert chosen_opt.isdigit(), 'Please enter a number from the choice list.  "%s" is not a valid choice.' % (chosen_opt)
+        chosen_opt = int(chosen_opt)
+        
+        option_lookup = {}
+        for cnt, key in enumerate(get_command_lookup().keys(), 1):
+            option_lookup[cnt] = key
+        assert chosen_opt in option_lookup.keys(), 'Please enter a number from the choice list.  "%s" is not a valid choice.' % (chosen_opt)
+        
+        cmd_list = get_command_lookup().get(option_lookup[chosen_opt], None)
+        assert cmd_list is not None, "cmd_list is None! For option '%s'" % option_lookup[chosen_opt]
+        
+        run_terminals(cmd_list)
+            
+    #run_terminals(CMS_GEO_TEST_WORLDMAP)
     #run_terminals(CMDS_GEOCONNECT)
     #run_terminals(CMDS_WORLDMAP)
     #run_terminals(['run_tester_tabular', 'run_geonode'])
