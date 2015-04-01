@@ -8,7 +8,7 @@
       </div>
     <div class="modal-body pagination-centered">
             <p class="alert alert-danger" xrole="alert">
-               This will permanently DELETE the map
+               This will permanently delete all versions of this map.
                <br />(However, you can make another map in the future.)
             </p>
         <form action="{% url 'view_delete_map' %}" method="POST">
@@ -17,7 +17,7 @@
                 {% for f in delete_form %}
                     {{ f }}
                     {% if not f.is_hidden %}
-                          {{ f.label }}
+                         I understand all versions of this map<br />will be deleted from WorldMap.
                           {% if f.errors %}
                             <p span="text-danger">{{ f.errors }}</p>
                         {% endif %}

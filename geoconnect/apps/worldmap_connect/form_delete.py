@@ -7,7 +7,7 @@ class DeleteMapForm(forms.Form):
     
     gis_data_file_md5 = forms.CharField(widget=forms.HiddenInput())
     worldmap_layer_info_md5 = forms.CharField(widget=forms.HiddenInput())
-    confirmation = forms.BooleanField(label="I understand the consequences", initial=False)
+    confirmation = forms.BooleanField(label="I understand all versions of this map will be deleted from WorldMap.", initial=False)
 
     def clean_gis_data_file_md5(self):
         md5 = self.cleaned_data.get('gis_data_file_md5')
