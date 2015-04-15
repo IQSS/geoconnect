@@ -17,10 +17,10 @@ TEST_SETUP_DIR = normpath(join(dirname(dirname(DJANGO_ROOT)), 'test_setup'))
 # Used for dataverse/worldmap communication.  Validate data passed via api, etc
 #
 #
-#DATAVERSE_INFO_REPOSITORY_PATH = '/Users/rmp553/Documents/iqss-git/shared-dataverse-information/'
-#if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
-#    raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
-#sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
+DATAVERSE_INFO_REPOSITORY_PATH = '/Users/rmp553/Documents/iqss-git/shared-dataverse-information/'
+if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
+    raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
+sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
 
 ####################### END: DATAVERSE_INFO_REPOSITORY_PATH
 
@@ -140,7 +140,7 @@ DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' #DA
 
 ########## LOGGING
 GEOLOG_DIRNAME = join(TEST_SETUP_DIR, 'logs')
-if not isfile(GEOLOG_DIRNAME):
+if not isdir(GEOLOG_DIRNAME):
     makedirs(GEOLOG_DIRNAME)
 LOGGING = {
     'version': 1,
@@ -166,12 +166,12 @@ LOGGING = {
             },
         },
     'loggers': {
-        '': {
-               'handlers': ['console'],
+        'apps': {
+               'handlers': ['console', 'file'],
                'level': 'ERROR',
                'propagate': True
            },
-        '': {
+        'apps': {
                'handlers': ['console'],
                'level': 'DEBUG',
                'propagate': True
@@ -192,4 +192,4 @@ LOGGING = {
 # make all loggers use the console.
 #for logger in LOGGING['loggers']:
 #   LOGGING['loggers'][logger]['handlers'] = ['console']
-LOGGING['loggers']['']['handlers'] = ['console']
+#LOGGING['loggers']['']['handlers'] = ['console']

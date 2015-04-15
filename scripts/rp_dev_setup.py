@@ -19,6 +19,12 @@ CMD_DICT =dict(
     , open_pgadmin3='open /Applications/pgAdmin3.app'
     , shell_query_counter='cd Documents/iqss-git/glassfish-query-counter/scripts/;python count_queries.py'
     
+    # Miniverse
+    , shell_miniverse="cd /Users/rmp553/Documents/iqss-git/miniverse/miniverse;workon miniverse"
+    , run_miniverse="cd /Users/rmp553/Documents/iqss-git/miniverse/miniverse;workon miniverse;python manage.py runserver"
+    , edit_miniverse="charm /Users/rmp553/Documents/iqss-git/miniverse"
+    
+    
     # WorldMap
     , shell_worldmap="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy/geonode;workon cga-worldmap;python manage.py shell --settings=geonode.settings"
 
@@ -37,6 +43,7 @@ def get_command_lookup():
     cmds['WorldMap (Run/Edit)'] = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'edit_worldmap', 'edit_shared_dv' )
     cmds['Dataverse (Run/Edit)'] = ( 'run_dataverse_solr', 'open_pgadmin3', 'shell_dataverse', 'open_netbeans', 'shell_query_counter')
     cmds['GEO Test WorldMap'] = cmds['WorldMap (Run/Edit)'] + ('run_geoconnect', 'edit_geoconnect')
+    cmds['Miniverse (Run/Edit)'] = ( 'shell_miniverse', 'run_miniverse', 'edit_miniverse')
     #cmds['Dataverse (Run/Edit)'] = ('open_netbeans',)
     
     return cmds
