@@ -1,10 +1,9 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
 
-{% block title %}{{ title }} | {% trans 'BARI GeoConnect  site admin' %}{% endblock %}
+{% block title %}{{ title }} | {{ site_title|default:_('Dataverse db site admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name">{% trans 'BARI GeoConnect administration' %}</h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Dataverse db administration') }}</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
