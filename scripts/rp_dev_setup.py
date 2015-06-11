@@ -24,6 +24,10 @@ CMD_DICT =dict(
     , run_miniverse="cd /Users/rmp553/Documents/iqss-git/miniverse/miniverse;workon miniverse;python manage.py runserver"
     , edit_miniverse="charm /Users/rmp553/Documents/iqss-git/miniverse"
     
+    # Dataverse - Locust
+    , run_locust_master='cd /Users/rmp553/Documents/iqss-git/dataverse-helper-scripts/src/stress_tests; workon stress-test; locust -f basic_test_01.py --master'
+    , run_locust_slave='cd /Users/rmp553/Documents/iqss-git/dataverse-helper-scripts/src/stress_tests; workon stress-test; locust -f basic_test_01.py --slave'  
+    , run_locust_single='cd /Users/rmp553/Documents/iqss-git/dataverse-helper-scripts/src/stress_tests; workon stress-test; locust -f basic_test_01.py'  
     
     # WorldMap
     , shell_worldmap="cd /Users/rmp553/Documents/github-worldmap/cga-worldmap/src/GeoNodePy/geonode;workon cga-worldmap;python manage.py shell --settings=geonode.settings"
@@ -42,10 +46,12 @@ def get_command_lookup():
     cmds['GeoConnect (Run/Edit)'] = ('run_geoconnect', 'edit_geoconnect', 'edit_shared_dv' )
     cmds['WorldMap (Run/Edit)'] = ('run_geoserver', 'run_geonode', 'shell_worldmap', 'edit_worldmap', 'edit_shared_dv' )
     cmds['Dataverse (Run/Edit)'] = ( 'run_dataverse_solr', 'open_pgadmin3', 'shell_dataverse', 'open_netbeans', 'shell_query_counter')
+    cmds['Dataverse (Run)'] = ( 'run_dataverse_solr', 'shell_dataverse', 'open_netbeans',)
     cmds['GEO Test WorldMap'] = cmds['WorldMap (Run/Edit)'] + ('run_geoconnect', 'edit_geoconnect')
     cmds['Miniverse (Run/Edit)'] = ( 'shell_miniverse', 'run_miniverse', 'edit_miniverse')
     #cmds['Dataverse (Run/Edit)'] = ('open_netbeans',)
-    
+    cmds['Locust Dataverse - Master + 3 Helpers'] = ('run_locust_master', 'run_locust_slave', 'run_locust_slave', 'run_locust_slave')
+    cmds['Locust Dataverse (one instance)'] = ('run_locust_single', )
     return cmds
 
 def format_title(t):
