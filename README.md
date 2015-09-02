@@ -1,3 +1,5 @@
+## _Note: These instructions need updating and should not be used if setting up a Dataverse installation_
+
 ## geoconnect
 
 GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
