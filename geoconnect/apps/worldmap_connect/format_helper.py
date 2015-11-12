@@ -29,31 +29,36 @@ def get_params_for_worldmap_connect(wm_import_attempt):
 
     assert isinstance(wm_import_attempt, WorldMapImportAttempt), "wm_import_attempt must be a WorldMapImportAttempt object"
     assert wm_import_attempt.gis_data_file is not None, "wm_import_attempt.gis_data_file cannot be None"
+    #print ('params 1')
 
     # Prepare initial data
     #
     #   - Give all parameters from WorldMapImportAttempt object to the ShapefileImportDataForm
     #   - ShapefileImportDataForm will validate and give back the needed values
     #
+    #print ('params 2')
     f = ShapefileImportDataForm(wm_import_attempt.__dict__)
     if not f.is_valid():
         form_errs_as_text = format_errors_as_text(f)
         raise ValueError('WorldMapImportAttempt does not have correct params for ShapefileImportDataForm: \n%s' % form_errs_as_text)
-    
+
     # Add basic data cleaned by ShapefileImportDataForm
     #
     #   Note: The parameters from this call include a signature key
     #
-    params_dict = f.get_api_params_with_signature()
-    
+    #params_dict = f.get_api_params_with_signature()
+    params_dict = f.cleaned_data
+
+    #print ('params 3')
     # Add dataverse info to the params_dict
     #
     dataverse_info_dict = get_dataverse_info_dict(wm_import_attempt.gis_data_file)
     if dataverse_info_dict is None:
         raise ValueError('Failed to format DataverseInfo params using wm_import_attempt.gis_data_file')
-        
+
     params_dict.update(dataverse_info_dict)
 
+    #print ('return params: %s' % params_dict)
     # Return the parameters
     #
     return params_dict
@@ -74,9 +79,7 @@ if not f.is_valid():
     errs = format_errors_as_text(f)
 
 
-    
+
 print (errs)
 
 """
-
-

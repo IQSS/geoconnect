@@ -103,20 +103,28 @@ def view_shapefile(request, shp_md5, **kwargs):
     logger.debug('-' * 40)
     logger.debug('view_shapefile')
 
-    first_time_notify = kwargs.get('first_time_notify', False)
-    logger.debug('first_time_notify: %s' % first_time_notify)
 
+    # Flag - Was a visualization attempt made?
+    #
     just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
     logger.debug('just_made_visualize_attempt: %s' % just_made_visualize_attempt)
 
+    # Gather common parameters for the template
+    #
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE 
     
+    # Flag for template - Is this the first time the file is being visualized?
+    #
+    first_time_notify = kwargs.get('first_time_notify', False)
+    logger.debug('first_time_notify: %s' % first_time_notify)
     if first_time_notify:
         d['first_time_notify'] = True
-    
+
+    # Attempt to retrieve the shapefile information
+    #
     try:
         shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
         d['shapefile_info'] = shapefile_info
@@ -129,7 +137,9 @@ def view_shapefile(request, shp_md5, **kwargs):
     
 
     """
-    Early pass: Move this logic out of view
+    Early pass: Validate that this .zip is a shapefile--a single shapefile
+        - Should we move this out?  Check being done at Dataverse
+        - Also, no need to move the file if viz already exists
     """
     if not shapefile_info.zipfile_checked:
         logger.debug('zipfile_checked NOT checked')
