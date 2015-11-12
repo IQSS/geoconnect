@@ -6,14 +6,12 @@ import requests
 
 from django.conf import settings
 
-
 from apps.gis_basic_file.models import GISDataFile
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
-from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
-from shared_dataverse_information.dataverse_info.forms_existing_layer import DataverseInfoValidationFormWithKey
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 from shared_dataverse_information.worldmap_api_helper.url_helper import GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                                                         , DELETE_LAYER_API_PATH
 
@@ -40,9 +38,9 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     """
     assert isinstance(gis_data_file, GISDataFile), "gis_data_file must be a GISDataFile object"
     assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
-    
+
     #--------------------------------------
-    # Does the GISDataFile object correspond 
+    # Does the GISDataFile object correspond
     #    to the WorldMapLayerInfo object?
     #--------------------------------------
     if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
@@ -57,20 +55,22 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     #--------------------------------------
 
     data_params = get_dataverse_info_dict(gis_data_file)
-    api_prep_form = DataverseInfoValidationFormWithKey(data_params)
-    if not api_prep_form.is_valid():
-        err_msg = """Error.  Validation failed. (DataverseInfoValidationFormWithKey)"""
+    existing_layer_form = CheckForExistingLayerForm(data_params)
+    if not existing_layer_form.is_valid():
+        err_msg = """Error.  Validation failed. (CheckForExistingLayerForm)"""
         logger.error(err_msg)
         return (False, err_msg)
 
-    data_params = api_prep_form.get_api_params_with_signature()
+    #
+    data_params = existing_layer_form.cleaned_data
 
     #data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
     print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
     print ("data_params: %s" % data_params)
     try:
-         r = requests.post(DELETE_LAYER_API_PATH\
+        r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\
+                        , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=30)
     except requests.exceptions.ConnectionError as e:
 
@@ -88,19 +88,18 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     # Check Response
     #--------------------------------------
     if r.status_code == 200:
-        
-        response_dict = r.json()
+        #response_dict = r.json()
         return (True, None)
-    
+
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
     err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
     logger.error(err_msg)
-    
+
     return (False, err_msg)
-    
-    
+
+
 
 
 """
@@ -113,7 +112,7 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     """
     assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
     assert isinstance(datafile_id, int), "dv_file_id must be an integer"
-    
+
     params = dict(dataverse_installation_name=dataverse_installation_name, datafile_id=datafile_id)
     f = CheckForExistingLayerForm(params)
     if not f.is_valid():
@@ -121,13 +120,13 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
         logger.error(err_msg + "  Validation failure for CheckForExistingLayerForm.  Errors: %s" % f.errors)
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
 
-    
+
     logger.debug('get_dataverse_layer_info_by_user_and_file')
-        
+
     #--------------------------------------
     # Prepare the data
     #--------------------------------------
-    data_params = f.get_api_params_with_signature()
+    data_params = f.cleaned_data    #get_api_params_with_signature()
     #print ('data_params: %s' % data_params)
 
     #--------------------------------------
@@ -136,6 +135,7 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     try:
         r = requests.post(GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                         , data=data_params\
+                        , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=30)
     except requests.exceptions.ConnectionError as e:
 
@@ -172,8 +172,8 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
     return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
 
-            
-        
+
+
 """
 python manage.py shell
 
@@ -192,7 +192,7 @@ python manage.py shell
 
 from apps.worldmap_connect.dataverse_layer_services import *
 
+get_layer_info_by_dv_installation_and_file('https://RAD-rprasad', 4)
 get_layer_info_by_dv_installation_and_file('Harvard Dataverse', 9)
 
 """
-    
