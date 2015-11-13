@@ -34,10 +34,10 @@ def view_test_1(request, tabular_id):
 
     #num_preview_rows =
 
-    d = dict(tabular_id=tabular_id\
-            , tab_file_stats=tab_file_stats\
-            , NUM_PREVIEW_ROWS=min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0 ])
-            )
+    d = dict(tabular_id=tabular_id,\
+            tabular_info=tabular_info,\
+            tab_file_stats=tab_file_stats,\
+            NUM_PREVIEW_ROWS=min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0 ]))
 
     return render_to_response('gis_tabular/view_test_1.html', d\
                                      , context_instance=RequestContext(request))
