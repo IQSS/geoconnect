@@ -1,3 +1,12 @@
+"""
+Calls to the WorldMap API to:
+    - Delete a dataverse created map layer
+        - params: DV installation name, DV file id
+    - Get layer information
+        - params: DV installation name, DV file id
+    - Retrieve available join targets
+
+"""
 from __future__ import print_function
 
 import sys
@@ -49,7 +58,8 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     #--------------------------------------
     if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
         if not gis_data_file == worldmap_layer_info.import_attempt.gis_data_file:
-            err_msg = """Error the GISDataFile does not correspond to the WorldMapLayerInfo object."""
+            err_msg = """Error the GISDataFile does not \
+            correspond to the WorldMapLayerInfo object."""
             LOGGER.error(err_msg)
             return (False, err_msg)
 
@@ -121,7 +131,8 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     f = CheckForExistingLayerForm(params)
     if not f.is_valid():
         err_msg = """Sorry! Failed to validate the request to retrieve WorldMap layer metadata."""
-        LOGGER.error(err_msg + "  Validation failure for CheckForExistingLayerForm.  Errors: %s" % f.errors)
+        LOGGER.error(err_msg + \
+        "  Validation failure for CheckForExistingLayerForm.  Errors: %s" % f.errors)
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
 
 
@@ -146,7 +157,7 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.
                     <p><b>Details for administrator:</b> Could not contact the
                     WorldMap server: %s</p><p>%s</p>"""\
-                                % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH, e.message)
+                    % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH, e.message)
         LOGGER.error(err_msg)
         return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
 
@@ -163,14 +174,14 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     if r.status_code == 200:
         try:
             response_dict = r.json()
-        except:
+        except ValueError:
             err_msg = "Failed to convert response to JSON."
             LOGGER.error(err_msg + "Status code: 200.\nResponse text: %s" % r.text)
             return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
 
         return MessageHelperJSON.get_dict_msg(success=True,\
                     msg=err_msg,\
-                    data=response_dict)
+                    data_dict=response_dict)
         #return response_dict
 
     #--------------------------------------
@@ -178,6 +189,23 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
     #--------------------------------------
     err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
     return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+
+def get_join_targets_as_json():
+    """
+    Retrieve JoinTarget information from WorldMap and
+    return it in JSON format
+    """
+
+    (success, data_dict_or_error_msg) = get_join_targets()
+    if success is True:
+        return MessageHelperJSON.get_dict_msg(success=True,\
+                    msg="Join Targets retrieved",\
+                    data_dict=data_dict_or_error_msg)
+
+    else:
+        return MessageHelperJSON.get_dict_msg(success=False,\
+                    msg=data_dict_or_error_msg)
+
 
 
 def get_join_targets():
@@ -190,7 +218,7 @@ def get_join_targets():
     # Make the request
     #--------------------------------------
     try:
-        r = requests.post(GET_JOIN_TARGETS\
+        r = requests.get(GET_JOIN_TARGETS\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=30)
     except requests.exceptions.ConnectionError as e:
@@ -200,40 +228,54 @@ def get_join_targets():
                     WorldMap server: %s</p><p>%s</p>"""\
                                 % (GET_JOIN_TARGETS, e.message)
         LOGGER.error(err_msg)
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return (False, err_msg)
 
     except:
         # Error with request
         #
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return (False, err_msg)
+
+    #--------------------------------------
+    # Convert to JSON
+    #--------------------------------------
+    try:
+        response_dict = r.json()
+    except:
+        err_msg = "Failed to convert response to JSON."
+        LOGGER.error(err_msg + "Status code: %s.\nResponse text: %s",\
+            r.status_code, r.text)
+        return (False, err_msg)
 
 
     #--------------------------------------
     # Response looks good
     #--------------------------------------
-    if r.status_code == 200:
-        try:
-            response_dict = r.json()
-        except:
-            err_msg = "Failed to convert response to JSON."
-            LOGGER.error(err_msg + "Status code: 200.\nResponse text: %s" % r.text)
-            return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
-
-        return MessageHelperJSON.get_dict_msg(success=True,\
-                    msg=err_msg,\
-                    data=response_dict)
+    if r.status_code == 200 and\
+        'data' in response_dict:
+        return (True, response_dict)
 
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
-    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
-    return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
-
+    default_err_msg = 'Join target retrieval failed. Status code\
+        {0}. Response text: {1}'.format(r.status_code,
+                                        r.text)
+    err_msg = response_dict.get('message', default_err_msg)
+    LOGGER.error(err_msg)
+    return (False, err_msg)
 
 
 
 """
+# Test, join target retreval from WorldMap
+# ---------------------
+python manage.py shell
+from apps.worldmap_connect.dataverse_layer_services import *
+get_join_targets()
+
+# ---------------------
+
 python manage.py shell
 
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer

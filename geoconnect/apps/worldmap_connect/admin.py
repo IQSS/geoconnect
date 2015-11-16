@@ -1,25 +1,27 @@
 from django.contrib import admin
 
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
+from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo, JoinTargetInformation
 
 class WorldMapImportFailInline(admin.TabularInline):
     model = WorldMapImportFail
     readonly_fields = ('modified', 'created',)
     fields = ('msg', 'modified', 'created')
     extra = 0
-    
+
 class WorldMapLayerInfoInline(admin.TabularInline):
     model = WorldMapLayerInfo
     readonly_fields = ('modified', 'created', 'update_dataverse',  'dv_params')
     fields = ('layer_name', 'layer_link', 'embed_map_link', 'worldmap_username', 'dv_params', 'modified', 'created')
     extra = 0
-    
+
+
+
 class WorldMapImportAttemptAdmin(admin.ModelAdmin):
     inlines = (WorldMapLayerInfoInline, WorldMapImportFailInline)
     save_on_top = True
     list_display = ('id', 'dv_username', 'title', 'shapefile_name', 'edit_shapefile', 'datafile_id', 'dataset_version_id', 'modified'  )
     search_fields = ('title', 'abstract', )
-    list_filter = ('dv_username',  )    
+    list_filter = ('dv_username',  )
     readonly_fields = ('modified', 'created', 'edit_shapefile')
 admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 
@@ -39,3 +41,9 @@ class WorldMapLayerInfoAdmin(admin.ModelAdmin):
     list_filter = ('worldmap_username', )
     search_fields = ('import_attempt__title', 'import_attempt__abstract', )
 admin.site.register(WorldMapLayerInfo, WorldMapLayerInfoAdmin)
+
+
+class JoinTargetInformationAdmin(admin.ModelAdmin):
+    save_on_top = True
+    list_display = ('name',)
+admin.site.register(JoinTargetInformation, JoinTargetInformationAdmin)
