@@ -16,6 +16,20 @@
 tabular id: {{ tabular_id }}
 {% block main_container %}
 
+<p>
+    <b>Geospatial Data Type{{ geocode_types|pluralize }}</b>
+    <ul>
+        {% for gt in geocode_types %}
+        <li>{{ gt }}</li>
+        {% endfor %}
+    </ul>
+    <br /><br />
+</p>
+<p>
+    <b>Column to join</b>
+    <br /><br />
+</p>
+
 <div>
     <table class='table table-bordered'>
         <tr>

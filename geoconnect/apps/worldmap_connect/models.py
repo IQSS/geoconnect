@@ -347,6 +347,12 @@ class JoinTargetInformation(TimeStampedModel):
     def __unicode__(self):
         return self.__str__()
 
+    @staticmethod
+    def get_formatted_name(geocode_type, year):
+
+        return "{0} ({1})".format(geocode_type, year)
+
+
     def get_geocode_types(self):
         assert hasattr(self.target_info, 'has_key'), 'target_info must be a dict'
         assert 'data' in self.target_info, 'target_info must be a "data" key'
@@ -356,7 +362,8 @@ class JoinTargetInformation(TimeStampedModel):
             if not 'geocode_type' in info:
                 continue
             if not info['geocode_type'] in gtypes:
-                info_line = "{0} ({1})".format(info['geocode_type'],\
+                info_line = JoinTargetInformation.get_formatted_name(\
+                            info['geocode_type'],\
                             info['year'])
                 gtypes.append(info_line)
         return gtypes
