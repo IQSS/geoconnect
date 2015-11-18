@@ -28,6 +28,7 @@ from geo_utils.json_field_reader import JSONFieldReader
 from geo_utils.message_helper_json import MessageHelperJSON
 from geo_utils.msg_util import *
 
+from apps.worldmap_connect.jointarget_util import JoinTargetFormatter
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
@@ -340,6 +341,7 @@ class JoinTargetInformation(TimeStampedModel):
     """
     name = models.CharField(max_length=255)
     target_info = JSONField()
+    is_valid_target_info = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -347,29 +349,30 @@ class JoinTargetInformation(TimeStampedModel):
     def __unicode__(self):
         return self.__str__()
 
-    @staticmethod
-    def get_formatted_name(geocode_type, year):
+    def save(self, *args, **kwargs):
+        """
+        Check if the JSON in target_info is valid
+        """
+        if not self.id:
+            super(JoinTargetInformation, self).save(*args, **kwargs)
 
-        return "{0} ({1})".format(geocode_type, year)
+        jt_formatter = JoinTargetFormatter(self)
+        self.is_valid_target_info = jt_formatter.is_valid()
 
+        super(JoinTargetInformation, self).save(*args, **kwargs)
 
     def get_geocode_types(self):
-        assert hasattr(self.target_info, 'has_key'), 'target_info must be a dict'
-        assert 'data' in self.target_info, 'target_info must be a "data" key'
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        return jt_formatter.get_geocode_types()
 
-        gtypes = []
-        for info in self.target_info['data']:
-            if not 'geocode_type' in info:
-                continue
-            if not info['geocode_type'] in gtypes:
-                info_line = JoinTargetInformation.get_formatted_name(\
-                            info['geocode_type'],\
-                            info['year'])
-                gtypes.append(info_line)
-        return gtypes
+    def get_join_targets_by_type(self, chosen_geocode_type):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        return jt_formatter.get_join_targets_by_type(chosen_geocode_type)
 
     class Meta:
         ordering = ('-created',)
+        verbose_name = 'Join Target information'
+        verbose_name_plural = verbose_name
 
 
 """
@@ -380,4 +383,5 @@ for g in GISDataFile.objects.all():
 from apps.worldmap_connect.models import *
 for wis in WorldMapLayerInfo.objects.all():
     wis.dv_params()
+
 """

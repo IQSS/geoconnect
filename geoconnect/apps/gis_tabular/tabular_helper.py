@@ -3,7 +3,7 @@ import sys
 import csv
 import json
 
-from apps.gis_tabular.models import GeoType, TabularFileInfo
+from apps.gis_tabular.models import TabularFileInfo
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 import logging

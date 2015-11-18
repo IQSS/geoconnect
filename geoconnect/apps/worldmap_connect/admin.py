@@ -23,7 +23,6 @@ class WorldMapImportAttemptAdmin(admin.ModelAdmin):
     search_fields = ('title', 'abstract', )
     list_filter = ('dv_username',  )
     readonly_fields = ('modified', 'created', 'edit_shapefile')
-admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 
 
 class WorldMapImportFailAdmin(admin.ModelAdmin):
@@ -31,7 +30,6 @@ class WorldMapImportFailAdmin(admin.ModelAdmin):
     list_display = ('import_attempt', 'msg', 'modified' )
     readonly_fields = ('modified', 'created',)
     search_fields = ('msg', 'import_attempt__title', 'import_attempt__abstract',)
-admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
 
 
 class WorldMapLayerInfoAdmin(admin.ModelAdmin):
@@ -40,10 +38,14 @@ class WorldMapLayerInfoAdmin(admin.ModelAdmin):
     readonly_fields = ('modified', 'created', 'md5', 'update_dataverse', 'dv_params')
     list_filter = ('worldmap_username', )
     search_fields = ('import_attempt__title', 'import_attempt__abstract', )
-admin.site.register(WorldMapLayerInfo, WorldMapLayerInfoAdmin)
 
 
 class JoinTargetInformationAdmin(admin.ModelAdmin):
     save_on_top = True
-    list_display = ('name',)
+    list_display = ('name', 'created', 'modified')
+
+
+admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
+admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
+admin.site.register(WorldMapLayerInfo, WorldMapLayerInfoAdmin)
 admin.site.register(JoinTargetInformation, JoinTargetInformationAdmin)

@@ -14,22 +14,6 @@ from geo_utils.json_field_reader import JSONFieldReader
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
-class GeoType(models.Model):
-    """Information may be updated via the WorldMap JoinTypes API"""
-    name = models.CharField(max_length=255)
-    sort_order = models.IntegerField(default=10)
-    description = models.CharField(max_length=255, blank=True)
-    slug = models.SlugField(max_length=255, blank=True)
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(name)
-        super(GeoType, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('sort_order', 'name')
 
 class SimpleTabularTest(TimeStampedModel):
 
@@ -50,7 +34,6 @@ class SimpleTabularTest(TimeStampedModel):
     # User mediated choices
     has_header_row = models.BooleanField(default=True)
     chosen_column = models.CharField(max_length=155, blank=True)
-    chosen_column_type = models.ForeignKey(GeoType, blank=True, null=True, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.name
@@ -86,7 +69,6 @@ class TabularFileInfo(GISDataFile):
     # User mediated choices
     has_header_row = models.BooleanField(default=True)
     chosen_column = models.CharField(max_length=155, blank=True)
-    chosen_column_type = models.ForeignKey(GeoType, blank=True, null=True, on_delete=models.PROTECT)
 
 
     def get_column_count(self):

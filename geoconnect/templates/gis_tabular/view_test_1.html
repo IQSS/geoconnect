@@ -56,13 +56,19 @@ tabular id: {{ tabular_id }}
     </table>
 </div>
 
-Preview of first {{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}
+{% if NUM_PREVIEW_ROWS == tabular_info.num_rows %}
+    Displaying {% if tabular_info.num_rows > 1 %} all {% endif %}
+    <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
+{% else %}
+    Preview of first <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
+{% endif %}
 
 
 <div id="table-wrapper">
     <div id="table-scroll">
 <table class="table table-bordered table-hover table-condensed">
     <thead>
+        <th>Row #</th>
         {% for col in tab_file_stats.column_names %}
         <th>{{ col }}</th>
         {% endfor %}
@@ -70,6 +76,7 @@ Preview of first {{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}
     <tbody>
         {% for row in tab_file_stats.preview_rows %}
             <tr>
+                <td>{{ forloop.counter }}</td>
             {% for val in row %}
                 <td>{{ val }}</td>
             {% empty %}
