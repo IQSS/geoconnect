@@ -21,6 +21,7 @@ class JoinTargetFormatter(object):
             {
               "layer": "geonode:massachusetts_census_nhu",
               "geocode_type": "US Census Tract",
+              "geocode_type_slug": "us-census-tract",
               "attribute": {
                 "attribute": "TRACTCE",
                 "type": "xsd:string"
@@ -98,31 +99,34 @@ class JoinTargetFormatter(object):
 
     def get_geocode_types(self):
         """
-        Create a list of available Geospatial Identifiers
-                - e.g. ["Census Tract", "Zip code", ...]
+        Create a list tuples for available Geospatial Identifiers
+            - Tuple Format: (name, slug)
+            - e.g. [("Census Tract", "census-tract'"), ("Zip code", "zip-code")]
         """
         if self.err_found:
             return None
 
         gtypes = []
+        type_dict = {}
         for info in self.target_info['data']:
-            if not 'geocode_type' in info:
-                continue
-            if not info['geocode_type'] in gtypes:
-                info_line = JoinTargetFormatter.get_formatted_name(\
-                            info['geocode_type'],)
-                gtypes.append(info_line)
+            # Have we already added this type to the list?
+            if not info['geocode_type_slug'] in type_dict:
+                # Nope, add it
+                gtypes.append((info['geocode_type'], info['geocode_type_slug']))
+                type_dict.update({ info['geocode_type_slug']: 1 })
         return gtypes
 
 
     def get_join_targets_by_type(self, chosen_geocode_type=None):
         """
         Creating a list of tuples of Names/Years based on the chosen Geospatial Identifier
-            - Format:
+            - Tuple Format:
+                [(join target name, join_target_id),]
+
                 join_target_name = name (year)
                 join_target_id = JoinTarget id on the WorldMap system
                     - Used in the Geoconnect form
-                [(join target name, join_target_id), ]
+
             - e.g. If Cenus Tract is chosen, list might be:
                 [("US Census 2010", 7), ("US Census 2000", 3), etc.]
 
@@ -134,8 +138,8 @@ class JoinTargetFormatter(object):
         join_targets = []
         for info in self.target_info['data']:
 
-            gtype = info['geocode_type']
-            if chosen_geocode_type == gtype or\
+            gtype_slug = info['geocode_type_slug']
+            if chosen_geocode_type == gtype_slug or\
                 chosen_geocode_type is None:
                 info_line = JoinTargetFormatter.get_formatted_name(\
                             info['geocode_type'],\

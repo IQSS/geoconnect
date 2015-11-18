@@ -34,7 +34,7 @@ def view_test_1(request, tabular_id):
     num_preview_rows = min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0])
 
     jt = get_latest_jointarget_information()
-    geocode_type_list = ['Latitude/Longitude']
+    geocode_type_list = [(u'Latitude/Longitude', u'latitude-longitude')]
     geocode_types_from_worldmap = jt.get_geocode_types()
     if geocode_types_from_worldmap:
         geocode_type_list += geocode_types_from_worldmap
@@ -48,8 +48,29 @@ def view_test_1(request, tabular_id):
     return render_to_response('gis_tabular/view_test_1.html', d\
                                      , context_instance=RequestContext(request))
 
+def ajax_get_all_join_targets(request):
+
+    return ajax_get_join_targets(request, None)
 
 def ajax_get_join_targets(request, selected_geo_type):
+    """
+    Ajax - Retrieve JoinTarget information that matches
+            a selected geospatial identification type
+
+    Returns a list for use in loading a dropdown box
+    """
+    jt = get_latest_jointarget_information()
+
+    join_target_info = jt.get_join_targets_by_type(selected_geo_type)
+    if join_target_info is None:
+        err_msg = "Sorry! No Join Targets found for Geospatial type: {0}".format(selected_geo_type)
+        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                                msg=err_msg)
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
 
-    return HttpResponse()
+    json_msg = MessageHelperJSON.get_json_msg(success=True,\
+                                msg="success",\
+                                data_dict=join_target_info)
+
+    return HttpResponse(status=200, content=json_msg, content_type="application/json")

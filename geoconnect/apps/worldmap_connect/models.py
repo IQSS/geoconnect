@@ -28,7 +28,7 @@ from geo_utils.json_field_reader import JSONFieldReader
 from geo_utils.message_helper_json import MessageHelperJSON
 from geo_utils.msg_util import *
 
-from apps.worldmap_connect.jointarget_util import JoinTargetFormatter
+from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
