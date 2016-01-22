@@ -13,10 +13,14 @@
         {% endif %}
 
         Use the form below the map to style it.
-        &nbsp; <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>	
-        
+        &nbsp; <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>
+
             <!-- WorldMap Layer in iframe -->
             <div>
+                yes?
+                {% comment %}
+                <iframe width="100%" height=900>{{ worldmap_layerinfo.embed_map_link }}</iframe>
+                {% endcomment %}
                 <div style="width:70%;float:left;">
                         <iframe id="id_iframe_map" height="275" width="100%" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
                 </div>
@@ -33,21 +37,20 @@
 		    <!-- start:  Classify form -->
             <div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
 		    <!-- end:  Classify form -->
-		    
+
 		    <!-- start:  Back to Dataverse | Delete Map links-->
             <div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
                 <div class="col-xs-6">
                     {% include "gis_shapefiles/link-back-to-dataverse.html" %}
-                    
+
                 </div>
                 <div class="col-xs-6 text-right"><a data-toggle="modal" data-target="#delete_map_confirm" class="btn btn-xs btn-danger">Delete Map</a></div>
-                
+
             </div>
             <!-- end:  Back to Dataverse | Delete Map links-->
-		    
+
             {% include "gis_shapefiles/import_debug_links.html" %}
-            
+
       {% else %}
         <div class="alert alert-warning">Sorry!  An Error occurred! The Map Layer is not available</div>
       {% endif %}
-

@@ -28,7 +28,7 @@ try:
     JSON_SECRETS = json.loads(open(GEOCONNECT_SECRETS_FNAME, 'r').read())
 except:
     raise Exception('Could not parse Geoconnect settings JSON file: %s' % GEOCONNECT_SECRETS_FNAME)
-    
+
 
 # Store uploaded files, logs, etc, etc
 GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR = JSON_SECRETS['GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR']
@@ -98,7 +98,7 @@ DATABASES = {
         'HOST': JSON_SECRETS['DATABASE_SETTINGS']['HOST'],
         'PORT': JSON_SECRETS['DATABASE_SETTINGS']['PORT'],
     },
-   
+
 }
 ########## END DATABASE CONFIGURATION
 
@@ -117,7 +117,7 @@ CACHES = {
 INSTALLED_APPS += (
     #'debug_toolbar',
     #'djcelery',
-    #'kombu.transport.django', 
+    #'kombu.transport.django',
 )
 
 #MIDDLEWARE_CLASSES += (
@@ -151,7 +151,7 @@ LOGIN_URL = "admin:index"
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
 DATAVERSE_SERVER_URL = JSON_SECRETS['DATAVERSE_SERVER_URL']
-DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' 
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/'
 #DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/?key=pete' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
 ########## DATAVERSE_SERVER_URL
 
@@ -199,17 +199,17 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': join(GEOCONNECT_LOGS_DIR, 'geolog.log'),
-            'formatter': 'simple'
+            'formatter': 'verbose'
             },
         },
     'loggers': {
-        
+
         'django': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': False,
             },
         },
@@ -220,8 +220,7 @@ LOGGING = {
         },
         'apps': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
             },
     }
-

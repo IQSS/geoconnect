@@ -125,7 +125,7 @@ def view_classify_layer_form(request, import_success_md5):
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
-    classify_params = api_form.get_api_params_with_signature()
+    classify_params = api_form.cleaned_data
 
     classify_url = classify_form.get_worldmap_classify_api_url()
     #print ('classify_params', classify_params)
@@ -134,7 +134,7 @@ def view_classify_layer_form(request, import_success_md5):
         resp = requests.post(classify_url,\
                     data=classify_params,\
                     auth=settings.WORLDMAP_ACCOUNT_AUTH,\
-                    timeout=2)
+                    timeout=7)
     except requests.exceptions.ConnectionError as e:
         err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
                                 % (classify_url, e.message)
