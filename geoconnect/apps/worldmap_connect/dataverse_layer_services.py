@@ -43,8 +43,6 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     """
     Delete a Layer from the WorldMap, using the WorldMap API
 
-    note: both API sender and recipient functions use the DataverseInfoValidationFormWithKey
-
     returns (True, None)
         or (False, 'error message of some type')
     """

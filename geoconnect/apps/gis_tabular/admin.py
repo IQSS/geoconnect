@@ -12,6 +12,7 @@ from geo_utils.admin_util import make_changelist_updates
 class SimpleTabularTestAdmin(admin.ModelAdmin):
     """For testing"""
 
+    readonly_fields = ('delimiter',)
     list_display = ('name', 'test_page', 'dv_file', 'delimiter')
     save_on_top = True
 

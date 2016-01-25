@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+</style>
+<script>
+
+    function get_alert(alert_type, err_msg){
+        return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
+    }
+
+
+    /**
+        Submit the latitude/longitude form
+    */
+    function submit_lat_lng_form(){
+        console.log('submit_lat_lng_form');
+
+        // url for ajax  call
+        check_lat_lng_url = '{% url 'view_check_lat_lng_column_form' %}';
+
+        // Disable submit button + hide message box
+        $('#id_frm_lat_lng_submit').addClass('disabled').html('Working...');
+        $('#msg_form_geotype').empty().hide();
+
+        // Submit form
+        var jqxhr = $.post(check_lat_lng_url, $('#form_lat_lng').serialize(), function(json_resp) {
+            // don't need a response for user
+            console.log(json_resp);
+        })
+        .done(function(json_resp) {
+            if (json_resp.success){
+                // Go to map!
+                $('#msg_form_geotype').show().empty().append(get_alert('success', json_resp.message));
+                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
+                //$('#id_progress_bar').hide();
+
+            }else{
+                console.log(json_resp.message);
+                // form error, display message
+                //$('#msg_form_lat_lng').html(json_resp.message);
+                $('#msg_form_geotype').show().empty().append(get_alert('danger', json_resp.message));
+
+            }
+          })
+        .fail(function(json_resp) {
+             //$('#simple_msg_div').show();
+             //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
+             //$('#id_success_msg').hide();
+             //$('#id_alert_msg').hide();
+
+        })
+        .always(function() {
+             // Enable submit button
+             $('#id_frm_lat_lng_submit').removeClass('disabled').html('Submit Latitude & Longitude columns');
+
+        });
+    }
+
+    function bind_submit_lat_lng_form(){
+        //console.log('bind_submit_lat_lng_form');
+        $("#id_frm_lat_lng_submit").on( "click", submit_lat_lng_form );
+    }
+
+    function bind_hide_show_column_forms(){
+
+        $( "#id_geocode_type" ).change(function() {
+            if ($( "#id_geocode_type" ).val() == 'latitude-longitude'){
+
+                $('#form_lat_lng').show();
+            }else{
+                $('#form_lat_lng').hide();
+            }
+        });
+    }
+
+    $( document ).ready(function() {
+        bind_hide_show_column_forms();
+        bind_submit_lat_lng_form();
+        //$( "#id_geocode_type" ).change(function() {
+          //alert( "Handler for .change() called." + $( "#id_geocode_type" ).val() );
+        //});
+    });
+</script>
+{% endblock %}
+
+{% block main_container %}
+
+<div class="row">
+    <div class="col-md-3">
+        <h4>test files</h4>
+        {% for tf in test_files %}
+            <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
+        {% endfor %}
+    </div><!-- col -->
+    <div class="col-md-9">
+        <p>
+            <b>Geospatial Data Type{{ geocode_types|pluralize }}</b>
+            <ul>
+                {% for gt in geocode_types %}
+                <li>{{ gt }}</li>
+                    <a href="{% url 'ajax_get_join_targets' gt.1 %}">{{ gt.0 }}</a>
+                {% endfor %}
+            </ul>
+            <br /><br />
+        </p>
+        <p>
+            <b>Column to join</b>
+            <br /><br />
+        </p>
+    </div><!-- col -->
+</div><!-- row -->
+<div class="row">
+    <div class="col-md-6">
+        <!-- Start: Primary form to hide/show/load other forms -->
+        <div id="msg_form_geotype" style="display:none;"></div>
+        <div>
+            <form id="form_geocode_types">
+                <table class="table">
+                    <tr>
+                        <td>Geospatial Data Type</td>
+                        <td>
+                            <select id="id_geocode_type">
+                                <option value="">Select ...</option>
+                            {% for gt in geocode_types %}
+                                <option value="{{ gt.1 }}">{{ gt.0 }}</option>
+                            {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <!-- End: Primary form to hide/show/load other forms -->
+
+        <!-- Start: Latitude/Longitude form -->
+        <div id="div_form_lat_lng">
+            <form id="form_lat_lng" method="post">
+                {% csrf_token %}
+                {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
+                <table class="table">
+                {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+                    <tr>
+                        <td>{{ field.label }}</td>
+                        <td>{% if field.errors %}{{ field.errors}}{% endif %}
+                            {{ field }}</td>
+                    </tr>
+                {% endspaceless %}{% endfor %}
+                    <tr>
+                        <td colspan="2"><a class="btn btn-sm btn-primary" id="id_frm_lat_lng_submit">Submit Latitude & Longitude columns</a></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <!-- End: Latitude/Longitude form -->
+
+    </div><!-- col -->
+    <div class="col-md-3">
+    </div><!-- col -->
+</div><!-- row -->
+
+<div>
+    <table class='table table-bordered'>
+        <tr>
+            <th>tabular_info</th>
+            <td>{{ tabular_info }} (id: {{ tabular_id }})</td>
+        </tr>
+        <tr>
+            <th>dv_file</th>
+            <td>{{ tabular_info.dv_file }}</td>
+        </tr>
+        <tr>
+            <th>column_names</th>
+            <td>{{ tabular_info.column_names }}</td>
+        </tr>
+        <tr>
+            <th>num_rows</th>
+            <td>{{ tabular_info.num_rows }}</td>
+        </tr>
+        <tr>
+            <th>has_header_row</th>
+            <td>{{ tabular_info.has_header_row }}</td>
+        </tr>
+
+    </table>
+</div>
+
+{% if NUM_PREVIEW_ROWS == tabular_info.num_rows %}
+    Displaying {% if tabular_info.num_rows > 1 %} all {% endif %}
+    <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
+{% else %}
+    Preview of first <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
+{% endif %}
+
+
+<div id="table-wrapper">
+    <div id="table-scroll">
+<table class="table table-bordered table-hover table-condensed">
+    <thead>
+        <th>Row #</th>
+        {% for col in tab_file_stats.column_names %}
+        <th>{{ col }}</th>
+        {% endfor %}
+    </thead>
+    <tbody>
+        {% for row in tab_file_stats.preview_rows %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+            {% for val in row %}
+                <td>{{ val }}</td>
+            {% empty %}
+            (No rows to display)
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    </div>
+</div>
+
+{% endblock %}

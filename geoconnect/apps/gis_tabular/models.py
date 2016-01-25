@@ -41,7 +41,7 @@ class SimpleTabularTest(TimeStampedModel):
     def test_page(self):
         if not self.id:
             return 'n/a'
-        lnk = reverse('view_test_1', kwargs=dict(tabular_id=self.id))
+        lnk = reverse('view_test_file', kwargs=dict(tabular_id=self.id))
         return '<a href="%s" target="_blank">test page</a>' % lnk
     test_page.allow_tags=True
 
