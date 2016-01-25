@@ -44,6 +44,16 @@ class LatLngColumnsForm(forms.Form):
 
         #self._meta.get_field_by_name('choices_f')[0]._choices
 
+    def get_latitude_colname(self):
+        assert self.cleaned_data is not None, "Do not call this unless .is_valid() is True"
+
+        return self.cleaned_data.get('latitude')
+
+    def get_longitude_colname(self):
+        assert self.cleaned_data is not None, "Do not call this unless .is_valid() is True"
+
+        return self.cleaned_data.get('longitude')
+
     def clean(self):
         """
         Check to make sure the lat and lng columns aren't the same

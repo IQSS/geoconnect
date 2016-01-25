@@ -14,7 +14,7 @@ from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 from apps.worldmap_connect.utils import get_latest_jointarget_information
 
 from geo_utils.message_helper_json import MessageHelperJSON
-
+from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
 #from geo_utils.msg_util import *
 #from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
 #from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
@@ -47,6 +47,12 @@ def view_check_lat_lng_column_form(request):
         #print 'Type: ', type(f)
         #print dir(f)#'Type: ', type(f)
         #print 'f.is_valid(): %s' % f.is_valid()
+
+
+    print create_map_from_datatable_lat_lng(tabular_info,
+                        f.get_latitude_colname(),
+                        f.get_longitude_colname(),
+                        )
 
     json_msg = MessageHelperJSON.get_json_success_msg('not bad:)')
     return HttpResponse(json_msg, mimetype="application/json", status=200)
