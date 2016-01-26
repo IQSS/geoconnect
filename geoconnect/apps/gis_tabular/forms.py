@@ -19,6 +19,26 @@ class DeleteMapForm(forms.Form):
     confirmation = forms.BooleanField(label="I understand all versions of this map will be deleted from WorldMap.", initial=False)
 '''
 
+
+class ChooseSingleColumnForm(forms.Form):
+    """
+    Basic form for capturing chosen column name
+    """
+    tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
+    chosen_column = forms.ChoiceField(label="Choose column", choices=())
+
+    def __init__(self, tabular_file_info_id, column_names, *args, **kwargs):
+        super(ChooseSingleColumnForm, self).__init__(*args, **kwargs)
+        assert column_names is not None, "You must initiate this form with column names"
+
+        colname_choices = [(c, c) for c in column_names if c]
+        print 'colname_choices', colname_choices
+        self.fields['tabular_file_info_id'].initial = tabular_file_info_id
+        self.fields['chosen_column'].choices = colname_choices
+
+        self.fields['chosen_column'].widget.attrs.update({'class' : 'form-control'})
+
+
 class LatLngColumnsForm(forms.Form):
     """
     Simple form for capturing latitude and longitude column names
@@ -26,23 +46,20 @@ class LatLngColumnsForm(forms.Form):
     err_msg_for_web = None
 
     tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
-    latitude = forms.ChoiceField(choices=())
-    longitude = forms.ChoiceField(choices=())
+    latitude = forms.ChoiceField(label='Latitude Column', choices=())
+    longitude = forms.ChoiceField(label='Longitude Column', choices=())
 
     def __init__(self, tabular_file_info_id, column_names, *args, **kwargs):
         super(LatLngColumnsForm, self).__init__(*args, **kwargs)
         assert column_names is not None, "You must initiate this form with column names"
-        colname_choices = [(c, c) for c in column_names]
-
+        colname_choices = [(c, c) for c in column_names if c]
+        print 'colname_choices', colname_choices
         self.fields['tabular_file_info_id'].initial = tabular_file_info_id
         self.fields['latitude'].choices = colname_choices
         self.fields['longitude'].choices = colname_choices
-        #self.fields['tabular_file_info_id'] = forms.IntegerField(initial=tabular_file_info_id,\
-        #                        widget=forms.HiddenInput())
-        #self.fields['latitude'] = forms.ChoiceField(choices=colname_choices)
-        #self.fields['longitude'] = forms.ChoiceField(choices=colname_choices)
 
-        #self._meta.get_field_by_name('choices_f')[0]._choices
+        self.fields['latitude'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['longitude'].widget.attrs.update({'class' : 'form-control'})
 
     def get_latitude_colname(self):
         assert self.cleaned_data is not None, "Do not call this unless .is_valid() is True"

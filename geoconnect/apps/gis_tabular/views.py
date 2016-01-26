@@ -8,7 +8,7 @@ from django.conf import settings
 from django.views.decorators.http import require_POST
 
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
-from apps.gis_tabular.forms import LatLngColumnsForm
+from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information
@@ -25,7 +25,23 @@ logger = logging.getLogger(__name__)
 
 
 @require_POST
-def view_check_lat_lng_column_form(request):
+def view_map_tabular_file_form(request):
+    """
+    Join your tabular file to a WorldMap layer
+    using the column selected in this form
+    """
+    json_msg = MessageHelperJSON.get_json_success_msg('You got here! (view_map_tabular_file_form)')
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+
+
+
+@require_POST
+def view_process_lat_lng_column_form(request):
+    """
+    Create a WorldMap layer from your tabular file
+    using the latitude and longitude columns selected in this form
+    """
 
     tabular_file_info_id = request.POST.get('tabular_file_info_id', -1)
 
@@ -49,15 +65,17 @@ def view_check_lat_lng_column_form(request):
         #print 'f.is_valid(): %s' % f.is_valid()
 
 
-    print create_map_from_datatable_lat_lng(tabular_info,
+    (success, worldmap_msg) = create_map_from_datatable_lat_lng(tabular_info,
                         f.get_latitude_colname(),
                         f.get_longitude_colname(),
                         )
 
-    json_msg = MessageHelperJSON.get_json_success_msg('not bad:)')
-    return HttpResponse(json_msg, mimetype="application/json", status=200)
+    if success:
+        json_msg = MessageHelperJSON.get_json_success_msg(worldmap_msg)
+    else:
+        json_msg = MessageHelperJSON.get_json_fail_msg('Sorry! ' + worldmap_msg)
 
-    #f = LatLngColumnsForm(request.POST)
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
 def view_test_file(request, tabular_id):
@@ -82,8 +100,11 @@ def view_test_file(request, tabular_id):
     if tab_file_stats:
         form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,\
                     column_names=tab_file_stats.column_names)
+        form_single_column = ChooseSingleColumnForm(tabular_file_info_id=tabular_info.id,\
+                    column_names=tab_file_stats.column_names)
     else:
         form_lat_lng = None
+        form_single_column = None
 
     d = dict(tabular_id=tabular_id,\
             tabular_info=tabular_info,\
@@ -91,6 +112,7 @@ def view_test_file(request, tabular_id):
             geocode_types=geocode_type_list,\
             NUM_PREVIEW_ROWS=num_preview_rows,\
             test_files=SimpleTabularTest.objects.all(),\
+            form_single_column=form_single_column,\
             form_lat_lng=form_lat_lng)
 
     return render_to_response('gis_tabular/view_test_file.html', d\

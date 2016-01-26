@@ -70,5 +70,12 @@ def create_map_from_datatable_lat_lng(datatable_obj, lat_col, lng_col):
         LOGGER.error(err_msg)
         return (False, err_msg)
 
-    print r.status_code
-    print r.text
+    try:
+        rjson = r.json()
+    except:
+        return (False, "Sorry!  The mapping failed.  (%s)" % r.text)
+
+    if rjson.get('success', False) is True:
+        return (True, rjson.get('message', '(no message sent)'))
+    else:
+        return (False, rjson.get('message', '(no message sent)'))

@@ -18,28 +18,28 @@
     }
 
 
-    /**
+    /* ------------------------------------------
         Submit the latitude/longitude form
-    */
+    ------------------------------------------ */
     function submit_lat_lng_form(){
         console.log('submit_lat_lng_form');
 
         // url for ajax  call
-        check_lat_lng_url = '{% url 'view_check_lat_lng_column_form' %}';
+        check_lat_lng_url = '{% url 'view_process_lat_lng_column_form' %}';
 
         // Disable submit button + hide message box
         $('#id_frm_lat_lng_submit').addClass('disabled').html('Working...');
-        $('#msg_form_geotype').empty().hide();
+        $('#msg_form_tabular').empty().hide();
 
         // Submit form
-        var jqxhr = $.post(check_lat_lng_url, $('#form_lat_lng').serialize(), function(json_resp) {
+        var jqxhr = $.post(check_lat_lng_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
             // don't need a response for user
             console.log(json_resp);
         })
         .done(function(json_resp) {
             if (json_resp.success){
                 // Go to map!
-                $('#msg_form_geotype').show().empty().append(get_alert('success', json_resp.message));
+                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
                 //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
                 //$('#id_progress_bar').hide();
 
@@ -47,7 +47,7 @@
                 console.log(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_geotype').show().empty().append(get_alert('danger', json_resp.message));
+                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -56,7 +56,6 @@
              //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
              //$('#id_success_msg').hide();
              //$('#id_alert_msg').hide();
-
         })
         .always(function() {
              // Enable submit button
@@ -65,26 +64,82 @@
         });
     }
 
-    function bind_submit_lat_lng_form(){
+    function submit_single_column_form(){
+        console.log('submit_single_column_form');
+
+        // url for ajax  call
+        map_tabular_file_url = '{% url 'view_map_tabular_file_form' %}';
+
+        // Disable submit button + hide message box
+        $('#id_frm_single_column_submit').addClass('disabled').html('Working...');
+        $('#msg_form_tabular').empty().hide();
+
+        // Submit form
+        var jqxhr = $.post(map_tabular_file_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
+            // don't need a response for user
+            console.log(json_resp);
+        })
+        .done(function(json_resp) {
+            if (json_resp.success){
+                // Go to map!
+                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
+                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
+                //$('#id_progress_bar').hide();
+
+            }else{
+                console.log(json_resp.message);
+                // form error, display message
+                //$('#msg_form_lat_lng').html(json_resp.message);
+                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
+
+            }
+          })
+        .fail(function(json_resp) {
+             //$('#simple_msg_div').show();
+             //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
+             //$('#id_success_msg').hide();
+             //$('#id_alert_msg').hide();
+        })
+        .always(function() {
+             // Enable submit button
+             $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
+
+        });
+    }
+
+
+    function bind_form_submit_buttons(){
         //console.log('bind_submit_lat_lng_form');
         $("#id_frm_lat_lng_submit").on( "click", submit_lat_lng_form );
+        $("#id_frm_single_column_submit").on( "click", submit_single_column_form );
+
     }
 
     function bind_hide_show_column_forms(){
-
+        console.log('bind geotype dropdown');
         $( "#id_geocode_type" ).change(function() {
+            console.log('type: '+ $( "#id_geocode_type" ).val());
             if ($( "#id_geocode_type" ).val() == 'latitude-longitude'){
+                // show latitude-longitude form
+                $('.form_lat_lng_fields').show();
+                $('.form_single_column_fields').hide();
 
-                $('#form_lat_lng').show();
+            }else if ($( "#id_geocode_type" ).val() == ''){
+                // hide both forms
+                $('.form_lat_lng_fields').hide();
+                $('.form_single_column_fields').hide();
+
             }else{
-                $('#form_lat_lng').hide();
+                // show single column form
+                $('.form_lat_lng_fields').hide();
+                $('.form_single_column_fields').show();
             }
         });
     }
 
     $( document ).ready(function() {
         bind_hide_show_column_forms();
-        bind_submit_lat_lng_form();
+        bind_form_submit_buttons();
         //$( "#id_geocode_type" ).change(function() {
           //alert( "Handler for .change() called." + $( "#id_geocode_type" ).val() );
         //});
@@ -118,54 +173,65 @@
         </p>
     </div><!-- col -->
 </div><!-- row -->
-<div class="row">
-    <div class="col-md-6">
-        <!-- Start: Primary form to hide/show/load other forms -->
-        <div id="msg_form_geotype" style="display:none;"></div>
-        <div>
-            <form id="form_geocode_types">
-                <table class="table">
-                    <tr>
-                        <td>Geospatial Data Type</td>
-                        <td>
-                            <select id="id_geocode_type">
-                                <option value="">Select ...</option>
-                            {% for gt in geocode_types %}
-                                <option value="{{ gt.1 }}">{{ gt.0 }}</option>
-                            {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <!-- End: Primary form to hide/show/load other forms -->
 
-        <!-- Start: Latitude/Longitude form -->
-        <div id="div_form_lat_lng">
-            <form id="form_lat_lng" method="post">
-                {% csrf_token %}
-                {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
-                <table class="table">
-                {% for field in form_lat_lng.visible_fields %}{% spaceless %}
-                    <tr>
-                        <td>{{ field.label }}</td>
-                        <td>{% if field.errors %}{{ field.errors}}{% endif %}
-                            {{ field }}</td>
-                    </tr>
-                {% endspaceless %}{% endfor %}
-                    <tr>
-                        <td colspan="2"><a class="btn btn-sm btn-primary" id="id_frm_lat_lng_submit">Submit Latitude & Longitude columns</a></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <!-- End: Latitude/Longitude form -->
+<div id="msg_form_tabular" style="display:none;"></div>
+<!-- START: tabular form -->
+<form class="form-horizontal" id="form_map_tabular_file" method="post">
+    <div class="form-group">
+      <label for="id_geocode_type" class="col-sm-3 control-label">Geospatial Data Type</label>
+      <div class="col-sm-4">
+          <select id="id_geocode_type" class="form-control">
+              <option value="">Select ...</option>
+          {% for gt in geocode_types %}
+              <option value="{{ gt.1 }}">{{ gt.0 }}</option>
+          {% endfor %}
+          </select>
+      </div>
+    </div>
 
-    </div><!-- col -->
-    <div class="col-md-3">
-    </div><!-- col -->
-</div><!-- row -->
+
+    <!-- Start: Single Column form -->
+    {% csrf_token %}
+    {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
+    {% for field in form_single_column.visible_fields %}{% spaceless %}
+        <div class="form-group form_single_column_fields" style="display:none;">
+            <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
+            <div class="col-sm-4">
+                {{ field }}
+                {% if field.errors %}{{ field.errors}}{% endif %}
+            </div>
+        </div>
+    {% endspaceless %}{% endfor %}
+    <div class="form-group form_single_column_fields" style="display:none;">
+        <div class="col-sm-3">&nbsp;</div>
+        <div class="col-sm-4">
+            <a class="btn btn-sm btn-primary" id="id_frm_single_column_submit">Submit</a>
+        </div>
+    </div>
+    <!-- End: Single Column form -->
+
+    <!-- Start: Latitude/Longitude form -->
+    {% csrf_token %}
+    {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
+    {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+        <div class="form-group form_lat_lng_fields" style="display:none;">
+            <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
+            <div class="col-sm-4">
+                {{ field }}
+                {% if field.errors %}{{ field.errors}}{% endif %}
+            </div>
+        </div>
+    {% endspaceless %}{% endfor %}
+        <div class="form-group form_lat_lng_fields" style="display:none;">
+            <div class="col-sm-3">&nbsp;</div>
+            <div class="col-sm-4">
+                <a class="btn btn-sm btn-primary" id="id_frm_lat_lng_submit">Submit Latitude & Longitude columns</a>
+            </div>
+        </div>
+    <!-- End: Latitude/Longitude form -->
+</form>
+<!-- END: tabular form -->
+
 
 <div>
     <table class='table table-bordered'>

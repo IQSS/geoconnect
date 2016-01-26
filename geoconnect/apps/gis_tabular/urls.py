@@ -11,6 +11,10 @@ urlpatterns = patterns('apps.gis_tabular.views',
     url(r'^ajax-join-targets-all/$', 'ajax_get_all_join_targets',\
         name='ajax_get_all_join_targets'),
 
-    url(r'^check-lat-long-form/$', 'view_check_lat_lng_column_form',\
-        name='view_check_lat_lng_column_form')
+    url(r'^process-lat-long-form/$', 'view_process_lat_lng_column_form',\
+        name='view_process_lat_lng_column_form'),
+
+    url(r'^process-tabular-form/$', 'view_map_tabular_file_form',\
+        name='view_map_tabular_file_form')
+
 )
