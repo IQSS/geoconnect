@@ -363,7 +363,13 @@ class JoinTargetInformation(TimeStampedModel):
 
     def get_geocode_types(self):
         jt_formatter = JoinTargetFormatter(self.target_info)
-        return jt_formatter.get_geocode_types()
+        return jt_formatter.get_join_targets_by_type()
+
+    def get_available_layers_list(self):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        # Get all the join targets
+        return jt_formatter.get_all_join_targets()
+
 
     def get_join_targets_by_type(self, chosen_geocode_type):
         jt_formatter = JoinTargetFormatter(self.target_info)

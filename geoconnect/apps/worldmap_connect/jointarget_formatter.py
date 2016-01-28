@@ -90,11 +90,15 @@ class JoinTargetFormatter(object):
 
 
     @staticmethod
-    def get_formatted_name(geocode_type, year=None):
+    def get_formatted_name(geocode_type, year=None, title=None):
         if year is None:
             return "{0}".format(geocode_type)
 
-        return "{0} ({1})".format(geocode_type, year)
+        if year and title:
+            return "{0} ({1}) {2}".format(geocode_type, year, title)
+
+        if year:
+            return "{0} ({1})".format(geocode_type, year)
 
 
     def get_geocode_types(self):
@@ -116,6 +120,18 @@ class JoinTargetFormatter(object):
                 type_dict.update({ info['geocode_type_slug']: 1 })
         return gtypes
 
+    def get_all_join_targets(self):
+        if self.err_found:
+            return None
+
+        join_targets = []
+        for info in self.target_info['data']:
+            info_line = JoinTargetFormatter.get_formatted_name(
+                        info['geocode_type'],
+                        info['year'],
+                        info['title'])
+            join_targets.append((info['id'], info_line))
+        return join_targets
 
     def get_join_targets_by_type(self, chosen_geocode_type=None):
         """
@@ -141,10 +157,12 @@ class JoinTargetFormatter(object):
             gtype_slug = info['geocode_type_slug']
             if chosen_geocode_type == gtype_slug or\
                 chosen_geocode_type is None:
-                info_line = JoinTargetFormatter.get_formatted_name(\
-                            info['geocode_type'],\
-                            info['year'])
-                join_targets.append((info_line, info['id']))
+                info_line = JoinTargetFormatter.get_formatted_name(
+                            info['geocode_type'])
+                            #info['year'])
+                gtype_tuple = (info['geocode_type_slug'], info_line)
+                if not gtype_tuple in join_targets:
+                    join_targets.append(gtype_tuple)
         return join_targets
 
 """

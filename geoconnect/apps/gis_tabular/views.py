@@ -30,6 +30,9 @@ def view_map_tabular_file_form(request):
     Join your tabular file to a WorldMap layer
     using the column selected in this form
     """
+    for k, v in request.POST.items():
+        print k, v
+
     json_msg = MessageHelperJSON.get_json_success_msg('You got here! (view_map_tabular_file_form)')
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 
@@ -80,6 +83,7 @@ def view_process_lat_lng_column_form(request):
 
 def view_test_file(request, tabular_id):
 
+
     try:
         tabular_info = SimpleTabularTest.objects.get(pk=tabular_id)
     except SimpleTabularTest.DoesNotExist:
@@ -90,21 +94,30 @@ def view_test_file(request, tabular_id):
     num_preview_rows = min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0])
 
     join_target_info = get_latest_jointarget_information()
-    geocode_type_list = [(u'Latitude/Longitude', u'latitude-longitude')]
+    geocode_type_list = [( u'latitude-longitude', u'Latitude/Longitude')]
     geocode_types_from_worldmap = join_target_info.get_geocode_types()
     if geocode_types_from_worldmap:
         geocode_type_list += geocode_types_from_worldmap
 
-    # Create a form for Lat/Lng column selection
+    available_layers_list = join_target_info.get_available_layers_list()
+
+    # Create a form for table join column selection
     #
-    if tab_file_stats:
-        form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,\
-                    column_names=tab_file_stats.column_names)
-        form_single_column = ChooseSingleColumnForm(tabular_file_info_id=tabular_info.id,\
+    if available_layers_list and len(available_layers_list) > 0:
+        form_single_column = ChooseSingleColumnForm(tabular_file_info_id=tabular_info.id,
+                    layer_choices=available_layers_list,
                     column_names=tab_file_stats.column_names)
     else:
         form_lat_lng = None
         form_single_column = None
+
+    # Create a form for Lat/Lng column selection
+    #
+    if tab_file_stats:
+        form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,
+                    column_names=tab_file_stats.column_names)
+    else:
+        form_lat_lng = None
 
     d = dict(tabular_id=tabular_id,\
             tabular_info=tabular_info,\
@@ -124,6 +137,7 @@ def view_test_file(request, tabular_id):
 def ajax_get_all_join_targets(request):
 
     return ajax_get_join_targets(request, None)
+
 
 def ajax_get_join_targets(request, selected_geo_type):
     """

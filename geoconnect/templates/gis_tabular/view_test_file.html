@@ -11,6 +11,8 @@
   margin-top:20px;
 }
 </style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
 <script>
 
     function get_alert(alert_type, err_msg){
@@ -118,6 +120,7 @@
     function bind_hide_show_column_forms(){
         console.log('bind geotype dropdown');
         $( "#id_geocode_type" ).change(function() {
+
             console.log('type: '+ $( "#id_geocode_type" ).val());
             if ($( "#id_geocode_type" ).val() == 'latitude-longitude'){
                 // show latitude-longitude form
@@ -133,6 +136,8 @@
                 // show single column form
                 $('.form_lat_lng_fields').hide();
                 $('.form_single_column_fields').show();
+                $("label[for='id_chosen_column']").html('Column for "' + $( "#id_geocode_type option:selected" ).html() + '"');
+
             }
         });
     }
@@ -143,6 +148,13 @@
         //$( "#id_geocode_type" ).change(function() {
           //alert( "Handler for .change() called." + $( "#id_geocode_type" ).val() );
         //});
+        $('#preview-tbl').DataTable( {
+                "scrollY": 400,
+                "scrollX": true,
+                "paging" : false,
+                "searching" : false
+        } );
+        //$('#preview-tbl').DataTable();
     });
 </script>
 {% endblock %}
@@ -161,8 +173,8 @@
             <b>Geospatial Data Type{{ geocode_types|pluralize }}</b>
             <ul>
                 {% for gt in geocode_types %}
-                <li>{{ gt }}</li>
-                    <a href="{% url 'ajax_get_join_targets' gt.1 %}">{{ gt.0 }}</a>
+                <li>{{ gt.0 }} zz {{gt.1}}</li>
+                    {#<a href="{% url 'ajax_get_join_targets' gt.0 %}">{{ gt.0 }}</a>#}
                 {% endfor %}
             </ul>
             <br /><br />
@@ -177,13 +189,14 @@
 <div id="msg_form_tabular" style="display:none;"></div>
 <!-- START: tabular form -->
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
+    {% csrf_token %}
     <div class="form-group">
       <label for="id_geocode_type" class="col-sm-3 control-label">Geospatial Data Type</label>
       <div class="col-sm-4">
-          <select id="id_geocode_type" class="form-control">
+          <select id="id_geocode_type" name="geocode_type" class="form-control">
               <option value="">Select ...</option>
           {% for gt in geocode_types %}
-              <option value="{{ gt.1 }}">{{ gt.0 }}</option>
+              <option value="{{ gt.0 }}">{{ gt.1 }}</option>
           {% endfor %}
           </select>
       </div>
@@ -191,7 +204,6 @@
 
 
     <!-- Start: Single Column form -->
-    {% csrf_token %}
     {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
     {% for field in form_single_column.visible_fields %}{% spaceless %}
         <div class="form-group form_single_column_fields" style="display:none;">
@@ -267,9 +279,11 @@
 {% endif %}
 
 
-<div id="table-wrapper">
-    <div id="table-scroll">
-<table class="table table-bordered table-hover table-condensed">
+<div id="xtable-wrapper">
+    <div id="xtable-scroll">
+    </div>
+</div>
+<table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
     <thead>
         <th>Row #</th>
         {% for col in tab_file_stats.column_names %}
@@ -289,7 +303,9 @@
         {% endfor %}
     </tbody>
 </table>
-    </div>
-</div>
 
+<br />
+<br />
+<br />
+<br />
 {% endblock %}

@@ -25,17 +25,21 @@ class ChooseSingleColumnForm(forms.Form):
     Basic form for capturing chosen column name
     """
     tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
+    chosen_layer = forms.ChoiceField(label="Choose layer", choices=())
     chosen_column = forms.ChoiceField(label="Choose column", choices=())
 
-    def __init__(self, tabular_file_info_id, column_names, *args, **kwargs):
+    def __init__(self, tabular_file_info_id, layer_choices, column_names, *args, **kwargs):
         super(ChooseSingleColumnForm, self).__init__(*args, **kwargs)
         assert column_names is not None, "You must initiate this form with column names"
 
         colname_choices = [(c, c) for c in column_names if c]
-        print 'colname_choices', colname_choices
+        #print 'colname_choices', colname_choices
         self.fields['tabular_file_info_id'].initial = tabular_file_info_id
-        self.fields['chosen_column'].choices = colname_choices
 
+        self.fields['chosen_layer'].choices = layer_choices
+        self.fields['chosen_layer'].widget.attrs.update({'class' : 'form-control'})
+
+        self.fields['chosen_column'].choices = colname_choices
         self.fields['chosen_column'].widget.attrs.update({'class' : 'form-control'})
 
 
