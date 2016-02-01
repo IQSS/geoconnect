@@ -44,7 +44,11 @@
                 $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
                 //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
                 //$('#id_progress_bar').hide();
-
+                if (json_resp.data){
+                    if (json_resp.data.embed_map_link){
+                        $('#msg_form_tabular').append("<iframe src='" + json_resp.data.embed_map_link + "'></iframe>");
+                    }
+                }
             }else{
                 console.log(json_resp.message);
                 // form error, display message
@@ -122,7 +126,7 @@
         $( "#id_geocode_type" ).change(function() {
 
             console.log('type: '+ $( "#id_geocode_type" ).val());
-            if ($( "#id_geocode_type" ).val() == 'latitude-longitude'){
+            if ($( "#id_geocode_type" ).val() == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
                 // show latitude-longitude form
                 $('.form_lat_lng_fields').show();
                 $('.form_single_column_fields').hide();
@@ -162,12 +166,15 @@
 {% block main_container %}
 
 <div class="row">
-    <div class="col-md-3">
-        <h4>test files</h4>
+    <div class="col-md-9">
+    </div>
+    <div class="col-md-3" style="border:1px solid #006699;">
+        test files
         {% for tf in test_files %}
             <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
         {% endfor %}
     </div><!-- col -->
+    {% comment %}
     <div class="col-md-9">
         <p>
             <b>Geospatial Data Type{{ geocode_types|pluralize }}</b>
@@ -184,11 +191,27 @@
             <br /><br />
         </p>
     </div><!-- col -->
+    {% endcomment %}
 </div><!-- row -->
+
+<div class="row">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-11">
+        <h3>{{ tabular_info }} -
+            <span style="font-size:85%">{{ tabular_info.get_dv_file_basename }}</span>
+        </h3>
+            {# {{ tabular_info.dv_file }} #}
+        <p><br />
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            Please select the type of geospatial data, and the columns that it can be found in.
+        </p>
+    </div>
+</div>
 
 <div id="msg_form_tabular" style="display:none;"></div>
 <!-- START: tabular form -->
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
+
     {% csrf_token %}
     <div class="form-group">
       <label for="id_geocode_type" class="col-sm-3 control-label">Geospatial Data Type</label>
@@ -244,66 +267,9 @@
 </form>
 <!-- END: tabular form -->
 
+{% include "gis_tabular/preview_rows.html" %}
 
-<div>
-    <table class='table table-bordered'>
-        <tr>
-            <th>tabular_info</th>
-            <td>{{ tabular_info }} (id: {{ tabular_id }})</td>
-        </tr>
-        <tr>
-            <th>dv_file</th>
-            <td>{{ tabular_info.dv_file }}</td>
-        </tr>
-        <tr>
-            <th>column_names</th>
-            <td>{{ tabular_info.column_names }}</td>
-        </tr>
-        <tr>
-            <th>num_rows</th>
-            <td>{{ tabular_info.num_rows }}</td>
-        </tr>
-        <tr>
-            <th>has_header_row</th>
-            <td>{{ tabular_info.has_header_row }}</td>
-        </tr>
-
-    </table>
-</div>
-
-{% if NUM_PREVIEW_ROWS == tabular_info.num_rows %}
-    Displaying {% if tabular_info.num_rows > 1 %} all {% endif %}
-    <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
-{% else %}
-    Preview of first <b>{{ NUM_PREVIEW_ROWS }} row{{ NUM_PREVIEW_ROWS|pluralize }}</b>
-{% endif %}
-
-
-<div id="xtable-wrapper">
-    <div id="xtable-scroll">
-    </div>
-</div>
-<table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
-    <thead>
-        <th>Row #</th>
-        {% for col in tab_file_stats.column_names %}
-        <th>{{ col }}</th>
-        {% endfor %}
-    </thead>
-    <tbody>
-        {% for row in tab_file_stats.preview_rows %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-            {% for val in row %}
-                <td>{{ val }}</td>
-            {% empty %}
-            (No rows to display)
-            {% endfor %}
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+{% include "gis_tabular/info_tabular.html" %}
 <br />
 <br />
 <br />

@@ -19,6 +19,8 @@ class DeleteMapForm(forms.Form):
     confirmation = forms.BooleanField(label="I understand all versions of this map will be deleted from WorldMap.", initial=False)
 '''
 
+GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
+
 
 class ChooseSingleColumnForm(forms.Form):
     """
@@ -41,6 +43,18 @@ class ChooseSingleColumnForm(forms.Form):
 
         self.fields['chosen_column'].choices = colname_choices
         self.fields['chosen_column'].widget.attrs.update({'class' : 'form-control'})
+
+
+    def clean_chosen_layer(self):
+
+        chosen_layer_id = self.cleaned_data.get('chosen_layer', None)
+        if chosen_layer_id is None:
+            ValidationError(_('You must choose a layer'))
+
+        try:
+            return int(chosen_layer_id)
+        except ValueError:
+            ValidationError(_('The layer does not have a valid id. (talk to the admin)'))
 
 
 class LatLngColumnsForm(forms.Form):

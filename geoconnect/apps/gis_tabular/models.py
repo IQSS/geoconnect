@@ -1,4 +1,5 @@
 import os
+from os.path import basename
 from hashlib import md5
 from django.utils.text import slugify
 from django.core.urlresolvers import reverse
@@ -44,6 +45,12 @@ class SimpleTabularTest(TimeStampedModel):
         lnk = reverse('view_test_file', kwargs=dict(tabular_id=self.id))
         return '<a href="%s" target="_blank">test page</a>' % lnk
     test_page.allow_tags=True
+
+    def get_dv_file_basename(self):
+        if not self.dv_file:
+            return None
+
+        return basename(self.dv_file.name)
 
     class Meta:
         verbose_name = 'GIS Simple Tabular (for dev)'

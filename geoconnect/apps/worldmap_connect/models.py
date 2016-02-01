@@ -371,6 +371,15 @@ class JoinTargetInformation(TimeStampedModel):
         return jt_formatter.get_all_join_targets()
 
 
+    def get_target_layer_name_column(self, target_layer_id):
+        """
+        Given a target layer id, retrieve the target name
+        """
+        jt_formatter = JoinTargetFormatter(self.target_info)
+
+        return jt_formatter.get_target_layer_name_column(target_layer_id)
+
+
     def get_join_targets_by_type(self, chosen_geocode_type):
         jt_formatter = JoinTargetFormatter(self.target_info)
         return jt_formatter.get_join_targets_by_type(chosen_geocode_type)

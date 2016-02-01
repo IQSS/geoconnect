@@ -91,8 +91,8 @@ class JoinTargetFormatter(object):
 
     @staticmethod
     def get_formatted_name(geocode_type, year=None, title=None):
-        if year is None:
-            return "{0}".format(geocode_type)
+        if geocode_type is None:
+            return None
 
         if year and title:
             return "{0} ({1}) {2}".format(geocode_type, year, title)
@@ -100,6 +100,25 @@ class JoinTargetFormatter(object):
         if year:
             return "{0} ({1})".format(geocode_type, year)
 
+        if title:
+            return "{0} - {1}".format(geocode_type, title)
+
+        return "{0}".format(geocode_type)
+
+
+    def get_target_layer_name_column(self, target_layer_id):
+        """
+        return (target layer name, target layer column)
+        """
+
+        if target_layer_id is None:
+            return None
+
+        for info in self.target_info['data']:
+            if 'id' in info and target_layer_id == info['id']:
+                return (info['layer'], info['attribute']['attribute'])
+
+        return (None, None)
 
     def get_geocode_types(self):
         """
