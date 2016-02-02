@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+</style>
+<script>
+    $( document ).ready(function() {
+    });
+</script>
+{% endblock %}
+
+{% block main_container %}
+
+<!-- start panel -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
+          - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_layerinfo.tabular_info.get_dv_file_basename }}</span>
+      </h3>
+    </div>
+    <div class="panel-body" id="id_main_panel_content">
+
+        <!-- start: IFRAME MAP -->
+        <div class="row">
+            <div class="col-md-9">
+                &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
+                <iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>
+            </div>
+            <div class="col-md-3">
+                <h5>Legend</h5>
+                <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+                {% if download_links %}
+                <h5>Download</h5>
+                    {% for dname, dlink in download_links.items %}
+                        <a href="{{ dlink }}">{{ dname }}</a>&nbsp;
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% if attribute_data %}
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Attribute Information</h5>
+                <table class="table table-bordered table-condensed table-striped">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Name</th>
+                        <th>Display Name</th>
+                        <th>Type</th>
+                    </tr>
+                {% for col_info in attribute_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ col_info.name }}</td>
+                        <td>{{ col_info.display_name }}</td>
+                        <td>{{ col_info.type }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        <!-- end: IFRAME MAP -->
+
+    </div>
+</div>
+<!-- end panel -->
+{% endblock %}

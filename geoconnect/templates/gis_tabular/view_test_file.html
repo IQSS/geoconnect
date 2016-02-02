@@ -164,43 +164,35 @@
 {% endblock %}
 
 {% block main_container %}
-
 <div class="row">
-    <div class="col-md-9">
-    </div>
+    <div class="col-md-9"></div>
     <div class="col-md-3" style="border:1px solid #006699;">
         test files
         {% for tf in test_files %}
             <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
         {% endfor %}
+        <br />(<a href="{% url 'view_sample_map' %}">sample map</a>)
     </div><!-- col -->
-    {% comment %}
-    <div class="col-md-9">
-        <p>
-            <b>Geospatial Data Type{{ geocode_types|pluralize }}</b>
-            <ul>
-                {% for gt in geocode_types %}
-                <li>{{ gt.0 }} zz {{gt.1}}</li>
-                    {#<a href="{% url 'ajax_get_join_targets' gt.0 %}">{{ gt.0 }}</a>#}
-                {% endfor %}
-            </ul>
-            <br /><br />
-        </p>
-        <p>
-            <b>Column to join</b>
-            <br /><br />
-        </p>
-    </div><!-- col -->
-    {% endcomment %}
-</div><!-- row -->
+</div>
+
+<!-- start panel --><div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
+          - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ tabular_info.get_dv_file_basename }}</span>
+      </h3>
+    </div>
+    <div class="panel-body" id="id_main_panel_content">
+
 
 <div class="row">
     <div class="col-sm-1"></div>
     <div class="col-sm-11">
+        {% comment %}
         <h3>{{ tabular_info }} -
             <span style="font-size:85%">{{ tabular_info.get_dv_file_basename }}</span>
         </h3>
-            {# {{ tabular_info.dv_file }} #}
+        {% endcomment %}
+
         <p><br />
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             Please select the type of geospatial data, and the columns that it can be found in.
@@ -274,4 +266,7 @@
 <br />
 <br />
 <br />
+
+</div>
+</div>
 {% endblock %}

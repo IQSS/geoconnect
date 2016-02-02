@@ -7,7 +7,8 @@ from django.conf import settings
 
 from django.views.decorators.http import require_POST
 
-from apps.gis_tabular.models import SimpleTabularTest   # for testing
+from apps.gis_tabular.models import SimpleTabularTest # for testing
+from apps.gis_tabular.models import WorldMapTabularLayerInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 
@@ -27,6 +28,27 @@ from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+def view_sample_map(request):
+    """
+    Test view a WorldMapTabularLayerInfo object
+    """
+    worldmap_info = WorldMapTabularLayerInfo.objects.first()
+    if worldmap_info is None:
+        return HttpResponse('Sorry! No WorldMapTabularLayerInfo objects available')
+
+    d = dict(worldmap_layerinfo=worldmap_info,
+            layer_data=worldmap_info.core_data,
+            download_links=worldmap_info.download_links,
+            attribute_data=worldmap_info.attribute_data
+            )
+
+    return render_to_response('gis_tabular/view_tabular_map.html', d\
+                                     , context_instance=RequestContext(request))
+
+
+
 
 
 @require_POST

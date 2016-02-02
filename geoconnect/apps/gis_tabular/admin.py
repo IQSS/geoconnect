@@ -1,7 +1,7 @@
 from django.contrib import admin
 from apps.gis_basic_file.admin import GISDataFileAdmin
 
-from apps.gis_tabular.models import TabularFileInfo
+from apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 from apps.gis_tabular.admin_forms import TabularInfoAdminForm
@@ -43,5 +43,15 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
         return fs
 
 
+class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
+    """For testing"""
+
+    readonly_fields = ('created', 'modified')
+    list_display = ('tabular_info', 'created',)# 'dv_file', 'delimiter')
+    save_on_top = True
+
+
 admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
+admin.site.register(WorldMapTabularLayerInfo, WorldMapTabularLayerInfoAdmin)
+
 admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)

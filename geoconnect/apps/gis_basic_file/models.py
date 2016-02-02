@@ -23,12 +23,12 @@ class GISDataFile(DataverseInfo):
     This object stores information describing a geospatial Dataverse File
     For continuity between GeoConnect and WorldMap, both project use the DataverseInfo model
     """
-    
+
     #
     # RegisteredDataverse - Used for calls back to Dataverse API
     #
     registered_dataverse = models.ForeignKey(RegisteredDataverse)
-    
+
     # session token
     # Token used to make requests of the Dataverse api; may expire, be refreshed
     #
@@ -36,13 +36,13 @@ class GISDataFile(DataverseInfo):
 
     # Copy of the actual file
     dv_file = models.FileField(upload_to='dv_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
-    
+
     # For file working.  examples: unzipping, pulling raw data from columns, etc
     gis_scratch_work_directory = models.CharField(max_length=255, blank=True, help_text='scratch directory for files')
 
     # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-    
+
 
     def is_datafile_private(self):
         """Is the datafile private on Dataverse?
@@ -54,9 +54,9 @@ class GISDataFile(DataverseInfo):
     def get_dataverse_server_url(self):
         if not self.registered_dataverse:
             return None
-            
+
         return self.registered_dataverse.dataverse_url
-        
+
 
     def is_dv_file_available(self):
         """Does the file actually exist in the dv_file specified path"""
@@ -75,9 +75,9 @@ class GISDataFile(DataverseInfo):
     def get_dv_file_basename(self):
         if not self.dv_file:
             return None
-            
+
         return basename(self.dv_file.name)
-    
+
     def get_dv_file_fullpath(self):
         if not self.dv_file:
             return None
@@ -89,7 +89,7 @@ class GISDataFile(DataverseInfo):
 
 
     def get_scratch_work_directory(self):
-        """Return the full path of the scratch working directory.  
+        """Return the full path of the scratch working directory.
         Creates directory if it doesn't exist """
         return ScratchDirectoryHelper.get_scratch_work_directory(self)
 
@@ -107,7 +107,7 @@ class GISDataFile(DataverseInfo):
         if len(l) == 0:
             return None
         return l
-        
+
     def save(self, *args, **kwargs):
         if not self.id:
             super(GISDataFile, self).save(*args, **kwargs)
@@ -118,7 +118,7 @@ class GISDataFile(DataverseInfo):
 
     def get_abstract_for_worldmap(self):
         return render_to_string('gis_basic_file/worldmap_abstract.html', { 'gis_file' : self })
-        
+
 
     def __unicode__(self):
         if self.dataverse_name and self.dataset_name and self.datafile_label:
@@ -129,4 +129,3 @@ class GISDataFile(DataverseInfo):
 
     class Meta:
         ordering = ('-modified',  )
-

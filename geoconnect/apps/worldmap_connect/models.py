@@ -43,7 +43,7 @@ class WorldMapImportAttempt(TimeStampedModel):
     """
     title = models.CharField(max_length=255)
     abstract = models.TextField()
-    shapefile_name = models.CharField(max_length=255)
+    shapefile_name = models.CharField('File name', max_length=255)
 
     gis_data_file = models.ForeignKey(GISDataFile, on_delete=models.CASCADE)  # ties back to user info
 
