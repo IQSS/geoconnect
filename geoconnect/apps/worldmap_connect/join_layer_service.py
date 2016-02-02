@@ -101,6 +101,6 @@ def create_map_from_datatable_join(datatable_obj, dataverse_metadata_dict, table
 
     if rjson.get('success', False) is True:
         # (True, (message, data))
-        return (True, (rjson.get('message', '(no message sent)'), rjson.get('data', {})))
+        return (True, rjson)
     else:
         return (False, rjson.get('message', '(no message sent)'))

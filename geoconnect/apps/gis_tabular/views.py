@@ -3,6 +3,8 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+
 from django.conf import settings
 
 from django.views.decorators.http import require_POST
@@ -27,7 +29,7 @@ from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 #from geo_utils.view_util import get_common_lookup
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def view_sample_map(request):
@@ -44,10 +46,25 @@ def view_sample_map(request):
             attribute_data=worldmap_info.attribute_data
             )
 
-    return render_to_response('gis_tabular/view_tabular_map.html', d\
-                                     , context_instance=RequestContext(request))
+    return render_to_response('gis_tabular/view_tabular_map.html',
+                            d,
+                            context_instance=RequestContext(request))
 
 
+
+def build_tabular_map_html(request, worldmap_info):
+    if not isinstance(worldmap_info, WorldMapTabularLayerInfo):
+        return None
+
+    d = dict(worldmap_layerinfo=worldmap_info,
+            layer_data=worldmap_info.core_data,
+            download_links=worldmap_info.download_links,
+            attribute_data=worldmap_info.attribute_data
+            )
+
+    return render_to_string('gis_tabular/view_tabular_map_div.html',
+                            d,
+                            context_instance=RequestContext(request))
 
 
 
@@ -91,21 +108,49 @@ def view_map_tabular_file_form(request):
                     tabular_info.dv_file.path)
 
 
-    (success, worldmap_msg) = create_map_from_datatable_join(tabular_info,
+    (success, worldmap_data_or_err_msg) = create_map_from_datatable_join(tabular_info,
                         dataverse_metadata_dict,
                         form_single_column.cleaned_data.get('chosen_column'),
                         form_single_column.cleaned_data.get('chosen_layer'),
                         )
     print '-' * 40
     print 'success', success
-    print 'worldmap_msg', worldmap_msg
+    print 'worldmap_data_or_err_msg', worldmap_data_or_err_msg
     print '-' * 40
 
-    if success:
-        msg, response_data = worldmap_msg
-        json_msg = MessageHelperJSON.get_json_success_msg(worldmap_msg, data_dict=response_data)
-    else:
-        json_msg = MessageHelperJSON.get_json_fail_msg('Sorry! ' + worldmap_msg)
+    # -----------------------------------------
+    # Failed! Return error message
+    # -----------------------------------------
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg('Sorry! ' + worldmap_data_or_err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+    # -----------------------------------------
+    # Succeeded!  Create a WorldMapTabularLayerInfo object
+    # -----------------------------------------
+    worldmap_tabular_info = WorldMapTabularLayerInfo.build_from_worldmap_json(tabular_info,
+                                worldmap_data_or_err_msg)
+
+    if worldmap_tabular_info is None:
+        LOGGER.error("Failed to create WorldMapTabularLayerInfo using %s" , worldmap_data_or_err_msg)
+        user_msg = 'Sorry! Failed to create map. Please try again. (code: s1)'
+        json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+    # -----------------------------------------
+    # Build the Map HTML chunk to replace the form
+    # -----------------------------------------
+    map_html = build_tabular_map_html(request, worldmap_tabular_info)
+    if map_html is None:
+        LOGGER.error("Failed to create map HTML using WorldMapTabularLayerInfo: %s (%d)" ,
+            worldmap_tabular_info, worldmap_tabular_info.id)
+        user_msg = 'Sorry! Failed to create map. Please try again. (code: s2)'
+        json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+    #    msg, response_data = worldmap_msg
+    data_dict = dict(map_html=map_html)
+    json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
     return HttpResponse(json_msg, mimetype="application/json", status=200)
 

@@ -17,6 +17,9 @@ from shared_dataverse_information.map_layer_metadata.models import MapLayerMetad
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
+import logging
+LOGGER = logging.getLogger(__name__)
+
 
 class SimpleTabularTest(TimeStampedModel):
 
@@ -139,10 +142,16 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
     attribute_data = JSONField()
     download_links = JSONField(blank=True)
 
+    is_join_layer = models.BooleanField(default=False)
+    is_lat_lng_layer = models.BooleanField(default=False)
+
     # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
 
-
+    class Meta:
+        ordering = ('-modified',)
+        verbose_name = 'WorldMapTabularLayerInfo'
+        verbose_name_plural = verbose_name
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -153,10 +162,70 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         self.md5 = md5('%s-%s' % (self.id, layer_name)).hexdigest()
         super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
 
-    class Meta:
-        ordering = ('-modified',)
-        verbose_name = 'WorldMapTabularLayerInfo'
-        verbose_name_plural = verbose_name
+    @staticmethod
+    def build_from_worldmap_json(tabular_info, json_dict):
+        """
+        Create WorldMapTabularLayerInfo object using
+        a python dictionary containing information
+        returned from the WorldMapLayerInfo
+        """
+        if tabular_info is None:
+            LOGGER.error('tabular_info cannot be None')
+            return None
+
+        if  json_dict is None:
+            LOGGER.error('json_dict cannot be None')
+            return None
+
+        # -----------------------------------------
+        # Get core data (required)
+        # -----------------------------------------
+        if not 'data' in json_dict:
+            LOGGER.error('The json_dict must have a "data" key')
+            return None
+        core_data = json_dict['data']
+
+        # -----------------------------------------
+        # Get attribute data (required)
+        # -----------------------------------------
+        if not 'attribute_info' in core_data:
+            LOGGER.error('The core_data must have a "attribute_info" key')
+            return None
+        attribute_data = core_data['attribute_info']
+
+        # -----------------------------------------
+        # Get download_links (optional)
+        # -----------------------------------------
+        if 'download_links' in core_data:
+            download_links = core_data['download_links']
+        else:
+            download_links = ''
+
+        # -----------------------------------------
+        # Gather initial values
+        # -----------------------------------------
+        init_data = dict(tabular_info=tabular_info,
+                    core_data=core_data,
+                    attribute_data=attribute_data,
+                    download_links=download_links)
+
+        # -----------------------------------------
+        # Is this a tabular join or lat/lng map?
+        # -----------------------------------------
+        attrs_indicating_a_join = ('tablejoin_id',
+                'join_layer_id',
+                'join_layer_typename')
+        if all (k in core_data for k in attrs_indicating_a_join):
+            init_data['is_join_layer'] = True
+        else:
+            init_data['is_lat_lng_layer'] = True
+
+        wm_info = WorldMapTabularLayerInfo(**init_data)
+        wm_info.save()
+
+        return wm_info
+
+
 
     def get_layer_url_base(self):
         if not self.core_data:
@@ -273,3 +342,11 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
         return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token)
+
+
+
+"""
+Example WorldMap response from successfully creating a join layer:
+
+    {u'message': u'worked', u'data': {u'tablejoin_id': 206, u'matched_record_count': 156, u'attribute_info': u'[{"type": "unicode", "display_name": "fid", "name": "fid"}, {"type": "unicode", "display_name": "the_geom_col", "name": "the_geom_col"}, {"type": "int", "display_name": "objectid", "name": "objectid"}, {"type": "float", "display_name": "area", "name": "area"}, {"type": "float", "display_name": "perimeter", "name": "perimeter"}, {"type": "int", "display_name": "state", "name": "state"}, {"type": "unicode", "display_name": "county", "name": "county"}, {"type": "unicode", "display_name": "tract", "name": "tract"}, {"type": "int", "display_name": "ct_id", "name": "ct_id"}, {"type": "unicode", "display_name": "logrecno", "name": "logrecno"}, {"type": "int", "display_name": "blk_count", "name": "blk_count"}, {"type": "float", "display_name": "dry_pct", "name": "dry_pct"}, {"type": "float", "display_name": "dry_acres", "name": "dry_acres"}, {"type": "float", "display_name": "dry_sqmi", "name": "dry_sqmi"}, {"type": "float", "display_name": "dry_sqkm", "name": "dry_sqkm"}, {"type": "float", "display_name": "shape_area", "name": "shape_area"}, {"type": "float", "display_name": "shape_len", "name": "shape_len"}, {"type": "int", "display_name": "hoods_pd_i", "name": "hoods_pd_i"}, {"type": "unicode", "display_name": "nbhd", "name": "nbhd"}, {"type": "unicode", "display_name": "nbhdcrm", "name": "nbhdcrm"}, {"type": "unicode", "display_name": "nsa_id_1", "name": "nsa_id_1"}, {"type": "unicode", "display_name": "nsa_name", "name": "nsa_name"}, {"type": "int", "display_name": "uniqueid", "name": "uniqueid"}, {"type": "int", "display_name": "uniqueid_1", "name": "uniqueid_1"}, {"type": "int", "display_name": "ct_id_1", "name": "ct_id_1"}, {"type": "unicode", "display_name": "nbhd_1", "name": "nbhd_1"}, {"type": "int", "display_name": "b19013_med", "name": "b19013_med"}, {"type": "float", "display_name": "walkabilit", "name": "walkabilit"}, {"type": "float", "display_name": "quality_of", "name": "quality_of"}]', u'layer_join_attribute': u'TRACT', u'worldmap_username': u'rp', u'join_layer_id': u'643', u'download_links': u'{"zip": "http://localhost:8000/download/wfs/643/zip?outputFormat=SHAPE-ZIP&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", "gml": "http://localhost:8000/download/wfs/643/gml?outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", "tiff": "http://localhost:8000/download/wms/643/tiff?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fgeotiff&srs=EPSG%3A4326&request=GetMap&height=550", "KML": "http://localhost:8000/download/wms_kml/643/kml?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&mode=refresh", "jpg": "http://localhost:8000/download/wms/643/jpg?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fjpeg&srs=EPSG%3A4326&request=GetMap&height=550", "json": "http://localhost:8000/download/wfs/643/json?outputFormat=json&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", "pdf": "http://localhost:8000/download/wms/643/pdf?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=application%2Fpdf&srs=EPSG%3A4326&request=GetMap&height=550", "csv": "http://localhost:8000/download/wfs/643/csv?outputFormat=csv&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", "xls": "http://localhost:8000/download/wfs/643/xls?outputFormat=excel&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", "png": "http://localhost:8000/download/wms/643/png?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550"}', u'unmatched_records_list': u'', u'layer_typename': u'geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'join_layer_url': u'/data/geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'join_layer_typename': u'geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'table_name': u'boston_income_01tab_2_1', u'embed_map_link': u'http://localhost:8000/maps/embed/?layer=geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'unmatched_record_count': 0, u'layer_link': u'http://localhost:8000/data/geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'table_id': 332, u'map_image_link': u'http://localhost:8000/download/wms/643/png?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550', u'llbbox': u'[-71.1908629979881, 42.2278900020655, -70.9862559993925, 42.3987970008647]', u'table_join_attribute': u'tract', u'layer_name': u'geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1', u'tablejoin_view_name': u'join_boston_census_blocks_0zm_boston_income_01tab_2_1'}, u'success': True}
+"""
