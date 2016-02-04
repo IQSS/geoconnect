@@ -52,8 +52,8 @@ ALLOWED_HOSTS = JSON_SECRETS['ALLOWED_HOSTS']
 ADMINS = JSON_SECRETS['ADMINS']
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-#DEBUG = False
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
