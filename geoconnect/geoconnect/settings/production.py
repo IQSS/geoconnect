@@ -169,7 +169,7 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR, 'gis_
 #
 
 # RETRIEVE WORLDMAP JSON INFO
-WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod.json")
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod2.json")
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
 if not isfile(WORLDMAP_SECRETS_FNAME):
     raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)
