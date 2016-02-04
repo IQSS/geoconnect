@@ -15,7 +15,8 @@ from geo_utils.json_field_reader import JSONFieldReader
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
-WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
+WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS\
+    + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -138,18 +139,20 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     tabular_info = models.ForeignKey(SimpleTabularTest)
 
+    layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
+
+    is_join_layer = models.BooleanField(default=False, help_text='auto-filled on save')
+    is_lat_lng_layer = models.BooleanField(default=False, help_text='auto-filled on save')
+
     core_data = JSONField()
     attribute_data = JSONField()
     download_links = JSONField(blank=True)
-
-    is_join_layer = models.BooleanField(default=False)
-    is_lat_lng_layer = models.BooleanField(default=False)
 
     # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
 
     class Meta:
-        ordering = ('-modified',)
+        ordering = ('-created',)
         verbose_name = 'WorldMapTabularLayerInfo'
         verbose_name_plural = verbose_name
 
@@ -157,9 +160,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         if not self.id:
             super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
 
-        layer_name = self.core_data.get('layer_typename', None)
+        self.layer_name = self.core_data.get('layer_typename', None)
 
-        self.md5 = md5('%s-%s' % (self.id, layer_name)).hexdigest()
+        self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
 
     @staticmethod
@@ -246,15 +249,11 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         if not self.core_data:
             return None
 
-        layer_name = self.core_data.get('layer_typename', None)
-        if layer_name is None:
-            return None
-
         params = (('request', 'GetLegendGraphic')\
                    , ('format', 'image/png')\
                    , ('width', 20)\
                    , ('height', 20)\
-                   , ('layer', layer_name)\
+                   , ('layer', self.layer_name)\
                    , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
                 )
         print ('params:', params)
@@ -268,9 +267,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     def get_dict_for_classify_form(self):
 
-        layer_name = self.core_data.get('layer_typename', None)
-
-        return dict(layer_name=layer_name\
+        return dict(layer_name=self.layer_name\
                 , raw_attribute_info=self.column_data)
 
     '''

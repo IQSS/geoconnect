@@ -68,7 +68,7 @@ def create_map_from_datatable_lat_lng(datatable_obj, dataverse_metadata_dict, la
                         data=map_params,
                         files=files,
                         auth=settings.WORLDMAP_ACCOUNT_AUTH,
-                        timeout=30
+                        timeout=settings.WORLDMAP_DEFAULT_TIMEOUT
                         )
     except RequestsConnectionError as e:
         print 'err', e

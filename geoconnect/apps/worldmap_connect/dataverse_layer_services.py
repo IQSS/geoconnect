@@ -83,7 +83,7 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
         r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
-                        , timeout=30)
+                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as e:
 
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.
@@ -93,8 +93,8 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
         LOGGER.error(err_msg)
         return (False, err_msg)
 
-    #print (r.text)
-    #print (r.status_code)
+    print (r.text)
+    print (r.status_code)
 
     #--------------------------------------
     # Check Response
@@ -149,7 +149,7 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
         r = requests.post(GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                         , data=data_params\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
-                        , timeout=30)
+                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as e:
 
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.
@@ -218,7 +218,7 @@ def get_join_targets():
     try:
         r = requests.get(GET_JOIN_TARGETS\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
-                        , timeout=30)
+                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as e:
 
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.

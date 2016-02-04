@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^%sshapefile/' % URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
-    url(r'^%stabular/' % URL_PREFIX, include('apps.gis_tabular.urls')),
+    #url(r'^%stabular/' % URL_PREFIX, include('apps.gis_tabular.urls')),
 
     #url(r'^%sgeoconnect/'% URL_PREFIX, include('apps.gis_shapefiles.urls')),
 
@@ -30,10 +30,10 @@ urlpatterns = patterns('',
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     #(r'^%s/geo-connect-admin/doc/' % URL_PREFIX, include('django.contrib.admindocs.urls')),
-    
+
     url(r'^%sgeo-connect-admin/' % URL_PREFIX, include(admin.site.urls)),
-    
-) 
+
+)
 #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Uncomment the next line to serve media files in dev.

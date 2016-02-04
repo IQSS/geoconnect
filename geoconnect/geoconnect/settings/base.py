@@ -316,8 +316,14 @@ DV_DATAFILE_DIRECTORY = None
 BROKER_URL = 'django://'
 
 ########## WORLDMAP CONNECTION INFO
-WORLDMAP_TOKEN_NAME_FOR_DV = 'geoconnect_token'
-WORLDMAP_TOKEN_FOR_DATAVERSE = None
 WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'
 WORLDMAP_ACCOUNT_USERNAME = None
 WORLDMAP_ACCOUNT_PASSWORD = None
+
+WORLDMAP_DEFAULT_TIMEOUT = 5*60 # seconds
+WORLDMAP_SHORT_TIMEOUT = 1*60 # seconds, for non-layer making requests
+
+# Old WorldMap connection info - leaving as placeholder 2/3 until
+# updated geoconnect fully ready
+WORLDMAP_TOKEN_NAME_FOR_DV = 'geoconnect_token'
+WORLDMAP_TOKEN_FOR_DATAVERSE = ''

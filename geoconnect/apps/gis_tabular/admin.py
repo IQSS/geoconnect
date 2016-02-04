@@ -46,8 +46,8 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
 class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
     """For testing"""
 
-    readonly_fields = ('created', 'modified')
-    list_display = ('tabular_info', 'created',)# 'dv_file', 'delimiter')
+    readonly_fields = ('created', 'modified',)# 'is_join_layer', 'is_lat_lng_layer')
+    list_display = ('tabular_info', 'layer_name', 'is_join_layer', 'is_lat_lng_layer', 'created',)# 'dv_file', 'delimiter')
     save_on_top = True
 
 

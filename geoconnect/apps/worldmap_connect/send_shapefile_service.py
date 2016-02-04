@@ -323,28 +323,3 @@ class SendShapefileService:
             return False
 
         return True
-
-        '''
-        try:
-            # Success!  Create a WorldMapLayerInfo object
-            #
-            self.worldmap_layerinfo_object = WorldMapLayerInfo(import_attempt=self.import_attempt_obj\
-                                            , layer_name=wm_data.get('layer_name', '')\
-                                            , layer_link=wm_data.get('layer_link', '')\
-                                            , embed_map_link=wm_data.get('embed_map_link', '')\
-                                            , worldmap_username=wm_data.get('worldmap_username', '')\
-                                        )
-            self.worldmap_layerinfo_object.add_attribute_info(wm_data.get('attribute_info', None))
-            self.worldmap_layerinfo_object.save()
-            logger.debug('--- SAVED ---')
-            self.import_attempt_obj.import_success = True
-            self.import_attempt_obj.save()
-
-        except:
-            # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
-            # Save a WorldMapImportFail object to check original response
-            #
-            logger.debug('--- Failed to save worldmap data\n%s ---' % wm_data)
-            self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but GeoConnect failed to save results')
-            return False
-        '''

@@ -31,7 +31,7 @@ class WorldMapImporter:
 
     This is meant to be run asynchronously, thus the 4 minute timeout
     """
-    def __init__(self, timeout_seconds=120, return_type_json=False):
+    def __init__(self, timeout_seconds=420, return_type_json=False):
         """
         :param worldmap_server_url: base server url, including http or
             https. e.g. http://worldmap.harvard.edu
@@ -93,6 +93,10 @@ class WorldMapImporter:
             LOGGER.error(err_msg)
             return self.get_result_msg(False, err_msg)
 
+        # quick hack here - so that the layer owner is the
+        # worldmap account holder
+        layer_params['worldmap_username'] = settings.WORLDMAP_ACCOUNT_USERNAME
+
 
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
 
@@ -104,11 +108,11 @@ class WorldMapImporter:
 
         r = None
         try:
-            r = requests.post(self.api_import_url,\
-                               data=layer_params,\
-                               files=shp_file_param,\
-                               auth=settings.WORLDMAP_ACCOUNT_AUTH,\
-                               timeout=self.timeout_seconds\
+            r = requests.post(self.api_import_url,
+                               data=layer_params,
+                               files=shp_file_param,
+                               auth=settings.WORLDMAP_ACCOUNT_AUTH,
+                               timeout=settings.WORLDMAP_DEFAULT_TIMEOUT
                             )
         except requests.exceptions.ConnectionError as e:
             err_msg = """<br /><p><b>Details for administrator:</b> Could not contact the

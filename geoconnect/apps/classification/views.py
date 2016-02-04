@@ -134,7 +134,7 @@ def view_classify_layer_form(request, import_success_md5):
         resp = requests.post(classify_url,\
                     data=classify_params,\
                     auth=settings.WORLDMAP_ACCOUNT_AUTH,\
-                    timeout=7)
+                    timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
     except requests.exceptions.ConnectionError as e:
         err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
                                 % (classify_url, e.message)

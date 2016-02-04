@@ -1,4 +1,6 @@
-shared-dataverse-information>=0.3.8
+# 0.4.1 - Doesn't have latest urls... (2.4.2016)
+shared-dataverse-information==0.4.1
+#shared-dataverse-information>=0.4.2
 Django==1.6
 pyshp==1.2.0
 requests==2.3.0
