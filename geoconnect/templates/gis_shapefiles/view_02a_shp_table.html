@@ -8,8 +8,8 @@
 <!-- Note for User -->
 <p><b>Please note:</b></p>
 
-<p>In order to map your data file, a copy will be sent to Harvard's WorldMap platform, <a href="{{ WORLDMAP_SERVER_URL }}" target="_blank">worldmap.harvard.edu</a>.</p> 
- 
+<p>In order to map your data file, a copy will be sent to Harvard's WorldMap platform, <a href="{{ WORLDMAP_SERVER_URL }}" target="_blank">worldmap.harvard.edu</a>.</p>
+
 <p>You have the ability to delete any maps, and associated data, from the Harvard WorldMap platform, at any time.</p>
 
 <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
@@ -26,19 +26,21 @@
         The shapefile was successfully examined!
         <p>Press the button below to create a Map Layer:</p>
     {% endcomment %}
-        
 
-    
+
+
 	<script>
 	$('#column_name_list').on('show.bs.collapse', function () {
-	  	$('#btn_show_cols').html('hide fields');	
+	  	$('#btn_show_cols').html('hide fields');
 	})
 	$('#column_name_list').on('hide.bs.collapse', function () {
 	  	$('#btn_show_cols').html('show fields');
 	})
 	</script>
 	<div style="display:none;" id="id_div_attempt_visualization_msg">
-            Attempting map visualization, this may 30 take seconds or longer.
+            Attempting map visualization, this may take 30 seconds* or longer.
+            <br />(Until spring 2016, this may take up to 5 <i>minutes</i> while
+            WorldMap infrastructure is being rebuilt.)
         <br />
                 <img src="{{ STATIC_URL }}images/spinner.gif" alt="spinner" />
         <br />
