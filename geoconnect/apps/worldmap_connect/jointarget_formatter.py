@@ -139,21 +139,13 @@ class JoinTargetFormatter(object):
                 type_dict.update({ info['geocode_type_slug']: 1 })
         return gtypes
 
-    def get_all_target_layers(self):
-        if self.err_found:
-            return None
-
-        join_targets = []
-        for info in self.target_info['data']:
-            info_line = JoinTargetFormatter.get_formatted_name(
-                        info['geocode_type'],
-                        info['year'],
-                        info['title'])
-            join_targets.append((info['id'], info_line))
-        return join_targets
-
-
     def get_available_layers_list_by_type(self, chosen_geocode_type=None):
+        """
+        Used for populating form dropdown with list of layers
+
+        value - join target id
+        text - (year) layer title
+        """
         if self.err_found:
             return None
 
@@ -164,7 +156,7 @@ class JoinTargetFormatter(object):
                 chosen_geocode_type is None:
 
                 info_line = JoinTargetFormatter.get_formatted_name(
-                        info['geocode_type'],
+                        #info['geocode_type'],
                         info['year'],
                         info['title'])
                 join_targets.append((info['id'], info_line))
