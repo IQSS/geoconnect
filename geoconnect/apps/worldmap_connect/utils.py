@@ -12,23 +12,6 @@ LOGGER = logging.getLogger('apps.worldmap_connect.utils')
 JOIN_TARGET_UPDATE_TIME = 10 * 60 # 10 minutes
 
 
-def get_geocode_types_and_join_layers():
-    """
-    Used for the the join layer form.
-
-    Return lists of:
-        - geocode types   [(id, description), (id, description)...]
-        - available layers  [(id, description), (id, description)...]
-    """
-    # Retrieve a JoinTarget object
-    join_target_info = get_latest_jointarget_information()
-    if join_target_info is None:
-        LOGGER.error("Could not retrieve join target information")
-        return (None, None)
-
-    return (join_target_info.get_geocode_types(),\
-        join_target_info.get_available_layers_list())
-
 
 def get_latest_jointarget_information():
     """
@@ -74,6 +57,24 @@ def get_latest_jointarget_information():
 
     return joint_target
 
+def get_geocode_types_and_join_layers():
+    """
+    Used for the the join layer form.
+
+    Return lists of:
+        - geocode types   [(id, description), (id, description)...]
+        - available layers  [(id, description), (id, description)...]
+    """
+    # Retrieve a JoinTarget object
+    join_target_info = get_latest_jointarget_information()
+    if join_target_info is None:
+        LOGGER.error("Could not retrieve join target information")
+        return (None, None)
+
+    return (join_target_info.get_geocode_types(),\
+        join_target_info.get_available_layers_list())
+
+    
 """
 python manage.py shell
 from apps.worldmap_connect.utils import get_latest_jointarget_information

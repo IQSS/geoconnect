@@ -14,7 +14,7 @@ from apps.gis_tabular.models import WorldMapTabularLayerInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 
-from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
+from apps.worldmap_connect.utils import get_latest_jointarget_information, get_geocode_types_and_join_layers
 
 from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
 
@@ -288,7 +288,7 @@ def ajax_get_join_targets(request, selected_geo_type):
     """
     jt = get_latest_jointarget_information()
 
-    join_target_info = jt.get_join_targets_by_type(selected_geo_type)
+    join_target_info = jt.get_available_layers_list_by_type(selected_geo_type)
     if join_target_info is None:
         err_msg = "Sorry! No Join Targets found for Geospatial type: {0}".format(selected_geo_type)
         json_msg = MessageHelperJSON.get_json_msg(success=False,\

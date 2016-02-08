@@ -70,6 +70,67 @@
         });
     }
 
+
+    /**
+        The user has selected a new "Geosptial Data Type"
+        Via Ajax, retrieve a list of layers that match this type.
+    */
+    function update_target_layers_based_on_geotype(selected_geocode_type){
+        
+        console.log('update_target_layers_based_on_geotype');
+        if (selected_geocode_type.length == 0){
+            return;
+        }
+        // form url to make request
+        target_layers_by_type_url = '{% url 'ajax_get_all_join_targets' %}' + selected_geocode_type;
+
+        // Temporarily disable layer dropdown box
+        $('#id_chosen_layer').addClass('disabled');
+        // Disable submit button
+        $('#id_frm_single_column_submit').addClass('disabled').html('Working...');
+
+        // Submit form
+        var jqxhr = $.get(target_layers_by_type_url, function(json_resp) {
+            // don't need a response for user
+            console.log(json_resp);
+        })
+        .done(function(json_resp) {
+            if (json_resp.success && json_resp.data){
+                console.log('success!!' + json_resp.data);
+                // {"message": "success", "data": [[9, "US Census Tract (2000) Boston Census Blocks"]], "success": true}
+                // Update the dropdown box
+
+                // Clear options from dropdown
+                $('#id_chosen_layer')
+                    .find('option').remove().end();
+
+                // Add new options
+                $.each(json_resp.data, function (index, item) {
+                    $('#id_chosen_layer')
+                        .append('<option value="' + item[0] + '">' + item[1] + '</option>');
+                });
+
+            }else{
+                console.log(json_resp.message);
+                // form error, display message
+                //$('#msg_form_lat_lng').html(json_resp.message);
+                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
+
+            }
+          })
+        .fail(function(json_resp) {
+        })
+        .always(function() {
+            // Enable dropdown
+            $('#id_chosen_layer').removeClass('disabled');
+            // Enable submit button
+            $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
+
+        });
+        //alert(target_layers_by_type_url);
+    }
+
+
     function submit_single_column_form(){
         console.log('submit_single_column_form');
 
@@ -116,31 +177,31 @@
         });
     }
 
-
     function bind_form_submit_buttons(){
         //console.log('bind_submit_lat_lng_form');
         $("#id_frm_lat_lng_submit").on( "click", submit_lat_lng_form );
         $("#id_frm_single_column_submit").on( "click", submit_single_column_form );
-
     }
 
     function bind_hide_show_column_forms(){
         console.log('bind geotype dropdown');
         $( "#id_geocode_type" ).change(function() {
 
-            console.log('type: '+ $( "#id_geocode_type" ).val());
-            if ($( "#id_geocode_type" ).val() == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
+            geocode_type_val = $( "#id_geocode_type" ).val()
+            console.log('type: '+ geocode_type_val);
+            if (geocode_type_val == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
                 // show latitude-longitude form
                 $('.form_lat_lng_fields').show();
                 $('.form_single_column_fields').hide();
 
-            }else if ($( "#id_geocode_type" ).val() == ''){
+            }else if (geocode_type_val == ''){
                 // hide both forms
                 $('.form_lat_lng_fields').hide();
                 $('.form_single_column_fields').hide();
 
             }else{
                 // show single column form
+                update_target_layers_based_on_geotype(geocode_type_val);
                 $('.form_lat_lng_fields').hide();
                 $('.form_single_column_fields').show();
                 $("label[for='id_chosen_column']").html('Column for "' + $( "#id_geocode_type option:selected" ).html() + '"');
@@ -199,6 +260,15 @@
         <p><br />
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             Please select the type of geospatial data, and the columns that it can be found in.
+
+            <p>
+            {% for gt in geocode_types %}
+                {% if gt.0 != GEO_TYPE_LATITUDE_LONGITUDE %}
+                <br /><a href="{% url 'ajax_get_join_targets' gt.0 %}">{% url 'ajax_get_join_targets' gt.0 %}</a>
+                {% endif %}
+
+            {% endfor %}
+            </p>
         </p>
     </div>
 </div>

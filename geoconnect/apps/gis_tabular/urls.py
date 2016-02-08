@@ -10,7 +10,7 @@ urlpatterns = patterns('apps.gis_tabular.views',
     url(r'^ajax-join-targets/(?P<selected_geo_type>[\w|-]{1,255})/$', 'ajax_get_join_targets',\
         name='ajax_get_join_targets'),
 
-    url(r'^ajax-join-targets-all/$', 'ajax_get_all_join_targets',\
+    url(r'^ajax-join-targets/$', 'ajax_get_all_join_targets',\
         name='ajax_get_all_join_targets'),
 
     url(r'^process-lat-long-form/$', 'view_process_lat_lng_column_form',\
