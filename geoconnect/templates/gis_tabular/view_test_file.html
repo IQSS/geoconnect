@@ -1,243 +1,13 @@
 {% extends "base.html" %}
 {% block extra_js %}
 <style>
-#table-wrapper {
-  position:relative;
-    border:1px solid #333;
-}
-#table-scroll {
-  height:300px;
-  overflow:auto;
-  margin-top:20px;
-}
 </style>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
-<script>
-
-    function get_alert(alert_type, err_msg){
-        return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
-    }
-
-
-    /* ------------------------------------------
-        Submit the latitude/longitude form
-    ------------------------------------------ */
-    function submit_lat_lng_form(){
-        console.log('submit_lat_lng_form');
-
-        // url for ajax  call
-        check_lat_lng_url = '{% url 'view_process_lat_lng_column_form' %}';
-
-        // Disable submit button + hide message box
-        $('#id_frm_lat_lng_submit').addClass('disabled').html('Working...');
-        $('#msg_form_tabular').empty().hide();
-
-        // Submit form
-        var jqxhr = $.post(check_lat_lng_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
-            // don't need a response for user
-            console.log(json_resp);
-        })
-        .done(function(json_resp) {
-            if (json_resp.success){
-                // Go to map!
-                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                //$('#id_progress_bar').hide();
-                if (json_resp.data){
-                    if (json_resp.data.embed_map_link){
-                        $('#msg_form_tabular').append("<iframe src='" + json_resp.data.embed_map_link + "'></iframe>");
-                    }
-                }
-            }else{
-                console.log(json_resp.message);
-                // form error, display message
-                //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
-
-            }
-          })
-        .fail(function(json_resp) {
-             //$('#simple_msg_div').show();
-             //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
-             //$('#id_success_msg').hide();
-             //$('#id_alert_msg').hide();
-        })
-        .always(function() {
-             // Enable submit button
-             $('#id_frm_lat_lng_submit').removeClass('disabled').html('Submit Latitude & Longitude columns');
-
-        });
-    }
-
-
-    /**
-        The user has selected a new "Geosptial Data Type"
-        Via Ajax, retrieve a list of layers that match this type.
-    */
-    function update_target_layers_based_on_geotype(selected_geocode_type){
-        
-        console.log('update_target_layers_based_on_geotype');
-        if (selected_geocode_type.length == 0){
-            return;
-        }
-        // form url to make request
-        target_layers_by_type_url = '{% url 'ajax_get_all_join_targets' %}' + selected_geocode_type;
-
-        // Temporarily disable layer dropdown box
-        $('#id_chosen_layer').addClass('disabled');
-        // Disable submit button
-        $('#id_frm_single_column_submit').addClass('disabled').html('Working...');
-
-        // Submit form
-        var jqxhr = $.get(target_layers_by_type_url, function(json_resp) {
-            // don't need a response for user
-            console.log(json_resp);
-        })
-        .done(function(json_resp) {
-            if (json_resp.success && json_resp.data){
-                console.log('success!!' + json_resp.data);
-                // {"message": "success", "data": [[9, "US Census Tract (2000) Boston Census Blocks"]], "success": true}
-                // Update the dropdown box
-
-                // Clear options from dropdown
-                $('#id_chosen_layer')
-                    .find('option').remove().end();
-
-                // Add new options
-                $.each(json_resp.data, function (index, item) {
-                    $('#id_chosen_layer')
-                        .append('<option value="' + item[0] + '">' + item[1] + '</option>');
-                });
-
-            }else{
-                console.log(json_resp.message);
-                // form error, display message
-                //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
-
-            }
-          })
-        .fail(function(json_resp) {
-        })
-        .always(function() {
-            // Enable dropdown
-            $('#id_chosen_layer').removeClass('disabled');
-            // Enable submit button
-            $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
-
-        });
-        //alert(target_layers_by_type_url);
-    }
-
-
-    function submit_single_column_form(){
-        console.log('submit_single_column_form');
-
-        // url for ajax  call
-        map_tabular_file_url = '{% url 'view_map_tabular_file_form' %}';
-
-        // Disable submit button + hide message box
-        $('#id_frm_single_column_submit').addClass('disabled').html('Working...');
-        $('#msg_form_tabular').empty().hide();
-
-        // Submit form
-        var jqxhr = $.post(map_tabular_file_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
-            // don't need a response for user
-            console.log(json_resp);
-        })
-        .done(function(json_resp) {
-            if (json_resp.success){
-                // Go to map!
-                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                if (json_resp.data.map_html){
-                    $('#id_main_panel_content').html(json_resp.data.map_html);
-                }
-                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                //$('#id_progress_bar').hide();
-
-            }else{
-                console.log(json_resp.message);
-                // form error, display message
-                //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
-
-            }
-          })
-        .fail(function(json_resp) {
-             //$('#simple_msg_div').show();
-             //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
-             //$('#id_success_msg').hide();
-             //$('#id_alert_msg').hide();
-        })
-        .always(function() {
-             // Enable submit button
-             $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
-
-        });
-    }
-
-    function bind_form_submit_buttons(){
-        //console.log('bind_submit_lat_lng_form');
-        $("#id_frm_lat_lng_submit").on( "click", submit_lat_lng_form );
-        $("#id_frm_single_column_submit").on( "click", submit_single_column_form );
-    }
-
-    function bind_hide_show_column_forms(){
-        console.log('bind geotype dropdown');
-        $( "#id_geocode_type" ).change(function() {
-
-            geocode_type_val = $( "#id_geocode_type" ).val()
-            console.log('type: '+ geocode_type_val);
-            if (geocode_type_val == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
-                // show latitude-longitude form
-                $('.form_lat_lng_fields').show();
-                $('.form_single_column_fields').hide();
-
-            }else if (geocode_type_val == ''){
-                // hide both forms
-                $('.form_lat_lng_fields').hide();
-                $('.form_single_column_fields').hide();
-
-            }else{
-                // show single column form
-                update_target_layers_based_on_geotype(geocode_type_val);
-                $('.form_lat_lng_fields').hide();
-                $('.form_single_column_fields').show();
-                $("label[for='id_chosen_column']").html('Column for "' + $( "#id_geocode_type option:selected" ).html() + '"');
-
-            }
-        });
-    }
-
-    $( document ).ready(function() {
-        bind_hide_show_column_forms();
-        bind_form_submit_buttons();
-        //$( "#id_geocode_type" ).change(function() {
-          //alert( "Handler for .change() called." + $( "#id_geocode_type" ).val() );
-        //});
-        $('#preview-tbl').DataTable( {
-                "scrollY": 400,
-                "scrollX": true,
-                "paging" : false,
-                "searching" : false
-        } );
-        //$('#preview-tbl').DataTable();
-    });
-</script>
+{% include "gis_tabular/tabular_forms.js" %}
 {% endblock %}
 
 {% block main_container %}
-<div class="row">
-    <div class="col-md-9"></div>
-    <div class="col-md-3" style="border:1px solid #006699;">
-        test files
-        {% for tf in test_files %}
-            <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
-        {% endfor %}
-        <br />(<a href="{% url 'view_sample_map' %}">sample map</a>)
-    </div><!-- col -->
-</div>
+
+{% include "gis_tabular/test_file_list.html" %}
 
 <!-- start panel --><div class="panel panel-default">
     <div class="panel-heading">
@@ -260,15 +30,6 @@
         <p><br />
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             Please select the type of geospatial data, and the columns that it can be found in.
-
-            <p>
-            {% for gt in geocode_types %}
-                {% if gt.0 != GEO_TYPE_LATITUDE_LONGITUDE %}
-                <br /><a href="{% url 'ajax_get_join_targets' gt.0 %}">{% url 'ajax_get_join_targets' gt.0 %}</a>
-                {% endif %}
-
-            {% endfor %}
-            </p>
         </p>
     </div>
 </div>
@@ -280,7 +41,7 @@
     {% csrf_token %}
     <div class="form-group">
       <label for="id_geocode_type" class="col-sm-3 control-label">Geospatial Data Type</label>
-      <div class="col-sm-4">
+      <div class="col-sm-6">
           <select id="id_geocode_type" name="geocode_type" class="form-control">
               <option value="">Select ...</option>
           {% for gt in geocode_types %}
@@ -296,7 +57,7 @@
     {% for field in form_single_column.visible_fields %}{% spaceless %}
         <div class="form-group form_single_column_fields" style="display:none;">
             <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 {{ field }}
                 {% if field.errors %}{{ field.errors}}{% endif %}
             </div>
@@ -304,7 +65,7 @@
     {% endspaceless %}{% endfor %}
     <div class="form-group form_single_column_fields" style="display:none;">
         <div class="col-sm-3">&nbsp;</div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <a class="btn btn-sm btn-primary" id="id_frm_single_column_submit">Submit</a>
         </div>
     </div>
@@ -333,8 +94,10 @@
 <!-- END: tabular form -->
 
 {% include "gis_tabular/preview_rows.html" %}
-
 {% include "gis_tabular/info_tabular.html" %}
+
+<h4>debug items</h4>
+{% include "gis_tabular/debug_help.html" %}
 <br />
 <br />
 <br />

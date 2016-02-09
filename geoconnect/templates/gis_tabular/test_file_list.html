@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col-md-9"></div>
+    <div class="col-md-3" style="border:1px solid #006699;">
+        test files
+        {% for tf in test_files %}
+            {% if tabular_info.id == tf.id %}
+                <br />- <a href="{% url 'view_test_file' tf.id %}"><b>{{ tf.name }} (id: {{ tf.id }})</b></a>
+            {% else %}
+                <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
+            {% endif %}
+        {% endfor %}
+        <br />(<a href="{% url 'view_sample_map' %}">sample map</a>)
+    </div><!-- col -->
+</div>

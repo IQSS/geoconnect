@@ -32,18 +32,23 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-def view_sample_map(request):
+def view_sample_map(request, worldmap_info=None):
     """
     Test view a WorldMapTabularLayerInfo object
     """
-    worldmap_info = WorldMapTabularLayerInfo.objects.first()
+    if worldmap_info is None:
+        worldmap_info = WorldMapTabularLayerInfo.objects.first()
+
     if worldmap_info is None:
         return HttpResponse('Sorry! No WorldMapTabularLayerInfo objects available')
 
     d = dict(worldmap_layerinfo=worldmap_info,
             layer_data=worldmap_info.core_data,
             download_links=worldmap_info.download_links,
-            attribute_data=worldmap_info.attribute_data
+            attribute_data=worldmap_info.attribute_data,
+            # for testing:
+            tabular_info=worldmap_info.tabular_info,
+            test_files=SimpleTabularTest.objects.all(),
             )
 
     return render_to_response('gis_tabular/view_tabular_map.html',
@@ -86,6 +91,8 @@ def view_map_tabular_file_form(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
         #raise Http404('No SimpleTabularTest for id: %s' % tabular_file_info_id)
+
+
 
     # Retrieve available Geocode types and join Layers
     (geocode_types_from_worldmap, available_layers_list) = get_geocode_types_and_join_layers()
@@ -216,6 +223,15 @@ def view_test_file(request, tabular_id):
         tabular_info = SimpleTabularTest.objects.get(pk=tabular_id)
     except SimpleTabularTest.DoesNotExist:
         raise Http404('No SimpleTabularTest for id: %s' % tabular_id)
+
+
+    # ----------------------------------
+    # Does the file already have an associated layer
+    # ----------------------------------
+    worldmap_tabularinfo = tabular_info.worldmaptabularlayerinfo_set.first()
+    if worldmap_tabularinfo is not None:
+        # A map exists: show it!
+        return view_sample_map(request, worldmap_tabularinfo)
 
     # ----------------------------------
     # Open the file and get the stats
