@@ -1,4 +1,23 @@
+{% if layer_info.matched_record_count == 0 %}
+        <!-- This shouldn't happen.  e.g. WorldMap should send
+        back an error message if no matches are found -->
+    <div class="alert alert-danger">
+        <p>Sorry! None of the rows matched for the column
+            <b>{{ layer_info.layer_join_attribute }}</b>.</p>
+        <p>Please try matching on a different column.</a>
+    </div>
+{% endif %}
 
+
+{% endif %}
+<div class="alert alert-info">
+    <!--
+        Add messages if unmatched_record_count > or
+        or matched_record_count > 0
+
+        etc.
+    -->
+</div>
 
 {
   "tablejoin_id": 254,

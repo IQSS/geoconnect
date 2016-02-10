@@ -14,7 +14,7 @@
         console.log('submit_lat_lng_form');
 
         // url for ajax  call
-        check_lat_lng_url = '{% url 'view_process_lat_lng_column_form' %}';
+        check_lat_lng_url = '{% url 'view_process_lat_lng_form' %}';
 
         // Disable submit button + hide message box
         $('#id_frm_lat_lng_submit').addClass('disabled').html('Working...');
@@ -29,13 +29,10 @@
             if (json_resp.success){
                 // Go to map!
                 $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                //$('#id_progress_bar').hide();
-                if (json_resp.data){
-                    if (json_resp.data.embed_map_link){
-                        $('#msg_form_tabular').append("<iframe src='" + json_resp.data.embed_map_link + "'></iframe>");
-                    }
+                if (json_resp.data.map_html){
+                    $('#id_main_panel_content').html(json_resp.data.map_html);
                 }
+
             }else{
                 console.log(json_resp.message);
                 // form error, display message

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from apps.gis_basic_file.admin import GISDataFileAdmin
 
-from apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
+from apps.gis_tabular.models import TabularFileInfo, WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 from apps.gis_tabular.admin_forms import TabularInfoAdminForm
@@ -44,14 +44,18 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
 
 
 class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
-    """For testing"""
+    """
+    Used for displaying two models:
+        - LatLngLayerInfo
+        - WorldMapTabularLayerInfoAdmin
+    """
 
     readonly_fields = ('created', 'modified',)# 'is_join_layer', 'is_lat_lng_layer')
-    list_display = ('tabular_info', 'layer_name', 'is_join_layer', 'is_lat_lng_layer', 'created',)# 'dv_file', 'delimiter')
+    list_display = ('tabular_info', 'layer_name', 'created',)# 'dv_file', 'delimiter')
     save_on_top = True
 
-
 admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
-admin.site.register(WorldMapTabularLayerInfo, WorldMapTabularLayerInfoAdmin)
+admin.site.register(WorldMapLatLngInfo, WorldMapTabularLayerInfoAdmin)
+admin.site.register(WorldMapJoinLayerInfo, WorldMapTabularLayerInfoAdmin)
 
 admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)

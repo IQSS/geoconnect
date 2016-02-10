@@ -4,9 +4,9 @@
         test files
         {% for tf in test_files %}
             {% if tabular_info.id == tf.id %}
-                <br />- <a href="{% url 'view_test_file' tf.id %}"><b>{{ tf.name }} (id: {{ tf.id }})</b></a>
+                <br />- <a href="{% url 'view_tabular_file' tf.id %}"><b>{{ tf.name }} (id: {{ tf.id }})</b></a>
             {% else %}
-                <br />- <a href="{% url 'view_test_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
+                <br />- <a href="{% url 'view_tabular_file' tf.id %}">{{ tf.name }} (id: {{ tf.id }})</a>
             {% endif %}
         {% endfor %}
         <br />(<a href="{% url 'view_sample_map' %}">sample map</a>)
