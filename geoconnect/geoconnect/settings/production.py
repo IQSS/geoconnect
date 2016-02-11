@@ -28,7 +28,7 @@ try:
     JSON_SECRETS = json.loads(open(GEOCONNECT_SECRETS_FNAME, 'r').read())
 except:
     raise Exception('Could not parse Geoconnect settings JSON file: %s' % GEOCONNECT_SECRETS_FNAME)
-    
+
 
 # Store uploaded files, logs, etc, etc
 GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR = JSON_SECRETS['GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR']
@@ -52,8 +52,8 @@ ALLOWED_HOSTS = JSON_SECRETS['ALLOWED_HOSTS']
 ADMINS = JSON_SECRETS['ADMINS']
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-#DEBUG = False
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
@@ -98,7 +98,7 @@ DATABASES = {
         'HOST': JSON_SECRETS['DATABASE_SETTINGS']['HOST'],
         'PORT': JSON_SECRETS['DATABASE_SETTINGS']['PORT'],
     },
-   
+
 }
 ########## END DATABASE CONFIGURATION
 
@@ -117,7 +117,7 @@ CACHES = {
 INSTALLED_APPS += (
     #'debug_toolbar',
     #'djcelery',
-    #'kombu.transport.django', 
+    #'kombu.transport.django',
 )
 
 #MIDDLEWARE_CLASSES += (
@@ -151,7 +151,7 @@ LOGIN_URL = "admin:index"
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
 DATAVERSE_SERVER_URL = JSON_SECRETS['DATAVERSE_SERVER_URL']
-DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/' 
+DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/'
 #DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/?key=pete' #DATAVERSE_SERVER_URL + '/api/worldmap/layer-update/'
 ########## DATAVERSE_SERVER_URL
 
@@ -169,7 +169,7 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR, 'gis_
 #
 
 # RETRIEVE WORLDMAP JSON INFO
-WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod.json")
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod2.json")
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
 if not isfile(WORLDMAP_SECRETS_FNAME):
     raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)
@@ -180,8 +180,11 @@ except:
     raise Exception('Could not parse worldmap_secrets_fname JSON file: %s' % WORLDMAP_SECRETS_FNAME)
 
 
-WORLDMAP_TOKEN_FOR_DATAVERSE = WORLDMAP_SECRETS_JSON['WORLDMAP_TOKEN_FOR_DATAVERSE']
+#WORLDMAP_TOKEN_FOR_DATAVERSE = WORLDMAP_SECRETS_JSON['WORLDMAP_TOKEN_FOR_DATAVERSE']
 WORLDMAP_SERVER_URL = WORLDMAP_SECRETS_JSON['WORLDMAP_SERVER_URL']
+WORLDMAP_ACCOUNT_USERNAME = WORLDMAP_SECRETS_JSON['WORLDMAP_ACCOUNT_USERNAME']
+WORLDMAP_ACCOUNT_PASSWORD = WORLDMAP_SECRETS_JSON['WORLDMAP_ACCOUNT_PASSWORD']
+WORLDMAP_ACCOUNT_AUTH = (WORLDMAP_ACCOUNT_USERNAME, WORLDMAP_ACCOUNT_PASSWORD)
 
 ########## END WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
 
@@ -199,14 +202,14 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': join(GEOCONNECT_LOGS_DIR, 'geolog.log'),
-            'formatter': 'simple'
+            'formatter': 'verbose'
             },
         },
     'loggers': {
-        
+
         'django': {
             'handlers': ['file'],
             'level': 'ERROR',
@@ -220,8 +223,7 @@ LOGGING = {
         },
         'apps': {
             'handlers': ['file'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
             },
     }
-

@@ -59,7 +59,7 @@ button.btn.dropdown-toggle span.glyphicon {margin-right:.3em;}
 #breadcrumbNavBlock a[id^='breadcrumbLnkTree'] span.glyphicon-chevron-down {vertical-align:middle;padding-bottom:2px;}
 
 #breadcrumbNavBlock > .ui-panel-content {overflow:hidden;}
-        
+
 #breadcrumbNavBlock.panelLayoutBlock > .ui-widget-content {border-bottom: 0;}
 
 #breadcrumbNavBlock .breadcrumbCarrot {float:left; margin:0 .4em 0 .8em; color:#B3B3B3;}
@@ -74,12 +74,12 @@ button.btn.dropdown-toggle span.glyphicon {margin-right:.3em;}
 #breadcrumbNavBlock div.ui-tree.ui-widget-content span.ui-treenode-content span.ui-icon.ui-tree-toggler.ui-icon-triangle-1-e {background-position: -35px -16px;}
 
 .spacer {
-    margin-top: 40px; 
+    margin-top: 40px;
 }
 
 /* -------- DATAVERSE -------- */
 form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget,
-form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget tr, 
+form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget tr,
 form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal table.ui-panelgrid.ui-widget td {border:0;}
 
 form[id$='dataverseForm'] .panelLayoutBlock .form-horizontal div.form-group {vertical-align: middle;}
@@ -173,12 +173,12 @@ table.ui-panelgrid.facetsMoreLess td:last-child {text-align:right;}
 #advancedSearchForm .select-scroll-block table.ui-selectmanycheckbox label {margin-left:5px; margin-top:0; font-weight:normal;}
 
 /* -------- DATASET -------- */
-.panelgridLayoutTable.titleCitationBlock, 
-.panelgridLayoutTable.titleCitationBlock tr.ui-widget-content, 
+.panelgridLayoutTable.titleCitationBlock,
+.panelgridLayoutTable.titleCitationBlock tr.ui-widget-content,
 .panelgridLayoutTable.titleCitationBlock tr.ui-widget-content td {border:0;}
 
 span[id$='editDataSet'] .ui-button-text {white-space: nowrap;}
-                                    
+
 #title {/*display:block;*/font-size:1.5em;font-weight:bold; /*margin-bottom:.5em;*/}
 #author, #contact {display:block; margin-bottom:.5em;}
 #citation {background-color: #FCFCE2; padding:.5em; margin-bottom:.5em;}
@@ -209,3 +209,7 @@ div[id$="versionsTable"] .ui-datatable-tablewrapper thead {display:none;}
 
 /* Overwrite Primefaces */
 button.btn-default.ui-button-text-only .ui-button-text {padding:0; font-size:14px;}
+
+
+#form_lat_lng table td {border:none;}
+#form_geocode_types table td {border:none;}

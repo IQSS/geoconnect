@@ -11,7 +11,7 @@ URL_PREFIX = '' #'geo/'
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'apps.content_pages.views.view_home', name="view_home"),
-    
+
     # url(r'^$', 'geoconnect.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^%sshapefile/' % URL_PREFIX, include('apps.gis_shapefiles.urls')),
@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     #(r'^%s/geo-connect-admin/doc/' % URL_PREFIX, include('django.contrib.admindocs.urls')),
-    
+
     url(r'^%sgeo-connect-admin/' % URL_PREFIX, include(admin.site.urls)),
-    
-) 
+
+)

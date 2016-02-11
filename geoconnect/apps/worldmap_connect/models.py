@@ -13,6 +13,8 @@ from django.http import HttpResponseRedirect
 
 from django.conf import settings
 
+from jsonfield import JSONField
+
 from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.models import GISDataFile
@@ -26,6 +28,7 @@ from geo_utils.json_field_reader import JSONFieldReader
 from geo_utils.message_helper_json import MessageHelperJSON
 from geo_utils.msg_util import *
 
+from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
 
 # Attributes that are copied from GISDataFile to WorldMapImportAttempt
 # WorldMapImportAttempt is kept as a log.  GISDataFile is less persistent, deleted within days or weeks
@@ -34,23 +37,23 @@ DV_SHARED_ATTRIBUTES = ['dv_user_id', 'dv_user_email', 'dv_username', 'datafile_
 
 class WorldMapImportAttempt(TimeStampedModel):
     """
-    Record the use of the WorldMap Import API.  This object records details including the DV user and file which will be sent to the WorldMap for import via API. 
-    
+    Record the use of the WorldMap Import API.  This object records details including the DV user and file which will be sent to the WorldMap for import via API.
+
     The result of the API call will be saved in either a :model:`worldmap_connect.WorldMapLayerInfo` or :model:`worldmap_connect.WorldMapImportFail` object
     """
     title = models.CharField(max_length=255)
     abstract = models.TextField()
-    shapefile_name = models.CharField(max_length=255)
+    shapefile_name = models.CharField('File name', max_length=255)
 
     gis_data_file = models.ForeignKey(GISDataFile, on_delete=models.CASCADE)  # ties back to user info
 
     import_success = models.BooleanField(default=False)
-    
+
     # Dataverse User Info
     dv_user_id = models.IntegerField(default=-1)          # copied from GISDataFile for audit
     dv_user_email = models.EmailField(blank=True)          # copied from GISDataFile for audit
     dv_username = models.CharField(max_length=255, blank=True)  # copied from GISDataFile for audit
-    
+
     # Dataverse Datafile Info
     datafile_id = models.IntegerField(default=-1)  # copied from GISDataFile for audit
     dataset_version_id = models.BigIntegerField(default=-1)  # copied from GISDataFile for audit
@@ -59,10 +62,10 @@ class WorldMapImportAttempt(TimeStampedModel):
     def __unicode__(self):
         return '%s %s id:%s, version:%s' % (self.dv_user_email, self.title, self.datafile_id, self.dataset_version_id)
 
-    
+
     def get_dataverse_server_url(self):
         assert self.gis_data_file is not None, "For WorldMapImportAttempt's get_dataverse_server_url() self.gis_data_file cannot be None"
-        
+
         return self.gis_data_file.get_dataverse_server_url()
 
     def edit_shapefile(self):
@@ -86,19 +89,19 @@ class WorldMapImportAttempt(TimeStampedModel):
         """
         return self.worldmaplayerinfo_set.order_by('-modified').first()
 
-        
+
     def did_import_succeed(self):
         # find successful import attempts
         if self.worldmaplayerinfo_set.count() > 0:
             self.import_success = True
             self.save()
             return True
-            
+
         self.import_success = False
         self.save()
         return True
-            
-    
+
+
     def save(self, *args, **kwargs):
         """
         Fill in Dataverse user and dataset information from the GISDataFile object -- this only happens once
@@ -106,10 +109,10 @@ class WorldMapImportAttempt(TimeStampedModel):
         if self.gis_data_file and self.dv_user_id < 0:
             for attr in DV_SHARED_ATTRIBUTES:
                 print attr, getattr(self.gis_data_file, attr)
-                setattr(self, attr, getattr(self.gis_data_file, attr)) 
+                setattr(self, attr, getattr(self.gis_data_file, attr))
         super(WorldMapImportAttempt, self).save(*args, **kwargs)
-    
-    
+
+
     @staticmethod
     def get_import_attempts(shapefile_info):
         """
@@ -120,25 +123,25 @@ class WorldMapImportAttempt(TimeStampedModel):
         """
         if shapefile_info is None:
             return None
-        
+
         lookup_params = {}
         for attr in DV_SHARED_ATTRIBUTES:
             lookup_params[attr] = getattr(shapefile_info, attr)
-        
+
         return WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified')
-        
+
 
     @staticmethod
     def get_latest_attempt(shapefile_info):
         """
         Get the latest WorldMapImportAttempt object where the params in DV_SHARED_ATTRIBUTES match
-        
+
         :param shapefile_info: ShapefileInfo object
         :returns: latest WorldMapImportAttempt object or None.  "latest" means most recently modified date
         """
         if shapefile_info is None:
             return None
-        
+
         lookup_params = {}
         for attr in DV_SHARED_ATTRIBUTES:
             lookup_params[attr] = getattr(shapefile_info, attr)
@@ -146,34 +149,34 @@ class WorldMapImportAttempt(TimeStampedModel):
         latest_attempt = WorldMapImportAttempt.objects.filter(**lookup_params).order_by('-modified').first()
         if not latest_attempt:
             return None
-            
+
         # If latest_attempt doesn't have a reference to the shapefile_info,
-        # then make one 
+        # then make one
         if not latest_attempt.gis_data_file:
             latest_attempt.gis_data_file = shapefile_info
             latest_attempt.save()
-            
+
         # return the latest_attempt
         return latest_attempt
 
-    
+
     class Meta:
         ordering = ('-modified',)
-        
+
 
 class WorldMapImportFail(TimeStampedModel):
     import_attempt = models.ForeignKey(WorldMapImportAttempt)
     msg = models.TextField()
     orig_response = models.TextField('original response', blank=True)
 
-    
+
     def __unicode__(self):
         return '%s' % self.import_attempt
-                
+
     class Meta:
         ordering = ('-modified',)
-        
-        
+
+
 class WorldMapLayerInfo(MapLayerMetadata):
     """
     Record the results of a success WorldMap visualization.
@@ -187,14 +190,14 @@ class WorldMapLayerInfo(MapLayerMetadata):
 
     # for object identification
     md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-    
-    
+
+
     class Meta:
         ordering = ('-modified',)
         verbose_name = 'WorldMapLayerInfo'
         verbose_name_plural = verbose_name
-    
-    
+
+
     def save(self, *args, **kwargs):
         if not self.id:
             super(WorldMapLayerInfo, self).save(*args, **kwargs)
@@ -202,28 +205,28 @@ class WorldMapLayerInfo(MapLayerMetadata):
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapLayerInfo, self).save(*args, **kwargs)
 
-    
+
     def get_dataverse_server_url(self):
         assert self.import_attempt is not None, "self.import_attempt cannot be None, when calling WorldMapLayerInfo 'get_dataverse_server_url'"
-        
+
         return self.import_attempt.get_dataverse_server_url()
-    
-    
+
+
     def get_layer_url_base(self):
         if not self.layer_link:
             return None
-            
+
         parsed_url = urlparse(self.layer_link)
-                        
+
         return '%s://%s' % (parsed_url.scheme, parsed_url.netloc)
-    
+
     def get_legend_img_url(self):
         """
         Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
         """
         if not self.layer_link:
             return None
-        
+
         params = (('request', 'GetLegendGraphic')\
                    , ('format', 'image/png')\
                    , ('width', 20)\
@@ -234,11 +237,11 @@ class WorldMapLayerInfo(MapLayerMetadata):
         print ('params:', params)
         param_str = '&'.join(['%s=%s' % (k, v) for k, v in params ])
         print ('\n\nparam_str:', param_str)
-        
+
         return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
 
         #<img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
-        
+
     def add_attribute_info_as_json_string(self, json_string):
         assert json_string is not None, "json_string cannot be None"
 
@@ -255,7 +258,7 @@ class WorldMapLayerInfo(MapLayerMetadata):
 
     def get_attribute_info(self):
         return JSONFieldReader.get_json_string_as_python_val(self.attribute_info)
-    
+
     def get_dict_for_classify_form(self):
 
         return dict(layer_name=self.layer_name\
@@ -277,11 +280,11 @@ class WorldMapLayerInfo(MapLayerMetadata):
         lnk = reverse('show_import_success_params', kwargs={ 'import_success_id' : self.id})
 
         return '<a href="%s">dv params</a>' % lnk
-    dv_params.allow_tags = True 
-    
-    
+    dv_params.allow_tags = True
 
-    
+
+
+
     def get_data_dict(self, json_format=False):
         """
         Used for processing model data.
@@ -298,27 +301,27 @@ class WorldMapLayerInfo(MapLayerMetadata):
         except:
             raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
 
-    
+
     def get_params_to_check_for_existing_layer_metadata(self):
 
         assert self.import_attempt is not None, "self.import_attempt cannot be None"
         assert self.import_attempt.gis_data_file is not None, "self.gis_data_file cannot be None"
-        
+
         f = CheckForExistingLayerForm(self.import_attempt.gis_data_file.__dict__)
         if not f.is_valid():
             raise forms.ValidationError('CheckForExistingLayerForm params did not validate: %s' % f.errors)
 
         return f.cleaned_data
-        
-    
+
+
     def get_params_for_dv_delete_layer_metadata(self):
 
         f = GeoconnectToDataverseDeleteMapLayerMetadataForm({ 'dv_session_token' : self.import_attempt.gis_data_file.dv_session_token})
         if not f.is_valid():
             raise forms.ValidationError('WorldMapLayerInfo DELETE params did not validate: %s' % f.errors)
-        
+
         return f.format_for_dataverse_api()
-        
+
 
     def get_params_for_dv_update(self):
         """
@@ -329,7 +332,67 @@ class WorldMapLayerInfo(MapLayerMetadata):
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
         return f.format_data_for_dataverse_api(self.import_attempt.gis_data_file.dv_session_token)
-       
+
+
+class JoinTargetInformation(TimeStampedModel):
+    """
+    Store information retrieved from the WorldMap's JoinTarget API end point.
+    This model is used as a "cache" to avoid over calling the API
+    """
+    name = models.CharField(max_length=255)
+    target_info = JSONField()
+    is_valid_target_info = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return self.__str__()
+
+    def save(self, *args, **kwargs):
+        """
+        Check if the JSON in target_info is valid
+        """
+        if not self.id:
+            super(JoinTargetInformation, self).save(*args, **kwargs)
+
+        jt_formatter = JoinTargetFormatter(self)
+        self.is_valid_target_info = jt_formatter.is_valid()
+
+        super(JoinTargetInformation, self).save(*args, **kwargs)
+
+    def get_geocode_types(self):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        return jt_formatter.get_join_targets_by_type()
+
+    def get_available_layers_list(self):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        # Get all the join targets
+        return jt_formatter.get_available_layers_list_by_type(None)
+        #return jt_formatter.get_all_target_layers()
+
+    def get_available_layers_list_by_type(self, chosen_geocode_type):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        # Get all the join targets
+        return jt_formatter.get_available_layers_list_by_type(chosen_geocode_type)
+
+    def get_target_layer_name_column(self, target_layer_id):
+        """
+        Given a target layer id, retrieve the target name
+        """
+        jt_formatter = JoinTargetFormatter(self.target_info)
+
+        return jt_formatter.get_target_layer_name_column(target_layer_id)
+
+
+    def get_join_targets_by_type(self, chosen_geocode_type):
+        jt_formatter = JoinTargetFormatter(self.target_info)
+        return jt_formatter.get_join_targets_by_type(chosen_geocode_type)
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = 'Join Target information'
+        verbose_name_plural = verbose_name
 
 
 """
@@ -340,6 +403,5 @@ for g in GISDataFile.objects.all():
 from apps.worldmap_connect.models import *
 for wis in WorldMapLayerInfo.objects.all():
     wis.dv_params()
+
 """
-    
-    

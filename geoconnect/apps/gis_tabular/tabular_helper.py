@@ -3,12 +3,17 @@ import sys
 import csv
 import json
 
-from apps.gis_tabular.models import GeoType, TabularFileInfo
+from apps.gis_tabular.models import TabularFileInfo
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
+import unicodedata
 
 import logging
 logger = logging.getLogger(__name__)
 
+
+"""
+unicodedata.normalize('NFKD', title).encode('ascii','ignore')
+"""
 
 NUM_PREVIEW_ROWS = 40
 
@@ -18,7 +23,10 @@ class TabFileStats(object):
         assert isfile(fname), "TabFileStats.  File does not exist: %s" % fname
 
         self.fname = fname
-        self.delimiter = b','    #delim
+
+        self.delimiter = str(delim)
+        print 'init delim:', self.delimiter, len(self.delimiter)
+        #'\t' #str(delim)  #b','    #delim
         self.tabular_info = tabular_info
 
         self.column_names = []

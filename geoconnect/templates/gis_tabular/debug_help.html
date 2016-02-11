@@ -1,0 +1,10 @@
+<div class="row">
+    <div class="col-md-12">
+        <h5>Geotypes used in url "ajax_get_join_targets"</h5>
+        {% for gt in geocode_types %}
+            {% if gt.0 != GEO_TYPE_LATITUDE_LONGITUDE %}
+            <br /><a href="{% url 'ajax_get_join_targets' gt.0 %}">{% url 'ajax_get_join_targets' gt.0 %}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

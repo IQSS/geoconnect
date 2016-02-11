@@ -34,4 +34,3 @@ def view_ajax_notify_dv_of_map(request, worldmapinfo_md5):
     else:
         json_msg = MessageHelperJSON.get_json_fail_msg('Failed to send data to dataverse')
         return HttpResponse(json_msg, mimetype="application/json", status=500)
-

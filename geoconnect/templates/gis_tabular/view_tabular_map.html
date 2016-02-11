@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+</style>
+<script>
+    $( document ).ready(function() {
+    });
+</script>
+{% endblock %}
+
+{% block main_container %}
+{% include "gis_tabular/test_file_list.html" %}
+
+<!-- start panel -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
+          - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_layerinfo.tabular_info.get_dv_file_basename }}</span>
+      </h3>
+    </div>
+    <div class="panel-body" id="id_main_panel_content">
+        {% include "gis_tabular/view_tabular_map_div.html" %}
+        {% include "gis_shapefiles/delete_and_back_to_dv_links.html" %}
+
+    </div>
+</div>
+<!-- end panel -->
+{% endblock %}

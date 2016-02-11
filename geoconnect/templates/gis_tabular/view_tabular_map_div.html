@@ -1,0 +1,41 @@
+<!-- start: IFRAME MAP -->
+<div class="row">
+    <div class="col-md-9">
+        &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
+        <iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>
+    </div>
+    <div class="col-md-3">
+        <h5>Legend</h5>
+        <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+        {% if download_links %}
+        <h5>Download</h5>
+            {% for dname, dlink in download_links.items %}
+                <a href="{{ dlink }}">{{ dname }}</a>&nbsp;
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% if attribute_data %}
+<div class="row">
+    <div class="col-md-6">
+        <h5>Attribute Information</h5>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Name</th>
+                <th>Display Name</th>
+                <th>Type</th>
+            </tr>
+        {% for col_info in attribute_data %}
+            <tr{% if col_info.name == layer_data.table_join_attribute %} class="info"{% endif %}>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ col_info.name }}{% if col_info.name == layer_data.table_join_attribute %}<br />* join column{% endif %}</td>
+                <td>{{ col_info.display_name }}</td>
+                <td>{{ col_info.type }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
+<!-- end: IFRAME MAP -->

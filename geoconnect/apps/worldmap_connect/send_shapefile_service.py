@@ -20,7 +20,7 @@ class SendShapefileService:
     """
     Logic for sending a shapefile to the WorldMap and processing the results
     """
-    
+
     def __init__(self, **kwargs):
         """
         Constructor: send a ShapefileInfo object, or a ShapefileInfo object md5 attribute
@@ -32,10 +32,10 @@ class SendShapefileService:
         self.has_err = False
         self.err_msgs = []
         self.import_attempt_obj = None      # WorldMapImportAttempt or None
-        self.worldmap_response = None       # dict returned from WorldMapImporter or None 
+        self.worldmap_response = None       # dict returned from WorldMapImporter or None
         self.worldmap_layerinfo_object = None      # WorldMapLayerInfo or None
         self.import_failure_object = None   # WorldMapImportFail or None
-        
+
         if kwargs.has_key('shapefile_info'):
             self.shapefile_info = kwargs['shapefile_info']
         elif kwargs.has_key('shp_md5'):
@@ -45,42 +45,45 @@ class SendShapefileService:
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
         assert isinstance(self.shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
-    
+
     def send_shapefile_to_worldmap(self):
         """
         TO DO : Option to make this happen via async.
-        
+
         Main function that attempts to send a shapefile to WorldMap
-        
+
         :returns: boolean indicating whether process worked
         """
-        
+
         # (1) Does the self.shapefile_info have what it needs?  Mainly a legit zippped shapefile
         #
         if not self.verify_shapefile():
             return False
-        
+
         # (2) Check if a successful import already exists (WorldMapLayerInfo), if it does, set the "self.worldmap_layerinfo_object"
         #
         if self.does_successful_import_already_exist():
             return True
         elif self.has_err:      # This may have produced an error
             return False
+
         # (3) Make a WorldMapImportAttempt object and set it to "self.import_attempt_obj"
         #
         if not self.make_import_attempt_object():
             return False
-        
-        
+
+
         # (4) Use the WorldMapImporter object to send the layer to the WorldMap server
         #
         if not self.send_file_to_worldmap():
             return False
-        
+
+
         # (5) Process the WorldMap response
         #
         if not self.process_worldmap_response():
             return False
+
 
         # (6) Update Dataverse with new WorldMap info
         if not self.update_dataverse_with_worldmap_info():
@@ -89,43 +92,43 @@ class SendShapefileService:
         return True
 
 
-            
+
     def add_err_msg(self, msg):
         logger.error(msg)
         self.has_err = True
         self.err_msgs.append(msg)
-    
-    
-    
+
+
+
     def load_shapefile_from_md5(self, shp_md5):
         """Load a ShapefileInfo based on an md5 attribute.
          Set self.shapefile_info to the retrieved ShapefileInfo
-        
+
         :param: shp_md5: str corresponding to a ShapefileInfo object
-        :returns: boolean 
+        :returns: boolean
         """
         if shp_md5 is None:
             self.add_err_msg('shp_md5 is None')
             return None
-            
+
         try:
             return ShapefileInfo.objects.get(md5=shp_md5)
         except ShapefileInfo.DoesNotExist:
             self.add_err_msg('Sorry, the shapefile was not found')
             return None
-    
-    
+
+
     def verify_shapefile(self):
         """
         Does the file specified by ShapefileInfo "dv_file" exist?
-        
-        :returns: boolean 
+
+        :returns: boolean
         """
         logger.debug('verify_shapefile')
         if not self.shapefile_info:
             self.add_err_msg('verify_shapefile: The shapefile set is None')
             return False
-        
+
         if not self.shapefile_info.has_shapefile:
             self.add_err_msg('verify_shapefile: This .zip does not contain a valid shapefile')
             return False
@@ -133,26 +136,26 @@ class SendShapefileService:
         if not self.shapefile_info.is_dv_file_available():
             self.add_err_msg('verify_shapefile: The file itself is not available.')
             return False
-        
+
         return True
-        
-    
+
+
     def does_successful_import_already_exist(self):
         """
-        Has this layer already been imported by WorldMap? 
+        Has this layer already been imported by WorldMap?
         If yes, then set the self.worldmap_layerinfo_object and stop here.
-        
+
         :returns: boolean.  If True then the self.worldmap_layerinfo_object has been set
         """
         if not self.shapefile_info:
             self.add_err_msg('does_successful_import_already_exist: The shapefile_info is None')
             return False
-            
+
         # Retrieve the lastest WorldMapImportAttempt, if it exists
         wm_attempt = WorldMapImportAttempt.get_latest_attempt(self.shapefile_info)
         if not wm_attempt:
             return False
-            
+
         # Did the attempt succeed
         if wm_attempt.did_import_succeed():
 
@@ -165,13 +168,13 @@ class SendShapefileService:
 
         # Nope, ok, let's do some work
         return False
-        
+
     def make_import_attempt_object(self):
         """
         Attempt to make a n WorldMapImportAttempt object and set it to "self.import_attempt_obj"
-        
+
         :returns: boolean.  If True then the self.import_attempt_obj has been set
-        
+
         """
         if not self.shapefile_info:
             self.add_err_msg('make_import_attempt_object: The shapefile_info is None')
@@ -181,7 +184,7 @@ class SendShapefileService:
         if not zipped_shapefile_name:
             self.add_err_msg('make_import_attempt_object: Shapefile basename was not found')
             return False
-        
+
         wm_attempt = WorldMapImportAttempt(gis_data_file=self.shapefile_info\
                                         , title=zipped_shapefile_name\
                                         #, abstract='[place holder abstract for %s]' % self.shapefile_info.name\
@@ -196,8 +199,8 @@ class SendShapefileService:
 
         self.import_attempt_obj = wm_attempt
         return True
-        
-        
+
+
     def send_file_to_worldmap(self):
         """
         Let's send this file over!
@@ -206,11 +209,11 @@ class SendShapefileService:
         if not self.shapefile_info:
             self.add_err_msg('send_file_to_worldmap: The shapefile_info is None')
             return False
-        
+
         if not self.import_attempt_obj:
             self.add_err_msg('send_file_to_worldmap: WorldMapImportAttempt was not found')
             return False
-        
+
         # Prepare the parameters
         layer_params = get_params_for_worldmap_connect(self.import_attempt_obj)
 
@@ -220,32 +223,32 @@ class SendShapefileService:
         #
         wmi = WorldMapImporter()
         worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, self.shapefile_info.get_dv_file_fullpath())
-        
+
         if not worldmap_response:
             self.add_err_msg('send_file_to_worldmap: worldmap_response was None!')
             return False
-        
+
         self.worldmap_response = worldmap_response
-        
+
         return True
-        
-    
+
+
     def record_worldmap_failure(self, worldmap_response, fail_msg=None):
         if not worldmap_response:
             self.add_err_msg('Import failed.  (Worldmap generated error message not found)')
             return
-        
+
         if fail_msg is None:
             fail_msg = worldmap_response.get('message', 'Import failed  (WorldMap generated error mesasge not avaiable)')
         self.add_err_msg(fail_msg)
-        
+
         self.import_failure_object = WorldMapImportFail(import_attempt=self.import_attempt_obj\
                                         , msg=fail_msg\
                                         , orig_response=worldmap_response\
                                     )
         self.import_failure_object.save()
-        
-        
+
+
     def get_worldmap_layerinfo(self):
         return self.worldmap_layerinfo_object
 
@@ -264,7 +267,7 @@ class SendShapefileService:
         if not import_success:
             self.record_worldmap_failure(self.worldmap_response)
             return False
-        
+
         # ------------------------------------------------------
         #  Sanity check: Did the import response have data?
         # ------------------------------------------------------
@@ -318,34 +321,5 @@ class SendShapefileService:
         except:
             self.record_worldmap_failure(self.worldmap_response, 'Error.  Layer created and saved BUT update to dataverse failed')
             return False
-            
+
         return True
-
-        '''
-        try:
-            # Success!  Create a WorldMapLayerInfo object
-            #
-            self.worldmap_layerinfo_object = WorldMapLayerInfo(import_attempt=self.import_attempt_obj\
-                                            , layer_name=wm_data.get('layer_name', '')\
-                                            , layer_link=wm_data.get('layer_link', '')\
-                                            , embed_map_link=wm_data.get('embed_map_link', '')\
-                                            , worldmap_username=wm_data.get('worldmap_username', '')\
-                                        )
-            self.worldmap_layerinfo_object.add_attribute_info(wm_data.get('attribute_info', None))
-            self.worldmap_layerinfo_object.save()
-            logger.debug('--- SAVED ---')
-            self.import_attempt_obj.import_success = True
-            self.import_attempt_obj.save()
-
-        except:
-            # Fail! Something in the return data seems to be incorrect.  e.g., Missing parameter such as layer_link
-            # Save a WorldMapImportFail object to check original response
-            #
-            logger.debug('--- Failed to save worldmap data\n%s ---' % wm_data)
-            self.record_worldmap_failure(self.worldmap_response, 'WorldMap says success but GeoConnect failed to save results')
-            return False
-        '''
-
-
-
-
