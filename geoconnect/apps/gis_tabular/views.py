@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 
 
 from apps.gis_tabular.models import SimpleTabularTest # for testing
-from apps.gis_tabular.models import WorldMapTabularLayerInfo
+from apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 
@@ -37,12 +37,17 @@ def view_sample_map(request, worldmap_info=None):
     Test view a WorldMapTabularLayerInfo object
     """
     if worldmap_info is None:
-        worldmap_info = WorldMapTabularLayerInfo.objects.first()
+        # If available grab the first WorldMapJoinLayerInfo object
+        worldmap_info = WorldMapJoinLayerInfo.objects.first()
+
+    if worldmap_info is None:
+        # If available grab the first WorldMapLatLngInfo object
+        worldmap_info = WorldMapLatLngInfo.objects.first()
 
     if worldmap_info is None:
         return HttpResponse('Sorry! No WorldMapTabularLayerInfo objects available')
 
-    d = dict(worldmap_layerinfo=worldmap_info,\
+    tmpl_dict = dict(worldmap_layerinfo=worldmap_info,\
             layer_data=worldmap_info.core_data,\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
@@ -52,19 +57,22 @@ def view_sample_map(request, worldmap_info=None):
             )
 
     return render_to_response('gis_tabular/view_tabular_map.html',\
-                            d,\
+                            tmpl_dict,\
                             context_instance=RequestContext(request))
 
 
 
 def build_tabular_map_html(request, worldmap_info):
     """
+    Expects a WorldMapJoinLayerInfo or WorldMapLatLngInfo object
+
     Create HTML string displaying:
         - Completed map via iframe
         - Download links using Geoserver functions
         - Attribute table
     """
-    if not isinstance(worldmap_info, WorldMapTabularLayerInfo):
+    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) and\
+        isinstance(worldmap_info, WorldMapLatLngInfo)) :
         return None
 
     d = dict(worldmap_layerinfo=worldmap_info,\
@@ -141,7 +149,7 @@ def view_tabular_file(request, tabular_id):
     else:
         form_lat_lng = None
 
-    d = dict(tabular_id=tabular_id,\
+    template_dict = dict(tabular_id=tabular_id,\
             tabular_info=tabular_info,\
             tab_file_stats=tab_file_stats,\
             geocode_types=geocode_type_list,\
@@ -151,8 +159,9 @@ def view_tabular_file(request, tabular_id):
             form_lat_lng=form_lat_lng,\
             GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE)
 
-    return render_to_response('gis_tabular/view_tabular_overview.html', d\
-                                     , context_instance=RequestContext(request))
+    return render_to_response('gis_tabular/view_tabular_overview.html',\
+                            template_dict,\
+                            context_instance=RequestContext(request))
 
 
 def ajax_get_all_join_targets(request):
