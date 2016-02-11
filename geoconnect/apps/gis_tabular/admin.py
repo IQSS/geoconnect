@@ -1,7 +1,9 @@
 from django.contrib import admin
 from apps.gis_basic_file.admin import GISDataFileAdmin
 
-from apps.gis_tabular.models import TabularFileInfo, WorldMapJoinLayerInfo, WorldMapLatLngInfo
+from apps.gis_tabular.models import TabularFileInfo,\
+                                    WorldMapJoinLayerInfo,\
+                                    WorldMapLatLngInfo
 from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 from apps.gis_tabular.admin_forms import TabularInfoAdminForm
