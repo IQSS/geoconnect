@@ -1,48 +1,44 @@
 """
-- Using Dataverse information, create a ShapefileInfo information.
-- Given a ShapefileInfo object, check for and
-    return a WorldMapLayerInfo object, if available
+- Using Dataverse information, create a TabularFileInfo information.
+- Given a TabularFileInfo object, check for and
+    return a TabularFileInfo object, if available
 """
-import json
+from __future__ import print_function
+
 import urllib2
 
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
-from shared_dataverse_information.dataverse_info.models import TABULAR_TYPES
 from apps.registered_dataverse.registered_dataverse_helper import find_registered_dataverse
+from apps.gis_tabular.models import TabularFileInfo
 
 from geo_utils.msg_util import *
-from geo_utils.error_result_msg import ErrResultMsg,\
-    FAILED_NOT_A_REGISTERED_DATAVERSE
-
-from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapLayerInfo
+from geo_utils.error_result_msg import ErrResultMsg, FAILED_NOT_A_REGISTERED_DATAVERSE
 
 import logging
 LOGGER = logging.getLogger(__name__)
 
-
-
-def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
-    """Using Dataverse API information, create a :model:`gis_shapefiles.ShapefileInfo' object.  This function should only receive successful responses.
+def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
+    """Using Dataverse API information, create a :model:`gis_tabular.TabularFileInfo' object.  This function should only receive successful responses.
 
     return True/False, shp_md5 or ErrResultMsg
 
-    Examples:  True, md5 from ShapefileInfo
+    Examples:  True, md5 from TabularFileInfo
                False,  ErrResultMsg
     """
     assert dv_session_token is not None, "dv_session_token cannot be None"
     assert type(dataverse_info_dict) is dict, "dataverse_info_dict must be type 'dict'"
 
+    msgt('dataverse_info_dict: {0}'.format(dataverse_info_dict))
     #------------------------------
     # (1) Validate the data (DataverseInfoValidationForm)
     #------------------------------
     #dataverse_info_dict.update({'datafile_id':None})   # for testing
     validation_form = DataverseInfoValidationForm(dataverse_info_dict)
     if not validation_form.is_valid():
-        errs = [ '%s: %s' % (k, v) for k,v in validation_form.errors.items()]
+        errs = ['%s: %s' % (k, v) for k,v in validation_form.errors.items()]
         print (errs)
         form_errs = '\n'.join(errs)
         return False, ErrResultMsg(None, form_errs)
@@ -53,8 +49,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     #-------------------------------------------------
     registered_dataverse = find_registered_dataverse(dataverse_info_dict['return_to_dataverse_url'])
     if registered_dataverse is None:
-        return False, ErrResultMsg(FAILED_NOT_A_REGISTERED_DATAVERSE\
-                        , "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
+        return False, ErrResultMsg(FAILED_NOT_A_REGISTERED_DATAVERSE,
+                         "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
                     )
 
     # quick hack for testing
@@ -71,12 +67,12 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
                                     , dataverse_installation_name=dataverse_info_dict.get('dataverse_installation_name', -1)\
                                     )
 
-    existing_sets = ShapefileInfo.objects.filter(**params_for_existing_check\
+    existing_sets = TabularFileInfo.objects.filter(**params_for_existing_check\
                                 ).values_list('id', flat=True\
                                 ).order_by('created')
 
-    existing_shapefile_info_ids = list(existing_sets)
-    msgt('existing_shapefile_info_ids: %s' % existing_shapefile_info_ids)
+    existing_tabular_info_ids = list(existing_sets)
+    msgt('existing_tabular_info_ids: %s' % existing_tabular_info_ids)
 
     #-------------------------------------------------
     # add dv_session_token and registered_dataverse to dataverse_info_dict
@@ -85,47 +81,51 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     dataverse_info_dict['registered_dataverse'] = registered_dataverse
 
     #------------------------------
-    # (4) Existing ShapefileInfo(s) found:
-    #  (a) Update the ShapefileInfo object
-    #  (b) Delete other groups ShapefileInfo object for this datafile and user
+    # (4) Existing TabularFileInfo(s) found:
+    #  (a) Update the TabularFileInfo object
+    #  (b) Delete other groups TabularFileInfo object for this datafile and user
     #  (c) Return the md5
     #------------------------------
-    if len(existing_shapefile_info_ids) > 1:
+    if len(existing_tabular_info_ids) > 1:
 
-        # pop the last ShapefileInfo id off the list of existing_shapefile_info_ids
-        shp_id = existing_shapefile_info_ids.pop()
+        # pop the last TabularFileInfo id off the list of existing_tabular_info_ids
+        shp_id = existing_tabular_info_ids.pop()
 
         # delete the rest
         if len(existing_sets) > 0:
-            ShapefileInfo.objects.filter(id__in=existing_shapefile_info_ids).delete()   # delete older ShapefileInfo(s)
+            # delete older TabularFileInfo objects
+            TabularFileInfo.objects.filter(id__in=existing_tabular_info_ids).delete()
 
 
     #------------------------------
-    # (5) Get or create a new ShapefileInfo object
+    # (5) Get or create a new TabularFileInfo object
     #------------------------------
-    msgt('(5) Get or create a new ShapefileInfo object')
+    msgt('(5) Get or create a new TabularFileInfo object')
     try:
-        # Existing ShapefileInfo:
+        # Existing TabularFileInfo:
         #   (1) Assume file is already saved
         #   (2) update the data
         #
-        shapefile_info = ShapefileInfo.objects.get(**params_for_existing_check)
+        tabular_info = TabularFileInfo.objects.get(**params_for_existing_check)
 
         for key, value in dataverse_info_dict.iteritems():
-            setattr(shapefile_info, key, value)
+            if key == 'column_names':
+                tabular_info.add_column_names(value)
+            else:
+                setattr(tabular_info, key, value)
 
         # Save
-        shapefile_info.save()
-        msg('shapefile info saved')
+        tabular_info.save()
+        msg('tabular_info info saved')
 
         # If the file is still available, return it
-        if shapefile_info.is_dv_file_available():
-            return True, shapefile_info.md5
+        if tabular_info.is_dv_file_available():
+            return True, tabular_info.md5
         else:
             # But the file isn't there!!  Delete ShapefileInfo and make a new one
-            shapefile_info.delete()
+            tabular_info.delete()
 
-    except ShapefileInfo.DoesNotExist:
+    except TabularFileInfo.DoesNotExist:
         pass
     #except:
     #    msg('Failed to retrieve an existing ShapefileInfo object -- so create a new one')
@@ -134,11 +134,13 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     msg('new file')
 
     #------------------------------
-    # New shapefile info, create object and attach file
+    # New tabular_info, create object and attach file
     #------------------------------
 
-    shapefile_info = ShapefileInfo(**dataverse_info_dict)
-    shapefile_info.save()
+    # Add name parameter
+    dataverse_info_dict['name'] = dataverse_info_dict.get('datafile_label', '(no datafile_label found)')
+    tabular_info = TabularFileInfo(**dataverse_info_dict)
+    tabular_info.save()
 
     #------------------------------
     # Download and attach file
@@ -157,8 +159,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     try:
         img_temp.write(urllib2.urlopen(datafile_download_url).read())
     except urllib2.HTTPError as e:
-        shapefile_info.delete() # clear shapefile
-        err_msg = 'Failed to download shapefile. HTTPError: %s \n\nurl: %s' % (str(e), datafile_download_url)
+        tabular_info.delete() # clear tabular info
+        err_msg = 'Failed to download tabular file. HTTPError: %s \n\nurl: %s' % (str(e), datafile_download_url)
         return False, ErrResultMsg(None, err_msg)
 
         #msg(dir(e))
@@ -167,25 +169,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
         #msgx('blah')
     img_temp.flush()
 
-    shapefile_info.dv_file.save(datafile_filename, File(img_temp))
-    shapefile_info.save()
+    tabular_info.dv_file.save(datafile_filename, File(img_temp))
+    tabular_info.save()
 
-    return True, shapefile_info.md5
-
-
-
-def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
-    """
-    Given a ShapefileInfo object, check for and return a WorldMapLayerInfo object, if available
-
-    :param shapefile_info: ShapefileInfo object
-    :return: WorldMapLayerInfo object or None
-    """
-    assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-
-    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
-    if latest_import_attempt:
-        worldmap_layerinfo = latest_import_attempt.get_success_info()
-        if type(worldmap_layerinfo) is WorldMapLayerInfo:
-            return worldmap_layerinfo
-    return None
+    return True, tabular_info.md5

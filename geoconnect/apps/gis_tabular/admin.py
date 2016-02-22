@@ -18,10 +18,19 @@ class SimpleTabularTestAdmin(admin.ModelAdmin):
     list_display = ('name', 'test_page', 'dv_file', 'delimiter')
     save_on_top = True
 
+class WorldMapLatLngInfoInline(admin.TabularInline):
+    model = WorldMapLatLngInfo
+    extra = 0
+
+class WorldMapJoinLayerInfoInline(admin.TabularInline):
+    model = WorldMapJoinLayerInfo
+    extra = 0
+
 
 class TabularFileInfoAdmin(GISDataFileAdmin):
     form = TabularInfoAdminForm
     save_on_top = True
+    inlines = (WorldMapLatLngInfoInline, WorldMapJoinLayerInfoInline)
 
     def changelist_view(self, request, extra_context=None):
         make_changelist_updates(self, 'list_filter', ['name', 'has_header_row'])
@@ -45,13 +54,13 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
         return fs
 
 
+
 class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
     """
     Used for displaying two models:
         - LatLngLayerInfo
         - WorldMapTabularLayerInfoAdmin
     """
-
     readonly_fields = ('created', 'modified',)# 'is_join_layer', 'is_lat_lng_layer')
     list_display = ('tabular_info', 'layer_name', 'created',)# 'dv_file', 'delimiter')
     save_on_top = True

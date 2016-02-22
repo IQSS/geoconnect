@@ -13,10 +13,12 @@
     <!-- START: Preview table -->
     <table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
         <thead>
-            <th>Row #</th>
-            {% for col in tab_file_stats.column_names %}
-            <th>{{ col }}</th>
-            {% endfor %}
+            <tr>
+                <th>Row #</th>
+                {% for col in tab_file_stats.column_names %}
+                <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
         </thead>
         <tbody>
             {% for row in tab_file_stats.preview_rows %}
@@ -32,6 +34,5 @@
         </tbody>
     </table>
     <!-- END: Preview table -->
-
-    </div>
-</div>
+    </div><!-- end col -->
+</div><!-- end row -->

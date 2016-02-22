@@ -3,7 +3,11 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('apps.gis_tabular.views',
 
-    url(r'^test1/(?P<tabular_id>\d{1,10})/$', 'view_tabular_file', name="view_tabular_file"),
+    url(r'^test/latest/$', 'view_tabular_file_latest', name="view_tabular_file_latest"),
+
+    #url(r'^test1/(?P<tabular_id>\d{1,10})/$', 'view_tabular_file', name="view_tabular_file"),
+
+    url(r'^view-tab-examine/(?P<tab_md5>\w{32})/$', 'view_tabular_file', name="view_tabular_file"),
 
     url(r'^test2-sample-map/$', 'view_sample_map', name="view_sample_map"),
 

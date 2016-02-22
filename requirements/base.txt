@@ -17,8 +17,8 @@ django-celery==3.1.10
 #openpyxl==1.8.6
 #numpy>=1.8.1
 #matplotlib==1.1.1
-#pandas==0.14.0
 # Folium related
 #pygdal>=1.11.0.0
 #folium==0.1.2
+pandas>=0.17.0
 django-jsonfield>=0.9

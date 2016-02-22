@@ -7,7 +7,7 @@ import requests # for POST
 if __name__=='__main__':
     import sys
     CURRENT_DIR = os.path.dirname(os.path.dirname(__file__))
-    sys.path.append(os.path.join(CURRENT_DIR, '../'))
+    sys.path.append(os.path.join(CURRENT_DIR, '../../'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
 #from geo_utils.key_checker import KeyChecker
@@ -23,7 +23,7 @@ from shared_dataverse_information.dataverse_info.url_helper import get_api_url_u
 from apps.worldmap_connect.models import WorldMapLayerInfo
 
 import logging
-logger = logging.getLogger('geoconnect')
+logger = logging.getLogger('apps.dv_notify.metadata_updater')
 
 
 class MetadataUpdater:
@@ -35,47 +35,47 @@ class MetadataUpdater:
     def __init__(self, dataverse_server_url, timeout_seconds=240, return_type_json=False):
         """
         Use data in a python dict to POST data to the Dataverse API, specifically the GeographicMetadataUpdateForm
-        
+
         :param dv_metadata_params: dict containing information necessary for contacting dataverse
         """
         self.dataverse_server_url = dataverse_server_url
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
-    
+
     def get_result_msg(self, success=False, msg='', data_dict=None):
 
         if type(data_dict) is dict:
             print ('YES')
             d = MessageHelperJSON.get_dict_msg(success=success, msg=msg, data_dict=data_dict)
-        else:        
+        else:
             d = MessageHelperJSON.get_dict_msg(success=success, msg=msg)
-        
+
         if not self.return_type_json:
             return d
-        
-        return MessageHelperJSON.get_json_msg_from_dict(d) 
-    
-    
+
+        return MessageHelperJSON.get_json_msg_from_dict(d)
+
+
     def delete_metadata_from_dataverse(self, worldmap_layer_info):
         """
         Delete map layer metadata from the Dataverse
-        
+
         returns (True, None)
             or (False, 'error message of some type')
         """
         assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
-        
+
 
         params = worldmap_layer_info.get_params_for_dv_delete_layer_metadata()
         api_delete_metadata_url = get_api_url_delete_metadata(self.dataverse_server_url)
-        
+
         print ('params to send: %s' % params)
         print ('-' * 40)
         print ('update url: %s' % api_delete_metadata_url)
         print ('-' * 40)
         print ('payload: %s' % json.dumps(params))
         print ('-' * 40)
-        
+
         req = None
         try:
             req = requests.post(api_delete_metadata_url, data=json.dumps(params), timeout=self.timeout_seconds)
@@ -93,18 +93,18 @@ class MetadataUpdater:
         msgt('status code: %s' % req.status_code)
         if req.status_code == 404:
             return (False, "The Dataverse delete API was not available")# 'Delete success')
-            
+
         if req.status_code == 200:
             return (True, None)# 'Delete success')
-        
-        else:        
-            logger.error('Metadata delete failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))    
+
+        else:
+            logger.error('Metadata delete failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
             return (False, 'Sorry! The update failed.')
-   
-        
-        
-        
-    
+
+
+
+
+
     def send_info_to_dataverse(self, worldmap_layer_info):
         """
         Go through the process of sending params to dataverse
@@ -112,7 +112,8 @@ class MetadataUpdater:
         :returns: JSON with "success" flag and either error or data
         :rtype: JSON string
         """
-        assert isinstance(worldmap_layer_info, WorldMapLayerInfo), "worldmap_layer_info must be a WorldMapLayerInfo object"
+        assert hasattr(worldmap_layer_info, 'get_params_for_dv_update'),\
+             "worldmap_layer_info must have a method get_params_for_dv_update()"
 
         logger.info('send_params_to_dataverse')
         print('1) send_params_to_dataverse')
@@ -141,23 +142,23 @@ class MetadataUpdater:
             return self.get_result_msg(False, err_msg)
 
         if not req.status_code == 200:
-                
+
             print ('request text: %s' % req.text)
-                
+
             logger.error('Metadata update failed.  Status code: %s\nResponse:%s' % (req.status_code, req.text))
-                
+
             return self.get_result_msg(False, 'Sorry! The update failed.')
-   
+
         print (req.text)
         dv_response_dict = req.json()
         print('4) req to json')
-            
+
         print( dv_response_dict)
         if dv_response_dict.get('status', False) in ('OK', 'success'):
             dv_response_dict.pop('status')
             print('4) send result')
             return self.get_result_msg(True, '', data_dict=dv_response_dict)
-                                
+
         elif dv_response_dict.has_key('message'):
             return self.get_result_msg(False, dv_response_dict['message'])
         else:
@@ -173,9 +174,9 @@ class MetadataUpdater:
 
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
-        
+
         return mu.delete_metadata_from_dataverse(worldmap_layer_info)
-        
+
 
 
 
@@ -187,32 +188,46 @@ class MetadataUpdater:
         #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
         mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
-        
+
         resp_dict = mu.send_info_to_dataverse(worldmap_layer_info)
         if resp_dict.get('success', False) is True:
             return True
         return False
 
-    
-if __name__ == '__main__':
-    #f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
-    from apps.worldmap_connect.models import WorldMapLayerInfo
-    
-    if WorldMapLayerInfo.objects.count() > 0:
-        success_obj = WorldMapLayerInfo.objects.all().order_by('-modified')[0]
-        #params = success_obj.get_params_for_dv_update()
-        #print('params to send: %s' % params)
 
-        mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        print (mu.send_info_to_dataverse(success_obj))
-    else:
-        print('No WorldMapLayerInfo objects')
-    
-    
-    
-    
-    
-    
-    
-    
-       
+if __name__ == '__main__':
+    pass
+    #f2 = '../../scripts/worldmap_api/test_shps/poverty_1990_gfz.zip'
+
+
+# ---------------------------
+# shapefile related
+# ---------------------------
+"""
+python manage.py shell
+from django.conf import settings
+from apps.dv_notify.metadata_updater import MetadataUpdater
+from apps.worldmap_connect.models import WorldMapLayerInfo
+wm_info = WorldMapLayerInfo.objects.first()
+if wm_info is not None:
+    mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+    print (mu.send_info_to_dataverse(wm_info))
+else:
+    print('No WorldMapLayerInfo objects')
+"""
+
+# ---------------------------
+# tabular related
+# ---------------------------
+"""
+python manage.py shell
+from django.conf import settings
+from apps.dv_notify.metadata_updater import MetadataUpdater
+from apps.gis_tabular.models import WorldMapJoinLayerInfo
+wm_info = WorldMapJoinLayerInfo.objects.first()
+if wm_info is not None:
+    mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
+    print (mu.send_info_to_dataverse(wm_info))
+else:
+    print('No WorldMapLayerInfo objects')
+"""

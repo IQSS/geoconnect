@@ -1,11 +1,9 @@
 import json
-import os
 import requests
 
-from django.shortcuts import render
 from django.shortcuts import render_to_response
 
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -15,6 +13,7 @@ from geo_utils.msg_util import *
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
 
 from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
+from apps.gis_tabular.tab_services import get_tabular_file_from_dv_api_info
 
 from geo_utils.view_util import get_common_lookup
 
@@ -63,7 +62,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
 
     # Make a post request using the temporary token issued by WorldMap
     #
-    TOKEN_PARAM = { settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token }
+    TOKEN_PARAM = {settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token}
 
     """
     #http://127.0.0.1:8070/shapefile/map-it/fe1b5f64adcbf2c2c4742fe5eaa0dd6887f410d02317361d9c999c2d4cdaa63e/?cb=http%3A%2F%2Flocalhost%3A8010%2Fapi%2Fworldmap%2Fdatafile%2F
@@ -123,7 +122,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
         if mapping_type == 'shapefile':
             return process_shapefile_info(request, dataverse_token, data_dict)
         elif mapping_type == 'tabular':
-            return HttpResponse('tabular')
+            return process_tabular_file_info(request, dataverse_token, data_dict)
         else:
             err_msg = 'The mapping_type for this metadata was not found.  Found: %s' % mapping_type
             err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
@@ -141,6 +140,26 @@ def view_mapit_incoming_token64(request, dataverse_token):
     return view_formatted_error_page(request\
                                      , FAILED_BAD_STATUS_CODE_FROM_WORLDMAP\
                                      , err_msg1)
+
+
+def process_tabular_file_info(request, dataverse_token, data_dict):
+    """
+    Use the shapefile metadata to
+        #   (1) Validate the DataverseInfo returned by Dataverse
+        #   (2) Create a TabularFileInfo object
+        #   (3) Download the dataverse file
+    """
+    success, tab_md5_or_err_msg = get_tabular_file_from_dv_api_info(dataverse_token, data_dict)
+
+    if not success:
+        return view_formatted_error_page(request\
+                                         , tab_md5_or_err_msg.err_type\
+                                         , tab_md5_or_err_msg.err_msg)
+
+    view_tab_file_first_time_url =  reverse('view_tabular_file'\
+                                    , kwargs={ 'tab_md5' : tab_md5_or_err_msg })
+
+    return HttpResponseRedirect(view_tab_file_first_time_url)
 
 
 def process_shapefile_info(request, dataverse_token, data_dict):

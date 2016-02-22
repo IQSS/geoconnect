@@ -11,9 +11,9 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-
-from apps.gis_tabular.models import SimpleTabularTest # for testing
-from apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
+from apps.gis_tabular.models import TabularFileInfo # for testing
+from apps.gis_tabular.models import TabularFileInfo,\
+                    WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 
@@ -53,7 +53,7 @@ def view_sample_map(request, worldmap_info=None):
             attribute_data=worldmap_info.attribute_data,\
             # for testing:
             tabular_info=worldmap_info.tabular_info,\
-            test_files=SimpleTabularTest.objects.all(),\
+            test_files=TabularFileInfo.objects.all(),\
             )
 
     return render_to_response('gis_tabular/view_tabular_map.html',\
@@ -72,7 +72,7 @@ def build_tabular_map_html(request, worldmap_info):
         - Attribute table
     """
     if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) and\
-        isinstance(worldmap_info, WorldMapLatLngInfo)) :
+        isinstance(worldmap_info, WorldMapLatLngInfo)):
         return None
 
     d = dict(worldmap_layerinfo=worldmap_info,\
@@ -85,8 +85,7 @@ def build_tabular_map_html(request, worldmap_info):
                             d,
                             context_instance=RequestContext(request))
 
-
-def view_tabular_file(request, tabular_id):
+def view_tabular_file_first_time(request, tab_md5):
     """
     View tabular file that has been sent over via Dataverse
     """
@@ -94,9 +93,33 @@ def view_tabular_file(request, tabular_id):
     # Retrieve the Tabular file information
     # ----------------------------------
     try:
-        tabular_info = SimpleTabularTest.objects.get(pk=tabular_id)
-    except SimpleTabularTest.DoesNotExist:
-        raise Http404('No SimpleTabularTest for id: %s' % tabular_id)
+        tabular_info = TabularFileInfo.objects.get(md5=tab_md5)
+    except TabularFileInfo.DoesNotExist:
+        raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
+
+    return HttpResponse('Found tabular info: %s' % tab_md5)
+
+
+def view_tabular_file_latest(request):
+
+    tabular_info = TabularFileInfo.objects.first()
+    if tabular_info is None:
+        return HttpResponse('Sorry, no TabularFileInfo objects found')
+
+    return view_tabular_file(request, tabular_info.id)
+
+
+def view_tabular_file(request, tab_md5):
+    """
+    View tabular file that has been sent over via Dataverse
+    """
+    # ----------------------------------
+    # Retrieve the Tabular file information
+    # ----------------------------------
+    try:
+        tabular_info = TabularFileInfo.objects.get(md5=tab_md5)
+    except TabularFileInfo.DoesNotExist:
+        raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
 
 
     # ----------------------------------
@@ -144,17 +167,18 @@ def view_tabular_file(request, tabular_id):
     # Create a form for Lat/Lng column selection
     # ----------------------------------
     if tab_file_stats:
-        form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,
+        form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,\
                     column_names=tab_file_stats.column_names)
     else:
         form_lat_lng = None
 
-    template_dict = dict(tabular_id=tabular_id,\
+    template_dict = dict(tabular_id=tabular_info.id,\
+            tabular_md5=tabular_info.md5,\
             tabular_info=tabular_info,\
             tab_file_stats=tab_file_stats,\
             geocode_types=geocode_type_list,\
             NUM_PREVIEW_ROWS=num_preview_rows,\
-            test_files=SimpleTabularTest.objects.all(),\
+            test_files=TabularFileInfo.objects.all(),\
             form_single_column=form_single_column,\
             form_lat_lng=form_lat_lng,\
             GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE)

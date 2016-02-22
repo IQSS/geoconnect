@@ -6,7 +6,7 @@ Views to create WorldMap layers by:
 from django.http import HttpResponse
 
 from django.views.decorators.http import require_POST
-from apps.gis_tabular.models import SimpleTabularTest # for testing
+from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import WorldMapTabularLayerInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
@@ -39,12 +39,12 @@ def view_map_tabular_file_form(request):
     tabular_file_info_id = request.POST.get('tabular_file_info_id', -1)
 
     try:
-        tabular_info = SimpleTabularTest.objects.get(pk=tabular_file_info_id)
-    except SimpleTabularTest.DoesNotExist:
+        tabular_info = TabularFileInfo.objects.get(pk=tabular_file_info_id)
+    except TabularFileInfo.DoesNotExist:
         err_msg = 'Sorry! The Tabular File was not found. (tabular_file_info_id)'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
-        #raise Http404('No SimpleTabularTest for id: %s' % tabular_file_info_id)
+        #raise Http404('No TabularFileInfo for id: %s' % tabular_file_info_id)
 
     # -----------------------------------------
     # Retrieve available Geocode types and join Layers
@@ -147,12 +147,12 @@ def view_process_lat_lng_form(request):
     tabular_file_info_id = request.POST.get('tabular_file_info_id', -1)
 
     try:
-        tabular_info = SimpleTabularTest.objects.get(pk=tabular_file_info_id)
-    except SimpleTabularTest.DoesNotExist:
+        tabular_info = TabularFileInfo.objects.get(pk=tabular_file_info_id)
+    except TabularFileInfo.DoesNotExist:
         err_msg = 'Sorry! The Tabular File was not found. (tabular_file_info_id)'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
-        #raise Http404('No SimpleTabularTest for id: %s' % tabular_file_info_id)
+        #raise Http404('No TabularFileInfo for id: %s' % tabular_file_info_id)
 
     form_lat_lng = LatLngColumnsForm(tabular_info.id,\
                         tabular_info.column_names,\
