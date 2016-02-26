@@ -9,6 +9,7 @@ Form for:
         - column 1 cannot be same as column 2
 """
 from django import forms
+from apps.gis_tabular.models import TabularFileInfo
 #from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
 
 '''
@@ -21,6 +22,10 @@ class DeleteMapForm(forms.Form):
 
 GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
 
+class TabularFileInfoForm(forms.ModelForm):
+    class Meta:
+        model = TabularFileInfo
+        exclude = ('created', 'modified')
 
 class ChooseSingleColumnForm(forms.Form):
     """

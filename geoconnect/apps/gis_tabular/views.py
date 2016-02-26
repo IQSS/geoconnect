@@ -71,8 +71,9 @@ def build_tabular_map_html(request, worldmap_info):
         - Download links using Geoserver functions
         - Attribute table
     """
-    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) and\
+    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
         isinstance(worldmap_info, WorldMapLatLngInfo)):
+        print 'no no no...', type(worldmap_info)
         return None
 
     d = dict(worldmap_layerinfo=worldmap_info,\
@@ -106,7 +107,7 @@ def view_tabular_file_latest(request):
     if tabular_info is None:
         return HttpResponse('Sorry, no TabularFileInfo objects found')
 
-    return view_tabular_file(request, tabular_info.id)
+    return view_tabular_file(request, tabular_info.md5)
 
 
 def view_tabular_file(request, tab_md5):

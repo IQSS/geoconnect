@@ -119,6 +119,7 @@ class MetadataUpdater:
         print('1) send_params_to_dataverse')
 
         dv_metadata_params = worldmap_layer_info.get_params_for_dv_update()
+        print ('dv_metadata_params', dv_metadata_params)
         api_update_url = get_api_url_update_map_metadata(self.dataverse_server_url)
 
         print ('params to send: %s' % dv_metadata_params)

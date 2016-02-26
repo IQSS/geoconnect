@@ -371,6 +371,23 @@ class JoinTargetInformation(TimeStampedModel):
         return jt_formatter.get_available_layers_list_by_type(None)
         #return jt_formatter.get_all_target_layers()
 
+    def get_format_info_for_target_layer(self, layer_id):
+        """
+        Retrieve the WorldMap info related to the
+        datatable model JoinTargetFormatType
+        """
+        jt_formatter = JoinTargetFormatter(self.target_info)
+
+        return jt_formatter.get_format_info_for_target_layer(layer_id)
+
+    def get_formatting_zero_pad_length(self, layer_id):
+        """
+        Helps with formatting columns that need zero padding
+        """
+        jt_formatter = JoinTargetFormatter(self.target_info)
+
+        return jt_formatter.get_formatting_zero_pad_length(layer_id)
+
     def get_available_layers_list_by_type(self, chosen_geocode_type):
         jt_formatter = JoinTargetFormatter(self.target_info)
         # Get all the join targets

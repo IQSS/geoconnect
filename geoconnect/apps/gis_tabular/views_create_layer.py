@@ -15,10 +15,12 @@ from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
 
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
-from apps.worldmap_connect.join_layer_service import create_map_from_datatable_join
+from apps.worldmap_connect.join_layer_service import TableJoinMapMaker
 
 from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
 from apps.gis_tabular.views import build_tabular_map_html
+
+from geo_utils.msg_util import msg, msgt
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -81,22 +83,17 @@ def view_map_tabular_file_form(request):
     # Use the WorldMap API and
     # try to create a layer
     # -----------------------------------------
-    (success, worldmap_data_or_err_msg) = create_map_from_datatable_join(\
-                        tabular_info,\
+    tj_map_maker = TableJoinMapMaker(tabular_info,\
                         dataverse_metadata_dict,\
                         form_single_column.cleaned_data.get('chosen_column'),\
                         form_single_column.cleaned_data.get('chosen_layer'),\
                         )
-    print '-' * 40
-    print 'success', success
-    print 'worldmap_data_or_err_msg', worldmap_data_or_err_msg
-    print '-' * 40
-
-    # -----------------------------------------
-    # Failed! Return error message
-    # -----------------------------------------
+    success = tj_map_maker.run_map_create()
+    msg('success: %s' % success)
     if not success:
-        json_msg = MessageHelperJSON.get_json_fail_msg('Sorry! ' + worldmap_data_or_err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(\
+                    'Sorry! ' + tj_map_maker.get_error_msg())
+        msg('error msg: %s' % json_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
@@ -104,11 +101,11 @@ def view_map_tabular_file_form(request):
     # Succeeded!  Create a WorldMapTabularLayerInfo object
     # -----------------------------------------
     worldmap_tabular_info = WorldMapTabularLayerInfo.build_from_worldmap_json(tabular_info,\
-                                worldmap_data_or_err_msg)
+                                tj_map_maker.get_map_info())
 
     if worldmap_tabular_info is None:
         LOGGER.error("Failed to create WorldMapTabularLayerInfo using %s",\
-            worldmap_data_or_err_msg)
+            tj_map_maker.get_map_info())
         user_msg = 'Sorry! Failed to create map. Please try again. (code: s1)'
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
@@ -165,18 +162,9 @@ def view_process_lat_lng_form(request):
         #json_msg = MessageHelperJSON.get_json_fail_msg(f.err_msg_for_web)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
-        #print f.errors.items()
-        #print 'Type: ', type(f)
-        #print dir(f)#'Type: ', type(f)
-        #print 'f.is_valid(): %s' % f.is_valid()
-
-    dataverse_metadata_dict = DataverseTestInfo.get_dataverse_test_info_dict(\
-                        tabular_info.name,\
-                        tabular_info.dv_file.path)
 
     (success, worldmap_data_or_err_msg) = create_map_from_datatable_lat_lng(\
                         tabular_info,\
-                        dataverse_metadata_dict,\
                         form_lat_lng.get_latitude_colname(),\
                         form_lat_lng.get_longitude_colname(),\
                         )

@@ -25,6 +25,7 @@ WORLDMAP_MANDATORY_IMPORT_EXTENSIONS = SHAPEFILE_MANDATORY_EXTENSIONS\
 import logging
 LOGGER = logging.getLogger(__name__)
 
+DEFAULT_TABULAR_DELIMITER = '\t'
 
 class SimpleTabularTest(TimeStampedModel):
     """
@@ -35,7 +36,7 @@ class SimpleTabularTest(TimeStampedModel):
     dv_file = models.FileField(upload_to='tab_files/%Y/%m/%d',\
                     blank=True, null=True, storage=dv_file_system_storage)
 
-    delimiter = models.CharField(max_length=10, default="\t")
+    delimiter = models.CharField(max_length=10, default=DEFAULT_TABULAR_DELIMITER)
 
     is_file_readable = models.BooleanField(default=False)
 
@@ -98,7 +99,7 @@ class TabularFileInfo(GISDataFile):
     """
     name = models.CharField(max_length=255, blank=True)        #   file basename
 
-    delimiter = models.CharField(max_length=10, default="\t")
+    delimiter = models.CharField(max_length=10, default=DEFAULT_TABULAR_DELIMITER)
 
     is_file_readable = models.BooleanField(default=False)
 

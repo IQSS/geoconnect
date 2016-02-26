@@ -5,22 +5,23 @@ from django.conf import settings
 from requests.exceptions import ConnectionError as RequestsConnectionError
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import MAP_LAT_LNG_TABLE_API_PATH
+from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
 #from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 LOGGER = logging.getLogger('apps.worldmap_connect.lat_lng_service')
 
 
-def create_map_from_datatable_lat_lng(datatable_obj, dataverse_metadata_dict, lat_col, lng_col):
+def create_map_from_datatable_lat_lng(tabular_info, lat_col, lng_col):
     """
     Use the WorldMap API to uplodat a datatable and join it to an existing layer
     """
     print 'create_map_from_datatable_lat_lng 1'
-    if datatable_obj is None:
+    if tabular_info is None:
         return (False, 'The Tabular File object was not specified.')
 
-    if dataverse_metadata_dict is None:
-        return (False, 'The Dataverse metadata was not specified.')
+    #if dataverse_metadata_dict is None:
+    #    return (False, 'The Dataverse metadata was not specified.')
 
     if lat_col is None:
         return (False, 'The Latitude column was not specified.')
@@ -28,10 +29,10 @@ def create_map_from_datatable_lat_lng(datatable_obj, dataverse_metadata_dict, la
     if lng_col is None:
         return (False, 'The Longitude column was not specified.')
 
-    if not hasattr(datatable_obj, 'name'):
+    if not hasattr(tabular_info, 'name'):
         return (False, 'The Tabular File object does not have a "name"')
 
-    if not hasattr(datatable_obj, 'delimiter'):
+    if not hasattr(tabular_info, 'delimiter'):
         return (False, 'The Tabular File object does not have a "delimiter"')
 
     print 'create_map_from_datatable_lat_lng 2'
@@ -39,14 +40,15 @@ def create_map_from_datatable_lat_lng(datatable_obj, dataverse_metadata_dict, la
     # --------------------------------
     # Prepare parameters
     # --------------------------------
-    map_params = dict(title=datatable_obj.name,
-                    abstract="Abstract for ... {0}".format(datatable_obj.name),
-                    delimiter=datatable_obj.delimiter,
+    map_params = dict(title=tabular_info.name,
+                    abstract="Abstract for ... {0}".format(tabular_info.name),
+                    delimiter=tabular_info.delimiter,
                     lat_attribute=lat_col,
                     lng_attribute=lng_col)
 
     # Add dataverse dict info
     #
+    dataverse_metadata_dict = get_dataverse_info_dict(tabular_info)
     map_params.update(dataverse_metadata_dict)
 
     print 'map_params', map_params
@@ -54,11 +56,11 @@ def create_map_from_datatable_lat_lng(datatable_obj, dataverse_metadata_dict, la
     # --------------------------------
     # Prepare file
     # --------------------------------
-    if not datatable_obj.dv_file or not datatable_obj.dv_file.path:
+    if not tabular_info.dv_file or not tabular_info.dv_file.path:
         return (False, "The file could not be found.")
     print 'create_map_from_datatable_lat_lng 3'
 
-    files = {'uploaded_file': open(datatable_obj.dv_file.path,'rb')}
+    files = {'uploaded_file': open(tabular_info.dv_file.path,'rb')}
 
     print 'make request to', MAP_LAT_LNG_TABLE_API_PATH
     print '-' * 40
