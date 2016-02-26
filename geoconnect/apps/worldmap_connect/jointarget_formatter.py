@@ -105,20 +105,26 @@ class JoinTargetFormatter(object):
 
         return "{0}".format(geocode_type)
 
-
-
     def get_target_layer_name_column(self, target_layer_id):
         """
-        return (target layer name, target layer column)
+        Given a target_layer_id, send back:
+            - target layer name
+            - target layer column
+            - zero pad length
+                - zero_pad_length is either an integer or None
+
+        return (target layer name, target layer column, zero_pad_length)
         """
         if target_layer_id is None:
-            return None
+            return (None, None, None)
 
         for info in self.target_info['data']:
             if 'id' in info and target_layer_id == info['id']:
-                return (info['layer'], info['attribute']['attribute'])
+                return (info['layer'],\
+                    info['attribute']['attribute'],\
+                    self.get_formatting_zero_pad_length(target_layer_id))
 
-        return (None, None)
+        return (None, None, None)
 
     def get_geocode_types(self):
         """

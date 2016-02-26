@@ -48,7 +48,7 @@ class TabularFileInfoAdmin(GISDataFileAdmin):
                     , ('Tabular Info', {
                        'fields': (('num_rows', 'num_columns'),\
                             'has_header_row', 'column_names',\
-                            'chosen_column', )
+                            'chosen_column', 'dv_join_file')
                     })\
                  ] + fs
         return fs

@@ -15,7 +15,7 @@ from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
 
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
-from apps.worldmap_connect.join_layer_service import TableJoinMapMaker
+from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 
 from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
 from apps.gis_tabular.views import build_tabular_map_html

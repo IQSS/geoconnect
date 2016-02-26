@@ -112,6 +112,11 @@ class TabularFileInfo(GISDataFile):
     has_header_row = models.BooleanField(default=True)
     chosen_column = models.CharField(max_length=155, blank=True)
 
+    dv_join_file = models.FileField(upload_to='dv_files/join/%Y/%m/%d',\
+                blank=True, null=True,\
+                storage=dv_file_system_storage,\
+                max_length=255,\
+                help_text="Used when a new column needs to be added for a TableJoin")
 
     def get_column_count(self):
         """
