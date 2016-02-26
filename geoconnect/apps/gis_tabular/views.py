@@ -16,6 +16,7 @@ from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
+from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
@@ -32,7 +33,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-def view_sample_map(request, worldmap_info=None):
+def view_existing_map(request, worldmap_info=None):
     """
     Test view a WorldMapTabularLayerInfo object
     """
@@ -47,10 +48,14 @@ def view_sample_map(request, worldmap_info=None):
     if worldmap_info is None:
         return HttpResponse('Sorry! No WorldMapTabularLayerInfo objects available')
 
+    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
+
     tmpl_dict = dict(worldmap_layerinfo=worldmap_info,\
             layer_data=worldmap_info.core_data,\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
+            delete_form=delete_form,\
+            is_tabular_delete=True,\
             # for testing:
             tabular_info=worldmap_info.tabular_info,\
             test_files=TabularFileInfo.objects.all(),\
@@ -69,22 +74,82 @@ def build_tabular_map_html(request, worldmap_info):
     Create HTML string displaying:
         - Completed map via iframe
         - Download links using Geoserver functions
+        - User message about join
         - Attribute table
     """
     if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
         isinstance(worldmap_info, WorldMapLatLngInfo)):
-        print 'no no no...', type(worldmap_info)
+        LOGGER.error('worldmap_info needs to be a WorldMapJoinLayerInfo\
+         or WorldMapLatLngInfo object. Not: %s', worldmap_info)
         return None
+
+    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
 
     d = dict(worldmap_layerinfo=worldmap_info,\
             layer_data=worldmap_info.core_data,\
             download_links=worldmap_info.download_links,\
-            attribute_data=worldmap_info.attribute_data\
+            attribute_data=worldmap_info.attribute_data,\
+            delete_form=delete_form,\
+            is_tabular_delete=True\
             )
 
     return render_to_string('gis_tabular/view_tabular_map_div.html',
                             d,
                             context_instance=RequestContext(request))
+
+
+def view_unmatched_join_rows(request, tab_md5):
+    """
+    View the unmatched rows resulting from a Table Join
+    """
+    # ----------------------------------
+    # Retrieve the Tabular file information
+    # ----------------------------------
+    try:
+        worldmap_info = WorldMapJoinLayerInfo.objects.get(md5=tab_md5)
+    except WorldMapJoinLayerInfo.DoesNotExist:
+        raise Http404('No WorldMapJoinLayerInfo for md5: %s' % tab_md5)
+
+    if worldmap_info.core_data and\
+        'unmatched_records_list' in worldmap_info.core_data:
+        # Unmatched records exist
+
+        json_msg = MessageHelperJSON.get_json_msg(success=True,\
+                        msg="Records found",\
+                        data_dict=worldmap_info.core_data['unmatched_records_list'])
+    else:
+        # No unmatched records exist
+        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                        msg="No unmatched records found.")
+
+    return HttpResponse(json_msg, content_type="application/json")
+
+def view_unmatched_lat_lng_rows(request, tab_md5):
+    """
+    View the unmatched rows resulting from a Table Join
+    """
+    # ----------------------------------
+    # Retrieve the Tabular file information
+    # ----------------------------------
+    try:
+        worldmap_info = WorldMapLatLngInfo.objects.get(md5=tab_md5)
+    except WorldMapLatLngInfo.DoesNotExist:
+        raise Http404('No WorldMapLatLngInfo for md5: %s' % tab_md5)
+
+    if worldmap_info.core_data and\
+        'unmapped_records_list' in worldmap_info.core_data:
+        # Unmatched records exist
+
+        json_msg = MessageHelperJSON.get_json_msg(success=True,\
+                        msg="Records found",\
+                        data_dict=worldmap_info.core_data['unmapped_records_list'])
+    else:
+        # No unmatched records exist
+        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                        msg="No unmatched records found.")
+
+    return HttpResponse(json_msg, content_type="application/json")
+
 
 def view_tabular_file_first_time(request, tab_md5):
     """
@@ -98,7 +163,7 @@ def view_tabular_file_first_time(request, tab_md5):
     except TabularFileInfo.DoesNotExist:
         raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
 
-    return HttpResponse('Found tabular info: %s' % tab_md5)
+    return HttpResponse('Found tabular info: %s' % tabular_info)
 
 
 def view_tabular_file_latest(request):
@@ -129,7 +194,7 @@ def view_tabular_file(request, tab_md5):
     worldmap_tabularinfo = tabular_info.get_worldmap_info()
     if worldmap_tabularinfo is not None:
         # A map exists: show it!
-        return view_sample_map(request, worldmap_tabularinfo)
+        return view_existing_map(request, worldmap_tabularinfo)
 
     # ----------------------------------
     # Open the file and get the stats

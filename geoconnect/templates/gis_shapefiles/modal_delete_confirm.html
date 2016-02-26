@@ -11,7 +11,11 @@
                This will permanently delete all versions of this map.
                <br />(However, you can make another map in the future.)
             </p>
+        {% if is_tabular_delete %}
+        <form action="{% url 'view_delete_tabular_map' %}" method="POST">
+        {% else %}
         <form action="{% url 'view_delete_map' %}" method="POST">
+        {% endif %}
             {% if delete_form %}
                 {% csrf_token %}
                 {% for f in delete_form %}

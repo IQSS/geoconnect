@@ -1,4 +1,5 @@
 <!-- start: IFRAME MAP -->
+{% include "gis_tabular/map_result_message.html" %}
 <div class="row">
     <div class="col-md-9">
         &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
@@ -37,5 +38,9 @@
         </table>
     </div>
 </div>
+{% endif %}
+{% if delete_form %}
+    {% include "gis_shapefiles/modal_delete_confirm.html" %}
+    {% include "classification/classify_form_dynamic_js.html" %}
 {% endif %}
 <!-- end: IFRAME MAP -->

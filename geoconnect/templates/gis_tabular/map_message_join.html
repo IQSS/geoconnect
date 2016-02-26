@@ -1,0 +1,27 @@
+{% load humanize %}
+A map was created from your tabular file.
+<ul>
+    <li>Rows matched: <b>{{ layer_data.matched_record_count|intcomma }}</b></li>
+    <li>Rows NOT matched: <b>{{ layer_data.unmatched_record_count|intcomma }}</b>
+        {% if layer_data.unmatched_record_count > 0 %}
+            <a href="{% url 'view_unmatched_join_rows' worldmap_layerinfo.md5 %}">view unmatched rows</a>
+        {% endif %}
+    </li>
+    <li>Join column: <b>{{ layer_data.table_join_attribute }}{% if layer_data.was_formatted_column_created %}*{% endif %}</b>
+
+    {% comment %}
+    {% if layer_data.llbbox %}
+        <li>Bounding box: <b>{{ layer_data.llbbox}}</b></li>
+    {% endif %}
+    {% endcomment %}
+</ul>
+
+{% if layer_data.was_formatted_column_created %}
+<p>* This formatted column was created to better match the target layer.
+    {% if layer_data.zero_pad_length %}
+        Each value in the column was padded with zeros
+        to make it {{ layer_data.zero_pad_length }} digit{{ layer_data.zero_pad_length|pluralize }}
+        in length.
+    {% endif %}
+</p>
+{% endif %}

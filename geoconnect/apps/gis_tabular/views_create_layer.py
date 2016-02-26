@@ -103,6 +103,7 @@ def view_map_tabular_file_form(request):
     worldmap_tabular_info = WorldMapTabularLayerInfo.build_from_worldmap_json(tabular_info,\
                                 tj_map_maker.get_map_info())
 
+
     if worldmap_tabular_info is None:
         LOGGER.error("Failed to create WorldMapTabularLayerInfo using %s",\
             tj_map_maker.get_map_info())

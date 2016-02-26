@@ -35,8 +35,12 @@ class TableJoinMapMaker(object):
         self.dataverse_metadata_dict = dataverse_metadata_dict
         self.table_attribute_for_join = table_attribute_for_join
         self.target_layer_id = target_layer_id
-        self.formatted_file_created = False # If a new join column is needed
 
+        # If a new join column is needed
+        self.formatted_file_created = False
+        self.zero_pad_length = None
+
+        # For error messages
         self.err_found = False
         self.err_messages = []
 
@@ -46,6 +50,23 @@ class TableJoinMapMaker(object):
         #self.run_map_create()
 
     def get_map_info(self):
+
+        if self.rjson_output is None:
+            return None
+
+        if not 'data' in self.rjson_output:
+            return None
+
+        # In the prep process, was a new column/created formatted?
+        if self.was_formatted_file_created():
+            # Add a "was_formatted_column_created" attribute
+            self.rjson_output['data']['was_formatted_column_created'] = True
+
+            # If used, add a zero_pad_length attribute
+            if self.zero_pad_length is not None:
+                self.rjson_output['data']['zero_pad_length'] = self.zero_pad_length
+
+
         return self.rjson_output
 
     def add_error(self, err_msg):
@@ -222,7 +243,7 @@ class TableJoinMapMaker(object):
         # -------------------------------------------
         join_target_info = get_latest_jointarget_information()
 
-        (target_layer_name, target_column_name, zero_pad_length) = join_target_info.get_target_layer_name_column(self.target_layer_id)
+        (target_layer_name, target_column_name, self.zero_pad_length) = join_target_info.get_target_layer_name_column(self.target_layer_id)
 
         if target_layer_name is None:
             self.add_error('Failed to retrieve target layer information.')
@@ -230,11 +251,11 @@ class TableJoinMapMaker(object):
 
         # Do we need to format the data in the join column?
         #
-        if zero_pad_length is not None:  # Yes! Formatting is needed!
+        if self.zero_pad_length is not None:  # Yes! Formatting is needed!
             # This will
             #   (1) create a new file with a formatted column
             #   (2) update the self.table_attribute_for_join
-            format_success = self.format_data_table_for_join(zero_pad_length)
+            format_success = self.format_data_table_for_join(self.zero_pad_length)
             if not format_success:
                 return False
 
@@ -242,7 +263,7 @@ class TableJoinMapMaker(object):
 
         msg('target_layer_name: %s' % target_layer_name)
         msg('target_column_name: %s' % target_column_name)
-        msg('zero_pad_length: %s' % zero_pad_length)
+        msg('zero_pad_length: %s' % self.zero_pad_length)
 
         # --------------------------------
         # Prepare parameters

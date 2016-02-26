@@ -413,6 +413,9 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     New Layer created by Joining a DataTable to an Existing Layer
     """
     join_description = models.TextField(blank=True)
+    #join_attribute_created = models.CharField(blank=True,\
+    #                    max_length=255,\
+    #                    help_text="Join attribute created")
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -428,10 +431,10 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         verbose_name_plural = verbose_name
 
     def is_lat_lng_layer(self):
-        return True
+        return False
 
     def is_join_layer(self):
-        return False
+        return True
 
     def did_any_rows_map(self):
         """
@@ -500,10 +503,10 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         return False
 
     def is_lat_lng_layer(self):
-        return False
+        return True
 
     def is_join_layer(self):
-        return True
+        return False
 
 
 

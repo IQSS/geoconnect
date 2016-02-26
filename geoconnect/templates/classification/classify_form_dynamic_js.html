@@ -2,13 +2,13 @@
  ul.errorlist{ list-style-type:none; padding:5px;margin:0; font-size:85%; color:#ff0000;}
  ul.errorlist li {padding:0; margin:0;}
  #id_classify_msg_tbl {width:75%}
- #id_classify_msg_tbl.table th, #id_classify_msg_tbl.table td { 
-      border-top: none; 
+ #id_classify_msg_tbl.table th, #id_classify_msg_tbl.table td {
+      border-top: none;
   }
   div.alert{width:75%;}
 </style>
 <script>
-   
+
     //-------------------------------
    /* START: Delete map form related */
    //-------------------------------
@@ -34,9 +34,9 @@
            $('#id_delete_map_button').attr( "disabled", "disabled" );
        }
    }
-   
+
    //-------------------------------
-   // Confirmation checkbox for Delete map form 
+   // Confirmation checkbox for Delete map form
    //   - on click, toggle ability to press delete button
    //-------------------------------
    function bind_delete_confirmation(){
@@ -84,23 +84,23 @@
 
     }
 
-   
+
 
    //-------------------------------
    /* END: Delete map form related */
    //-------------------------------
-   
+
    function get_alert(alert_type, err_msg){
         return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
    }
-   
+
    function submit_classify_form(){
             // Fade out classify button
             $('#id_frm_style_submit').addClass('disabled').html('Working...');
-            
+
            var classify_url = "{% url 'view_classify_layer_form' worldmap_layerinfo.md5 %}";
            var jqxhr = $.post( classify_url, $('#frm_classify').serialize(), function(json_resp) {
-               
+
               // console.log(json_resp);
               // If new form/message data is in the response, then update the page
                if ((json_resp.data)&&(json_resp.data.div_content)){
@@ -112,8 +112,8 @@
                if (json_resp.success){
                     // Reload the map!
                    $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                   $('#id_progress_bar').hide();    
-                   
+                   $('#id_progress_bar').hide();
+
                    // reload the legend
                    dt_obj = new Date();
                    {% if worldmap_layerinfo %}
@@ -121,11 +121,11 @@
                    //alert(legend_url);
                    $("#legend_img").attr("src", legend_url);
                    {% endif %}
-                   
+
                }else{
                    $('#simple_msg_div').show();
                    $('#simple_msg_div').empty().append(get_alert('danger', json_resp.message));
-                   
+
                }
              })
            .fail(function(json_resp) {
@@ -138,21 +138,21 @@
            .always(function() {
                 // Restore classify button
                 $('#id_frm_style_submit').removeClass('disabled').html('Style Map');
-                $( "#id_attribute" ).on( "change", check_attribute );        
-                               
-               //bind_form_submit_button();           
+                $( "#id_attribute" ).on( "change", check_attribute );
+
+               //bind_form_submit_button();
            });
    }
-   
-   
+
+
    var non_string_classification_methods = { {% for m in classify_form.get_classify_non_string_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
-   
+
    var all_classification_methods = { {% for m in classify_form.get_classify_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
-   
+
    var string_classification_methods =  { {% for m in classify_form.get_classify_string_choices %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1" {% endfor %} }
 
 
-   
+
    function check_attribute(){
        /*
         Attribute values have a type and a name.
@@ -172,13 +172,13 @@
        $select_elem.empty();  // remove choices
        if (attr_val_pieces[0]=='string'){
            //alert('string only');
-           
+
            $.each(string_classification_methods, function(key, value) {
                $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
            });
-           $('#id_intervals').attr("readonly", "readonly"); 
-   
+           $('#id_intervals').attr("readonly", "readonly");
+
        }else{
 
             // "non_string_classification_methods" = don't allow unique values on numeric data
@@ -186,20 +186,22 @@
            $.each(all_classification_methods, function(key, value) {
                 $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
-           });           
-           $('#id_intervals').removeAttr("readonly"); 
-           
+           });
+           $('#id_intervals').removeAttr("readonly");
+
        }
-       
+
    }
-   
+
    $(document).ready(function() {
         //alert('buttons bound');
+        /*
         $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-        $( "#id_attribute" ).on( "change", check_attribute );     
-        
-        check_attribute();   
+        $( "#id_attribute" ).on( "change", check_attribute );
+
+        check_attribute();
+        */
         bind_delete_confirmation();
-        bind_return_btn_to_dv_update();
+        //bind_return_btn_to_dv_update();
    });
  </script>
