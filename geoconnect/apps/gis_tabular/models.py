@@ -327,9 +327,11 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
 
     def get_dict_for_classify_form(self):
-
-        return dict(layer_name=self.layer_name\
-                , raw_attribute_info=self.column_data)
+        """
+        Parameters used for populating the classification form
+        """
+        return dict(layer_name=self.layer_name,\
+                raw_attribute_info=self.attribute_data)
 
     '''
     def update_dataverse(self):

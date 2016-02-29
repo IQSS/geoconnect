@@ -112,6 +112,7 @@ def view_map_tabular_file_form(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
+
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
@@ -128,6 +129,9 @@ def view_map_tabular_file_form(request):
     #   back the map HTML
     # -----------------------------------------
     data_dict = dict(map_html=map_html)
+
+    # Add Footer HTML!!
+
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
     return HttpResponse(json_msg, mimetype="application/json", status=200)

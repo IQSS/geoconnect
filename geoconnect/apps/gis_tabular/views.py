@@ -21,9 +21,15 @@ from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
+
 from geo_utils.message_helper_json import MessageHelperJSON
 
 from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
+
+from shared_dataverse_information.layer_classification.forms import\
+    ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+
 #from geo_utils.msg_util import *
 #from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
 #from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
@@ -37,29 +43,28 @@ def view_existing_map(request, worldmap_info=None):
     """
     Test view a WorldMapTabularLayerInfo object
     """
-    if worldmap_info is None:
-        # If available grab the first WorldMapJoinLayerInfo object
-        worldmap_info = WorldMapJoinLayerInfo.objects.first()
-
-    if worldmap_info is None:
-        # If available grab the first WorldMapLatLngInfo object
-        worldmap_info = WorldMapLatLngInfo.objects.first()
-
-    if worldmap_info is None:
-        return HttpResponse('Sorry! No WorldMapTabularLayerInfo objects available')
-
-    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
+    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
+        isinstance(worldmap_info, WorldMapLatLngInfo)):
+        LOGGER.error('worldmap_info needs to be a WorldMapJoinLayerInfo\
+         or WorldMapLatLngInfo object. Not: %s', worldmap_info)
+        return HttpResponse('Sorry! No WorldMap information was found.')
 
     tmpl_dict = dict(worldmap_layerinfo=worldmap_info,\
-            layer_data=worldmap_info.core_data,\
-            download_links=worldmap_info.download_links,\
-            attribute_data=worldmap_info.attribute_data,\
-            delete_form=delete_form,\
-            is_tabular_delete=True,\
-            tabular_info=worldmap_info.tabular_info,\
-            # for testing
-            test_files=TabularFileInfo.objects.all(),\
-            )
+        #layer_data=worldmap_info.core_data,\
+        #download_links=worldmap_info.download_links,\
+        attribute_data=worldmap_info.attribute_data,\
+        tabular_map_div=build_tabular_map_html(request, worldmap_info),\
+        tabular_info=worldmap_info.tabular_info,\
+
+        # for testing
+        test_files=TabularFileInfo.objects.all(),\
+
+        # redundant
+        #delete_form=delete_form,\
+        #is_tabular_delete=True,\
+        )
+
+
 
     return render_to_response('gis_tabular/view_tabular_map.html',\
                             tmpl_dict,\
@@ -85,16 +90,26 @@ def build_tabular_map_html(request, worldmap_info):
 
     delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
 
-    d = dict(worldmap_layerinfo=worldmap_info,\
+    template_dict = dict(worldmap_layerinfo=worldmap_info,\
             layer_data=worldmap_info.core_data,\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
             delete_form=delete_form,\
-            is_tabular_delete=True\
+            is_tabular_delete=True,\
             )
 
-    return render_to_string('gis_tabular/view_tabular_map_div.html',
-                            d,
+    # --------------------------------
+    # Classification form attributes
+    # --------------------------------
+    classify_params = {GEOCONNECT_STEP_KEY : STEP3_STYLE,\
+            'ATTRIBUTE_VALUE_DELIMITER' : ATTRIBUTE_VALUE_DELIMITER,\
+            'classify_form' : ClassifyLayerForm(\
+                **worldmap_info.get_dict_for_classify_form())}
+
+    template_dict.update(classify_params)
+
+    return render_to_string('gis_tabular/view_tabular_map_div.html',\
+                            template_dict,\
                             context_instance=RequestContext(request))
 
 
@@ -150,7 +165,7 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
 
     return HttpResponse(json_msg, content_type="application/json")
 
-
+'''
 def view_tabular_file_first_time(request, tab_md5):
     """
     View tabular file that has been sent over via Dataverse
@@ -164,7 +179,7 @@ def view_tabular_file_first_time(request, tab_md5):
         raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
 
     return HttpResponse('Found tabular info: %s' % tabular_info)
-
+'''
 
 def view_tabular_file_latest(request):
 

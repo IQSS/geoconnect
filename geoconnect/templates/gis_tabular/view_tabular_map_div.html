@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-md-9">
         &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
-        <iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>
+        {#<iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>#}
     </div>
     <div class="col-md-3">
         <h5>Legend</h5>
@@ -17,7 +17,9 @@
     </div>
 </div>
 {#% include "gis_tabular/map_attributes_list.html" %#}
-
+{% if classify_form %}
+    {% include "classification/view_classify_form.html" %}
+{% endif %}
 {% if delete_form %}
     {% include "gis_shapefiles/modal_delete_confirm.html" %}
     {% include "classification/classify_form_dynamic_js.html" %}

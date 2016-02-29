@@ -25,11 +25,12 @@
 <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
-          - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_layerinfo.tabular_info.get_dv_file_basename }}</span>
+        - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_info.tabular_info.get_dv_file_basename }}</span>
       </h3>
     </div>
     <div class="panel-body" id="id_main_panel_content">
-        {% include "gis_tabular/view_tabular_map_div.html" %}
+        {{ tabular_map_div }}
+        {#% include "gis_tabular/view_tabular_map_div.html" %#}
         {% include "gis_shapefiles/delete_and_back_to_dv_links.html" %}
 
     </div>
