@@ -1,0 +1,23 @@
+{% if attribute_data %}
+<div class="row">
+    <div class="col-md-6">
+        <h5>Attribute Information</h5>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th>&nbsp;</th>
+                <th>Name</th>
+                <th>Display Name</th>
+                <th>Type</th>
+            </tr>
+        {% for col_info in attribute_data %}
+            <tr{% if col_info.name == layer_data.table_join_attribute %} class="info"{% endif %}>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ col_info.name }}{% if col_info.name == layer_data.table_join_attribute %}<br />* join column{% endif %}</td>
+                <td>{{ col_info.display_name }}</td>
+                <td>{{ col_info.type }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}

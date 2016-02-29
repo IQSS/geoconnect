@@ -15,8 +15,8 @@
 <div class="pull-left" style="padding:0 0px 0 20px;width:100%; xborder:1px solid #ff0000;">
 
 	{% if Err_Found or Dataverse_Connect_Err_Msg %}
-	    <!-- The shapefile didn't open at all, 
-	    failed when ingested by a shapefile reader (e.g. bad zip/bad file), 
+	    <!-- The shapefile didn't open at all,
+	    failed when ingested by a shapefile reader (e.g. bad zip/bad file),
 	    or contained multiple shapefiles -->
 		{% include "gis_shapefiles/view_02a_err_examine.html" %}
 	{% endif %}
@@ -49,17 +49,17 @@
                 {#% include "gis_shapefiles/view_03_visualize_layer.html" %#}
 
             {% else %}{% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
-		    
-		        {% include "gis_shapefiles/view_04_ajax_style_layer.html" %}	
-		        
+
+		        {% include "gis_shapefiles/view_04_ajax_style_layer.html" %}
+
             {% else %}
-			
-			    {% include "gis_shapefiles/view_02a_shp_table.html" %}	
-            
+
+			    {% include "gis_shapefiles/view_02a_shp_table.html" %}
+
             {% endif %}{% endif %}
 
 		{% endif %}
-		
+
 	    {% if is_logged_in and is_staff %}
     		<p>Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
 				{% if shapefile_info %}
@@ -69,7 +69,7 @@
         {% endif %}
     </div><!-- end main panel content -->
     </div><!-- end: panel -->
-    
+
     {% if shapefile_info %}
         {#% include "gis_shapefiles/shapefile_info_panel.html" %#}
     {% endif %}

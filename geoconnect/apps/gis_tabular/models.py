@@ -14,9 +14,12 @@ from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
-from shared_dataverse_information.map_layer_metadata.forms import GeoconnectToDataverseMapLayerMetadataValidationForm
+from shared_dataverse_information.map_layer_metadata.forms import\
+    GeoconnectToDataverseMapLayerMetadataValidationForm,\
+    GeoconnectToDataverseDeleteMapLayerMetadataForm
+
 #MapLayerMetadataValidationForm
-#GeoconnectToDataverseDeleteMapLayerMetadataForm
+
 
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS = SHAPEFILE_MANDATORY_EXTENSIONS\
@@ -348,6 +351,15 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
     dv_params.allow_tags = True
     '''
 
+    def get_dataverse_server_url(self):
+        """
+        Retrieve the Dataverse base url to be used
+        for using the Dataverse API
+        """
+        if not self.tabular_info:
+            return None
+
+        return self.tabular_info.get_dataverse_server_url()
 
 
     def get_data_dict(self, json_format=False):

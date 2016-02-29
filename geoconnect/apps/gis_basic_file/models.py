@@ -52,6 +52,10 @@ class GISDataFile(DataverseInfo):
         return not self.dataset_is_public
 
     def get_dataverse_server_url(self):
+        """
+        Return the Dataverse url.
+        Used for API calls back to that specific Dataverse installation
+        """
         if not self.registered_dataverse:
             return None
 

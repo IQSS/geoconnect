@@ -16,7 +16,6 @@ import requests
 from django.conf import settings
 
 from apps.gis_basic_file.models import GISDataFile
-from apps.worldmap_connect.models import WorldMapLayerInfo
 
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
@@ -47,25 +46,40 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
         or (False, 'error message of some type')
     """
     assert isinstance(gis_data_file, GISDataFile), "gis_data_file must be a GISDataFile object"
-    assert isinstance(worldmap_layer_info, WorldMapLayerInfo),\
-            "worldmap_layer_info must be a WorldMapLayerInfo object"
+    #assert isinstance(worldmap_layer_info, WorldMapLayerInfo),\
+    #        "worldmap_layer_info must be a WorldMapLayerInfo object"
 
     #--------------------------------------
     # Does the GISDataFile object correspond
     #    to the WorldMapLayerInfo object?
     #--------------------------------------
-    if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
-        if not gis_data_file == worldmap_layer_info.import_attempt.gis_data_file:
+    if hasattr(worldmap_layer_info, 'import_attempt'):
+        # Shapefiles...
+        #
+        if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
+            if gis_data_file != worldmap_layer_info.import_attempt.gis_data_file:
+                err_msg = """Error the GISDataFile does not \
+            correspond to the WorldMapLayerInfo object. (shapefile)"""
+                LOGGER.error(err_msg)
+                return (False, err_msg)
+    elif hasattr(worldmap_layer_info, 'tabular_info'):
+        # Tabular files...
+        #
+        if worldmap_layer_info.tabular_info != gis_data_file:
             err_msg = """Error the GISDataFile does not \
-            correspond to the WorldMapLayerInfo object."""
+            correspond to the WorldMapLayerInfo object. (tabular)"""
             LOGGER.error(err_msg)
             return (False, err_msg)
+    else:
+        # Unknown
+        err_msg = "worldmap_layer_info is an unknown file type: %s" % type(worldmap_layer_info)
+        LOGGER.error(err_msg)
+        return (False, err_msg)
 
 
     #--------------------------------------
     # Prepare params for WorldMAP API call
     #--------------------------------------
-
     data_params = get_dataverse_info_dict(gis_data_file)
     existing_layer_form = CheckForExistingLayerForm(data_params)
     if not existing_layer_form.is_valid():

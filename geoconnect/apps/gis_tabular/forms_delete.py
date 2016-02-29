@@ -23,9 +23,9 @@ class DeleteTabularMapForm(forms.Form):
         tab_md5 = self.cleaned_data.get('worldmap_tab_info_md5')
 
         if is_join_layer:
-            return WorldMapJoinLayerInfo.objects.get(md5=tab_md5).first()
+            return WorldMapJoinLayerInfo.objects.filter(md5=tab_md5).first()
         else:
-            return WorldMapLatLngInfo.objects.get(md5=tab_md5).first()
+            return WorldMapLatLngInfo.objects.filter(md5=tab_md5).first()
 
     @staticmethod
     def get_form_with_initial_vals(worldmap_info):

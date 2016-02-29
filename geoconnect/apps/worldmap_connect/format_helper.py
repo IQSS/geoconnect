@@ -44,9 +44,6 @@ def get_params_for_worldmap_connect(wm_import_attempt):
 
     # Add basic data cleaned by ShapefileImportDataForm
     #
-    #   Note: The parameters from this call include a signature key
-    #
-    #params_dict = f.get_api_params_with_signature()
     params_dict = f.cleaned_data
 
     #print ('params 3')

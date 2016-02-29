@@ -195,12 +195,15 @@
 
    $(document).ready(function() {
         //alert('buttons bound');
-        /*
-        $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-        $( "#id_attribute" ).on( "change", check_attribute );
 
-        check_attribute();
-        */
+        if ($("#id_frm_style_submit").length>0){
+            $("#id_frm_style_submit").on( "click", submit_classify_form );
+        }
+        if ($("#id_attribute").length>0){
+            $("#id_attribute").on( "change", check_attribute );
+            check_attribute();
+        }
+
         bind_delete_confirmation();
         //bind_return_btn_to_dv_update();
    });

@@ -53,16 +53,16 @@ def render_breadcrumb_div_for_style_step():
          }
     return render_to_string('breadcrumb.html', d)
 
-    
+
 def render_main_panel_title_for_style_step(shapefile_info):
-    
+
     assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
 
     d = {   'shapefile_info' : shapefile_info\
             , 'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
         }
     return render_to_string('gis_shapefiles/view_02_main_panel_title.html', d)
-    
+
 
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
@@ -85,10 +85,10 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
             , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
             , show_visualize_success_msg=True\
         )
-    
+
     #d['classify_form'] = classify_form
     #d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
-    
+
     return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
                     , d\
                     , context_instance=RequestContext(request)\
@@ -104,7 +104,8 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
 
 
 class ViewAjaxVisualizeShapefile(View):
-    """Given the md5 of a ShapefileInfo, attempt to visualize the file on WorldMap
+    """
+    Given the md5 of a ShapefileInfo, attempt to visualize the file on WorldMap
 
     Return a JSON response
     """
@@ -131,7 +132,7 @@ class ViewAjaxVisualizeShapefile(View):
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
         breadcrumb_html = render_breadcrumb_div_for_style_step()
         main_title_panel_html=render_main_panel_title_for_style_step(shapefile_info)
-        
+
         msg('create  json_msg')
         json_msg = MessageHelperJSON.get_json_msg(success=True
                                         , msg='Success!'
@@ -157,7 +158,7 @@ class ViewAjaxVisualizeShapefile(View):
         except ShapefileInfo.DoesNotExist:
             err_note = "Sorry!  The shapefile was not found."
             err_note_html = render_ajax_basic_err_msg(err_note)
-            
+
             json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
                                  , data_dict=dict(id_main_panel_content=err_note_html)
@@ -188,7 +189,7 @@ class ViewAjaxVisualizeShapefile(View):
 
         logger.debug('(3a) send_shapefile_to_worldmap')
         send_shp_service.send_shapefile_to_worldmap()
-        
+
         logger.debug('(3b) get_worldmap_layerinfo')
         worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
 
@@ -208,13 +209,13 @@ class ViewAjaxVisualizeShapefile(View):
             # (3b) Uh oh!  Failed to visualize
             #
             err_note = "Sorry!  The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
-            
+
             err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
             json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
                                  , data_dict=dict(id_main_panel_content=err_note_html)
             )
-            
+
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
@@ -224,11 +225,10 @@ class ViewAjaxVisualizeShapefile(View):
         msgt('(4) Unanticipated error')
         err_note = "Sorry!  An error occurred.  A message was sent to the administrator."
         err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
-        
+
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                                  , msg=err_note\
                                  , data_dict=dict(id_main_panel_content=err_note_html)
             )
 
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
-

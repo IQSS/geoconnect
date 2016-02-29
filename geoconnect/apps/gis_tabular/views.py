@@ -56,8 +56,8 @@ def view_existing_map(request, worldmap_info=None):
             attribute_data=worldmap_info.attribute_data,\
             delete_form=delete_form,\
             is_tabular_delete=True,\
-            # for testing:
             tabular_info=worldmap_info.tabular_info,\
+            # for testing
             test_files=TabularFileInfo.objects.all(),\
             )
 

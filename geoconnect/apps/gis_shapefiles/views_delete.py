@@ -68,7 +68,7 @@ def view_delete_map(request):
     # Delete metadata from dataverse
     # -----------------------------------
 
-    (success2, err_msg_or_None2) = MetadataUpdater.delete_map_metadata_from_dataverse(worldmap_layer_info)
+    (success2, err_msg_or_None2) = MetadataUpdater.delete_dataverse_map_metadata(worldmap_layer_info)
     if success2 is False:
         logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 

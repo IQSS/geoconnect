@@ -6,21 +6,24 @@ Views to create WorldMap layers by:
 from django.http import HttpResponse
 
 from django.views.decorators.http import require_POST
+
+from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
+from geo_utils.msg_util import msg, msgt
+
+from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
+
 from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import WorldMapTabularLayerInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
 from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 
-from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
-
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
 from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 
-from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
+#from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
 from apps.gis_tabular.views import build_tabular_map_html
 
-from geo_utils.msg_util import msg, msgt
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -75,9 +78,7 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Get Dataverse info dict
     # -----------------------------------------
-    dataverse_metadata_dict = DataverseTestInfo.get_dataverse_test_info_dict(\
-                    tabular_info.name,\
-                    tabular_info.dv_file.path)
+    dataverse_metadata_dict = get_dataverse_info_dict(tabular_info)
 
     # -----------------------------------------
     # Use the WorldMap API and
