@@ -168,6 +168,10 @@ class JoinTargetFormatter(object):
                 #if zero_pad_note:
                 #    info_line = "{0} ({1})".format(info_line, zero_pad_note)
 
+                formatting_note = self.get_format_name(info)
+                if formatting_note:
+                    info_line = "{0} - {1}".format(info_line, formatting_note)
+
                 join_targets.append((info['id'], info_line))
 
         return join_targets
@@ -230,6 +234,29 @@ class JoinTargetFormatter(object):
                 expected_format['expected_zero_padded_length']
 
         return None
+
+    def get_format_name(self, info):
+        """
+        If the format type JSON includes zero padding info,
+        show it
+
+        Example JSON:
+        "expected_format": {
+            "expected_zero_padded_length": 6,
+            "is_zero_padded": true,
+            "description": "Remove non integers. Check for empty string. Pad with zeros until 6 digits.",
+            "name": "Census Tract (6 digits, no decimal)"
+        },
+        """
+        if info is None or not hasattr(info, 'get'):
+            return None
+
+        if not 'expected_format' in info:
+            return None
+
+        expected_format = info['expected_format']
+
+        return expected_format.get('name', None)
 
 
     def get_join_targets_by_type(self, chosen_geocode_type=None):

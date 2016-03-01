@@ -32,7 +32,7 @@ class ChooseSingleColumnForm(forms.Form):
     Basic form for capturing chosen column name
     """
     tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
-    chosen_layer = forms.ChoiceField(label="Choose layer", choices=())
+    chosen_layer = forms.ChoiceField(label="WorldMap Layer", choices=())
     chosen_column = forms.ChoiceField(label="Choose column", choices=())
 
     def __init__(self, tabular_file_info_id, layer_choices, column_names, *args, **kwargs):

@@ -2,11 +2,11 @@
 A map was created from your tabular file.
 <ul>
     <li>Rows matched: <b>{{ layer_data.mapped_record_count|intcomma }}</b></li>
+    {% if layer_data.unmapped_record_count > 0 %}
     <li>Rows NOT matched: <b>{{ layer_data.unmapped_record_count|intcomma }}</b>
-        {% if layer_data.unmapped_record_count > 0 %}
-            <a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">view unmatched rows</a> 
-        {% endif %}
+            <a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">view unmatched rows</a>
     </li>
+    {% endif %}
     <li>Latitude Join column: <b> {{ layer_data.lat_attribute.attribute }}</b></li>
     <li>Longitude Join column: <b> {{ layer_data.lng_attribute.attribute }}</b></li>
 

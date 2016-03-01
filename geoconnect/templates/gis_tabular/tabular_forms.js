@@ -175,17 +175,21 @@
             console.log('type: '+ geocode_type_val);
             if (geocode_type_val == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
                 // show latitude-longitude form
+                $('.form_inactive_default').hide();
                 $('.form_lat_lng_fields').show();
                 $('.form_single_column_fields').hide();
 
             }else if (geocode_type_val == ''){
                 // hide both forms
+
+                $('.form_inactive_default').show();
                 $('.form_lat_lng_fields').hide();
                 $('.form_single_column_fields').hide();
 
             }else{
                 // show single column form
                 update_target_layers_based_on_geotype(geocode_type_val);
+                $('.form_inactive_default').hide();
                 $('.form_lat_lng_fields').hide();
                 $('.form_single_column_fields').show();
                 $("label[for='id_chosen_column']").html('Column for "' + $( "#id_geocode_type option:selected" ).html() + '"');

@@ -196,6 +196,19 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         verbose_name = 'WorldMapTabularLayerInfo'
         verbose_name_plural = verbose_name
 
+    def get_unmapped_record_count(self):
+        """
+        Differs according to record type
+        """
+        assert False, "This must be implemented in concrete classes"
+
+    def did_any_rows_map(self):
+        """
+        Check the mapping result for the number of mapped records
+        """
+        assert False, "This must be implemented in concrete classes"
+
+
     def is_lat_lng_layer(self):
         """
         Is this the result of mapping Lat/Lng columns?
@@ -452,7 +465,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
     def did_any_rows_map(self):
         """
-        The APIs for joint
+        Check the mapping result for the number of mapped records
         """
         if not self.core_data:
             return False
@@ -464,6 +477,17 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
             return True
 
         return False
+
+    def get_unmapped_record_count(self):
+        """
+        Return the unmapped record count.
+
+        If no data is available, return -1
+        """
+        if not self.core_data:
+            return -1
+
+        return self.core_data.get('matched_records_count', -1)
 
 
     def get_params_for_dv_update(self):
@@ -515,6 +539,18 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
             return True
 
         return False
+
+    def get_unmapped_record_count(self):
+        """
+        Return the unmapped record count.
+
+        If no data is available, return -1
+        """
+        if not self.core_data:
+            return -1
+
+        return self.core_data.get('mapped_record_count', -1)
+
 
     def is_lat_lng_layer(self):
         return True

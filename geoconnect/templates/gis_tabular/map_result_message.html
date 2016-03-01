@@ -1,7 +1,11 @@
 {% if worldmap_layerinfo %}
 <div class="row">
     <div class="col-md-8">
-        <div class="alert alert-info">
+        <div class="alert {% spaceless %}
+        {% if worldmap_layerinfo.get_unmapped_record_count > 0 %}
+        alert-warning
+        {% else %}alert-success{% endif %}
+        {% endspaceless %}">
           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             {% if worldmap_layerinfo.is_join_layer %}
                 <!-- join layer message -->

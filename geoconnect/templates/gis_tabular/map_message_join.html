@@ -2,11 +2,12 @@
 A map was created from your tabular file.
 <ul>
     <li>Rows matched: <b>{{ layer_data.matched_record_count|intcomma }}</b></li>
+    {% if layer_data.unmatched_record_count > 0 %}
     <li>Rows NOT matched: <b>{{ layer_data.unmatched_record_count|intcomma }}</b>
-        {% if layer_data.unmatched_record_count > 0 %}
+
             <a href="{% url 'view_unmatched_join_rows' worldmap_layerinfo.md5 %}">view unmatched rows</a>
-        {% endif %}
     </li>
+    {% endif %}
     <li>Join column: <b>{{ layer_data.table_join_attribute }}{% if layer_data.was_formatted_column_created %}*{% endif %}</b>
 
     {% comment %}

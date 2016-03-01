@@ -20,21 +20,21 @@
 
 
 <div class="row">
-    <div class="col-sm-1"></div>
-    <div class="col-sm-11">
+    {#<div class="col-sm-1"></div>#}
+    <div class="col-sm-12">
         {% comment %}
         <h3>{{ tabular_info }} -
             <span style="font-size:85%">{{ tabular_info.get_dv_file_basename }}</span>
         </h3>
         {% endcomment %}
+        <h4 class="text-left">WorldMap Data</h4>
 
-        <p><br />
+        <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            Please select the type of geospatial data, and the columns that it can be found in.
+            Please select the type of geospatial data, and the WorldMap layer to join to.
         </p>
     </div>
 </div>
-
 <div id="msg_form_tabular" style="display:none;"></div>
 <!-- START: tabular form -->
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
@@ -51,12 +51,36 @@
           </select>
       </div>
     </div>
+    <!-- Start: Inactive Form before Geospatial type is chosen -->
 
+    <div class="form-group form_inactive_default">
+        <div class="col-md-12">
+            <h4>Dataverse File</h4>
+            <p>
+        </div>
+        <label class="col-sm-3 control-label" for="id_chosen_column">Column Name</label>
+        <div class="col-sm-6">
+            <select id="id_chosen_column" class="form-control" disabled="disabled" name="chosen_column">
+                <option value="">Select Disabled</option>
+            </select>
+        </div>
+    </div>
+    <!-- End: Inactive Form before Geospatial type is chosen -->
 
     <!-- Start: Single Column form -->
     {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
+
     {% for field in form_single_column.visible_fields %}{% spaceless %}
+
         <div class="form-group form_single_column_fields" style="display:none;">
+
+            {% if field.name == "chosen_column" %}
+            <div class="col-md-12">
+                <h4>Dataverse File</h4>
+                <p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                Please select the Dataverse file column to join to.</p>
+            </div>
+            {% endif %}
             <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
             <div class="col-sm-6">
                 {{ field }}
@@ -77,6 +101,13 @@
     {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
     {% for field in form_lat_lng.visible_fields %}{% spaceless %}
         <div class="form-group form_lat_lng_fields" style="display:none;">
+            {% if field.name == "latitude" %}
+            <div class="col-md-12">
+                <h4>Dataverse File</h4>
+                <p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                Please select the Dataverse file columns to join to.</p>
+            </div>
+            {% endif %}
             <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
             <div class="col-sm-4">
                 {{ field }}

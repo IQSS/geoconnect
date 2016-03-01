@@ -155,6 +155,13 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
         'unmapped_records_list' in worldmap_info.core_data:
         # Unmatched records exist
 
+        unmatched_rows_html = render_to_string('gis_tabular/unmatched_rows.html',\
+            dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],\
+                column_names=worldmap_info.attribute_data,
+            ),\
+            context_instance=RequestContext(request))
+
+        return HttpResponse(unmatched_rows_html)
         json_msg = MessageHelperJSON.get_json_msg(success=True,\
                         msg="Records found",\
                         data_dict=worldmap_info.core_data['unmapped_records_list'])
@@ -162,6 +169,9 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
         # No unmatched records exist
         json_msg = MessageHelperJSON.get_json_msg(success=False,\
                         msg="No unmatched records found.")
+
+
+    #from django.template.loader import render_to_string
 
     return HttpResponse(json_msg, content_type="application/json")
 
