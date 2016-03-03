@@ -18,7 +18,6 @@ from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
 
-
 logger = logging.getLogger(__name__)
 
 def view_delete_tabular_map(request):

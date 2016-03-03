@@ -23,7 +23,7 @@ class GISDataFileAdmin(DataverseInfoAdmin):
     #
     fieldsets = [fs for fs in DataverseInfoAdmin.fieldsets]
     geoconnect_fieldset = ('GeoConnect specific', {'fields': ['registered_dataverse', 'dv_session_token', 'dv_file', 'gis_scratch_work_directory']})
-    fieldsets.insert(-1, geoconnect_fieldset)   # second to last in admin
+    fieldsets.insert(0, geoconnect_fieldset)   # second to last in admin
 
 # register the model
 admin.site.register(GISDataFile, GISDataFileAdmin)

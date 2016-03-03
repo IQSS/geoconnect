@@ -77,3 +77,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 xenv/*
+
+scripts/tab_read/test_dv_files/CBG Annual and Longitudinal Measures.tab
+
+scripts/tab_read/test_dv_files/CENSUS2010_BLK_BG_TRCT_SHP.zip

@@ -1,18 +1,16 @@
 import logging
 import requests
 import sys
-import os
 
 from django.conf import settings
-from django.core.files import File
+#from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db.models import FileField
 from requests.exceptions import ConnectionError as RequestsConnectionError
-
+from csv import QUOTE_NONNUMERIC
 from geo_utils.msg_util import msg, msgt
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
-    MAP_LAT_LNG_TABLE_API_PATH,\
     UPLOAD_JOIN_DATATABLE_API_PATH
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information
@@ -20,6 +18,7 @@ from apps.worldmap_connect.utils import get_latest_jointarget_information
 
 # If a column needs formatting
 import pandas as pd
+import numpy as np
 
 LOGGER = logging.getLogger('apps.worldmap_connect.join_layer_service')
 
@@ -27,8 +26,15 @@ LOGGER = logging.getLogger('apps.worldmap_connect.join_layer_service')
 class TableJoinMapMaker(object):
     """
     Use the WorldMap API to uplodat a datatable and join it to an existing layer
-    """
 
+    tj_map_maker = TableJoinMapMaker(tabular_info, dataverse_metadata_dict,
+                                    chosen_column_name, chosen_layer_name)
+    success = tj_map_maker.run_map_create()
+    if success:
+        map_info_dict = tj_map_maker.get_map_info()
+    else:
+        err_msg = tj_map_maker.get_error_msg()
+    """
     def __init__(self, datatable_obj, dataverse_metadata_dict,\
         table_attribute_for_join, target_layer_id):
         self.datatable_obj = datatable_obj
@@ -102,6 +108,57 @@ class TableJoinMapMaker(object):
             self.add_error('The Tabular File object does not have a "delimiter"')
 
 
+    def is_formatted_column_needed(self, data_frame, zero_pad_length):
+        """
+        Column needs formatting if:
+            (a) It is type numeric
+            (b) The values do not meet the minimal length
+        """
+        assert isinstance(data_frame, pd.DataFrame),\
+            "data_frame must be a pandas DataFrame object"
+
+        df = data_frame
+
+        # --------------------------------------------
+        # (1) Is this a numeric column?
+        # If so, we need a formatted column b/c we're matching against a string.
+        # --------------------------------------------
+        if np.isreal(df[self.table_attribute_for_join].dtype):
+            return True
+
+        # --------------------------------------------
+        # (2) Are the values in our column the correct length for a join?
+        # --------------------------------------------
+        total_rows = len(df)
+
+        # Count how many columns meet the padding length
+        #   - convert our temp column to a string
+        # --------------------------------------------
+
+        temp_col = self.table_attribute_for_join + '_temp'
+        df[temp_col] = df[self.table_attribute_for_join].astype('str')
+
+        #   - Make a filter to count how many values have
+        #       the correct length
+        # --------------------------------------------
+        filter_criteria = (df[temp_col].str.len() == zero_pad_length)
+        num_short_rows = len(df.loc[filter_criteria])
+
+        # Drop the temp column
+        df = df.drop(temp_col, axis=1)
+
+
+        #   - Are all the rows the right length?
+        # --------------------------------------------
+        if num_short_rows == total_rows:    # Yes
+            # Looks ok, no formatting needed
+            return False
+
+        # We need a formatted column
+        return True
+
+
+
     def format_data_table_for_join(self, zero_pad_length):
         """
         Create a new file and add a formatted column that's zero-padded
@@ -114,93 +171,86 @@ class TableJoinMapMaker(object):
             self.add_error("The file could not be found.")
             return False
 
-        # ----------------------------------
-        # (1) Make a new column and zero pad it
-        # ----------------------------------
-        # remove any old join files
+        # Cleanup: remove any old join files from the TabularInfo object
+        # --------------------------------------------
         if self.datatable_obj.dv_join_file:
             self.datatable_obj.dv_join_file.delete()
 
-        # (1a) Open the file in pandas
-        #
+        # --------------------------------------------
+        # (1) Do we need a formatted column?
+        # --------------------------------------------
+
+        # (1a) Open the dataverse tabular file in pandas
+        # --------------------------------------------
         df = pd.read_csv(self.datatable_obj.dv_file.path,\
                         sep=self.datatable_obj.delimiter)
 
         # (1b) Is the join column in the data frame?
-        #
+        # --------------------------------------------
         if not self.table_attribute_for_join in df.columns:
             self.add_error('Failed to find column "%s" for formatting.'\
                 % self.table_attribute_for_join)
             return False
 
-        # (1c) Do we need a padded column?
+        # (1c) Do we need a formatted column?
         #   The data may already be formatted
-        total_rows = len(df)
-
-        # Count how many columns meet the padding length
-        #   - convert our column to a string
-        temp_col = self.table_attribute_for_join + '_temp'
-        df[temp_col] = df[self.table_attribute_for_join].astype('str')
-        #   - Make a filter
-        filter_criteria = (df[temp_col].str.len() == zero_pad_length)
-        num_short_rows = len(df.loc[filter_criteria])
-
-        if num_short_rows == total_rows:    # No formatting needed
+        # --------------------------------------------
+        if not self.is_formatted_column_needed(df, zero_pad_length):
+            # The existing column may be used for the join
             return True
 
-        # Remove temp column
-        df = df.drop(temp_col, axis=1)
+        # Looks like we need a formatted column
 
         # ----------------------------------
         # (2) Add formatted column
         # ----------------------------------
+        # new column name = existing name + "_formatted"
         new_column_name = '{0}_formatted'.format(\
                             self.table_attribute_for_join)
 
+        # zero pad formatting
         zero_pad_fmt = '{0:0>%s}' % zero_pad_length
-        df[new_column_name]=  df[self.table_attribute_for_join].apply(
+
+        # make the column
+        # ----------------------------------
+        df[new_column_name] = df[self.table_attribute_for_join].apply(\
                                 lambda x: zero_pad_fmt.format(x))
 
         # (2b) set new join column name
+        # ----------------------------------
         self.table_attribute_for_join = new_column_name
 
         # ----------------------------------
         # (3) Save  new file
         # ----------------------------------
+        #msg('columns 4: %s' % df.columns)
 
         # Write the DataFrame to a ContentFile
         #
-        content_file = ContentFile(df.to_csv(sep=str(self.datatable_obj.delimiter)))
+        csv_parms = dict(sep=str(self.datatable_obj.delimiter),\
+                        quoting=QUOTE_NONNUMERIC,\
+                        index=False,\
+                        columns=df.columns,\
+                        )
+        content_file = ContentFile(df.to_csv(**csv_parms))
 
         # Save the ContentFile in the datatable_obj
-        #
+        # ----------------------------------
         self.datatable_obj.dv_join_file.save(\
                 self.datatable_obj.datafile_label,\
                 content_file)
 
         # Indicate that a formatted file has been created
-        #
+        # ----------------------------------
         self.formatted_file_created = True
 
         return True
 
-
-        # Write formatted dataframe to the path of the dv_join_file (?)
-        # Copy the dv_file to dv_join_file
-        # fh = open(self.datatable_obj.dv_file.path, 'rb')
-
-        # Save copy of file to a new path
-        #self.datatable_obj.dv_join_file.save(\
-        #        self.datatable_obj.datafile_label,\
-        #        File(fh))
-
-        #df.to_csv(self.datatable_obj.dv_join_file.path,\
-        #        self.datatable_obj.delimiter)
-
-
     def was_formatted_file_created(self):
+        """
+        Return the flag to indicate that a new formatted file was created
+        """
         return self.formatted_file_created
-
 
     def get_file_params(self):
         """
@@ -273,7 +323,7 @@ class TableJoinMapMaker(object):
                         delimiter=self.datatable_obj.delimiter,
                         table_attribute=self.table_attribute_for_join,
                         layer_name=target_layer_name,
-                        layer_attribute=target_column_name
+                        layer_attribute=target_column_name\
                         )
 
         # Add dataverse dict info
