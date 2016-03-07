@@ -12,7 +12,10 @@ from urlparse import urlparse
 from django import forms
 from apps.core.models import TimeStampedModel
 
-from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
+from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage,\
+            TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+
+from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseMapLayerMetadataValidationForm,\
@@ -342,9 +345,10 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
     def get_dict_for_classify_form(self):
         """
         Parameters used for populating the classification form
+        # Override in concrete class
         """
-        return dict(layer_name=self.layer_name,\
-                raw_attribute_info=self.attribute_data)
+        pass
+
 
     '''
     def update_dataverse(self):
@@ -396,8 +400,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     def get_params_to_check_for_existing_layer_metadata(self):
 
-        assert self.import_attempt is not None, "self.import_attempt cannot be None"
-        assert self.import_attempt.gis_data_file is not None, "self.gis_data_file cannot be None"
+        assert self.tabular_info is not None, "self.tabular_info cannot be None"
 
         f = CheckForExistingLayerForm(self.tabular_info.__dict__)
         if not f.is_valid():
@@ -501,6 +504,15 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token,\
                         join_description=self.join_description)
 
+    def get_dict_for_classify_form(self):
+        """
+        Parameters used for populating the classification form
+        # Override in concrete class
+        """
+        return dict(layer_name=self.layer_name,
+                data_source_type=TYPE_JOIN_LAYER,
+                raw_attribute_info=self.attribute_data)
+
 """
 from apps.gis_tabular.models import *
 w = WorldMapJoinLayerInfo.objects.first()
@@ -558,6 +570,14 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
     def is_join_layer(self):
         return False
 
+    def get_dict_for_classify_form(self):
+        """
+        Parameters used for populating the classification form
+        # Override in concrete class
+        """
+        return dict(layer_name=self.layer_name,
+                data_source_type=TYPE_LAT_LNG_LAYER,
+                raw_attribute_info=self.attribute_data)
 
 
 """

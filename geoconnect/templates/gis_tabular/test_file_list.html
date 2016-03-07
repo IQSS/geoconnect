@@ -1,6 +1,5 @@
 <div class="row">
-    <div class="col-md-9"></div>
-    <div class="col-md-3" style="border:1px solid #006699;">
+    <div class="col-md-4" style="border:1px solid #006699;">
         test files
         {% for tf in test_files %}
             {% if tabular_info.id == tf.id %}
@@ -11,4 +10,5 @@
         {% endfor %}
         <br />(<a href="{% url 'view_existing_map' %}">sample map</a>)
     </div><!-- col -->
+    <div class="col-md-8"></div>
 </div>
