@@ -179,11 +179,17 @@ class TableJoinMapMaker(object):
         # --------------------------------------------
         # (1) Do we need a formatted column?
         # --------------------------------------------
+        df_headers = pd.read_csv(self.datatable_obj.dv_file.path,\
+                        sep=self.datatable_obj.delimiter,\
+                        nrows=1)
+        df_colnames = list(df_headers.columns)
+
 
         # (1a) Open the dataverse tabular file in pandas
         # --------------------------------------------
         df = pd.read_csv(self.datatable_obj.dv_file.path,\
-                        sep=self.datatable_obj.delimiter)
+                        sep=self.datatable_obj.delimiter,\
+                        names=df_colnames)
 
         # (1b) Is the join column in the data frame?
         # --------------------------------------------
@@ -353,7 +359,8 @@ class TableJoinMapMaker(object):
         except RequestsConnectionError as e:
             print 'err', e
             err_msg = 'Error connecting to WorldMap server: %s' % e.message
-            LOGGER.error('Error trying to join to datatable with id: %s', datatable_obj.id )
+            LOGGER.error('Error trying to join to datatable with id: %s',\
+                self.datatable_obj.id )
             LOGGER.error(err_msg)
             self.add_error(err_msg)
             return False

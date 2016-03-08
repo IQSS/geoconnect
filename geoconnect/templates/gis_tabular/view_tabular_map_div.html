@@ -1,7 +1,7 @@
 <!-- start: IFRAME MAP -->
 {% include "gis_tabular/map_result_message.html" %}
 <div class="row">
-    <div class="col-md-9">{{ worldmap_layerinfo.md5 }}
+    <div class="col-md-9">
         &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
         <iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>
     </div>

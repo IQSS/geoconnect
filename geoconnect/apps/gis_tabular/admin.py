@@ -69,4 +69,4 @@ admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
 admin.site.register(WorldMapLatLngInfo, WorldMapTabularLayerInfoAdmin)
 admin.site.register(WorldMapJoinLayerInfo, WorldMapTabularLayerInfoAdmin)
 
-admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)
+#admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)

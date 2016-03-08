@@ -12,8 +12,8 @@ from apps.registered_dataverse.models import RegisteredDataverse
 
 # Create a new TabularFileInfo object
 
-name = 'CBG Annual and Longitudinal Measures 2014'
-dv_file_path = 'CBG Annual and Longitudinal Measures.xlsx'
+name = 'Zip code test (happiness)'
+dv_file_path = 'happiness.tab'
 
 dv_meta = DataverseTestInfo.get_dataverse_test_info_dict(\
                 name,\
