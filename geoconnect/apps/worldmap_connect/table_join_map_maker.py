@@ -179,17 +179,19 @@ class TableJoinMapMaker(object):
         # --------------------------------------------
         # (1) Do we need a formatted column?
         # --------------------------------------------
-        df_headers = pd.read_csv(self.datatable_obj.dv_file.path,\
-                        sep=self.datatable_obj.delimiter,\
-                        nrows=1)
-        df_colnames = list(df_headers.columns)
-
 
         # (1a) Open the dataverse tabular file in pandas
         # --------------------------------------------
-        df = pd.read_csv(self.datatable_obj.dv_file.path,\
+        try:
+            df = pd.read_csv(self.datatable_obj.dv_file.path,\
                         sep=self.datatable_obj.delimiter,\
-                        names=df_colnames)
+                        )
+        except pd.parser.CParserError as e:
+            err_msg = ('Could not process the file. '
+                        'At least one row had too many values. '
+                        '(error: %s)' % e.message)
+            self.add_error(err_msg)
+            return False
 
         # (1b) Is the join column in the data frame?
         # --------------------------------------------
