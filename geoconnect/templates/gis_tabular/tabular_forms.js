@@ -31,6 +31,7 @@
                 $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
                 if (json_resp.data.map_html){
                     $('#id_main_panel_content').html(json_resp.data.map_html);
+                    $('#id_main_panel_title').html('you did it');
                 }
 
             }else{

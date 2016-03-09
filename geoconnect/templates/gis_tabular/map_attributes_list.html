@@ -2,7 +2,8 @@
 <div class="row">
     <div class="col-md-6">
         <h5>Attribute Information</h5>
-        <table class="table table-bordered table-condensed table-striped">
+        <p><a id="btn-show-attributes" class="btn btn-info btn-xs">show</a></p>
+        <table id="id-tbl-attributes" style="display:none;" class="table table-bordered table-condensed table-striped">
             <tr>
                 <th>&nbsp;</th>
                 <th>Name</th>
@@ -20,4 +21,18 @@
         </table>
     </div>
 </div>
+<script>
+$( document ).ready(function() {
+    // show/hide attributes
+    $("#btn-show-attributes").click(function() {
+      $("#id-tbl-attributes").toggle( "fast", function() {
+         if ($("#btn-show-attributes").is(":visible")){
+             $("#btn-show-attributes").html('Hide');
+         }else{
+             $("#btn-show-attributes").html('Show');
+         }
+      });
+    });
+});
+</script>
 {% endif %}

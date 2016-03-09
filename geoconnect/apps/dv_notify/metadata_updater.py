@@ -142,6 +142,9 @@ class MetadataUpdater(object):
         :returns: JSON with "success" flag and either error or data
         :rtype: JSON string
         """
+        #msgt('TURN THIS BACK ON!!!!')
+        #return self.get_result_msg(True, '', data_dict={})
+
         MetadataUpdater.check_for_required_methods(worldmap_layer_info)
 
         LOGGER.info('send_params_to_dataverse')

@@ -239,9 +239,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         a python dictionary containing information
         returned from the WorldMapLayerInfo
         """
-        print 'build_from_worldmap_json'
-        print 'tabular_info', tabular_info
-        print 'json_dict', json_dict
+        #print 'build_from_worldmap_json'
+        #print 'tabular_info', tabular_info
+        #print 'json_dict', json_dict
 
         if tabular_info is None:
             LOGGER.error('tabular_info cannot be None')

@@ -16,10 +16,13 @@
         {% endif %}
     </div>
 </div>
-{#% include "gis_tabular/map_attributes_list.html" %#}
 {% if classify_form %}
     {% include "classification/view_classify_form.html" %}
 {% endif %}
+
+{% include "gis_tabular/map_attributes_list.html" %}
+{% include "gis_tabular/core_data_list.html" %}
+
 {% if delete_form %}
     {% include "gis_shapefiles/modal_delete_confirm.html" %}
     {% include "classification/classify_form_dynamic_js.html" %}
