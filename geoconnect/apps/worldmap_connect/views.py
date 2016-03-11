@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
 
-from apps.worldmap_connect.models import WorldMapLayerInfo
+from apps.worldmap_connect.models import WorldMapLayerInfo, JoinTargetInformation
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
@@ -74,3 +74,22 @@ def view_send_shapefile_to_worldmap(request, shp_md5):
         print ('-' * 40)
 
     return HttpResponseRedirect(reverse('view_shapefile_visualize_attempt', kwargs={'shp_md5': shp_md5 }))
+
+@login_required
+def clear_jointarget_info(request):
+    """
+    For debugging, clear out any JoinTarget Information
+    saved from the WorldMap API
+    """
+    if not request.user.is_superuser:
+        return HttpResponse('must be a superuser')
+
+    l = JoinTargetInformation.objects.all()
+
+    cnt = l.count()
+    if cnt == 0:
+        return HttpResponse('no JoinTargetInformation objects found')
+
+    l.delete()
+
+    return HttpResponse('%s JoinTargetInformation object(s) deleted' % cnt)

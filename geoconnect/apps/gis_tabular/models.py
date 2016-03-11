@@ -169,6 +169,21 @@ class TabularFileInfo(GISDataFile):
         return self.worldmapjoinlayerinfo_set.first()
 
 
+    def get_abstract_for_join(self):
+        """
+        Populate the 'abstract' field when attempting to
+        create a WorldMap layer
+
+        This should be editable by the user
+        """
+        abstract = ('{0}<p><b>File:</b> {1}</p>'
+                    '<p><b>Source:</b> Dataverse repository</p>'
+                    '').format(self.dataset_citation,\
+                        self.datafile_label)
+        return abstract
+
+
+
 
 class WorldMapTabularLayerInfo(TimeStampedModel):
     """

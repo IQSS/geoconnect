@@ -41,7 +41,7 @@ def create_map_from_datatable_lat_lng(tabular_info, lat_col, lng_col):
     # Prepare parameters
     # --------------------------------
     map_params = dict(title=tabular_info.name,
-                    abstract="Abstract for ... {0}".format(tabular_info.name),
+                    abstract=tabular_info.get_abstract_for_join(),
                     delimiter=tabular_info.delimiter,
                     lat_attribute=lat_col,
                     lng_attribute=lng_col)

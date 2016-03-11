@@ -12,8 +12,8 @@ from apps.registered_dataverse.models import RegisteredDataverse
 
 # Create a new TabularFileInfo object
 
-name = 'Zip code test (happiness)'
-dv_file_path = 'happiness.tab'
+name = 'CBG Annual and Longitudinal Measures'
+dv_file_path = 'CBG Annual and Longitudinal Measures.tab'
 
 dv_meta = DataverseTestInfo.get_dataverse_test_info_dict(\
                 name,\
@@ -34,6 +34,7 @@ f.errors
 tab_info = TabularFileInfo(**f.cleaned_data)
 tab_info.save()
 
+##  stop....
 import pandas as pd
 df = pd.read_csv('CBG Annual and Longitudinal Measures.xlsx')
 df = pd.read_excel('CBG Annual and Longitudinal Measures.xlsx')

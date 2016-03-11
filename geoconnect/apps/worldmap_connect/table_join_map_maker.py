@@ -1,6 +1,8 @@
+import sys
+import json
+import pprint
 import logging
 import requests
-import sys
 
 from django.conf import settings
 #from django.core.files import File
@@ -327,7 +329,7 @@ class TableJoinMapMaker(object):
         # Prepare parameters
         # --------------------------------
         map_params = dict(title=self.datatable_obj.name,
-                        abstract="Abstract for ... {0}".format(self.datatable_obj.name),
+                        abstract=self.datatable_obj.get_abstract_for_join(),
                         delimiter=self.datatable_obj.delimiter,
                         table_attribute=self.table_attribute_for_join,
                         layer_name=target_layer_name,
@@ -338,7 +340,8 @@ class TableJoinMapMaker(object):
         #
         map_params.update(self.dataverse_metadata_dict)
 
-        msg('map_params: %s' % map_params)
+        pp = pprint.PrettyPrinter(indent=4)
+        msg(pp.pprint(map_params))
 
         # --------------------------------
         # Prepare file
@@ -377,7 +380,7 @@ class TableJoinMapMaker(object):
         except:
             self.add_error("Sorry!  The mapping failed.  (%s)" % r.text)
             return False
-        msg('rjson: %s' % rjson)
+        msg('rjson: %s' % json.dumps(rjson, indent=4))
 
         if rjson.get('success', False) is True:
             self.rjson_output = rjson

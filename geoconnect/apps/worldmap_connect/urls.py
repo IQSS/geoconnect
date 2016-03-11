@@ -10,4 +10,5 @@ urlpatterns = patterns('apps.worldmap_connect.views',
 
     url(r'^params-for-datavarse/(?P<import_success_id>\d{1,10})/$', 'show_import_success_params', name="show_import_success_params"),
 
+    url(r'^clear-jointarget-info/$', 'clear_jointarget_info', name="clear_jointarget_info"),
 )
