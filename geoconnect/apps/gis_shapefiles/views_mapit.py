@@ -127,11 +127,13 @@ def view_mapit_incoming_token64(request, dataverse_token):
 
         if mapping_type == DV_MAP_TYPE_SHAPEFILE:
 
-            if not is_setting_active(DV_MAP_TYPE_TABULAR):
-                return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
+            if not is_setting_active(DV_MAP_TYPE_SHAPEFILE):
+                return view_filetype_note_by_name(request, DV_MAP_TYPE_SHAPEFILE)
             return process_shapefile_info(request, dataverse_token, data_dict)
 
         elif mapping_type == DV_MAP_TYPE_TABULAR:
+            if not is_setting_active(DV_MAP_TYPE_TABULAR):
+                return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
 
             return process_tabular_file_info(request, dataverse_token, data_dict)
 
@@ -185,8 +187,6 @@ def process_shapefile_info(request, dataverse_token, data_dict):
         #   (2) Create a ShapefileInfo object
         #   (3) Download the dataverse file
     """
-    if not is_setting_active(DV_MAP_TYPE_SHAPEFILE):
-        return view_filetype_note_by_name(request, DV_MAP_TYPE_SHAPEFILE)
 
     success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
 
