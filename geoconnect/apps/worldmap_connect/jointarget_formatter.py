@@ -164,6 +164,10 @@ class JoinTargetFormatter(object):
                 if 'name' in info:
                     info_line = "{0} - {1}".format(info['year'], info['name'])
                 else:
+                    if 'year' in info:
+                        info_line = "{0} - {1}".format(info['year'], info['title'])
+                    else:
+                        info_line = info['title']
                     # If this is zero-padded, add that info
                     zero_pad_note = self.get_zero_pad_note(info)
                     if zero_pad_note:
