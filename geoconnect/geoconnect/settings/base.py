@@ -222,6 +222,7 @@ LOCAL_APPS = (
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
     'apps.worldmap_connect',
+    'apps.gis_tabular',
     #'apps.column_stats',
     #'folium_maker',     # quick experiment
 )

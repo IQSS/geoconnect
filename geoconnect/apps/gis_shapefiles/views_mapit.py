@@ -84,9 +84,8 @@ def view_mapit_incoming_token64(request, dataverse_token):
                                         , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
                                         , err_msg)
 
-    #msgt(r.text)
-    #msg(r.status_code)
-    LOGGER.error('(not an err) dv incoming: %s', r.text)
+    msgt(r.text)
+    msg(r.status_code)
 
     # ------------------------------
     # Check if valid status code

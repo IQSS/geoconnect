@@ -73,7 +73,7 @@ CACHES = {
 ########## TOOLBAR CONFIGURATION
 # See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
 INSTALLED_APPS += (
-    'apps.gis_tabular',
+    #'apps.gis_tabular',
     #'debug_toolbar',
     #'djcelery',
     #'kombu.transport.django',
