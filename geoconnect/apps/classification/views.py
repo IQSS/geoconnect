@@ -18,7 +18,7 @@ from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 from apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
 
-from apps.gis_basic_file.models import TYPE_SHAPEFILE_LAYER,\
+from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
                 TYPE_JOIN_LAYER,\
                 TYPE_LAT_LNG_LAYER
 

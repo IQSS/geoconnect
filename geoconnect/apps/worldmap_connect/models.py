@@ -17,7 +17,8 @@ from jsonfield import JSONField
 
 from apps.core.models import TimeStampedModel
 
-from apps.gis_basic_file.models import GISDataFile, TYPE_SHAPEFILE_LAYER
+from apps.gis_basic_file.models import GISDataFile
+from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm\
                                                 , GeoconnectToDataverseMapLayerMetadataValidationForm\

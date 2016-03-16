@@ -29,3 +29,5 @@ def view_home(request):
     return render_to_response('content_pages/view_home.html'\
                             , d
                             , context_instance=RequestContext(request))
+
+#def view_content_not_accepted(request)

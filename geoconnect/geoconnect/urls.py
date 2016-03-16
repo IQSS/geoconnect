@@ -12,6 +12,9 @@ urlpatterns = patterns('',
     # Examples:
 
     url(r'^$', 'apps.content_pages.views.view_home', name="view_home"),
+
+    url(r'^%sdv/' % URL_PREFIX, include('apps.registered_dataverse.urls')),
+
     # url(r'^$', 'geoconnect.views.home', name='home'),
 
     # url(r'^blog/', include('blog.urls')),

@@ -12,8 +12,14 @@ from geo_utils.msg_util import *
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
 
+from apps.layer_types.static_vals import DV_MAP_TYPE_SHAPEFILE,\
+                DV_MAP_TYPE_TABULAR
+
 from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
 from apps.gis_tabular.tab_services import get_tabular_file_from_dv_api_info
+
+from apps.registered_dataverse.utils import is_setting_active
+from apps.registered_dataverse.views import view_filetype_note_by_name
 
 from geo_utils.view_util import get_common_lookup
 
@@ -119,9 +125,9 @@ def view_mapit_incoming_token64(request, dataverse_token):
         data_dict = jresp.get('data')
         mapping_type = data_dict.pop('mapping_type', None)
 
-        if mapping_type == 'shapefile':
+        if mapping_type == DV_MAP_TYPE_SHAPEFILE:
             return process_shapefile_info(request, dataverse_token, data_dict)
-        elif mapping_type == 'tabular':
+        elif mapping_type == DV_MAP_TYPE_TABULAR:
             return process_tabular_file_info(request, dataverse_token, data_dict)
         else:
             err_msg = 'The mapping_type for this metadata was not found.  Found: %s' % mapping_type
@@ -149,6 +155,9 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
         #   (2) Create a TabularFileInfo object
         #   (3) Download the dataverse file
     """
+    if not is_setting_active(DV_MAP_TYPE_TABULAR):
+        return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
+
     success, tab_md5_or_err_msg = get_tabular_file_from_dv_api_info(dataverse_token, data_dict)
 
     if not success:
@@ -169,6 +178,9 @@ def process_shapefile_info(request, dataverse_token, data_dict):
         #   (2) Create a ShapefileInfo object
         #   (3) Download the dataverse file
     """
+    if not is_setting_active(DV_MAP_TYPE_SHAPEFILE):
+        return view_filetype_note_by_name(request, DV_MAP_TYPE_SHAPEFILE)
+
     success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
 
     if not success:

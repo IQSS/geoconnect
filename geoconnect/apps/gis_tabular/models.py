@@ -12,8 +12,8 @@ from urlparse import urlparse
 from django import forms
 from apps.core.models import TimeStampedModel
 
-from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage,\
-            TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
+from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata

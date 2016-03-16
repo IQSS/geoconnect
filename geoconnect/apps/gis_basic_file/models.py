@@ -18,13 +18,6 @@ from apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelpe
 
 dv_file_system_storage = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
 
-# Used for classification purposes
-TYPE_SHAPEFILE_LAYER = 'TYPE_SHAPEFILE_LAYER'
-TYPE_JOIN_LAYER = 'TYPE_JOIN_LAYER'
-TYPE_LAT_LNG_LAYER = 'TYPE_LAT_LNG_LAYER'
-LAYER_TYPES = (TYPE_SHAPEFILE_LAYER, TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER)
-LAYER_TYPE_CHOICES = [(x, x) for x in LAYER_TYPES]
-
 class GISDataFile(DataverseInfo):
     """
     This object stores information describing a geospatial Dataverse File
