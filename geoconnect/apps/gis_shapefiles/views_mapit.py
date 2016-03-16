@@ -126,9 +126,19 @@ def view_mapit_incoming_token64(request, dataverse_token):
         mapping_type = data_dict.pop('mapping_type', None)
 
         if mapping_type == DV_MAP_TYPE_SHAPEFILE:
+
+            if not is_setting_active(DV_MAP_TYPE_TABULAR):
+                return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
             return process_shapefile_info(request, dataverse_token, data_dict)
+
         elif mapping_type == DV_MAP_TYPE_TABULAR:
+
             return process_tabular_file_info(request, dataverse_token, data_dict)
+
+        elif mapping_type is None:  # older installations may not have this setting
+            # Shapefiles -- pre DV 4.3
+            return process_shapefile_info(request, dataverse_token, data_dict)
+
         else:
             err_msg = 'The mapping_type for this metadata was not found.  Found: %s' % mapping_type
             err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
@@ -155,9 +165,6 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
         #   (2) Create a TabularFileInfo object
         #   (3) Download the dataverse file
     """
-    if not is_setting_active(DV_MAP_TYPE_TABULAR):
-        return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
-
     success, tab_md5_or_err_msg = get_tabular_file_from_dv_api_info(dataverse_token, data_dict)
 
     if not success:
