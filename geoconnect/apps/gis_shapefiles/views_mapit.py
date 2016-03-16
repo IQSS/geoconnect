@@ -24,7 +24,7 @@ from apps.registered_dataverse.views import view_filetype_note_by_name
 from geo_utils.view_util import get_common_lookup
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 FAILED_TO_RETRIEVE_DATAVERSE_FILE = 'FAILED_TO_RETRIEVE_DATAVERSE_FILE'
 FAILED_TO_CONVERT_RESPONSE_TO_JSON = 'FAILED_TO_CONVERT_RESPONSE_TO_JSON'
@@ -79,13 +79,14 @@ def view_mapit_incoming_token64(request, dataverse_token):
 
         err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
                                 % (callback_url, e.message)
-        logger.error(err_msg)
+        LOGGER.error(err_msg)
         return view_formatted_error_page(request\
                                         , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
                                         , err_msg)
 
     #msgt(r.text)
     #msg(r.status_code)
+    LOGGER.error('(not an err) dv incoming: %s', r.text)
 
     # ------------------------------
     # Check if valid status code
@@ -93,7 +94,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
     if not r.status_code == 200:
         err_msg1 = 'Status code from dataverse: %s' % (r.status_code)
         err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-        logger.error(err_msg2)
+        LOGGER.error(err_msg2)
         return view_formatted_error_page(request\
                                         , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
                                         , err_msg1)
@@ -107,7 +108,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
     if not type(jresp) is dict:
         err_msg1 = 'Failed to convert response to JSON\nStatus code from dataverse: %s' % (r.status_code)
         err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-        logger.error(err_msg2)
+        LOGGER.error(err_msg2)
         return view_formatted_error_page(request\
                                          , FAILED_TO_CONVERT_RESPONSE_TO_JSON\
                                          , err_msg1)
@@ -142,7 +143,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
         else:
             err_msg = 'The mapping_type for this metadata was not found.  Found: %s' % mapping_type
             err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-            logger.error(err_msg2)
+            LOGGER.error(err_msg2)
             return view_formatted_error_page(request\
                                      , FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE\
                                      , err_msg1)
@@ -152,7 +153,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
     # ------------------------------
     err_msg1 = 'Unsuccessful request to Dataverse\nStatus code from dataverse: %s\nStatus: %s' % (r.status_code, jresp.get('status', 'not found'))
     err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-    logger.error(err_msg2)
+    LOGGER.error(err_msg2)
     return view_formatted_error_page(request\
                                      , FAILED_BAD_STATUS_CODE_FROM_WORLDMAP\
                                      , err_msg1)
