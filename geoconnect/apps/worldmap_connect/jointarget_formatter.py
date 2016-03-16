@@ -161,16 +161,17 @@ class JoinTargetFormatter(object):
             if chosen_geocode_type == gtype_slug or\
                 chosen_geocode_type is None:
 
-                info_line = "{0} - {1}".format(info['year'], info['name'])
+                if 'name' in info:
+                    info_line = "{0} - {1}".format(info['year'], info['name'])
+                else:
+                    # If this is zero-padded, add that info
+                    zero_pad_note = self.get_zero_pad_note(info)
+                    if zero_pad_note:
+                        info_line = "{0} ({1})".format(info_line, zero_pad_note)
 
-                # If this is zero-padded, add that info
-                #zero_pad_note = self.get_zero_pad_note(info)
-                #if zero_pad_note:
-                #    info_line = "{0} ({1})".format(info_line, zero_pad_note)
-
-                #formatting_note = self.get_format_name(info)
-                #if formatting_note:
-                #    info_line = "{0} - {1}".format(info_line, formatting_note)
+                    formatting_note = self.get_format_name(info)
+                    if formatting_note:
+                        info_line = "{0} - {1}".format(info_line, formatting_note)
 
                 join_targets.append((info['id'], info_line))
 
