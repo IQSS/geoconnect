@@ -467,6 +467,9 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
             super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
 
         self.layer_name = self.core_data.get('layer_typename', None)
+        if self.layer_name is None:
+            self.layer_name = self.core_data.get('layer_name')
+
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
@@ -547,6 +550,8 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
             super(WorldMapLatLngInfo, self).save(*args, **kwargs)
 
         self.layer_name = self.core_data.get('layer_typename', None)
+        if self.layer_name is None:
+            self.layer_name = self.core_data.get('layer_name')
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapLatLngInfo, self).save(*args, **kwargs)
