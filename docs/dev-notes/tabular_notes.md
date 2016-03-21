@@ -27,6 +27,8 @@
       1. worldmap_layerinfo
       1. download_links
   - template heirarchy:
+   
+  
   1. ```gis_tabular/map_result_message.html```
     - expected values:
       1. worldmap_layerinfo
