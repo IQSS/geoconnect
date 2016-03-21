@@ -95,11 +95,25 @@ All expected values in template and sub-templates:
       1. core_data (worldmap_layerinfo.core_data)
 
 
+## Workflow, Classify a Tabular File
 
-### Basic view:
+- **ajax view**: ```view_classify_layer_form```
+- **file:** ```classification/views.py```
 
+- The request fails form ValidationError message contents (JSON):
+    { "success": false
+      "msg": User message
+      "data.div_content": Form with error messages }
 
-(1) Classify and Delete
-    - For code re-use
-        - Include type of WorldMapInfo object
-        - Or type of source file
+    - "div_content" in AJAX message is used for "#div_classify_form"
+
+- The request succeeds:
+    { "success": true
+    "msg": User message
+    "data.div_content": _See note below_ }
+
+  - Note: template for div_content: ```classification/view_classify_form.html```
+    - expected values:
+      1. classify_form
+      1. success_msg or error_msg   
+      

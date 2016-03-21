@@ -47,7 +47,7 @@
        $( "#id_confirmation" ).change( "change", toggle_delete_button );
    }
 
-    function get_update_sv_url(){
+    function get_update_dv_url(){
         {% if worldmap_layerinfo %}
            return "{% url 'view_ajax_notify_dv_of_map' worldmap_layerinfo.md5 %}";
         {% else %}
@@ -60,7 +60,7 @@
      */
     function update_map_info_on_dv(){
 
-        update_dv_url = get_update_sv_url();
+        update_dv_url = get_update_dv_url();
         //console.log('update_dv_url: ' + update_dv_url);
         if (update_dv_url==""){
             return;
@@ -153,26 +153,31 @@
 
 
 
+   /* --------------------------------------
+    Attribute values have a type and a name.
+        e.g. "string|TRACT"
+    For string types, restrict the classification methods
+    For non-string types, allow all classifications
+   -------------------------------------- */
    function check_attribute(){
-       /*
-        Attribute values have a type and a name.
-            e.g. "string|TRACT"
-        For string types, restrict the classification methods, if not, allow all classifications
-       */
+       // get the seclect attribute
        current_attr_val = $( "#id_attribute option:selected" ).val();
-       //alert(current_attr_val);
        if (current_attr_val.length==0){
            return;
        }
+       // split it
        attr_val_pieces = current_attr_val.split('{{ ATTRIBUTE_VALUE_DELIMITER }}');
        if (attr_val_pieces.length!=2){
             return;
        }
+       // from the classification method dropdown, remove the choices
        var $select_elem = $("#id_method");
        $select_elem.empty();  // remove choices
-       if (attr_val_pieces[0]=='string'||attr_val_pieces[0]=='unicode'){
-           //alert('string only');
 
+       // Add classification methods based on the chosen attribute
+       //
+       if (attr_val_pieces[0]=='string'||attr_val_pieces[0]=='unicode'){
+           // String value, limit classification choices
            $.each(string_classification_methods, function(key, value) {
                $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
@@ -180,17 +185,13 @@
            $('#id_intervals').attr("readonly", "readonly");
 
        }else{
-
-           // "non_string_classification_methods" = don't allow unique values on numeric data
-           //$.each(non_string_classification_methods, function(key, value) {
+           // Numeric value, allow all classification choices
            $.each(all_classification_methods, function(key, value) {
                 $select_elem.append($("<option></option>")
                 .attr("value", value).text(key));
            });
            $('#id_intervals').removeAttr("readonly");
-
        }
-
    }
 
    $(document).ready(function() {

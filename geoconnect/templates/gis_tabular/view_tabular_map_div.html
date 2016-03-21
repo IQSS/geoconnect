@@ -18,7 +18,9 @@
     </div>
 </div>
 {% if classify_form %}
-    {% include "classification/view_classify_form.html" %}
+<!-- start:  Classify form -->
+<div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
+<!-- end:  Classify form -->
 {% endif %}
 
 {% if DEBUG_MODE or is_staff %}
