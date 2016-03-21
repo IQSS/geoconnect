@@ -21,19 +21,19 @@
         - file: gis_tabular.views
         - template heirarchy:
             - gis_tabular/view_tabular_map_div.html
-                - expected values:
-                    1. layer_data
-                    1. worldmap_layerinfo
-                    1. download_links
+              - expected values:
+                1. layer_data
+                1. worldmap_layerinfo
+                1. download_links
               - gis_tabular/map_result_message.html
+                - expected values:
+                  1. worldmap_layerinfo
+                - gis_tabular/map_message_join.html
                   - expected values:
-                    1. worldmap_layerinfo
-                  - gis_tabular/map_message_join.html
-                    - expected values:
-                      1. layer_data
-                  - gis_tabular/map_message_lat_lng.html
-                    - expected values:
-                      1. layer_data
+                    1. layer_data
+                - gis_tabular/map_message_lat_lng.html
+                  - expected values:
+                    1. layer_data
               - classification/view_classify_form.html
                 - expected values:
                   1. classify_form
@@ -62,7 +62,7 @@
                 - gis_shapefiles/link-back-to-dataverse.html
                   - expected values:
                     1. tabular_info
-                      1. tabular_info.return_to_dataverse_url
+                    1. tabular_info.return_to_dataverse_url
 
   - success dict:
         { "map_html" : map_html,
