@@ -28,8 +28,13 @@
     {% include "gis_tabular/core_data_list.html" %}
 {% endif %}
 
-{% if delete_form %}
-    {% include "gis_shapefiles/modal_delete_confirm.html" %}
+{% if classify_form %}
+    {% if delete_form %}
+        {% include "gis_shapefiles/modal_delete_confirm.html" %}
+    {% endif %}
+    {% if tabular_info %}
+        {% include "gis_shapefiles/modal_save_confirm.html" %}
+    {% endif %}
     {% include "classification/classify_form_dynamic_js.html" %}
 {% endif %}
 {% include "gis_shapefiles/delete_and_back_to_dv_links.html" %}

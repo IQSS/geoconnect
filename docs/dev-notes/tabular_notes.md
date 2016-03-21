@@ -68,6 +68,9 @@ All expected values in template and sub-templates:
     - expected values:
       1. is_tabular_delete
       1. delete_form
+  1. ```gis_shapefiles/modal_save_confirm.html```
+    - expected values:
+      1. tabular_info
   1. ```classification/view_classify_form.html```
     - expected values:
       1. classify_form
@@ -116,4 +119,3 @@ All expected values in template and sub-templates:
     - expected values:
       1. classify_form
       1. success_msg or error_msg   
-      

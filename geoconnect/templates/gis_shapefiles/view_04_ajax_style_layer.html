@@ -1,9 +1,16 @@
 
 <!-- content for id_main_panel_content -->
       {% if worldmap_layerinfo %}
-        {% include "gis_shapefiles/modal_delete_confirm.html" %}
-        {% include "gis_shapefiles/modal_save_confirm.html" %}
-        {% include "classification/classify_form_dynamic_js.html" %}
+
+        {% if classify_form %}
+            {% if delete_form %}
+                {% include "gis_shapefiles/modal_delete_confirm.html" %}
+            {% endif %}
+            {% if worldmap_layerinfo %}
+                {% include "gis_shapefiles/modal_save_confirm.html" %}
+            {% endif %}
+            {% include "classification/classify_form_dynamic_js.html" %}
+        {% endif %}
 
         {% if show_visualize_success_msg %}
         <div class="alert alert-success alert-dismissible" role="alert">

@@ -1,17 +1,26 @@
 <!-- start: back to dataverse button -->
-{% if tabular_info and tabular_info.return_to_dataverse_url %}
-    <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-{% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
-    <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-{% else %}{% if gis_data_file and gis_data_file.return_to_dataverse_url %}
-    <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-{% else %}{% if worldmap_layerinfo %}
+{% if worldmap_layerinfo or tabular_info or shapefile_info or gis_data_file %}
     <form id="frm_update_dv">{% csrf_token %}</form>
     <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">Return to the Dataverse</a>
 {% else %}
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
-{% endif %}{% endif %}{% endif %}{% endif %}
+{% endif %}
 <!-- end: back to dataverse button -->
+
+{% comment %}
+    {% if tabular_info and tabular_info.return_to_dataverse_url %}
+        <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
+        <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    {% else %}{% if gis_data_file and gis_data_file.return_to_dataverse_url %}
+        <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    {% else %}{% if worldmap_layerinfo %}
+        <form id="frm_update_dv">{% csrf_token %}</form>
+        <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">Return to the Dataverse</a>
+    {% else %}
+        <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    {% endif %}{% endif %}{% endif %}{% endif %}
+{% endcomment %}
 
 
 {% comment %}

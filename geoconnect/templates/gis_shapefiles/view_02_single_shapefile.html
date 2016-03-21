@@ -60,8 +60,10 @@
 
 		{% endif %}
 
-	    {% if is_logged_in and is_staff %}
-    		<p>Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
+        <hr />
+	    {% if is_staff %}
+
+    		<p>Staff debug: Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
 				{% if shapefile_info %}
 				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shapefile_info.id %}">Edit</a>
 				{% endif %}
