@@ -13,5 +13,8 @@
     <div class="col-md-8 text-center">
         <h5>debug</h5>
         <a href="{% url 'clear_jointarget_info' %}" class="btn-success btn-sm" target="_blank">Clear JoinTarget info</a>
+        {% if core_data %}
+            <a href="{% url 'view_show_lawyer_links' %}?layer={{ core_data.layer_name}}" class="btn-success btn-sm" target="sld">sld info</a>
+        {% endif %}
     </div>
 </div>

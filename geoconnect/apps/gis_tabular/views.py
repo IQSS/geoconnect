@@ -10,6 +10,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.conf import settings
 
 from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
@@ -22,6 +23,7 @@ from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
+from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
 
@@ -49,9 +51,9 @@ def view_existing_map(request, worldmap_info=None):
          or WorldMapLatLngInfo object. Not: %s', worldmap_info)
         return HttpResponse('Sorry! No WorldMap information was found.')
 
-    tmpl_dict = dict(worldmap_layerinfo=worldmap_info,\
-        #layer_data=worldmap_info.core_data,\
-        #download_links=worldmap_info.download_links,\
+    template_dict = get_common_lookup(request)
+
+    template_dict = dict(worldmap_layerinfo=worldmap_info,\
         attribute_data=worldmap_info.attribute_data,\
         tabular_map_div=build_tabular_map_html(request, worldmap_info),\
         tabular_info=worldmap_info.tabular_info,\
@@ -64,10 +66,8 @@ def view_existing_map(request, worldmap_info=None):
         #is_tabular_delete=True,\
         )
 
-
-
     return render_to_response('gis_tabular/view_tabular_map.html',\
-                            tmpl_dict,\
+                            template_dict,\
                             context_instance=RequestContext(request))
 
 
@@ -90,13 +90,16 @@ def build_tabular_map_html(request, worldmap_info):
 
     delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
 
-    template_dict = dict(worldmap_layerinfo=worldmap_info,\
-            layer_data=worldmap_info.core_data,\
+    template_dict = get_common_lookup(request)
+
+    template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
+            core_data=worldmap_info.core_data,\
+            tabular_info=worldmap_info.tabular_info,\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
             delete_form=delete_form,\
             is_tabular_delete=True,\
-            )
+            ))
 
     # --------------------------------
     # Classification form attributes

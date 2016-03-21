@@ -170,7 +170,7 @@
        }
        var $select_elem = $("#id_method");
        $select_elem.empty();  // remove choices
-       if (attr_val_pieces[0]=='string'){
+       if (attr_val_pieces[0]=='string'||attr_val_pieces[0]=='unicode'){
            //alert('string only');
 
            $.each(string_classification_methods, function(key, value) {

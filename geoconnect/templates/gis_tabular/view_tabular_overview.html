@@ -125,15 +125,12 @@
 <!-- END: tabular form -->
 
 {% include "gis_tabular/preview_rows.html" %}
-{#% include "gis_tabular/info_tabular.html" %#}
-{% include "gis_tabular/test_file_list.html" %}
 
-<h4>debug items</h4>
-{% include "gis_tabular/debug_help.html" %}
-<br />
-<br />
-<br />
-<br />
+{% if DEBUG_MODE or is_staff %}
+ <h4>dev/debug items</h4>
+ {% include "gis_tabular/test_file_list.html" %}
+ {% include "gis_tabular/debug_help.html" %}
+{% endif %}
 
 </div>
 </div>

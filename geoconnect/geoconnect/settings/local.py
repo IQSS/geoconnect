@@ -34,6 +34,8 @@ MEDIA_ROOT = join(TEST_SETUP_DIR, 'media' )
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
+ALLOWED_HOSTS = ('localhost', '127.0.0.1')
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
 ########## END DEBUG CONFIGURATION
@@ -175,11 +177,11 @@ LOGGING = {
                'level': 'ERROR',
                'propagate': True
            },
-        'apps': {
+"""        'apps': {
                'handlers': ['console'],
                'level': 'DEBUG',
                'propagate': True
-           },
+           },"""
         'django': {
             'handlers': ['file'],
             'level': 'DEBUG',

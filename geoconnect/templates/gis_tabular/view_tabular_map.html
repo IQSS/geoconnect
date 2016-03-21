@@ -31,7 +31,8 @@
         {{ tabular_map_div }}
     </div>
 </div>
-{% include "gis_tabular/test_file_list.html" %}
-
+{% if DEBUG_MODE or is_staff %}
+    {% include "gis_tabular/test_file_list.html" %}
+{% endif %}
 <!-- end panel -->
 {% endblock %}

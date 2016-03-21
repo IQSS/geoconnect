@@ -1,4 +1,4 @@
-{% if layer_data %}
+{% if core_data %}
 <div class="row">
     <div class="col-md-10">
         <h5>Core Data</h5>
@@ -9,7 +9,7 @@
                 <th>Name</th>
                 <th>Value</th>
             </tr>
-        {% for ckey, cval in layer_data.items %}
+        {% for ckey, cval in core_data.items %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ ckey }}</td>

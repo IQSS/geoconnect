@@ -2,11 +2,9 @@
 {% include "gis_tabular/map_result_message.html" %}
 <div class="row">
     <div class="col-md-9">
-        {% if layer_data %}
-            <a href="{% url 'view_show_lawyer_links' %}?layer={{ layer_data.layer_name}}" target="sld">sld info</a>
-        {% endif %}
-        &nbsp; <small><a href="{{ layer_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
-        <iframe id="id_iframe_map" height="275" width="100%" src="{{ layer_data.embed_map_link }}"></iframe>
+
+        &nbsp; <small><a href="{{ core_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
+        <iframe id="id_iframe_map" height="275" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
     </div>
     <div class="col-md-3">
         <h5>Legend</h5>
@@ -23,8 +21,10 @@
     {% include "classification/view_classify_form.html" %}
 {% endif %}
 
-{% include "gis_tabular/map_attributes_list.html" %}
-{% include "gis_tabular/core_data_list.html" %}
+{% if DEBUG_MODE or is_staff %}
+    {% include "gis_tabular/map_attributes_list.html" %}
+    {% include "gis_tabular/core_data_list.html" %}
+{% endif %}
 
 {% if delete_form %}
     {% include "gis_shapefiles/modal_delete_confirm.html" %}

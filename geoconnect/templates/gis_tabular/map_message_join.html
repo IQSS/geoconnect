@@ -1,27 +1,27 @@
 {% load humanize %}
 A map was created from your tabular file.
 <ul>
-    <li>Rows matched: <b>{{ layer_data.matched_record_count|intcomma }}</b></li>
-    {% if layer_data.unmatched_record_count > 0 %}
-    <li>Rows NOT matched: <b>{{ layer_data.unmatched_record_count|intcomma }}</b>
+    <li>Rows matched: <b>{{ core_data.matched_record_count|intcomma }}</b></li>
+    {% if core_data.unmatched_record_count > 0 %}
+    <li>Rows NOT matched: <b>{{ core_data.unmatched_record_count|intcomma }}</b>
 
             <a href="{% url 'view_unmatched_join_rows' worldmap_layerinfo.md5 %}">view unmatched rows</a>
     </li>
     {% endif %}
-    <li>Join column: <b>{{ layer_data.table_join_attribute }}{% if layer_data.was_formatted_column_created %}*{% endif %}</b>
+    <li>Join column: <b>{{ core_data.table_join_attribute }}{% if core_data.was_formatted_column_created %}*{% endif %}</b>
 
     {% comment %}
-    {% if layer_data.llbbox %}
-        <li>Bounding box: <b>{{ layer_data.llbbox}}</b></li>
+    {% if core_data.llbbox %}
+        <li>Bounding box: <b>{{ core_data.llbbox}}</b></li>
     {% endif %}
     {% endcomment %}
 </ul>
 
-{% if layer_data.was_formatted_column_created %}
+{% if core_data.was_formatted_column_created %}
 <p>* This formatted column was created to better match the target layer.
-    {% if layer_data.zero_pad_length %}
+    {% if core_data.zero_pad_length %}
         Each value in the column was padded with zeros
-        to make it {{ layer_data.zero_pad_length }} digit{{ layer_data.zero_pad_length|pluralize }}
+        to make it {{ core_data.zero_pad_length }} digit{{ core_data.zero_pad_length|pluralize }}
         in length.
     {% endif %}
 </p>
