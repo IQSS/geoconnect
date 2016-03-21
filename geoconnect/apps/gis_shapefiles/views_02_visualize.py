@@ -12,15 +12,19 @@ from apps.worldmap_connect.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
+    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
 
-from shared_dataverse_information.layer_classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from shared_dataverse_information.layer_classification.forms import\
+    ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.json_field_reader import JSONFieldReader
 
 from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
+from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
+    render_main_panel_title_for_style_step
 
 logger = logging.getLogger(__name__)
 
@@ -44,24 +48,6 @@ def render_ajax_basic_err_msg(err_note, shapefile_info=None):
             , 'shapefile_info' : shapefile_info\
          }
     return render_to_string('gis_shapefiles/view_02_ajax_basic_err.html', d)
-
-
-def render_breadcrumb_div_for_style_step():
-
-    d = {   'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
-            , 'GEOCONNECT_STEPS' : GEOCONNECT_STEPS\
-         }
-    return render_to_string('breadcrumb.html', d)
-
-
-def render_main_panel_title_for_style_step(shapefile_info):
-
-    assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
-
-    d = {   'shapefile_info' : shapefile_info\
-            , 'GEOCONNECT_STEP_KEY' : STEP3_STYLE\
-        }
-    return render_to_string('gis_shapefiles/view_02_main_panel_title.html', d)
 
 
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):

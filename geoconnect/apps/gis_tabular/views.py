@@ -12,6 +12,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.conf import settings
 
+
 from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
@@ -22,7 +23,8 @@ from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE, STEP2_VISUALIZE, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
+    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
 from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -31,6 +33,9 @@ from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+
+from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
+    render_main_panel_title_for_style_step
 
 #from geo_utils.msg_util import *
 #from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
@@ -53,18 +58,20 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = get_common_lookup(request)
 
+    main_panel_title = render_main_panel_title_for_style_step(worldmap_info.tabular_info)
+
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
         attribute_data=worldmap_info.attribute_data,\
         tabular_map_div=build_tabular_map_html(request, worldmap_info),\
         tabular_info=worldmap_info.tabular_info,\
-
+        #id_main_panel_title=main_panel_title,\
+        #id_breadcrumb=render_breadcrumb_div_for_style_step(),\
         # for testing
         test_files=TabularFileInfo.objects.all(),\
-
-        # redundant
-        #delete_form=delete_form,\
-        #is_tabular_delete=True,\
         )
+
+    template_dict[GEOCONNECT_STEP_KEY] = STEP3_STYLE
+    template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
     return render_to_response('gis_tabular/view_tabular_map.html',\
                             template_dict,\
@@ -178,21 +185,6 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
 
     return HttpResponse(json_msg, content_type="application/json")
 
-'''
-def view_tabular_file_first_time(request, tab_md5):
-    """
-    View tabular file that has been sent over via Dataverse
-    """
-    # ----------------------------------
-    # Retrieve the Tabular file information
-    # ----------------------------------
-    try:
-        tabular_info = TabularFileInfo.objects.get(md5=tab_md5)
-    except TabularFileInfo.DoesNotExist:
-        raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
-
-    return HttpResponse('Found tabular info: %s' % tabular_info)
-'''
 
 def view_tabular_file_latest(request):
 
@@ -266,7 +258,9 @@ def view_tabular_file(request, tab_md5):
     else:
         form_lat_lng = None
 
-    template_dict = dict(tabular_id=tabular_info.id,\
+    template_dict = get_common_lookup(request)
+
+    template_dict.update(dict(tabular_id=tabular_info.id,\
             tabular_md5=tabular_info.md5,\
             tabular_info=tabular_info,\
             tab_file_stats=tab_file_stats,\
@@ -275,7 +269,10 @@ def view_tabular_file(request, tab_md5):
             test_files=TabularFileInfo.objects.all(),\
             form_single_column=form_single_column,\
             form_lat_lng=form_lat_lng,\
-            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE)
+            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE))
+
+    template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
+    template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
     return render_to_response('gis_tabular/view_tabular_overview.html',\
                             template_dict,\

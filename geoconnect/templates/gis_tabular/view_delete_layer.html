@@ -22,10 +22,10 @@
 	            <p><span class="label label-danger">No</span> Failed to delete map metadata from Dataverse.</p>
                 <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
-                <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
+                <p>Please use your browser's <a href="javascript:history.go(-1)" class="btn-success btn-sm">back button</a>
     		       and try again.</p>
 
-    		    <p><br />Or <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a></p>
+    		    <p><br />Or <a href="{{ DATAVERSE_SERVER_URL }}"  class="btn-success btn-sm">Return to the Dataverse</a></p>
     	    {% endif %}
 
     	    {% if DATAVERSE_DATA_DELETE_FAILURE %}
@@ -34,8 +34,8 @@
 
                 <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
-                <p>Please <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a>
-                  <br /><br />or  <a href="{% url 'view_tabular_file' gis_data_file.md5 %}">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
+                <p>Please <a href="{{ DATAVERSE_SERVER_URL }}"  class="btn-success btn-sm">Return to the Dataverse</a>
+                  <br /><br />or  <a href="{% url 'view_tabular_file' gis_data_file.md5 %}"  class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
                 </p>
     	    {% endif %}
     	    </div>

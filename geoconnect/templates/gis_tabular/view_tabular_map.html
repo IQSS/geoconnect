@@ -23,9 +23,7 @@
 <!-- start panel -->
 <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
-        - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_info.tabular_info.get_dv_file_basename }}</span>
-      </h3>
+      {% include "gis_shapefiles/view_02_main_panel_title.html" %}
     </div>
     <div class="panel-body" id="id_main_panel_content">
         {{ tabular_map_div }}

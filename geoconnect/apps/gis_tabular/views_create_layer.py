@@ -24,6 +24,8 @@ from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 #from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
 from apps.gis_tabular.views import build_tabular_map_html
 
+from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
+    render_main_panel_title_for_style_step
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -128,9 +130,10 @@ def view_map_tabular_file_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    data_dict = dict(map_html=map_html)
-
-    # Add Footer HTML!!
+    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
+    data_dict = dict(map_html=map_html,\
+                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
+                id_main_panel_title=main_title_panel_html)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
@@ -233,7 +236,11 @@ def view_process_lat_lng_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    data_dict = dict(map_html=map_html)
+    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
+    data_dict = dict(map_html=map_html,\
+                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
+                id_main_panel_title=main_title_panel_html)
+
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
     return HttpResponse(json_msg, mimetype="application/json", status=200)

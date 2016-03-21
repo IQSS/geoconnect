@@ -6,7 +6,7 @@
     	<div class="alert alert-danger" style="padding:10px;">
             Sorry!  Delete failed.
         </div>
-    
+
         <!-- start: panel -->
         <div class="panel panel-default">
           <div class="panel-heading">Delete Error</div>
@@ -14,34 +14,36 @@
             {% if FAILED_TO_VALIDATE %}
     		    <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
     		       and try again.</p>
-    		       
+
     		    <p>Or <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a></p>
-    	    {% endif %}    		 
-	    
+    	    {% endif %}
+
 	        {% if WORLDMAP_DATA_DELETE_FAILURE %}
 	            <p><span class="label label-danger">No</span> Failed to delete map metadata from Dataverse.</p>
                 <p>Message: {{ ERR_MSG }}</p>
                 <hr />
                 <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
     		       and try again.</p>
-    		       
+
     		    <p><br />Or <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a></p>
-    	    {% endif %}    	            
-    	    
+    	    {% endif %}
+
     	    {% if DATAVERSE_DATA_DELETE_FAILURE %}
     	        <p><span class="label label-success">Yes</span> Map is deleted from WorldMap</p>
     	        <p><span class="label label-danger">No</span> Failed to delete map metadata from Dataverse.</p>
 
                 <p>Message: {{ ERR_MSG }}</p>
                 <hr />
-                <p>Please <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a>
-                  <br /><br />or  <a href="{% url 'view_shapefile' gis_data_file.md5 %}">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
+                <p>
+					<a href="{{ DATAVERSE_SERVER_URL }}" class="btn-success btn-sm">Return to the Dataverse</a>
+
+					<a href="{% url 'view_shapefile' gis_data_file.md5 %}"  class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
                 </p>
-    	    {% endif %}    	
-    	    </div>           
-    	</div><!-- end: panel -->	
+    	    {% endif %}
+    	    </div>
+    	</div><!-- end: panel -->
 	{% endif %}
-	
+
 	{% if DELETE_SUCCESS %}
 	<div class="alert alert-success" style="padding:10px;">
         Success!  The Map has been deleted for file <b>{{ gis_data_file.datafile_label }}</b>.
@@ -54,15 +56,15 @@
             <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
 
             <br /><br />or  {% include "gis_shapefiles/link-back-to-dataverse.html" %}</p>
-            
+
             <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
-            
+
         </div>
     </div>
     {% endif %}
 
 
 	{% endif %}
-	
-</div><!-- end: main_container -->	
+
+</div><!-- end: main_container -->
 {% endblock %}

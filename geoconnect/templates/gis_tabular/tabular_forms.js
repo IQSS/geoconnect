@@ -27,12 +27,13 @@
         })
         .done(function(json_resp) {
             if (json_resp.success){
-                // Go to map!
-                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                if (json_resp.data.map_html){
-                    $('#id_main_panel_content').html(json_resp.data.map_html);
-                    $('#id_main_panel_title').html('you did it');
-                }
+                // Show map, update titles
+                show_map_update_titles(json_resp);
+                //$('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
+                //if (json_resp.data.map_html){
+                //    $('#id_main_panel_content').html(json_resp.data.map_html);
+                //    $('#id_main_panel_title').html('you did it');
+                //}
 
             }else{
                 console.log(json_resp.message);
@@ -43,15 +44,13 @@
             }
           })
         .fail(function(json_resp) {
-             //$('#simple_msg_div').show();
              //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
-             //$('#id_success_msg').hide();
-             //$('#id_alert_msg').hide();
         })
         .always(function() {
              // Enable submit button
-             $('#id_frm_lat_lng_submit').removeClass('disabled').html('Submit Latitude & Longitude columns');
-
+             if ($('#id_frm_lat_lng_submit').length){
+                 $('#id_frm_lat_lng_submit').removeClass('disabled').html('Submit Latitude & Longitude columns');
+             }
         });
     }
 
@@ -115,6 +114,26 @@
         //alert(target_layers_by_type_url);
     }
 
+    function show_map_update_titles(json_resp){
+
+        // Update message
+        $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
+
+        // Show map
+        if (json_resp.data.hasOwnProperty('map_html')){
+            $('#id_main_panel_content').html(json_resp.data.map_html);
+        }
+        // Title update
+        if (json_resp.data.hasOwnProperty('id_main_panel_title')){
+             //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
+             $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
+        }
+        // Breadcrumb update
+        if(json_resp.data.hasOwnProperty('id_breadcrumb')){
+            $( "#id_breadcrumb" ).replaceWith(json_resp.data.id_breadcrumb);
+        }
+
+    }
 
     function submit_single_column_form(){
         console.log('submit_single_column_form');
@@ -133,32 +152,22 @@
         })
         .done(function(json_resp) {
             if (json_resp.success){
-                // Go to map!
-                $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                if (json_resp.data.map_html){
-                    $('#id_main_panel_content').html(json_resp.data.map_html);
-                }
-                //$( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
+                show_map_update_titles(json_resp);
                 //$('#id_progress_bar').hide();
-
             }else{
                 console.log(json_resp.message);
-                // form error, display message
-                //$('#msg_form_lat_lng').html(json_resp.message);
                 $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
         .fail(function(json_resp) {
-             //$('#simple_msg_div').show();
              //$('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
-             //$('#id_success_msg').hide();
-             //$('#id_alert_msg').hide();
         })
         .always(function() {
              // Enable submit button
-             $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
-
+             if ($('#id_frm_single_column_submit').length){
+                 $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
+             }
         });
     }
 

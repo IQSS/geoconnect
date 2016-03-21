@@ -10,12 +10,11 @@
 
 
 <!-- start panel --><div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title" id="id_main_panel_title">1. Map Tabular File
-          - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ tabular_info.get_dv_file_basename }}</span>
-      </h3>
-    </div>
-    <div class="panel-body" id="id_main_panel_content">
+<div class="panel-heading">
+  {% include "gis_shapefiles/view_02_main_panel_title.html" %}
+</div>
+
+<div class="panel-body" id="id_main_panel_content">
 
 
 <div class="row">
@@ -124,13 +123,21 @@
 </form>
 <!-- END: tabular form -->
 
+
 {% include "gis_tabular/preview_rows.html" %}
 
 {% if DEBUG_MODE or is_staff %}
- <h4>dev/debug items</h4>
- {% include "gis_tabular/test_file_list.html" %}
- {% include "gis_tabular/debug_help.html" %}
-{% endif %}
+<div class="row">
+    <div class="col-md-1">&nbsp;</div>
+    <div class="col-md-10">
+    <hr />
+     <h4>dev/debug items</h4>
+     {% include "gis_tabular/test_file_list.html" %}
+     {% include "gis_tabular/debug_help.html" %}
+    {% endif %}
+    </div>
+    <div class="col-md-1">&nbsp;</div>
+</div>
 
 </div>
 </div>
