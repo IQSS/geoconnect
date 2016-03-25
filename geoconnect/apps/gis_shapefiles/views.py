@@ -109,28 +109,27 @@ def view_shapefile(request, shp_md5, **kwargs):
     logger.debug('-' * 40)
     logger.debug('view_shapefile')
 
-
-    # Flag - Was a visualization attempt made?
-    #
-    just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
-    logger.debug('just_made_visualize_attempt: %s' % just_made_visualize_attempt)
-
+    # -------------------------------------------
     # Gather common parameters for the template
-    #
+    # -------------------------------------------
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
 
-    # Flag for template - Is this the first time the file is being visualized?
-    #
+    # -------------------------------------------
+    # Flags for template - Is this the first time the file is being visualized?
+    # -------------------------------------------
     first_time_notify = kwargs.get('first_time_notify', False)
-    logger.debug('first_time_notify: %s' % first_time_notify)
     if first_time_notify:
         d['first_time_notify'] = True
+    # Added to template later...
+    just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
 
+
+    # -------------------------------------------
     # Attempt to retrieve the shapefile information
-    #
+    # -------------------------------------------
     try:
         shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
         d['shapefile_info'] = shapefile_info
@@ -142,11 +141,11 @@ def view_shapefile(request, shp_md5, **kwargs):
     logger.debug('shapefile_info: %s' % shapefile_info)
 
 
-    """
-    Early pass: Validate that this .zip is a shapefile--a single shapefile
-        - Should we move this out?  Check being done at Dataverse
-        - Also, no need to move the file if viz already exists
-    """
+    # -------------------------------------------
+    # Early pass: Validate that this .zip is a shapefile--a single shapefile
+    #    - Should we move this out?  Check being done at Dataverse
+    #    - Also, no need to move the file if viz already exists
+    # -------------------------------------------
     if not shapefile_info.zipfile_checked:
         logger.debug('zipfile_checked NOT checked')
 
@@ -157,67 +156,58 @@ def view_shapefile(request, shp_md5, **kwargs):
         zip_checker = ShapefileZipCheck(shapefile_info.get_dv_file_fullpath())
         zip_checker.validate()
 
-        list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
-
+        # -----------------------------
         # Error: No shapefiles found
-        #
+        #   Show error message
+        # -----------------------------
         if zip_checker.err_detected:
             return view_zip_checker_error(request, shapefile_info, zip_checker, d)
 
+        # -----------------------------
         # Load the single shapefile
-        #
-        elif len(list_of_shapefile_set_names) == 1:
-            logger.debug('Load the single shapefile')
+        # -----------------------------
+        logger.debug('Load the single shapefile')
 
-            shapefile_info.has_shapefile = True
-            shapefile_info.zipfile_checked = True
+        shapefile_info.has_shapefile = True
+        shapefile_info.zipfile_checked = True
+        shapefile_info.save()
+
+        list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
+        (success, err_msg_or_none) = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
+        if not success:
+            d['Err_Found'] = True
+            if zip_checker.err_could_not_process_shapefile:
+                d['Err_Shapefile_Could_Not_Be_Opened'] = True
+                d['zip_name_list'] = zip_checker.get_zipfile_names()
+            else:
+                d['Err_Msg'] = err_msg_or_none
+            shapefile_info.has_shapefile = False
             shapefile_info.save()
-            #shapefile_info.name = os.path.basename(list_of_shapefile_set_names[0])
-            (success, err_msg_or_none) = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
-            if not success:
-                #print 'here - err'
-                d['Err_Found'] = True
-                print ('Err msg: %s' % err_msg_or_none)
-                if zip_checker.err_could_not_process_shapefile:
-                    d['Err_Shapefile_Could_Not_Be_Opened'] = True
-                    d['zip_name_list'] = zip_checker.get_zipfile_names()
-                else:
-                    d['Err_Msg'] = err_msg_or_none
-                shapefile_info.has_shapefile = False
-                shapefile_info.save()
-                logger.error('Shapefile not loaded. (%s)' % shp_md5)
-                return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+            logger.error('Shapefile not loaded. (%s)' % shp_md5)
+            zip_checker.close_zip()
+            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                         , context_instance=RequestContext(request))
 
-            zip_checker.close_zip()
-
-            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
-                                    , context_instance=RequestContext(request))
-
-
+    # -------------------------------------------
     # The examination failed
     # No shapefile was found in this .zip
-    #
+    # -------------------------------------------
     if not shapefile_info.has_shapefile:
         logger.debug('No shapefile found in .zip')
 
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
-        #d['zip_name_list'] = zip_checker.get_zipfile_names()
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                                 , context_instance=RequestContext(request))
 
-
-
-    logger.debug('Has an import been attempted?')
+    # -------------------------------------------
+    #   Check if a visualization has already been attempted
+    # -------------------------------------------
     latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
-    #get_successful_worldmap_attempt_from_shapefile(shapefile_info)
     if latest_import_attempt:
-        logger.debug('latest_import_attempt: %s' % latest_import_attempt )
         worldmap_layerinfo = latest_import_attempt.get_success_info()
         if worldmap_layerinfo:
-
             if just_made_visualize_attempt:
                 d['page_title'] = 'Visualize Shapefile'
                 d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
@@ -235,19 +225,20 @@ def view_shapefile(request, shp_md5, **kwargs):
             d['delete_form'] = delete_form
             d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
 
-
-
         d['worldmap_layerinfo'] = worldmap_layerinfo
-        print(d)
-        logger.debug('worldmap_layerinfo: %s' % d['worldmap_layerinfo'] ) #WorldMapLayerInfo.objects.filter(import_attempt__gis_data_file=shapefile_info)
+
+        # for debugging
         d['import_fail_list'] = latest_import_attempt.get_fail_info()
 
-        logger.debug('import_fail_list: %s' % d['import_fail_list'] )
-        #WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_info)
+        return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+                                , context_instance=RequestContext(request))
 
     else:
-        # Check for an existing WorldMap layer via the WorldMap api
-        # This is so ugly....
+        # -------------------------------------------
+        #  Check for an existing WorldMap layer via the WorldMap API
+        #  This is so ugly....almost an infinite loop
+        # -------------------------------------------
+
         if add_worldmap_layerinfo_if_exists(shapefile_info):
             view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
                                             , kwargs={ 'shp_md5' : shapefile_info.md5 })
@@ -311,7 +302,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
 
         # Update for user template
         d['Err_Multiple_Shapefiles_Found'] = True
-        d['list_of_shapefile_set_names'] = list_of_shapefile_set_names
+        d['list_of_shapefile_set_names'] = zip_checker.get_shapefile_setnames()
         d['zip_name_list'] = zip_checker.get_zipfile_names()
         zip_checker.close_zip()
 
