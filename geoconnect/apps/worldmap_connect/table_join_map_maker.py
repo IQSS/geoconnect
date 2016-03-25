@@ -27,7 +27,7 @@ LOGGER = logging.getLogger('apps.worldmap_connect.join_layer_service')
 
 class TableJoinMapMaker(object):
     """
-    Use the WorldMap API to uplodat a datatable and join it to an existing layer
+    Use the WorldMap API to upload a datatable and join it to an existing layer
 
     tj_map_maker = TableJoinMapMaker(tabular_info, dataverse_metadata_dict,
                                     chosen_column_name, chosen_layer_name)

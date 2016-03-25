@@ -305,8 +305,10 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
                 'join_layer_id',\
                 'join_layer_typename')
         if all(k in core_data for k in attrs_indicating_a_join):
+            # Looks like a TableJoin
             wm_info = WorldMapJoinLayerInfo(**init_data)
         else:
+            # Assume it's a LatLng
             wm_info = WorldMapLatLngInfo(**init_data)
 
         wm_info.save()

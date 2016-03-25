@@ -13,15 +13,69 @@ from django.core.files.temp import NamedTemporaryFile
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
 from apps.registered_dataverse.registered_dataverse_helper import find_registered_dataverse
 from apps.gis_tabular.models import TabularFileInfo
+from apps.gis_tabular.models import WorldMapTabularLayerInfo
 
 from geo_utils.msg_util import *
 from geo_utils.error_result_msg import ErrResultMsg, FAILED_NOT_A_REGISTERED_DATAVERSE
 
+from apps.worldmap_connect.dataverse_layer_services import get_layer_info_using_dv_info
+from shared_dataverse_information.dataverse_info.forms_existing_layer import\
+        CheckForExistingLayerForm
+
 import logging
 LOGGER = logging.getLogger(__name__)
 
+
+def add_worldmap_layerinfo_if_exists(tabular_info):
+    """
+    Does the WorldMap already have a layer for this Dataverse DataFile?
+
+    Check the WorldMap API.  If a layer exists, for this "tabular_info",
+    create one of the following:
+        - WorldMapLatLngInfo
+        - WorldMapJoinLayerInfo
+
+    Expects tabular_info to have these fields:
+        - dataverse_installation_name
+        - datafile_id
+    """
+    if tabular_info is None:
+        return False
+
+    success, dict_or_err_msg = get_layer_info_using_dv_info(tabular_info.__dict__)
+
+    if not success:
+        return False
+
+    worldmap_tabular_info = WorldMapTabularLayerInfo.build_from_worldmap_json(\
+                                tabular_info,\
+                                dict_or_err_msg)
+
+    if worldmap_tabular_info is None:
+        LOGGER.error("Failed to create WorldMapTabularLayerInfo using %s",\
+                    dict_or_err_msg)
+        return False
+
+    return True
+
+
+    # Let's make this into an actual object...
+    #if
+
+
+"""
+from apps.gis_tabular.tab_services import check_if_already_mapped
+d = dict(dataverse_installation_name='http://localhost:8000', datafile_id=7193)
+
+d = dict(dataverse_installation_name='http://localhost:8000', datafile_id=15562)
+check_if_already_mapped(d)
+"""
+
+
+
 def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
-    """Using Dataverse API information, create a :model:`gis_tabular.TabularFileInfo' object.  This function should only receive successful responses.
+    """Using Dataverse API information, create a :model:`gis_tabular.TabularFileInfo' object.
+    This function should only return successful responses.
 
     return True/False, shp_md5 or ErrResultMsg
 
@@ -53,14 +107,8 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
                          "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
                     )
 
-    # quick hack for testing
-    #
-    #datafile_download_url = dataverse_info_dict.get('datafile_download_url', '--datafile_download_url not avail--')
-    #if datafile_download_url.find('dvn-build') > -1 and datafile_download_url.find('https') == -1:
-    #    dataverse_info_dict['datafile_download_url'] = datafile_download_url.replace('http', 'https')
-
     #-------------------------------------------------
-    # (3) Look for existing Dataverse files in the database
+    # (3b) Look for existing Dataverse files in the database
     #    ShapefileInfo and TabularFileInfo objects are routinely deleted, but if file is already here, use it
     #-------------------------------------------------
     params_for_existing_check = dict(datafile_id=dataverse_info_dict.get('datafile_id', -1)\
@@ -120,6 +168,7 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
 
         # If the file is still available, return it
         if tabular_info.is_dv_file_available():
+            add_worldmap_layerinfo_if_exists(tabular_info)
             return True, tabular_info.md5
         else:
             # But the file isn't there!!  Delete ShapefileInfo and make a new one
@@ -162,14 +211,10 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
         tabular_info.delete() # clear tabular info
         err_msg = 'Failed to download tabular file. HTTPError: %s \n\nurl: %s' % (str(e), datafile_download_url)
         return False, ErrResultMsg(None, err_msg)
-
-        #msg(dir(e))
-        #msg('HTTP ERROR!: %s' % e.msg)
-        #msg('HTTP ERROR!: %s' % e.msg)
-        #msgx('blah')
     img_temp.flush()
 
     tabular_info.dv_file.save(datafile_filename, File(img_temp))
     tabular_info.save()
+    add_worldmap_layerinfo_if_exists(tabular_info)
 
     return True, tabular_info.md5

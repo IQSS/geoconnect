@@ -179,33 +179,42 @@ def delete_join_layer(worldmap_layer_info):
     return (False, err_msg)
 
 
+def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, datafile_id):
+    assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
+    assert isinstance(datafile_id, int), "dv_file_id must be an integer"
+
+    params = dict(dataverse_installation_name=dataverse_installation_name,\
+                datafile_id=datafile_id)
+
+    return get_layer_info_from_dv_dict(params)
+
 """
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
 url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
 """
-def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, datafile_id):
+def get_layer_info_using_dv_info(params_dict):
     """
-    Retrieve layer information using dataverse_installation_name and datafile_id
-    """
-    assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
-    assert isinstance(datafile_id, int), "dv_file_id must be an integer"
+    Retrieve WorldMap layer information via API
 
-    params = dict(dataverse_installation_name=dataverse_installation_name, datafile_id=datafile_id)
-    f = CheckForExistingLayerForm(params)
+    params_dict needs to include:
+        - dataverse_installation_name
+        - datafile_id
+
+    Fail: (False, error message)
+    Success: (True, python dict)
+    """
+    f = CheckForExistingLayerForm(params_dict)
     if not f.is_valid():
         err_msg = """Sorry! Failed to validate the request to retrieve WorldMap layer metadata."""
         LOGGER.error(err_msg + \
         "  Validation failure for CheckForExistingLayerForm.  Errors: %s" % f.errors)
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return False, err_msg
 
-
-    LOGGER.debug('get_dataverse_layer_info_by_user_and_file')
 
     #--------------------------------------
     # Prepare the data
     #--------------------------------------
-    data_params = f.cleaned_data    #get_api_params_with_signature()
-    #print ('data_params: %s' % data_params)
+    data_params = f.cleaned_data
 
     #--------------------------------------
     # Make the request
@@ -222,13 +231,13 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
                     WorldMap server: %s</p><p>%s</p>"""\
                     % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH, e.message)
         LOGGER.error(err_msg)
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return False, err_msg
 
     except:
         # Error with request
         #
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
-        return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+        return False, err_msg
 
 
     #--------------------------------------
@@ -240,18 +249,15 @@ def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, data
         except ValueError:
             err_msg = "Failed to convert response to JSON."
             LOGGER.error(err_msg + "Status code: 200.\nResponse text: %s" % r.text)
-            return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+            return False, err_msg
 
-        return MessageHelperJSON.get_dict_msg(success=True,\
-                    msg=err_msg,\
-                    data_dict=response_dict)
-        #return response_dict
+        return True, response_dict
 
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
     err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
-    return MessageHelperJSON.get_dict_msg(success=False, msg=err_msg)
+    return False, err_msg
 
 def get_join_targets_as_json():
     """

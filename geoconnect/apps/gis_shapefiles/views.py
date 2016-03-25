@@ -17,7 +17,8 @@ from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
 
-from shared_dataverse_information.layer_classification.forms import ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
+from shared_dataverse_information.layer_classification.forms import \
+    ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\

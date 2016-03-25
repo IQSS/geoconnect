@@ -1,5 +1,5 @@
 
-STEP1_EXAMINE = '1. Map Shapefile'
+STEP1_EXAMINE = '1. Map Dataverse File'
 STEP2_VISUALIZE = 'x1. Visualize the Shapefile'
 STEP3_STYLE = '2. Style Map'
 

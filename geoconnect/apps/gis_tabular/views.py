@@ -34,6 +34,7 @@ from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
+from apps.gis_tabular.tab_services import add_worldmap_layerinfo_if_exists
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
     render_main_panel_title_for_style_step
 
@@ -215,6 +216,15 @@ def view_tabular_file(request, tab_md5):
     if worldmap_tabularinfo is not None:
         # A map exists: show it!
         return view_existing_map(request, worldmap_tabularinfo)
+
+    #
+    # Is there a WorldMap layer but Geoconnect doesn't know about it?
+    #
+    if add_worldmap_layerinfo_if_exists(tabular_info):
+        worldmap_tabularinfo = tabular_info.get_worldmap_info()
+        if worldmap_tabularinfo:
+            return view_existing_map(request, worldmap_tabularinfo)
+
 
     # ----------------------------------
     # Open the file and get the stats
