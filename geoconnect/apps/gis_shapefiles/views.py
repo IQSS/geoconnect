@@ -16,6 +16,7 @@ from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 #from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
+from apps.gis_shapefiles.shp_services import add_worldmap_layerinfo_if_exists
 
 from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
@@ -89,6 +90,7 @@ def view_examine_dataset(request):
 def view_shapefile_first_time(request, shp_md5):
     return view_shapefile(request, shp_md5, first_time_notify=True)
 
+
 def view_shapefile_visualize_attempt(request, shp_md5):
     return view_shapefile(request, shp_md5, just_made_visualize_attempt=True)
 
@@ -97,6 +99,8 @@ def view_shapefile_visualize_attempt(request, shp_md5):
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
     """
+    This is fantastically long and messy -- need to break it up
+
     Retrieve and view a :model:`gis_shapefiles.ShapefileInfo` object
 
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
@@ -158,54 +162,7 @@ def view_shapefile(request, shp_md5, **kwargs):
         # Error: No shapefiles found
         #
         if zip_checker.err_detected:
-            # Update shapefile_info object
-            shapefile_info.has_shapefile = False
-            shapefile_info.zipfile_checked = True
-
-            # Update for user template
-            d['Err_Found'] = True
-
-            if zip_checker.err_no_file_to_check:
-                logger.debug('Error: No file to check')
-
-                # Update shapefile_info object
-                shapefile_info.name = '(no file to check)'
-                shapefile_info.save()
-
-                # Update for user template
-                d['Err_No_File_Found'] = True
-                #d['zip_name_list'] = zip_checker.get_zipfile_names()
-                #d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-                zip_checker.close_zip()
-
-            elif zip_checker.err_no_shapefiles:
-                logger.debug('Error: No shapefiles found')
-
-                # Update shapefile_info object
-                shapefile_info.name = '(not a shapefile)'
-                shapefile_info.save()
-
-                # Update for user template
-                d['Err_No_Shapefiles_Found'] = True
-                d['zip_name_list'] = zip_checker.get_zipfile_names()
-                d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-                zip_checker.close_zip()
-
-            elif zip_checker.err_multiple_shapefiles:
-                # Error: More than one shapefile in the .zip
-                #
-                shapefile_info.name = '(multiple shapefiles found)'
-                shapefile_info.save()
-
-                # Update for user template
-                d['Err_Multiple_Shapefiles_Found'] = True
-                d['list_of_shapefile_set_names'] = list_of_shapefile_set_names
-                d['zip_name_list'] = zip_checker.get_zipfile_names()
-                zip_checker.close_zip()
-
-            # Send error to user
-            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
-                                    , context_instance=RequestContext(request))
+            return view_zip_checker_error(request, shapefile_info, zip_checker, d)
 
         # Load the single shapefile
         #
@@ -253,7 +210,6 @@ def view_shapefile(request, shp_md5, **kwargs):
 
 
 
-
     logger.debug('Has an import been attempted?')
     latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
     #get_successful_worldmap_attempt_from_shapefile(shapefile_info)
@@ -289,7 +245,76 @@ def view_shapefile(request, shp_md5, **kwargs):
         logger.debug('import_fail_list: %s' % d['import_fail_list'] )
         #WorldMapImportFail.objects.filter(import_attempt__gis_data_file=shapefile_info)
 
+    else:
+        # Check for an existing WorldMap layer via the WorldMap api
+        # This is so ugly....
+        if add_worldmap_layerinfo_if_exists(shapefile_info):
+            view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
+                                            , kwargs={ 'shp_md5' : shapefile_info.md5 })
+            return HttpResponseRedirect(view_shapefile_first_time_url)
 
 
+    return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+                            , context_instance=RequestContext(request))
+
+
+
+def view_zip_checker_error(request, shapefile_info, zip_checker, template_params):
+    """
+    Used to display a message when an error is detected
+    while examining the zipped Shapefile
+    """
+    assert isinstance(zip_checker, ShapefileZipCheck),\
+        "zip_checker is not a ShapefileZipCheck object"
+    assert zip_checker.err_detected, "Only use this when 'err_detected is True'"
+
+    d = template_params
+
+    # Update shapefile_info object
+    shapefile_info.has_shapefile = False
+    shapefile_info.zipfile_checked = True
+
+    # Update for user template
+    d['Err_Found'] = True
+
+    if zip_checker.err_no_file_to_check:
+        logger.debug('Error: No file to check')
+
+        # Update shapefile_info object
+        shapefile_info.name = '(no file to check)'
+        shapefile_info.save()
+
+        # Update for user template
+        d['Err_No_File_Found'] = True
+        #d['zip_name_list'] = zip_checker.get_zipfile_names()
+        #d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
+        zip_checker.close_zip()
+
+    elif zip_checker.err_no_shapefiles:
+        logger.debug('Error: No shapefiles found')
+
+        # Update shapefile_info object
+        shapefile_info.name = '(not a shapefile)'
+        shapefile_info.save()
+
+        # Update for user template
+        d['Err_No_Shapefiles_Found'] = True
+        d['zip_name_list'] = zip_checker.get_zipfile_names()
+        d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
+        zip_checker.close_zip()
+
+    elif zip_checker.err_multiple_shapefiles:
+        # Error: More than one shapefile in the .zip
+        #
+        shapefile_info.name = '(multiple shapefiles found)'
+        shapefile_info.save()
+
+        # Update for user template
+        d['Err_Multiple_Shapefiles_Found'] = True
+        d['list_of_shapefile_set_names'] = list_of_shapefile_set_names
+        d['zip_name_list'] = zip_checker.get_zipfile_names()
+        zip_checker.close_zip()
+
+    # Send error to user
     return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
                             , context_instance=RequestContext(request))

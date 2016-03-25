@@ -239,6 +239,8 @@ def get_layer_info_using_dv_info(params_dict):
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
         return False, err_msg
 
+    print (r.text)
+    print (r.status_code)
 
     #--------------------------------------
     # Response looks good

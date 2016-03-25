@@ -19,10 +19,33 @@ from geo_utils.error_result_msg import ErrResultMsg,\
 
 from apps.gis_shapefiles.models import ShapefileInfo
 from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapLayerInfo
+from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 import logging
 LOGGER = logging.getLogger(__name__)
 
+
+def add_worldmap_layerinfo_if_exists(shapefile_info):
+    """
+    Does the WorldMap already have a layer for this Dataverse DataFile?
+
+    Check the WorldMap API.  If a layer exists, for this "shapefile_info",
+    create the following:
+        - WorldMapImportAttempt
+        - WorldMapLayerInfo
+
+    Expects shapefile_info to have these fields:
+        - dataverse_installation_name
+        - datafile_id
+    """
+    if shapefile_info is None:
+        return False
+
+    send_shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
+
+    success = send_shp_service.workflow2_check_for_existing_worldmap_layer()
+
+    return success
 
 
 def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
@@ -39,7 +62,6 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
     #------------------------------
     # (1) Validate the data (DataverseInfoValidationForm)
     #------------------------------
-    #dataverse_info_dict.update({'datafile_id':None})   # for testing
     validation_form = DataverseInfoValidationForm(dataverse_info_dict)
     if not validation_form.is_valid():
         errs = [ '%s: %s' % (k, v) for k,v in validation_form.errors.items()]
@@ -57,15 +79,10 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
                         , "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
                     )
 
-    # quick hack for testing
-    #
-    #datafile_download_url = dataverse_info_dict.get('datafile_download_url', '--datafile_download_url not avail--')
-    #if datafile_download_url.find('dvn-build') > -1 and datafile_download_url.find('https') == -1:
-    #    dataverse_info_dict['datafile_download_url'] = datafile_download_url.replace('http', 'https')
-
     #-------------------------------------------------
     # (3) Look for existing Dataverse files in the database
-    #    ShapefileInfo and TabularFileInfo objects are routinely deleted, but if file is already here, use it
+    #    ShapefileInfo objects are routinely deleted, but if file is already here, use it
+    #       * todo: check for staleness, if the data is old delete it
     #-------------------------------------------------
     params_for_existing_check = dict(datafile_id=dataverse_info_dict.get('datafile_id', -1)\
                                     , dataverse_installation_name=dataverse_info_dict.get('dataverse_installation_name', -1)\
@@ -161,10 +178,6 @@ def get_shapefile_from_dv_api_info(dv_session_token, dataverse_info_dict):
         err_msg = 'Failed to download shapefile. HTTPError: %s \n\nurl: %s' % (str(e), datafile_download_url)
         return False, ErrResultMsg(None, err_msg)
 
-        #msg(dir(e))
-        #msg('HTTP ERROR!: %s' % e.msg)
-        #msg('HTTP ERROR!: %s' % e.msg)
-        #msgx('blah')
     img_temp.flush()
 
     shapefile_info.dv_file.save(datafile_filename, File(img_temp))
