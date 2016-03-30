@@ -453,11 +453,13 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
         # Is it just a path?
         if layer_link and layer_link.startswith('/'):
-            embed_link = self.core_data.get('embed_link', None)
+            full_link = self.core_data.get('embed_link', None)
+            if not full_link:
+                full_link = self.core_data.get('map_image_link',  None)
             # Does the embed link a full url
-            if embed_link and embed_link.lower().startswith('http'):
+            if full_link and full_link.lower().startswith('http'):
                 # Parse the embed link and use it to reformat the layer_link
-                url_parts = urlparse(embed_link)
+                url_parts = urlparse(full_link)
 
                 # Full layer link
                 layer_link = '%s://%s%s' % (url_parts.scheme,

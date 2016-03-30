@@ -210,8 +210,14 @@ def view_process_lat_lng_form(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
+
     # -----------------------------------------
-    # Possible that this failed.
+    # Notify Dataverse of the new map
+    # -----------------------------------------
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_tabular_info)
+
+    # -----------------------------------------
+    # Possible that this failed?
     # Make sure at least 1 row mapped
     # -----------------------------------------
     # Skip for now!  Error in row counts for Lat/Lng!
