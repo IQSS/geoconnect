@@ -477,6 +477,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         self.verify_layer_link_format()
         if self.core_data and self.core_data.get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from tabular file'
+            self.save()
 
         f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
         if not f.is_valid():
@@ -550,13 +551,14 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         self.verify_layer_link_format()
         if self.core_data and self.core_data.get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from joining to an existing layer'
+            self.save()
 
         f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
         if not f.is_valid():
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
         return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token,\
-                        join_description=self.join_description)
+                        join_description=self.core_data['joinDescription'])
 
     def get_dict_for_classify_form(self):
         """
@@ -597,7 +599,6 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         verbose_name_plural = verbose_name
 
 
-
     def get_params_for_dv_update(self):
         """
         Format data to send to the Dataverse
@@ -605,13 +606,14 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         self.verify_layer_link_format()
         if self.core_data and self.core_data.get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from mapping the Latitude and Longitude columnns'
+            self.save()
 
         f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
         if not f.is_valid():
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
         return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token,\
-                        join_description=self.join_description)
+                        join_description=self.core_data['joinDescription'])
 
 
     def did_any_rows_map(self):
