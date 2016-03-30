@@ -11,7 +11,7 @@ from jsonfield import JSONField
 from urlparse import urlparse
 from django import forms
 from apps.core.models import TimeStampedModel
-
+from urlparse import urlparse
 from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 
@@ -443,11 +443,39 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
     #def get_existing_info(**params_for_existing_check):
 
 
+    def verify_layer_link_format(self):
+        """
+        Hack to make sure the layer_link is a full url and not just the path
+
+        e.g., If it's just the path, take the rest of the url from the embed_link
+        """
+        layer_link = self.core_data.get('layer_link', None)
+
+        # Is it just a path?
+        if layer_link and layer_link.startswith('/'):
+            embed_link = self.core_data.get('embed_link', None)
+            # Does the embed link a full url
+            if embed_link and embed_link.lower().startswith('http'):
+                # Parse the embed link and use it to reformat the layer_link
+                url_parts = urlparse(embed_link)
+
+                # Full layer link
+                layer_link = '%s://%s%s' % (url_parts.scheme,
+                                url_parts.netloc,
+                                layer_link)
+                self.core_data['layer_link'] = layer_link
+                self.save()
+
 
     def get_params_for_dv_update(self):
         """
         Format data to send to the Dataverse
         """
+        # Hack for the layer_link
+        self.verify_layer_link_format()
+        if self.core_data and self.core_data.get('joinDescription') is None:
+            self.core_data['joinDescription'] = 'Layer created fom tabular file'
+
         f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
         if not f.is_valid():
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)

@@ -16,6 +16,8 @@ from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import WorldMapTabularLayerInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
+from apps.dv_notify.metadata_updater import MetadataUpdater
+
 from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
@@ -114,6 +116,10 @@ def view_map_tabular_file_form(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
+    # -----------------------------------------
+    # Notify Dataverse of the new map
+    # -----------------------------------------
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_tabular_info)
 
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
