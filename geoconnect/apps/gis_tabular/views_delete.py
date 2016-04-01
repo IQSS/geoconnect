@@ -46,15 +46,15 @@ def view_delete_tabular_map(request):
         return render_to_response('gis_tabular/view_delete_layer.html', d\
                                  , context_instance=RequestContext(request))
 
-    #return HttpResponse(f)
-
     # Form params look good
     msg('view_delete_tabular_map - 3')
 
     worldmap_layer_info = f.get_worldmap_layer_info()
-    gis_data_file = worldmap_layer_info.tabular_info
+    if not worldmap_layer_info:
+        raise Http404('WorldMap Layer info no longer available')
+    tabular_info = worldmap_layer_info.tabular_info
 
-    d['gis_data_file'] = gis_data_file
+    d['tabular_info'] = tabular_info
 
     # -----------------------------------
     # Delete map from WorldMap
@@ -63,7 +63,7 @@ def view_delete_tabular_map(request):
 
     flag_delete_local_worldmap_info = False
 
-    (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
+    (success, err_msg_or_None) = delete_map_layer(tabular_info, worldmap_layer_info)
     if success is False:
         msg('view_delete_tabular_map - 4a')
         logger.error("Faild to delete WORLDMAP layer: %s", err_msg_or_None)
@@ -88,6 +88,12 @@ def view_delete_tabular_map(request):
 
     msg('view_delete_tabular_map - 5')
     (success2, err_msg_or_None2) = MetadataUpdater.delete_dataverse_map_metadata(worldmap_layer_info)
+
+    # Delete the Geoconnect WorldMap info -- regardless of
+    # whether the data was removed from Dataverse
+    if flag_delete_local_worldmap_info:
+        worldmap_layer_info.delete()
+
     if success2 is False:
         msg('view_delete_tabular_map - 5a')
         logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
@@ -96,16 +102,8 @@ def view_delete_tabular_map(request):
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
         d['ERR_MSG'] = err_msg_or_None2
 
-        if flag_delete_local_worldmap_info:
-            worldmap_layer_info.delete()
-
         return render_to_response('gis_tabular/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
-
-
-    msg('view_delete_tabular_map - 6')
-    if flag_delete_local_worldmap_info:
-        worldmap_layer_info.delete()
 
     d['DELETE_SUCCESS'] = True
 
