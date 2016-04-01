@@ -61,6 +61,8 @@ def view_delete_tabular_map(request):
     # -----------------------------------
     msg('view_delete_tabular_map - 4')
 
+    flag_delete_local_worldmap_info = False
+
     (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
     if success is False:
         msg('view_delete_tabular_map - 4a')
@@ -74,10 +76,11 @@ def view_delete_tabular_map(request):
             d['ERR_MSG'] = err_msg_or_None
             return render_to_response('gis_tabular/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
-
-    # At this point, the layer no longer exists on WorldMap,
-    # delete the "worldmap_layer_info" object
-    worldmap_layer_info.delete()
+    else:
+        # At this point, the layer no longer exists on WorldMap,
+        # set a flag to delete it from geoconnect, even if the Dataverse
+        # delete fails
+        flag_delete_local_worldmap_info = True
 
     # -----------------------------------
     # Delete metadata from dataverse
@@ -92,11 +95,17 @@ def view_delete_tabular_map(request):
         d['ERROR_FOUND'] = True
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
         d['ERR_MSG'] = err_msg_or_None2
+
+        if flag_delete_local_worldmap_info:
+            worldmap_layer_info.delete()
+
         return render_to_response('gis_tabular/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
 
 
     msg('view_delete_tabular_map - 6')
+    if flag_delete_local_worldmap_info:
+        worldmap_layer_info.delete()
 
     d['DELETE_SUCCESS'] = True
 

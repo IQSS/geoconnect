@@ -134,6 +134,24 @@ class MetadataUpdater(object):
              "worldmap_layer_info must have a method get_dataverse_server_url()."\
              + " type: (%s)" % worldmap_layer_info
 
+    def update_embed_link_for_https(self, params):
+        """
+        Force the embed map link to https
+        """
+        EMBED_MAP_LINK_KEY = 'embedMapLink'
+
+        if params is None or EMBED_MAP_LINK_KEY not in params:
+            return False
+
+        embed_link_val = params[EMBED_MAP_LINK_KEY].lower()
+        if embed_link_val.find('worldmap.harvard.edu') > -1:
+            if embed_link_val.startswith('http://'):
+                embed_link_val = embed_link_val.replace('http:', 'https:', 1)
+                params[EMBED_MAP_LINK_KEY] = embed_link_val
+                return True
+
+        return True
+
 
     def send_info_to_dataverse(self, worldmap_layer_info):
         """
@@ -151,6 +169,8 @@ class MetadataUpdater(object):
         print('1) send_params_to_dataverse')
 
         dv_metadata_params = worldmap_layer_info.get_params_for_dv_update()
+        self.update_embed_link_for_https(dv_metadata_params)
+
         print ('dv_metadata_params', dv_metadata_params)
         api_update_url = get_api_url_update_map_metadata(self.dataverse_server_url)
 

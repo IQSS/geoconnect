@@ -306,14 +306,53 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
                 'join_layer_typename')
         if all(k in core_data for k in attrs_indicating_a_join):
             # Looks like a TableJoin
-            wm_info = WorldMapJoinLayerInfo(**init_data)
+            SelectedWorldMapLayerInfoType = WorldMapJoinLayerInfo
         else:
             # Assume it's a LatLng
-            wm_info = WorldMapLatLngInfo(**init_data)
+            SelectedWorldMapLayerInfoType = WorldMapLatLngInfo
 
+        # Create the object
+        wm_info = SelectedWorldMapLayerInfoType(**init_data)
+
+        # Save it
         wm_info.save()
 
+        # Clear dupe layers, if any
+        WorldMapTabularLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
+
         return wm_info
+
+    @staticmethod
+    def clear_duplicate_worldmap_info_objects(worldmap_info):
+        """
+        wm_info_object - instance of a WorldMapLatLngInfo or WorldMapJoinLayerInfo
+        """
+        if worldmap_info is None or not worldmap_info.id:
+            # Make sure the object has been saved -- e.g. has an 'id'
+            return
+        assert hasattr(worldmap_info, 'is_lat_lng_layer'),\
+            ("wm_info_object must be a WorldMapJoinLayerInfo"
+             " or WorldMapLatLngInfo object")
+
+        if worldmap_info.is_lat_lng_layer():
+            SelectedWorldMapLayerInfoType = WorldMapLatLngInfo
+        else:
+            SelectedWorldMapLayerInfoType = WorldMapJoinLayerInfo
+
+        # Delete similar objects - same tabular file + same WorldMap layer
+        # Bit of a hack due to fuzzy requirements early on
+        # whether a tab file can have more than one map -- currently allowing
+        #
+        filters = dict(tabular_info=worldmap_info.tabular_info,\
+                        layer_name=worldmap_info.layer_name)
+
+        # Pull objects except the current "worldmap_info"
+        #
+        older_info_objects = SelectedWorldMapLayerInfoType.objects.filter(\
+                        **filters).exclude(id=worldmap_info.id)
+
+        # Delete the older objects
+        older_info_objects.delete()
 
 
 
