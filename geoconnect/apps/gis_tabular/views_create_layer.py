@@ -214,7 +214,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     # Notify Dataverse of the new map
     # -----------------------------------------
-    MetadataUpdater.update_dataverse_with_metadata(worldmap_tabular_info)
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_latlng_info)
 
     # -----------------------------------------
     # Possible that this failed?
