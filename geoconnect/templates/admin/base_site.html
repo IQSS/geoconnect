@@ -1,9 +1,9 @@
 {% extends "admin/base.html" %}
 
-{% block title %}{{ title }} | {{ site_title|default:_('Dataverse db site admin') }}{% endblock %}
+{% block title %}{{ title }} | {{ site_title|default:_('Geoconnect site admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Dataverse db administration') }}</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Geoconnect administration') }}</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

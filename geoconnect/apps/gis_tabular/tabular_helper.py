@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 unicodedata.normalize('NFKD', title).encode('ascii','ignore')
 """
 
-NUM_PREVIEW_ROWS = 40
+NUM_PREVIEW_ROWS = 100
 
 class TabFileStats(object):
 
