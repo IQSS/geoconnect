@@ -4,15 +4,16 @@ from os.path import dirname, join, abspath, isdir
 
 if __name__=='__main__':
     PROJECT_ROOT = dirname(dirname(abspath(__file__)))
-    paths = [ join(PROJECT_ROOT, 'geoconnect')\
-            , join(PROJECT_ROOT, 'geoconnect', 'geoconnect')\
-            , '/home/ubuntu/.virtualenvs/geoconnect/lib/python2.7/site-packages'\
+    paths = [ PROJECT_ROOT,\
+            join(PROJECT_ROOT, 'geoconnect'),\
+            join(PROJECT_ROOT, 'geoconnect', 'geoconnect'),\
+            '/home/ubuntu/.virtualenvs/geoconnect/lib/python2.7/site-packages'\
             ]
     paths = [p for p in paths if isdir(p)]
     for p in paths:
         sys.path.append(p)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.production")
+    os.environ["DJANGO_SETTINGS_MODULE"] = "geoconnect.settings.production"
 
 from django.conf import settings
 
@@ -24,8 +25,7 @@ from geo_utils.stale_data_remover import StaleDataRemover
 """
 # sudo crontab -e
 MAILTO=raman_prasad@harvard.edu
-9 * * * * /usr/bin/python /home/ubuntu/code/geoconnect/task_script/prune_scratch_directories.py
-
+9 * * * * /webapps/virtualenvs/geoconnect/bin/python /webapps/code/geoconnect/task_scripts/remove_stale_data.py
 """
 
 

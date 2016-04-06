@@ -1,0 +1,30 @@
+#!/bin/sh
+# ------------------------------------------
+# This script should be wrapped by another script that
+# encloses all of these commands in "scl enable python27"
+# i.e. scl enable python27 "path/to/this/script.sh"
+#
+#   See also http://developerblog.redhat.com/2013/02/14/setting-up-django-and-python-2-7-on-red-hat-enterprise-6-the-easy-way/
+#   scl enable python27 bash
+# ------------------------------------------
+# Note: Meant to be run via cron.  e.g. daily at 2:20am
+# 30 2 * * * scl enable python27 "/home/ubuntu/code/geoconnect/task_scripts/remove_stale_data"
+# ------------------------------------------
+#
+# ------------------------------------------
+# Run the virtualenvwrapper shell
+# ------------------------------------------
+source /opt/rh/python27/root/usr/bin/virtualenvwrapper.sh
+#
+# ------------------------------------------
+# Setup virtualenv
+# ------------------------------------------
+echo "Setup virtualenv and 'workon' geoconnect"
+export WORKON_HOME=/webapps/virtualenvs
+workon geoconnect
+# ------------------------------------------
+# Remove stale data
+# ------------------------------------------
+echo "Remove the stale data"
+cd /webapps/code/geoconnect/task_scripts
+python remove_stale_data.py
