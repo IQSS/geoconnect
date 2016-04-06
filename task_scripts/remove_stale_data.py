@@ -15,10 +15,6 @@ if __name__=='__main__':
 
     os.environ["DJANGO_SETTINGS_MODULE"] = "geoconnect.settings.production"
 
-from django.conf import settings
-
-#from django.core.mail import send_mail
-#from django.template.loader import render_to_string
 
 from geo_utils.stale_data_remover import StaleDataRemover
 
@@ -33,3 +29,4 @@ if __name__=='__main__':
     sdr = StaleDataRemover()
     sdr.remove_stale_worldmap_data()
     sdr.remove_stale_dataverse_data()
+    sdr.send_email_notice()

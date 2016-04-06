@@ -8,7 +8,7 @@
 #   scl enable python27 bash
 # ------------------------------------------
 # Note: Meant to be run via cron.  e.g. daily at 2:20am
-# 30 2 * * * scl enable python27 "/home/ubuntu/code/geoconnect/task_scripts/remove_stale_data"
+# 30 2 * * * scl enable python27 "/webapps/code/geoconnect/task_scripts/remove_stale_data"
 # ------------------------------------------
 #
 # ------------------------------------------
