@@ -112,7 +112,10 @@ class StaleDataRemover(object):
 
         self.add_message_line('This is an email notice from Geoconnect',\
                 prepend=True)
-                
+        self.add_message_line('-' *30, prepend=True)
+        self.add_message_line('-' *30)
+        self.add_message_line('(end of message)'')
+
         if len(settings.ADMINS)==0:
             msg('No one to email! (no one in settings.ADMINS)')
             return
@@ -139,4 +142,6 @@ sdr = StaleDataRemover()
 sdr.remove_stale_worldmap_data()
 sdr.send_email_notice()
 #sdr.remove_stale_dataverse_data()
+test_email = 'somemail@harvard.edu'
+send_mail('test geoconnect', 'did it work', test_email, [test_email])
 """
