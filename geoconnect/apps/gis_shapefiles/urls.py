@@ -25,7 +25,7 @@ urlpatterns += patterns('apps.gis_shapefiles.views_mapit',
     #url(r'^map-it/(?P<dataset_id>\d{1,10})/$', 'view_mapit_incoming_no_token', name="view_mapit_incoming_no_token"),
 
     url(r'^map-it/(?P<dataverse_token>\w{64})/$', 'view_mapit_incoming_token64', name="view_mapit_incoming_token64"),
-    
+
 )
 
 
@@ -38,12 +38,6 @@ urlpatterns += patterns('apps.gis_shapefiles.views_delete',
 
     url(r'^delete-map/$', 'view_delete_map', name="view_delete_map"),
 )
-
-urlpatterns += patterns('apps.dv_notify.views',
-
-   url(r'^notify-dv-of-map/(?P<worldmapinfo_md5>\w{1,32})/$', 'view_ajax_notify_dv_of_map', name="view_ajax_notify_dv_of_map"),
-)
-
 
 #urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
 #    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
@@ -58,4 +52,3 @@ urlpatterns += patterns('apps.dv_notify.views',
 #urlpatterns += patterns('gis_shapefiles.views_field_check',
 #    url(r'^shp/(?P<shp_md5>\w{32})/(?P<field_name>\w{1,200})/(?P<column_index>\d{1,7})/$', #'view_field_stats', name="view_field_stats"),
 #)
-

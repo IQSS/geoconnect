@@ -26,6 +26,8 @@ urlpatterns = patterns('',
 
     url(r'^%sclassify/' % URL_PREFIX, include('apps.classification.urls')),
 
+    url(r'^%sdv-notify/' % URL_PREFIX, include('apps.dv_notify.urls')),
+
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 
     #(r'^%s/geo-connect-admin/doc/' % URL_PREFIX, include('django.contrib.admindocs.urls')),

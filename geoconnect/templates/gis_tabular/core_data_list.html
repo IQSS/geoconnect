@@ -27,6 +27,15 @@
         </table>
     </div>
 </div>
+{% if is_staff %}
+    <p>Staff debug:
+        {% if worldmap_layerinfo.is_lat_lng_layer %}
+            <a href="{% url 'ajax_dv_notify_latlng_map' worldmap_layerinfo.md5  %}" target="_blank">Send Info to Dataverse</a>
+        {% elif worldmap_layerinfo.is_join_layer %}
+            <a href="{% url 'ajax_dv_notify_tabular_join_map' worldmap_layerinfo.md5  %}" target="_blank">Send Info to Dataverse</a>
+        {% endif %}
+    </p>
+{% endif %}
 <script>
 $( document ).ready(function() {
     // show/hide attributes

@@ -46,4 +46,4 @@ cp /webapps/code/geoconnect/geoconnect/geoconnect/vagrant-centos-wsgi.py /var/ww
 echo "---Run collecstatic to copy files to the static www directory"
 #
 python manage.py collectstatic --noinput --settings=geoconnect.settings.production
-#python manage.py loaddata apps/classfication/fixtures/test-data.json --settings=geoconnect.settings.production
+#python manage.py loaddata apps/classification/fixtures/test-data.json --settings=geoconnect.settings.production

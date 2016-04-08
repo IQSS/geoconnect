@@ -67,6 +67,9 @@
 				{% if shapefile_info %}
 				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shapefile_info.id %}">Edit</a>
 				{% endif %}
+                {% if worldmap_layerinfo %}
+                &nbsp;|&nbsp; <a href="{% url 'ajax_dv_notify_shapefile_map' worldmap_layerinfo.md5  %}" target="_blank">Send Info to Dataverse</a>
+                {% endif %}
 			</p>
         {% endif %}
     </div><!-- end main panel content -->

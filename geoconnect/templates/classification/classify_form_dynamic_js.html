@@ -49,7 +49,7 @@
 
     function get_update_dv_url(){
         {% if worldmap_layerinfo %}
-           return "{% url 'view_ajax_notify_dv_of_map' worldmap_layerinfo.md5 %}";
+           return "{% url 'ajax_dv_notify_shapefile_map' worldmap_layerinfo.md5 %}";
         {% else %}
             return "";
         {% endif %}

@@ -5,30 +5,20 @@ from __future__ import print_function
 import requests
 import logging
 
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from django.conf import settings
 
 from geo_utils.message_helper_json import MessageHelperJSON
-from geo_utils.msg_util import msg, dashes
-
+#from geo_utils.msg_util import msg
 from apps.dv_notify.metadata_updater import MetadataUpdater
-from apps.worldmap_connect.models import WorldMapImportAttempt,\
-    WorldMapImportFail, WorldMapLayerInfo
-from apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
-
-from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
-                TYPE_JOIN_LAYER,\
-                TYPE_LAT_LNG_LAYER
-
+from apps.classification.utils import get_worldmap_info_object
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from shared_dataverse_information.layer_classification.forms_api import\
     ClassifyRequestDataForm
-
-
 from shared_dataverse_information.map_layer_metadata.forms import\
     WorldMapToGeoconnectMapLayerMetadataValidationForm
 
@@ -36,17 +26,17 @@ from shared_dataverse_information.map_layer_metadata.forms import\
 LOGGER = logging.getLogger(__name__)
 
 
-def format_major_error_message(msg, import_success_md5=None):
+def format_major_error_message(err_msg, import_success_md5=None):
     """
     This error is severe and replaces the entire classify form
     """
-    params = dict(error_message=msg,\
+    params = dict(error_message=err_msg,\
                 import_success_md5=import_success_md5)
     return render_to_string('classification/classify_major_error.html', params)
 
-def format_minor_error_message(msg):
+def format_minor_error_message(err_msg):
     return render_to_string('classification/classify_basic_error.html',\
-        dict(error_message=msg))
+        dict(error_message=err_msg))
 
 #@login_required
 def view_classify_layer_form(request, import_success_md5):
@@ -179,11 +169,14 @@ def view_classify_layer_form(request, import_success_md5):
         try:
             json_resp = resp.json()
         except:
-            LOGGER.error('Worldmap classification failed. Status code: %s\nText;%s' % (resp.status_code, resp.text))
-            json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')
+            error_msg = ('Worldmap classification failed. Status code:'
+                        ' %s\nText;%s',
+                            (resp.status_code, resp.text.encode('utf-8')))
+            LOGGER.error(error_msg)
+            json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                msg='Sorry!  The classification failed.')
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
-        LOGGER.error('Worldmap classification failed. Status code: %s\nText;%s' % (resp.status_code, json_resp))
         wm_err_msg = json_resp.get('message', None)
         if wm_err_msg is None:
             wm_err_msg = 'No message given.'
@@ -203,16 +196,20 @@ def view_classify_layer_form(request, import_success_md5):
     try:
         json_resp = resp.json()
     except:
-        LOGGER.error('Worldmap response was not valid json: %s' % resp.text)
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='Sorry!  The classification failed.')
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        LOGGER.error('Worldmap response was not valid json: %s',\
+                resp.text.encode('utf-8'))
+        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+            msg='Sorry!  The classification failed.')
+        return HttpResponse(status=200,\
+            content=json_msg,\
+            content_type="application/json")
 
     # --------------------------------------------------------------
     #   Classification Failed
     # --------------------------------------------------------------
     if not json_resp.get("success") is True:
-        LOGGER.error('Worldmap response did not have success==true: %s' % resp.text)
-        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' % json_resp.get('message', 'nada')
+        LOGGER.error('Worldmap response did not have success==true: %s', resp.text)
+        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)', json_resp.get('message', 'nada')
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
@@ -221,7 +218,7 @@ def view_classify_layer_form(request, import_success_md5):
     # --------------------------------------------------------------
     f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
     if not f_val.is_valid():
-        LOGGER.error('Classify return data failed validation: %s' % f_val.errors)
+        LOGGER.error('Classify return data failed validation: %s', f_val.errors)
         user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' \
                         % json_resp.get('message', f_val.errors)
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
@@ -267,29 +264,3 @@ def view_classify_layer_form(request, import_success_md5):
                                         , data_dict={'div_content':form_content}\
                                         )
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-
-def get_worldmap_info_object(data_source_type, info_md5):
-    """
-    Based on the type of data, return the appropriate container
-    WorldMap data
-
-    shapfile -> WorldMapLayerInfo
-    tabular join -> WorldMapJoinLayerInfo
-    tabular lat/lng -> WorldMapLatLngInfo
-    """
-    if data_source_type == TYPE_SHAPEFILE_LAYER:
-        WORLDMAP_INFO_CLASS_TYPE = WorldMapLayerInfo
-    elif data_source_type == TYPE_JOIN_LAYER:
-        WORLDMAP_INFO_CLASS_TYPE = WorldMapJoinLayerInfo
-    elif data_source_type == TYPE_LAT_LNG_LAYER:
-        WORLDMAP_INFO_CLASS_TYPE = WorldMapLatLngInfo
-
-    try:
-        return WORLDMAP_INFO_CLASS_TYPE.objects.get(md5=info_md5)
-    except WORLDMAP_INFO_CLASS_TYPE.DoesNotExist:
-        err_note = ('Sorry! The layer data could not be found '
-                    'for md5 "%s". '
-                    '(%s object not found)' % (info_md5, data_source_type))
-        LOGGER.error(err_note)
-        return None

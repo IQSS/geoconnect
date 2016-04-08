@@ -262,7 +262,7 @@ class WorldMapLayerInfo(MapLayerMetadata):
 
     def get_dict_for_classify_form(self):
         """
-        Used for the classfication form
+        Used for the classification form
         """
         return dict(layer_name=self.layer_name,
                 data_source_type=TYPE_SHAPEFILE_LAYER,

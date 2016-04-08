@@ -1,3 +1,6 @@
+"""
+Convenience views for sending Layer metadata back to Dataverse via API
+"""
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 
@@ -5,20 +8,62 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.dv_notify.metadata_updater import MetadataUpdater
+from apps.classification.utils import get_worldmap_info_object
+from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
+                TYPE_JOIN_LAYER,\
+                TYPE_LAT_LNG_LAYER
 from geo_utils.message_helper_json import MessageHelperJSON
 
 
-def view_ajax_notify_dv_of_map(request, worldmapinfo_md5):
+def ajax_dv_notify_shapefile_map(request, worldmapinfo_md5):
     """
-    Send WorldMapLayerInfo to Dataverse
+    Retrieve a WorldMapLayerInfo object (from a shapefile) and send it to Dataverse
     """
+    worldmap_layer_info = get_worldmap_info_object(TYPE_SHAPEFILE_LAYER, worldmapinfo_md5)
+    if worldmap_layer_info is None:
+        err_msg = 'WorldMapLayerInfo not found'
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=404)
 
-    # ------------------------------
-    # Retrieve WorldMapLayerInfo
-    # ------------------------------
-    try:
-        worldmap_layer_info = WorldMapLayerInfo.objects.get(md5=worldmapinfo_md5)
-    except WorldMapLayerInfo.DoesNotExist:
+    return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
+
+
+
+def ajax_dv_notify_latlng_map(request, worldmapinfo_md5):
+    """
+    Retrieve a WorldMapJoinLayerInfo object and send it to Dataverse
+    """
+    worldmap_layer_info = get_worldmap_info_object(TYPE_LAT_LNG_LAYER, worldmapinfo_md5)
+    if worldmap_layer_info is None:
+        err_msg = 'WorldMapLatLngInfo not found'
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=404)
+
+    return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
+
+
+def ajax_dv_notify_tabular_join_map(request, worldmapinfo_md5):
+    """
+    Retrieve a WorldMapJoinLayerInfo object and send it to Dataverse
+    """
+    worldmap_layer_info = get_worldmap_info_object(TYPE_JOIN_LAYER, worldmapinfo_md5)
+    if worldmap_layer_info is None:
+        err_msg = 'WorldMapJoinLayerInfo not found'
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=404)
+
+    return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
+
+
+def view_ajax_dv_notify_of_map(request, worldmap_layer_info):
+    """
+    Given a WorldMap layer information, send it to Dataverse
+    worldmap_info may be:
+        - WorldMapJoinLayerInfo
+        - WorldMapLatLngInfo
+        - WorldMapLayerInfo
+    """
+    if worldmap_layer_info is None:
         err_msg = 'WorldMapLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=404)
