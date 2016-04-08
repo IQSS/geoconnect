@@ -42,8 +42,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="{% if shapefile_info and shapefile_info.return_to_dataverse_url %}{{ shapefile_info.return_to_dataverse_url }}{% else %}{{ DATAVERSE_SERVER_URL }}{% endif %}"><span class="navbar-brand">Geoconnect: Map Data Set Up</span></a>
-                <a href="{% if tabular_info and tabular_info.return_to_dataverse_url %}{{ tabular_info.return_to_dataverse_url }}{% else %}{{ DATAVERSE_SERVER_URL }}{% endif %}"><span class="navbar-brand">Geoconnect: Map Data Set Up</span></a>
+                {% if shapefile_info and shapefile_info.return_to_dataverse_url %}
+                    <a href="{{ shapefile_info.return_to_dataverse_url }}">
+                {% elif tabular_info and tabular_info.return_to_dataverse_url %}
+                    <a href="{{ tabular_info.return_to_dataverse_url }}">
+                {% else %}
+                    <a href="{{ DATAVERSE_SERVER_URL }}">
+                {% endif %}
+                    <span class="navbar-brand">Geoconnect: Map Data Set Up</span></a>
+                <!--a href="{% if tabular_info and tabular_info.return_to_dataverse_url %}{{ tabular_info.return_to_dataverse_url }}{% else %}{{ DATAVERSE_SERVER_URL }}{% endif %}"><span class="navbar-brand">Geoconnect: Map Data Set Up</span></a-->
                 <!--a href="{#% url 'view_examine_dataset' %#}"><span class="navbar-brand">GeoConnect: Map Data</span></a-->
                 <span class="label label-default beta">beta</span>
             </div>
