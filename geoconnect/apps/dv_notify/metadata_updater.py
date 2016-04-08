@@ -101,7 +101,7 @@ class MetadataUpdater(object):
             LOGGER.error(err_msg)
             return (False, err_msg)
 
-        msgt('text: %s' % req.text)
+        msgt('text: %s' % req.text.encode('utf-8'))
         msgt('status code: %s' % req.status_code)
         if req.status_code == 404:
             return (False, "The Dataverse delete API was not available")# 'Delete success')
@@ -111,7 +111,7 @@ class MetadataUpdater(object):
 
         else:
             LOGGER.error('Metadata delete failed.  Status code: %s\nResponse:%s',\
-             req.status_code, req.text)
+             req.status_code, req.text.encode('utf-8'))
             return (False, 'Sorry! The update failed.')
 
     @staticmethod
@@ -201,21 +201,21 @@ class MetadataUpdater(object):
 
         if not req.status_code == 200:
 
-            print ('request text: %s' % req.text)
+            #print ('request text: %s' % req.text)
 
             LOGGER.error('Metadata update failed.  Status code: %s\nResponse:%s',\
-                req.status_code, req.text)
+                req.status_code, req.text.encode('utf-8'))
 
             return self.get_result_msg(False, 'Sorry! The update failed.')
 
-        print (req.text)
+        #print (req.text)
         dv_response_dict = req.json()
-        print('4) req to json')
+        #print('4) req to json')
 
-        print(dv_response_dict)
+        #print(dv_response_dict)
         if dv_response_dict.get('status', False) in ('OK', 'success'):
             dv_response_dict.pop('status')
-            print('4) send result')
+            #print('4) send result')
             return self.get_result_msg(True, '', data_dict=dv_response_dict)
 
         elif dv_response_dict.has_key('message'):
