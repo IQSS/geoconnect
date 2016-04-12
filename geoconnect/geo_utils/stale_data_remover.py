@@ -114,7 +114,7 @@ class StaleDataRemover(object):
                 prepend=True)
         self.add_message_line('-' *30, prepend=True)
         self.add_message_line('-' *30)
-        self.add_message_line('(end of message)'')
+        self.add_message_line('(end of message)')
 
         if len(settings.ADMINS)==0:
             msg('No one to email! (no one in settings.ADMINS)')

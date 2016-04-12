@@ -69,7 +69,7 @@ class TabFileStats(object):
                         self.preview_rows.append(row)
             except csv.Error as e:
                 logger.error('Error reading file: %s\nLine: %d\nMessage: %s' \
-                                % (filename, reader.line_num, e))
+                                % (self.fname, reader.line_num, e))
 
         self.stats_collected = True
 
