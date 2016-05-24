@@ -37,7 +37,7 @@
                 <p>
 					<a href="{{ DATAVERSE_SERVER_URL }}" class="btn-success btn-sm">Return to the Dataverse</a>
 
-					<a href="{% url 'view_shapefile' gis_data_file.md5 %}"  class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
+					<a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
                 </p>
     	    {% endif %}
     	    </div>
@@ -53,7 +53,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Would you like to Re-Map this file?</div>
         <div class="panel-body">
-            <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
+            <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
 
             <br /><br />or  {% include "gis_shapefiles/link-back-to-dataverse.html" %}</p>
 

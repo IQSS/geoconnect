@@ -6,7 +6,9 @@
         return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
     }
 
-
+    function getWorkingBtnMessage(){
+        return 'Working ... (may take up to 30 seconds)';
+    }
     /* ------------------------------------------
         Submit the latitude/longitude form
     ------------------------------------------ */
@@ -17,7 +19,7 @@
         check_lat_lng_url = '{% url 'view_process_lat_lng_form' %}';
 
         // Disable submit button + hide message box
-        $('#id_frm_lat_lng_submit').addClass('disabled').html('Working...');
+        $('#id_frm_lat_lng_submit').addClass('disabled').html(getWorkingBtnMessage());
         $('#msg_form_tabular').empty().hide();
 
         // Submit form
@@ -142,7 +144,7 @@
         map_tabular_file_url = '{% url 'view_map_tabular_file_form' %}';
 
         // Disable submit button + hide message box
-        $('#id_frm_single_column_submit').addClass('disabled').html('Working...');
+        $('#id_frm_single_column_submit').addClass('disabled').html(getWorkingBtnMessage());
         $('#msg_form_tabular').empty().hide();
 
         // Submit form
