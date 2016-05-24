@@ -148,7 +148,7 @@ def view_unmatched_join_rows(request, tab_md5):
         return HttpResponse(unmatched_rows_html)
         json_msg = MessageHelperJSON.get_json_msg(success=True,\
                         msg="Records found",\
-                        data_dict=worldmap_info.core_data['unmatched_records_list'])
+                        data_dict=worldmap_info.core_data['unmatched_rows'])
     else:
         # No unmatched records exist
         json_msg = MessageHelperJSON.get_json_msg(success=False,\
