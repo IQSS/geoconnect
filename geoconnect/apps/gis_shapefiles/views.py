@@ -21,6 +21,7 @@ from apps.gis_shapefiles.shp_services import add_worldmap_layerinfo_if_exists
 from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
+from apps.gis_tabular.models import TabularFileInfo
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     STEP1_EXAMINE, STEP3_STYLE
@@ -64,6 +65,7 @@ def view_examine_dataset(request):
     #return HttpResponse('view_google_map')
     d = { 'page_title' : 'Shapefiles: Test Upload Page'\
         , 'existing_shapefiles' : ShapefileInfo.objects.all()
+        , 'existing_tabular_files' : TabularFileInfo.objects.all()
         }
 
     if request.method=='POST':

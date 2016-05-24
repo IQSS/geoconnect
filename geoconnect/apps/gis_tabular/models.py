@@ -580,7 +580,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('matched_records_count', -1)
+        return self.core_data.get('unmatched_record_count', -1)
 
 
     def get_params_for_dv_update(self):
@@ -676,7 +676,7 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('mapped_record_count', -1)
+        return self.core_data.get('unmapped_record_count', -1)
 
 
     def is_lat_lng_layer(self):

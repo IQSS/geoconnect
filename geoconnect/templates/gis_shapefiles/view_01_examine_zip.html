@@ -10,7 +10,7 @@
 			<br />
 			{% endif %}
 			{% if existing_shapefiles %}
-			<p>Choose an existing shapefile group:</p>
+			<p>Choose an existing <b>shapefile group</b>:</p>
 				<ol>
 				{% for shp in existing_shapefiles %}
 						<li><a href="{% url 'view_shapefile' shp.md5 %}">{% if shp.dataset_name %}{{ shp.dataset_name }}:{% endif %} {{ shp }} </a>
@@ -18,6 +18,16 @@
 				{% endfor %}
 				</ol>
 			{% endif %}
+			{% if existing_tabular_files %}
+			<p>Choose an existing <b>tabular file</b>:</p>
+				<ol>
+				{% for tab in existing_tabular_files %}
+						<li><a href="{% url 'view_tabular_file' tab.md5 %}">{{ tab.name }}{% if tab.dv_join_file %}{{ tab.dv_join_file }}:{% endif %}</a>
+								&nbsp;|&nbsp; <a href="{% url 'admin:gis_tabular_tabularfileinfo_change' tab.id %}">edit</a></li>
+				{% endfor %}
+				</ol>
+			{% endif %}
+
 			<hr />
 			<p>Upload new shapefile:</p>
 
