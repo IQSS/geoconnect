@@ -7,7 +7,7 @@ If a map has already beeen created use:
 This is connected to modal boxes to verify keeping the map, etc.
 {% endcomment %}
 {% if tabular_info and tabular_info.return_to_dataverse_url %}
-    <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
 {% else %}
-    <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-chevron-left"></span> Return to the Dataverse</a>
+    <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
 {% endif %}
