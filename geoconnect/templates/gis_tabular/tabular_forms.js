@@ -7,7 +7,7 @@
     }
 
     function getWorkingBtnMessage(){
-        return 'Working ... (This may take up to 30 seconds)';
+        return 'Working ... (This may take up to 45 seconds)';
     }
     /* ------------------------------------------
         Submit the latitude/longitude form

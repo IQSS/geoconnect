@@ -172,6 +172,12 @@ class MetadataUpdater(object):
         self.update_embed_link_for_https(dv_metadata_params)
 
         print ('dv_metadata_params', dv_metadata_params)
+
+        # FIXME: temp fix for DV error
+        # Make joinDescription an empty String instead of None
+        if dv_metadata_params.get('joinDescription', None) is None:
+            dv_metadata_params['joinDescription'] = ''
+
         api_update_url = get_api_url_update_map_metadata(self.dataverse_server_url)
 
         print ('params to send: %s' % dv_metadata_params)
