@@ -15,6 +15,8 @@ Set up:
 import requests
 import json
 
+YOUR_GEOCONNECT_TOKEN = "PUT YOUR GEOCONNECT_TOKEN HERE"
+
 
 payload =  {'mapLayerLinks': '{"json": "http://worldmap.harvard.edu/download/wfs/29145/json?outputFormat=json&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Aupdatedeva_g6x&version=1.0.0", "csv": "http://worldmap.harvard.edu/download/wfs/29145/csv?outputFormat=csv&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Aupdatedeva_g6x&version=1.0.0", "png": "http://worldmap.harvard.edu/download/wms/29145/png?layers=geonode%3Aupdatedeva_g6x&width=678&bbox=140.617908%2C37.2418281146%2C141.258962531%2C37.761795&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550", "zip": "http://worldmap.harvard.edu/download/wfs/29145/zip?outputFormat=SHAPE-ZIP&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Aupdatedeva_g6x&version=1.0.0", "gml": "http://worldmap.harvard.edu/download/wfs/29145/gml?outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Aupdatedeva_g6x&version=1.0.0", "tiff": "http://worldmap.harvard.edu/download/wms/29145/tiff?layers=geonode%3Aupdatedeva_g6x&width=678&bbox=140.617908%2C37.2418281146%2C141.258962531%2C37.761795&service=WMS&format=image%2Fgeotiff&srs=EPSG%3A4326&request=GetMap&height=550", "KML": "http://worldmap.harvard.edu/download/wms_kml/29145/kml?layers=geonode%3Aupdatedeva_g6x&mode=refresh", "xls": "http://worldmap.harvard.edu/download/wfs/29145/xls?outputFormat=excel&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Aupdatedeva_g6x&version=1.0.0", "pdf": "http://worldmap.harvard.edu/download/wms/29145/pdf?layers=geonode%3Aupdatedeva_g6x&width=678&bbox=140.617908%2C37.2418281146%2C141.258962531%2C37.761795&service=WMS&format=application%2Fpdf&srs=EPSG%3A4326&request=GetMap&height=550", "jpg": "http://worldmap.harvard.edu/download/wms/29145/jpg?layers=geonode%3Aupdatedeva_g6x&width=678&bbox=140.617908%2C37.2418281146%2C141.258962531%2C37.761795&service=WMS&format=image%2Fjpeg&srs=EPSG%3A4326&request=GetMap&height=550"}',
 'embedMapLink': u'https://worldmap.harvard.edu/maps/embed/?layer=geonode:updatedeva_g6x',
@@ -34,7 +36,7 @@ api_update_url = 'http://localhost:8080/api/worldmap/update-layer-metadata'
 print payload.keys()
 
 
-payload['GEOCONNECT_TOKEN'] = 'PUT YOUR GEOCONNECT_TOKEN HERE'
+payload['GEOCONNECT_TOKEN'] = YOUR_GEOCONNECT_TOKEN
 
 req = requests.post(api_update_url,\
     data=json.dumps(payload))
