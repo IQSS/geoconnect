@@ -81,3 +81,7 @@ xenv/*
 scripts/tab_read/test_dv_files/CBG Annual and Longitudinal Measures.tab
 
 scripts/tab_read/test_dv_files/CENSUS2010_BLK_BG_TRCT_SHP.zip
+
+scripts/tab_read/test_dv_files/Boston_MHHI1999_kP4.csv
+
+scripts/tab_read/test_dv_files/*
