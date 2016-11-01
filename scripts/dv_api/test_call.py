@@ -1,3 +1,17 @@
+"""
+Testing: Add a Map Layer Information to a Dataverse file by
+calling the Dataverse API usually caleld by GeoConnect
+
+Set up:
+    - Upload a mappable file to your local Dataverse
+    - Publish it
+    - Click "Map Data"
+    - Go to PgAdmin
+        - Go to the "worldmapauth_token" table
+    - Go to the latest entry and copy the "token" value
+    - Past the value into the line below marked: "PUT YOUR GEOCONNECT_TOKEN HERE"
+    - Run the script
+"""
 import requests
 import json
 
@@ -12,10 +26,23 @@ payload =  {'mapLayerLinks': '{"json": "http://worldmap.harvard.edu/download/wfs
 'layerLink': u'http://worldmap.harvard.edu/maps/new/?layer=geonode:updatedeva_g6x',
 'LatLngBoundingBox': u'[140.617908, 37.2418281145771, 141.258962531409, 37.761795]'}
 
+
+
 #api_update_url = 'https://demo.dataverse.org:443/api/worldmap/update-layer-metadata'
 api_update_url = 'http://localhost:8080/api/worldmap/update-layer-metadata'
 
 print payload.keys()
+
+
+payload['GEOCONNECT_TOKEN'] = 'PUT YOUR GEOCONNECT_TOKEN HERE'
+
+req = requests.post(api_update_url,\
+    data=json.dumps(payload))
+
+
+print req.text
+print req.status_code
+
 
 #payload['mapLayerLinks'] = None
 '''
@@ -25,11 +52,3 @@ for rq in required_params:
     payload2[rq] = payload[rq]
 print payload2
 '''
-payload['GEOCONNECT_TOKEN'] = 'f2c56a6cdffbcf0d4d0c4f60608e003d63313948cd5f31b0ec7319629182167c'
-
-req = requests.post(api_update_url,\
-    data=json.dumps(payload))
-
-
-print req.text
-print req.status_code
