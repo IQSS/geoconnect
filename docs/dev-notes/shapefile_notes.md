@@ -7,7 +7,7 @@
 
 ### Pre-Mapping:
 
-view_02_single_shapefile.html
+file: ```view_02_single_shapefile.html```
 
 - Includes:
     - Title: "view_02_main_panel_title.html"
@@ -17,7 +17,7 @@ view_02_single_shapefile.html
 
 ### Post-Mapping/Classify
 
-view_02_single_shapefile.html
+file: ```view_02_single_shapefile.html```
 
 - Includes:
     - View/Classify: "view_04_ajax_style_layer.html"
