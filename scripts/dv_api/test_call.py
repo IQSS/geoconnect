@@ -1,6 +1,6 @@
 """
 Testing: Add a Map Layer Information to a Dataverse file by
-calling the Dataverse API usually caleld by GeoConnect
+calling the Dataverse API usually called by GeoConnect
 
 Set up:
     - Upload a mappable file to your local Dataverse

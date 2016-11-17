@@ -11,6 +11,7 @@ Helper class to format JSON in the JoinTargetInformation model's "target_info" f
         - The Upload and Join API
         - Parms: name of target layer, name of target layer column
 """
+from collections import OrderedDict
 
 class JoinTargetFormatter(object):
     """
@@ -149,6 +150,16 @@ class JoinTargetFormatter(object):
         """
         Used for populating form dropdown with list of layers
 
+        Create a list of items, each item has the following attributes:
+
+            [
+                {
+                  "join_target_id" : 8
+                  "name" : "2014 - Election Precincts, Boston",
+                  "expected_format" : "Boston Election Precinct ID (integer)"
+                }
+            ]
+
         value - join target id
         text - (year) layer title
         """
@@ -161,13 +172,34 @@ class JoinTargetFormatter(object):
             if chosen_geocode_type == gtype_slug or\
                 chosen_geocode_type is None:
 
-                if 'name' in info:
-                    info_line = "{0} - {1}".format(info['year'], info['name'])
-                else:
-                    if 'year' in info:
-                        info_line = "{0} - {1}".format(info['year'], info['title'])
-                    else:
-                        info_line = info['title']
+                if 'name' not in info:
+                    continue
+
+                info_line = "{0} - {1}".format(info['year'], info['name'])
+                join_targets.append((info['id'], info_line))
+
+                """
+                target_info = OrderedDict()
+
+                # Add Formatted name
+                #    e.g. "2014 - Election Precincts, Boston"
+                #
+                target_info['join_target_id'] = info['id']
+
+                # Add Formatted name
+                #    e.g. "2014 - Election Precincts, Boston"
+                #
+                target_info['name'] = "{0} - {1}".format(info['year'], info['name'])
+
+                # Add Expected format
+                #   e.g. "Boston Election Precinct ID (integer)"
+                #   (BTW, blow up on a bad key -- the API needs to have this key)
+                #
+                target_info['expected_format'] = info['expected_format']['name']
+
+                join_targets.append(target_info)
+                """
+                """
                     # If this is zero-padded, add that info
                     zero_pad_note = self.get_zero_pad_note(info)
                     if zero_pad_note:
@@ -176,8 +208,8 @@ class JoinTargetFormatter(object):
                     formatting_note = self.get_format_name(info)
                     if formatting_note:
                         info_line = "{0} - {1}".format(info_line, formatting_note)
-
                 join_targets.append((info['id'], info_line))
+                """
 
         return join_targets
 
