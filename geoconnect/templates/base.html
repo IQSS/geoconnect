@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ page_title }}</title>
+    <title>{% if page_title %}{{ page_title }}{% else %}Geoconnect: Map Data{% endif %}</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>

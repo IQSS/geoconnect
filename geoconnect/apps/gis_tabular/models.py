@@ -252,7 +252,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
         Create WorldMapTabularLayerInfo object using
         a python dictionary containing information
-        returned from the WorldMapLayerInfo
+        returned from the WorldMapLayerInfo.
+
+        (Also used to check if a layer exists)
         """
         #print 'build_from_worldmap_json'
         #print 'tabular_info', tabular_info

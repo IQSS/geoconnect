@@ -80,6 +80,8 @@ uired.'], 'shapefile_name': [u'This field is required.'], 'title': [u'This field
         tab_char = '&nbsp; &nbsp; '
 
     for field_name, err_list in form_obj.errors.items():
+        if field_name == '__all__':
+            continue
         for idx, err_msg in enumerate(err_list):
             if idx == 0:
                 outlines.append('%s- %s: %s' % (line_break, field_name, err_msg))
