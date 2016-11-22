@@ -110,11 +110,14 @@ class TableJoinMapMaker(object):
             self.add_error('The Tabular File object does not have a "delimiter"')
 
 
-    def is_formatted_column_needed(self, data_frame, zero_pad_length):
+    def is_formatted_column_needed(self, data_frame, join_target_info_snippet):
         """
-        Column needs formatting if:
+        This is called by "format_data_table_for_join" -- it is only called
+        when the target column is a string and/or specifies zero-padding
+
+        Selected join column needs formatting if:
             (a) It is type numeric
-            (b) The values do not meet the minimal length
+            (b) The values do not meet the minimal length (zero padding)
         """
         assert isinstance(data_frame, pd.DataFrame),\
             "data_frame must be a pandas DataFrame object"
@@ -125,8 +128,15 @@ class TableJoinMapMaker(object):
         # (1) Is this a numeric column?
         # If so, we need a formatted column b/c we're matching against a string.
         # --------------------------------------------
-        if np.isreal(df[self.table_attribute_for_join].dtype):
+        col_dtype = df[self.table_attribute_for_join].dtype
+        if np.isreal(col_dtype) and col_dtype != 'object':
             return True
+
+        #   Our chosen column is character but the target doesn't have
+        #   a zero padding requirement
+        #
+        if not join_target_info_snippet.requires_zero_padding():
+            return False
 
         # --------------------------------------------
         # (2) Are the values in our column the correct length for a join?
@@ -136,14 +146,13 @@ class TableJoinMapMaker(object):
         # Count how many columns meet the padding length
         #   - convert our temp column to a string
         # --------------------------------------------
-
         temp_col = self.table_attribute_for_join + '_temp'
         df[temp_col] = df[self.table_attribute_for_join].astype('str')
 
         #   - Make a filter to count how many values have
         #       the correct length
         # --------------------------------------------
-        filter_criteria = (df[temp_col].str.len() == zero_pad_length)
+        filter_criteria = (df[temp_col].str.len() == join_target_info_snippet.zero_pad_length)
         num_short_rows = len(df.loc[filter_criteria])
 
         # Drop the temp column
@@ -161,28 +170,52 @@ class TableJoinMapMaker(object):
 
 
 
-    def format_data_table_for_join(self, zero_pad_length):
+    def format_data_table_for_join(self, join_target_info_snippet):
         """
         Create a new file and add a formatted column that's zero-padded
+
+        When to format a column:
+            - selected column is numeric and target is string
+            - target column indicates 0-padding
+
+        Formatting consists of:
+            - creating a *new*, formatted column and
+            - making new column the join column
         """
-        if zero_pad_length is None or zero_pad_length < 1:
-            self.add_error('Wrong value for zero_pad_length: %s' % zero_pad_length)
+        if join_target_info_snippet is None:
+            self.add_error('join_target_info_snippet cannot be None')
             return False
 
+        # Set instance wide value for zero_pad_length
+        #
+        zero_pad_length = join_target_info_snippet.zero_pad_length
+
+        # ----------------------------------------
+        # Do we need to do any formatting at all?  (Looking at the target only)
+        # ----------------------------------------
+        if not join_target_info_snippet.does_join_column_potentially_need_formatting():
+            return True
+
+        # ----------------------------------------
+        # Make sure the file is still around
+        # ----------------------------------------
         if not self.datatable_obj.dv_file or not self.datatable_obj.dv_file.path:
             self.add_error("The file could not be found.")
             return False
 
+        # ----------------------------------------
         # Cleanup: remove any old join files from the TabularInfo object
-        # --------------------------------------------
+        # ----------------------------------------
         if self.datatable_obj.dv_join_file:
             self.datatable_obj.dv_join_file.delete()
 
-        # --------------------------------------------
+        # ============================================
         # (1) Do we need a formatted column?
-        # --------------------------------------------
+        #   - Check the type of the selected column
+        # ============================================
 
-        # (1a) Open the dataverse tabular file in pandas
+        # --------------------------------------------
+        # (1a) Open the dataverse tabular file with pandas
         # --------------------------------------------
         try:
             df = pd.read_csv(self.datatable_obj.dv_file.path,\
@@ -195,17 +228,20 @@ class TableJoinMapMaker(object):
             self.add_error(err_msg)
             return False
 
+        # --------------------------------------------
         # (1b) Is the join column in the data frame?
         # --------------------------------------------
+        #import ipdb; ipdb.set_trace()
         if not self.table_attribute_for_join in df.columns:
             self.add_error('Failed to find column "%s" for formatting.'\
                 % self.table_attribute_for_join)
             return False
 
+        # --------------------------------------------
         # (1c) Do we need a formatted column?
         #   The data may already be formatted
         # --------------------------------------------
-        if not self.is_formatted_column_needed(df, zero_pad_length):
+        if not self.is_formatted_column_needed(df, join_target_info_snippet):
             # The existing column may be used for the join
             return True
 
@@ -218,13 +254,24 @@ class TableJoinMapMaker(object):
         new_column_name = '{0}_formatted'.format(\
                             self.table_attribute_for_join)
 
-        # zero pad formatting
-        zero_pad_fmt = '{0:0>%s}' % zero_pad_length
+        # What type of column formatting?
+        #
+        if join_target_info_snippet.requires_zero_padding():
+            #
+            # zero pad formatting
+            #
+            zero_pad_fmt = '{0:0>%s}' % zero_pad_length
+            func_col_fmt = lambda x: zero_pad_fmt.format(x)
+        elif join_target_info_snippet.is_target_column_string():
+            #
+            # simple convert to string
+            #
+            func_col_fmt = lambda x: '%s' % x
 
         # make the column
         # ----------------------------------
         df[new_column_name] = df[self.table_attribute_for_join].apply(\
-                                lambda x: zero_pad_fmt.format(x))
+                                lambda x: func_col_fmt(x))
 
         # (2b) set new join column name
         # ----------------------------------
@@ -293,7 +340,6 @@ class TableJoinMapMaker(object):
         """
         Format parameters and make a WorldMap API call
         """
-        msg('create_map_from_datatable_join 1')
         if self.err_found:
             return False
 
@@ -303,27 +349,25 @@ class TableJoinMapMaker(object):
         # -------------------------------------------
         join_target_info = get_latest_jointarget_information()
 
-        (target_layer_name, target_column_name, self.zero_pad_length) = join_target_info.get_target_layer_name_column(self.target_layer_id)
+        join_target_info_snippet = join_target_info.get_target_layer_name_column(self.target_layer_id)
 
-        if target_layer_name is None:
+        if join_target_info_snippet is None:
             self.add_error('Failed to retrieve target layer information.')
             return False
 
-        # Do we need to format the data in the join column?
+        #join_target_info_snippet.show()
+
+        # Update instance info
         #
-        if self.zero_pad_length is not None:  # Yes! Formatting is needed!
-            # This will
-            #   (1) create a new file with a formatted column
-            #   (2) update the self.table_attribute_for_join
-            format_success = self.format_data_table_for_join(self.zero_pad_length)
-            if not format_success:
-                return False
+        self.zero_pad_length = join_target_info_snippet.zero_pad_length
 
+        # --------------------------------------------------
+        # Do we need to format the data in the join column?
+        # --------------------------------------------------
+        format_success = self.format_data_table_for_join(join_target_info_snippet)
+        if not format_success:
+            return False
 
-
-        msg('target_layer_name: %s' % target_layer_name)
-        msg('target_column_name: %s' % target_column_name)
-        msg('zero_pad_length: %s' % self.zero_pad_length)
 
         # --------------------------------
         # Prepare parameters
@@ -332,8 +376,8 @@ class TableJoinMapMaker(object):
                         abstract=self.datatable_obj.get_abstract_for_join(),
                         delimiter=self.datatable_obj.delimiter,
                         table_attribute=self.table_attribute_for_join,
-                        layer_name=target_layer_name,
-                        layer_attribute=target_column_name\
+                        layer_name=join_target_info_snippet.target_layer_name,
+                        layer_attribute=join_target_info_snippet.target_column_name\
                         )
 
         # Add dataverse dict info
@@ -346,7 +390,6 @@ class TableJoinMapMaker(object):
         # --------------------------------
         # Prepare file
         # --------------------------------
-        msg('create_map_from_datatable_join 3')
         file_params = self.get_file_params()
         if file_params is None:
             return False

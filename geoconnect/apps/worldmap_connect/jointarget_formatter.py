@@ -12,6 +12,7 @@ Helper class to format JSON in the JoinTargetInformation model's "target_info" f
         - Parms: name of target layer, name of target layer column
 """
 from collections import OrderedDict
+from apps.worldmap_connect.join_target_info import JoinTargetInfoSnippet
 
 class JoinTargetFormatter(object):
     """
@@ -121,11 +122,15 @@ class JoinTargetFormatter(object):
 
         for info in self.target_info['data']:
             if 'id' in info and target_layer_id == info['id']:
-                return (info['layer'],\
-                    info['attribute']['attribute'],\
-                    self.get_formatting_zero_pad_length(target_layer_id))
 
-        return (None, None, None)
+                return JoinTargetInfoSnippet(\
+                                info['layer'],\
+                                info['attribute']['attribute'],\
+                                info['attribute']['type'],\
+                                self.get_formatting_zero_pad_length(target_layer_id)\
+                                    )
+
+        return None
 
     def get_geocode_types(self):
         """
