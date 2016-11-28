@@ -328,6 +328,10 @@ class JoinTargetFormatter(object):
                 gtype_tuple = (info['geocode_type_slug'], info_line)
                 if not gtype_tuple in join_targets:
                     join_targets.append(gtype_tuple)
+
+        # Sort list by geocode_type name
+        join_targets.sort(key=lambda tup: tup[1])  # sorts in place
+
         return join_targets
 
 """

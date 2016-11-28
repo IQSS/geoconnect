@@ -34,7 +34,19 @@ class AbstractHelp(object):
 <ul>
 <li>Data: <a href="{1}">{1}</a></li>
 <li>Documentation: <a href="http://dx.doi.org/10.7910/DVN/C5IULB">http://dx.doi.org/10.7910/DVN/C5IULB</a></li>
-</ul>""".format(self.get_description_from_file(), self.dataset_doi, self.title)
+</ul>
+
+=================================
+## Purpose
+=================================
+To provide geocoding services to data within Dataverse, https://dataverse.harvard.edu/
+
+=================================
+## Test url
+=================================
+http://worldmap.harvard.edu/data/geonode:LAYER_NAME
+
+""".format(self.get_description_from_file(), self.dataset_doi, self.title)
 
         return desc
 
