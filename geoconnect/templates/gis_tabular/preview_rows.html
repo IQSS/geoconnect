@@ -21,7 +21,7 @@
             <tr>
                 <th>Row #</th>
                 {% for col in tab_file_stats.column_names %}
-                <th>{{ col }}</th>
+                    <th><span class="geo_col_select">{{ col }}</span></th>
                 {% endfor %}
             </tr>
         </thead>
