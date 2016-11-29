@@ -4,7 +4,6 @@ import csv
 import json
 
 from apps.gis_tabular.models import TabularFileInfo
-from apps.gis_tabular.models import SimpleTabularTest   # for testing
 import unicodedata
 
 import logging
@@ -41,8 +40,8 @@ class TabFileStats(object):
 
     @staticmethod
     def create_tab_stats_from_tabular_info(tabular_info):
-        assert isinstance(tabular_info, TabularFileInfo) or isinstance(tabular_info, SimpleTabularTest)\
-            , 'tabular_info must be a TabularFileInfo or SimpleTabularTest object'
+        assert isinstance(tabular_info, TabularFileInfo)\
+            , 'tabular_info must be a TabularFileInfo object'
 
         assert tabular_info.dv_file is not None, "tabular_info.file cannot be None"
 
@@ -77,24 +76,21 @@ class TabFileStats(object):
         """
         If one is specified update the tabular_info object.
 
-        This is usually a TabularFileInfo or SimpleTabularTest object
+        This is usually a TabularFileInfo object
         """
         if not self.tabular_info:
             return
 
         self.tabular_info.num_rows = self.num_rows
         self.tabular_info.num_columns = self.num_cols
+        self.tabular_info.column_names = self.column_names
+        """
+        try:
+            json_header = json.dumps(self.column_names)
+            self.tabular_info.column_names = json_header
+        except:
+            sys.exit(0)
+            logger.error("Failed to convert header row (column names) to JSON.\n%s" % sys.exc_info()[0])
+        """
 
-        if hasattr(self.tabular_info, "add_column_names"):
-            self.tabular_info.add_column_names(self.column_names)
-        else:
-            try:
-                json_header = json.dumps(self.column_names)
-                self.tabular_info.column_names = json_header
-            except:
-                sys.exit(0)
-                logger.error("Failed to convert header row (column names) to JSON.\n%s" % sys.exc_info()[0])
-
-
-        if hasattr(self.tabular_info, "save"):
-            self.tabular_info.save()
+        self.tabular_info.save()

@@ -7,7 +7,7 @@ from hashlib import md5
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
-from jsonfield import JSONField
+import jsonfield  # using jsonfield.JSONField
 from urlparse import urlparse
 from django import forms
 from apps.core.models import TimeStampedModel
@@ -33,72 +33,6 @@ LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TABULAR_DELIMITER = '\t'
 
-class SimpleTabularTest(TimeStampedModel):
-    """
-    Used to mimic tabular information from Dataverse
-    """
-    name = models.CharField(max_length=255, blank=True)        #   file basename
-
-    dv_file = models.FileField(upload_to='tab_files/%Y/%m/%d',\
-                    blank=True, null=True, storage=dv_file_system_storage)
-
-    delimiter = models.CharField(max_length=10, default=DEFAULT_TABULAR_DELIMITER)
-
-    is_file_readable = models.BooleanField(default=False)
-
-    num_rows = models.IntegerField(default=0)
-    num_columns = models.IntegerField(default=0)
-
-    column_names = JSONField(blank=True, help_text='Saved as a json list')
-
-    # User mediated choices
-    has_header_row = models.BooleanField(default=True)
-    chosen_column = models.CharField(max_length=155, blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def test_page(self):
-        """
-        Link to a test page using the 'view_tabular_file' url
-        """
-        if not self.id:
-            return 'n/a'
-        lnk = reverse('view_tabular_file', kwargs=dict(tabular_id=self.id))
-        return '<a href="%s" target="_blank">test page</a>' % lnk
-    test_page.allow_tags = True
-
-    def get_dv_file_basename(self):
-        """
-        Return the file basename -- e.g. strip the rest of the path
-        """
-        if not self.dv_file:
-            return None
-
-        return basename(self.dv_file.name)
-
-    class Meta:
-        verbose_name = 'GIS Simple Tabular (for dev)'
-        verbose_name_plural = verbose_name
-
-    def get_worldmap_info(self):
-        """
-        Retrieve any WorldMap info:
-            - a WorldMapJoinLayerInfo object or
-            - a WorldMapLatLngInfo
-        """
-        # Is there a related WorldMapLatLngInfo object?
-        #
-        worldmap_info = self.worldmaplatlnginfo_set.first()
-        if worldmap_info is not None:   # Yes, send it
-            return worldmap_info
-
-        # Return an available WorldMapJoinLayerInfo object or None
-        #
-        return self.worldmapjoinlayerinfo_set.first()
-
-
-
 class TabularFileInfo(GISDataFile):
     """
     Tabular File Information.
@@ -112,7 +46,7 @@ class TabularFileInfo(GISDataFile):
     num_rows = models.IntegerField(default=0)
     num_columns = models.IntegerField(default=0)
 
-    column_names = JSONField(blank=True, help_text='Saved as a json list')
+    column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
 
     # User mediated choices
     has_header_row = models.BooleanField(default=True)
@@ -198,9 +132,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
 
-    core_data = JSONField()
-    attribute_data = JSONField()
-    download_links = JSONField(blank=True)
+    core_data = jsonfield.JSONField()
+    attribute_data = jsonfield.JSONField()
+    download_links = jsonfield.JSONField(blank=True)
 
     # for object identification
     md5 = models.CharField(max_length=40,\
