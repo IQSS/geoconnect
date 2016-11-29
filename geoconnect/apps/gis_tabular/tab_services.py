@@ -4,6 +4,7 @@
     return a TabularFileInfo object, if available
 """
 from __future__ import print_function
+import json
 
 import urllib2
 

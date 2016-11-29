@@ -16,7 +16,6 @@ from shared_dataverse_information.worldmap_api_helper.url_helper import\
     UPLOAD_JOIN_DATATABLE_API_PATH
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information
-#from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 # If a column needs formatting
 import pandas as pd

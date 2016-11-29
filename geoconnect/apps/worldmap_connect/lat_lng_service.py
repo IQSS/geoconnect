@@ -7,8 +7,6 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from shared_dataverse_information.worldmap_api_helper.url_helper import MAP_LAT_LNG_TABLE_API_PATH
 from apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
-#from apps.gis_tabular.models import SimpleTabularTest   # for testing
-
 LOGGER = logging.getLogger('apps.worldmap_connect.lat_lng_service')
 
 
