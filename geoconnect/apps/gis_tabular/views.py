@@ -236,6 +236,9 @@ def view_tabular_file(request, tab_md5):
     # Open the file and get the stats
     # ----------------------------------
     tab_file_stats = TabFileStats.create_tab_stats_from_tabular_info(tabular_info)
+    if tab_file_stats.has_error():
+        raise Http404(tab_file_stats.error_message)
+        
     # preview rows
     num_preview_rows = min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0])
 

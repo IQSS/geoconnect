@@ -2,6 +2,7 @@ from os.path import isfile
 import sys
 import csv
 import json
+import pandas as pd
 
 from apps.gis_tabular.models import TabularFileInfo
 import unicodedata
@@ -33,10 +34,25 @@ class TabFileStats(object):
         self.num_cols = 0
         self.preview_rows = []
 
+        self.error_found = False
+        self.error_message = None
+
         self.stats_collected = False
 
         self.collect_stats()
         self.update_tabular_info_object()
+
+
+    def has_error(self):
+        return self.error_found
+
+    def add_error(self, m):
+        """
+        Save error message encountered in the process of
+        collecting stats or updating the tabularFileInfo object
+        """
+        self.error_found = True
+        self.error_message = m
 
     @staticmethod
     def create_tab_stats_from_tabular_info(tabular_info):
@@ -56,21 +72,30 @@ class TabFileStats(object):
         Open the file: collect num_rows, num_cols and preview_row data
         """
         print 'self.delimiter', self.delimiter, len(self.delimiter)
-        with open(self.fname, 'rU') as f:
-            reader = csv.reader(f, delimiter=self.delimiter, skipinitialspace=True)
-            self.column_names = next(reader)
-            self.num_cols = len(self.column_names)
 
-            try:
-                for row in reader:
-                    self.num_rows += 1
-                    if self.num_rows <= NUM_PREVIEW_ROWS:
-                        self.preview_rows.append(row)
-            except csv.Error as e:
-                logger.error('Error reading file: %s\nLine: %d\nMessage: %s' \
-                                % (self.fname, reader.line_num, e))
+        try:
+            df = pd.read_csv(self.fname,\
+                        sep=self.delimiter,\
+                        )
+        except pd.parser.CParserError as e:
+            err_msg = ('Could not process the file. '
+                        'At least one row had too many values. '
+                        '(error: %s)' % e.message)
+            self.add_error(err_msg)
+            return
+
+        self.column_names = df.columns.values.tolist()
+        self.num_cols = len(self.column_names)
+        self.num_rows = len(df.index)
+
+        self.preview_rows = df.head(NUM_PREVIEW_ROWS).values.tolist()
+
+        if not self.preview_rows or len(self.preview_rows) == 0:
+            self.add_error('No data rows in the file')
+            return
 
         self.stats_collected = True
+
 
     def update_tabular_info_object(self):
         """
@@ -78,6 +103,9 @@ class TabFileStats(object):
 
         This is usually a TabularFileInfo object
         """
+        if self.has_error():
+            return
+
         if not self.tabular_info:
             return
 
