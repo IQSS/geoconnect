@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo, JoinTargetInformation
+from apps.worldmap_connect.models import WorldMapImportAttempt,\
+    WorldMapImportFail, WorldMapLayerInfo,\
+    JoinTargetInformation, APIValidationSchema
 
 class WorldMapImportFailInline(admin.TabularInline):
     model = WorldMapImportFail
@@ -44,8 +46,15 @@ class JoinTargetInformationAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('name', 'created', 'modified')
 
+'''
+class APIValidationSchemaAdmin(admin.ModelAdmin):
+    """May be used to evaluate API results such as APIValidationSchema"""
+    save_on_top = True
+    list_display = ('name', 'notes', 'created', 'modified')
+'''
 
 admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
 admin.site.register(WorldMapLayerInfo, WorldMapLayerInfoAdmin)
 admin.site.register(JoinTargetInformation, JoinTargetInformationAdmin)
+#admin.site.register(APIValidationSchema, APIValidationSchemaAdmin)

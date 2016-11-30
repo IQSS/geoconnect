@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.db import models
 
-import jsonfield    # use as jsonfield.JSONField
+from jsonfield import JSONField
 
 from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.models import GISDataFile
@@ -28,8 +28,8 @@ class ShapefileInfo(GISDataFile):
     number_of_features = models.IntegerField(default=0)
     bounding_box = models.CharField(max_length=255, blank=True)
 
-    column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
-    column_info = jsonfield.JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
+    column_names = JSONField(blank=True, help_text='Saved as a json list')
+    column_info = JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
 
     def get_file_info(self):

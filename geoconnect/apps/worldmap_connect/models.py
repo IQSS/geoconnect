@@ -9,9 +9,7 @@ from urlparse import urlparse
 from django.db import models
 from django import forms
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-
-from django.conf import settings
+from django.template.defaultfilters import slugify
 
 from jsonfield import JSONField
 
@@ -26,7 +24,6 @@ from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetada
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 
 from geo_utils.json_field_reader import JSONFieldReader
-from geo_utils.message_helper_json import MessageHelperJSON
 from geo_utils.msg_util import *
 
 from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
@@ -397,13 +394,13 @@ class JoinTargetInformation(TimeStampedModel):
         # Get all the join targets
         return jt_formatter.get_available_layers_list_by_type(chosen_geocode_type)
 
-    def get_target_layer_name_column(self, target_layer_id):
+    def get_single_join_target_info(self, target_layer_id):
         """
         Given a target layer id, retrieve the target name
         """
         jt_formatter = JoinTargetFormatter(self.target_info)
 
-        return jt_formatter.get_target_layer_name_column(target_layer_id)
+        return jt_formatter.get_single_join_target_info(target_layer_id)
 
 
     def get_join_targets_by_type(self, chosen_geocode_type):
@@ -415,6 +412,23 @@ class JoinTargetInformation(TimeStampedModel):
         verbose_name = 'Join Target information'
         verbose_name_plural = verbose_name
 
+'''
+class APIValidationSchema(TimeStampedModel):
+    """May be used to evaluate API results such as JoinTargetInformation"""
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, blank=True)
+    json_schema = JSONField(load_kwargs={'object_pairs_hook': OrderedDict})
+    notes = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        # create the slug
+        if self.name:
+            self.slug = slugify(self.name)
+
+        super(APISchema, self).save(*args, **kwargs)
+
+'''
 
 """
 from apps.gis_basic_file.models import *
