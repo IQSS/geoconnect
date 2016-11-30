@@ -11,6 +11,7 @@ Helper class to format JSON in the JoinTargetInformation model's "target_info" f
         - The Upload and Join API
         - Parms: name of target layer, name of target layer column
 """
+import json
 from collections import OrderedDict
 from apps.worldmap_connect.single_join_target_info import SingleJoinTargetInfo
 
@@ -37,10 +38,12 @@ class JoinTargetFormatter(object):
         }
     """
     def __init__(self, target_info):
-        self.target_info = target_info
+        """Initialize using target_info JSON retrieved from WorldMap"""
 
         self.err_found = False
         self.err_message = None
+
+        self.target_info = target_info
 
         self.initial_check()
 
@@ -65,8 +68,13 @@ class JoinTargetFormatter(object):
         # Is this a dict?  (e.g. not a list or blank, etc)
         #print 'target_info', self.target_info
         if not hasattr(self.target_info, 'has_key'):
-            self.add_error("target_info is not a dict")
-            return False
+            # OK, Maybe it's a JSON string that can be converted to a dict
+            print 'type self.target_info', type(self.target_info)
+            try:
+                self.target_info = json.loads(self.target_info)
+            except ValueError:
+                self.add_error("target_info should always be a JSON string or python dict")
+                return false
 
         # Is there a 'success' attribute?
         if not 'success' in self.target_info:
@@ -122,13 +130,13 @@ class JoinTargetFormatter(object):
 
         for info in self.target_info['data']:
             if 'id' in info and target_layer_id == info['id']:
-
-                return SingleJoinTargetInfo(\
-                                info['layer'],\
-                                info['attribute']['attribute'],\
-                                info['attribute']['type'],\
-                                self.get_formatting_zero_pad_length(target_layer_id)\
-                                    )
+                return SingleJoinTargetInfo(info)
+                #return SingleJoinTargetInfo(
+                #                info['layer'],
+                #                info['attribute']['attribute'],
+                #                info['attribute']['type'],
+                #                self.get_formatting_zero_pad_length(target_layer_id)
+                #                    )
 
         return None
 

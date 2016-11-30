@@ -5,7 +5,6 @@ import logging
 import requests
 
 from django.conf import settings
-#from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db.models import FileField
 from requests.exceptions import ConnectionError as RequestsConnectionError
@@ -230,7 +229,6 @@ class TableJoinMapMaker(object):
         # --------------------------------------------
         # (1b) Is the join column in the data frame?
         # --------------------------------------------
-        #import ipdb; ipdb.set_trace()
         if not self.table_attribute_for_join in df.columns:
             self.add_error('Failed to find column "%s" for formatting.'\
                 % self.table_attribute_for_join)

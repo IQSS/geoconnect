@@ -2,24 +2,26 @@
 Models to save the Tabular information from Dataverse
 as well as the mapping results from WorldMap
 """
-from os.path import basename
+import json
 from hashlib import md5
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.db import models
+from urlparse import urlparse
+
 import jsonfield  # using jsonfield.JSONField
-from urlparse import urlparse
+
+from django.db import models
 from django import forms
-from apps.core.models import TimeStampedModel
-from urlparse import urlparse
-from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
-from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseMapLayerMetadataValidationForm,\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
+
+from apps.core.models import TimeStampedModel
+from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
+from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+from geo_utils.json_field_reader import JSONFieldReader
+
 
 #MapLayerMetadataValidationForm
 
@@ -58,13 +60,21 @@ class TabularFileInfo(GISDataFile):
                 max_length=255,\
                 help_text="Used when a new column needs to be added for a TableJoin")
 
+    def get_tabular_column_names(self):
+        """
+        Return the columns names as a python list
+        """
+        if not self.column_names:
+            return None
+        return json.loads(self.column_names)
+
     def get_column_count(self):
         """
         Return the number of columns
         """
         if not self.column_names:
             return 0
-        return len(self.column_names)
+        return len(json.dumps(self.column_names))
 
     def save(self, *args, **kwargs):
         """
@@ -148,6 +158,22 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         verbose_name = 'WorldMapTabularLayerInfo'
         verbose_name_plural = verbose_name
 
+
+    def get_core_data(self):
+        """Convert from JSON string to python object (dict or list)"""
+        print 'get_core_data'
+        print JSONFieldReader.get_json_string_as_python_val(self.core_data)
+        print '-' * 40
+        return JSONFieldReader.get_json_string_as_python_val(self.core_data)
+
+    def get_download_links(self):
+        """Convert from JSON string to python object (dict or list)"""
+        return JSONFieldReader.get_json_string_as_python_val(self.download_links)
+
+    def get_attribute_data(self):
+        """Convert from JSON string to python object (dict or list)"""
+        return JSONFieldReader.get_json_string_as_python_val(self.attribute_data)
+
     def get_unmapped_record_count(self):
         """
         Differs according to record type
@@ -213,16 +239,27 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         # -----------------------------------------
         # Get attribute data (required)
         # -----------------------------------------
+        # Note: Currently this is an escaped string within core data...
         if not 'attribute_info' in core_data:
             LOGGER.error('The core_data must have a "attribute_info" key')
             return None
-        attribute_data = core_data['attribute_info']
+
+        try:
+            attribute_data = eval(core_data['attribute_info'])
+        except:
+            LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
+            return None
+        #    attribute_data = ''
 
         # -----------------------------------------
         # Get download_links (optional)
         # -----------------------------------------
         if 'download_links' in core_data:
-            download_links = core_data['download_links']
+            try:
+                download_links = eval(core_data['download_links'])
+            except:
+                LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
+                download_links = ''
         else:
             download_links = ''
 
@@ -301,7 +338,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         if not self.core_data:
             return None
 
-        layer_link = self.core_data.get('layer_link', None)
+        layer_link = self.get_core_data().get('layer_link', None)
         if layer_link is None:
             return None
 
@@ -342,26 +379,6 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         pass
 
 
-    '''
-    def update_dataverse(self):
-        if not self.id:
-            return 'n/a'
-        lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id': self.id})
-        return lnk
-    update_dataverse.allow_tags = True
-
-
-
-    def dv_params(self):
-        if not self.id:
-            return 'n/a'
-
-        lnk = reverse('show_import_success_params', kwargs={ 'import_success_id' : self.id})
-
-        return '<a href="%s">dv params</a>' % lnk
-    dv_params.allow_tags = True
-    '''
-
     def get_dataverse_server_url(self):
         """
         Retrieve the Dataverse base url to be used
@@ -377,7 +394,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
         Used for processing model data.
         """
-        f = MapLayerMetadataValidationForm(self.core_data)
+        f = MapLayerMetadataValidationForm(self.get_core_data())
         if not f.is_valid():
             raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
 
@@ -424,13 +441,13 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
         e.g., If it's just the path, take the rest of the url from the embed_link
         """
-        layer_link = self.core_data.get('layer_link', None)
+        layer_link = self.get_core_data().get('layer_link', None)
 
         # Is it just a path?
         if layer_link and layer_link.startswith('/'):
-            full_link = self.core_data.get('embed_link', None)
+            full_link = self.get_core_data().get('embed_link', None)
             if not full_link:
-                full_link = self.core_data.get('map_image_link',  None)
+                full_link = self.get_core_data().get('map_image_link',  None)
             # Does the embed link a full url
             if full_link and full_link.lower().startswith('http'):
                 # Parse the embed link and use it to reformat the layer_link
@@ -450,7 +467,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
         # Hack for the layer_link
         self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
+        if self.core_data and self.get_core_data().get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from tabular file'
             self.save()
 
@@ -471,8 +488,9 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     #                    help_text="Join attribute created")
 
     def save(self, *args, **kwargs):
+
         if not self.id:
-            super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
+            super(WorldMapJoinLayerInfo, self).save(*args, **kwargs)
 
         self.layer_name = self.core_data.get('layer_typename', None)
         if self.layer_name is None:
@@ -480,7 +498,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
-        super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
+        super(WorldMapJoinLayerInfo, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'WorldMap Tabular Join Layer Information'
@@ -502,7 +520,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         #if not 'matched_records_count' in  self.core_data:
         #    return False
 
-        if self.core_data.get('matched_records_count', 0) > 0:
+        if self.get_core_data().get('matched_records_count', 0) > 0:
             return True
 
         return False
@@ -516,7 +534,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('unmatched_record_count', -1)
+        return self.get_core_data().get('unmatched_record_count', -1)
 
 
     def get_params_for_dv_update(self):
@@ -524,7 +542,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         Format data to send to the Dataverse
         """
         self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
+        if self.core_data and self.get_core_data().get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from joining to an existing layer'
             self.save()
 
@@ -540,9 +558,21 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         Parameters used for populating the classification form
         # Override in concrete class
         """
+        print 'self.get_attribute_data()', type(json.loads(self.attribute_data))
+        print '-' * 30
+        print self.attribute_data
+        print '-' * 30
+        cn = json.loads(self.attribute_data)
+        print cn
+        print len(cn)
+
+        print '-' * 30
+
+        print 'self.get_attribute_data()', type(cn)
+
         return dict(layer_name=self.layer_name,
                 data_source_type=TYPE_JOIN_LAYER,
-                raw_attribute_info=self.attribute_data)
+                raw_attribute_info=cn)
 
 """
 from apps.gis_tabular.models import *
@@ -562,9 +592,9 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         if not self.id:
             super(WorldMapLatLngInfo, self).save(*args, **kwargs)
 
-        self.layer_name = self.core_data.get('layer_typename', None)
+        self.layer_name = self.get_core_data().get('layer_typename', None)
         if self.layer_name is None:
-            self.layer_name = self.core_data.get('layer_name')
+            self.layer_name = self.get_core_data().get('layer_name')
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
         super(WorldMapLatLngInfo, self).save(*args, **kwargs)
@@ -579,7 +609,7 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         Format data to send to the Dataverse
         """
         self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
+        if self.core_data and self.get_core_data().get('joinDescription') is None:
             self.core_data['joinDescription'] = 'Layer created from mapping the Latitude and Longitude columnns'
             self.save()
 
@@ -598,7 +628,7 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return False
 
-        if self.core_data.get('mapped_record_count', 0) > 0:
+        if self.get_core_data().get('mapped_record_count', 0) > 0:
             return True
 
         return False
@@ -612,7 +642,7 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('unmapped_record_count', -1)
+        return self.get_core_data().get('unmapped_record_count', -1)
 
 
     def is_lat_lng_layer(self):
@@ -628,7 +658,7 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         """
         return dict(layer_name=self.layer_name,
                 data_source_type=TYPE_LAT_LNG_LAYER,
-                raw_attribute_info=self.attribute_data)
+                raw_attribute_info=self.get_attribute_data())
 
 
 """

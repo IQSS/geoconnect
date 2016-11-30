@@ -22,7 +22,7 @@ def get_latest_jointarget_information():
     """
 
     # ---------------------------------
-    # (1) Is available JoinTarget info from db
+    # (1) Is available JoinTarget info from db 
     # ---------------------------------
     recent_time_window = timezone.now() + timedelta(seconds=(-1 * JOIN_TARGET_UPDATE_TIME))
 
@@ -74,7 +74,7 @@ def get_geocode_types_and_join_layers():
     return (join_target_info.get_geocode_types(),\
         join_target_info.get_available_layers_list())
 
-    
+
 """
 python manage.py shell
 from apps.worldmap_connect.utils import get_latest_jointarget_information

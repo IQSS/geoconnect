@@ -357,7 +357,7 @@ class JoinTargetInformation(TimeStampedModel):
         if not self.id:
             super(JoinTargetInformation, self).save(*args, **kwargs)
 
-        jt_formatter = JoinTargetFormatter(self)
+        jt_formatter = JoinTargetFormatter(self.target_info)
         self.is_valid_target_info = jt_formatter.is_valid()
 
         super(JoinTargetInformation, self).save(*args, **kwargs)

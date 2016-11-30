@@ -62,7 +62,7 @@ def view_existing_map(request, worldmap_info=None):
     main_panel_title = render_main_panel_title_for_style_step(worldmap_info.tabular_info)
 
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
-        attribute_data=worldmap_info.attribute_data,\
+        attribute_data=worldmap_info.get_attribute_data(),\
         tabular_map_div=build_tabular_map_html(request, worldmap_info),\
         tabular_info=worldmap_info.tabular_info,\
         #id_main_panel_title=main_panel_title,\
@@ -140,8 +140,8 @@ def view_unmatched_join_rows(request, tab_md5):
         'unmatched_records_list' in worldmap_info.core_data:
         # Unmatched records exist
         unmatched_rows_html = render_to_string('gis_tabular/unmatched_records.html',\
-            dict(ummatched_rows=worldmap_info.core_data['unmatched_records_list'],\
-                column_names=worldmap_info.attribute_data,
+            dict(ummatched_rows=worldmap_info.get_core_data()['unmatched_records_list'],\
+                column_names=worldmap_info.get_attribute_data(),
             ),\
             context_instance=RequestContext(request))
 
@@ -238,7 +238,7 @@ def view_tabular_file(request, tab_md5):
     tab_file_stats = TabFileStats.create_tab_stats_from_tabular_info(tabular_info)
     if tab_file_stats.has_error():
         raise Http404(tab_file_stats.error_message)
-        
+
     # preview rows
     num_preview_rows = min([x for x in (NUM_PREVIEW_ROWS, tabular_info.num_rows) if x > 0])
 
@@ -260,10 +260,12 @@ def view_tabular_file(request, tab_md5):
     # ----------------------------------
     # Create a Django form for table join column selection
     # ----------------------------------
+    print 'tab_file_stats.column_names', type(tab_file_stats.column_names)
+
     if available_layers_list and len(available_layers_list) > 0:
-        form_single_column = ChooseSingleColumnForm(\
-                    tabular_file_info_id=tabular_info.id,\
-                    layer_choices=available_layers_list,\
+        form_single_column = ChooseSingleColumnForm(
+                    tabular_file_info_id=tabular_info.id,
+                    layer_choices=available_layers_list,
                     column_names=tab_file_stats.column_names)
     else:
         form_single_column = None

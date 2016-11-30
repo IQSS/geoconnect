@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from apps.worldmap_connect.models import WorldMapImportAttempt,\
     WorldMapImportFail, WorldMapLayerInfo,\
-    JoinTargetInformation, APIValidationSchema
+    JoinTargetInformation
+#, APIValidationSchema
 
 class WorldMapImportFailInline(admin.TabularInline):
     model = WorldMapImportFail
