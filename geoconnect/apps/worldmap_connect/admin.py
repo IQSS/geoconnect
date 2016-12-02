@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo, JoinTargetInformation
+from apps.worldmap_connect.models import WorldMapImportAttempt,\
+    WorldMapImportFail, WorldMapLayerInfo,\
+    JoinTargetInformation
+#, APIValidationSchema
 
 class WorldMapImportFailInline(admin.TabularInline):
     model = WorldMapImportFail
@@ -49,3 +52,4 @@ admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)
 admin.site.register(WorldMapLayerInfo, WorldMapLayerInfoAdmin)
 admin.site.register(JoinTargetInformation, JoinTargetInformationAdmin)
+#admin.site.register(APIValidationSchema, APIValidationSchemaAdmin)

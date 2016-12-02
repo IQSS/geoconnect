@@ -4,19 +4,11 @@ from apps.gis_basic_file.admin import GISDataFileAdmin
 from apps.gis_tabular.models import TabularFileInfo,\
                                     WorldMapJoinLayerInfo,\
                                     WorldMapLatLngInfo
-from apps.gis_tabular.models import SimpleTabularTest   # for testing
 
 from apps.gis_tabular.admin_forms import TabularInfoAdminForm
 
 from geo_utils.admin_util import make_changelist_updates
 
-
-class SimpleTabularTestAdmin(admin.ModelAdmin):
-    """For testing"""
-
-    readonly_fields = ('delimiter',)
-    list_display = ('name', 'test_page', 'dv_file', 'delimiter')
-    save_on_top = True
 
 class WorldMapLatLngInfoInline(admin.TabularInline):
     model = WorldMapLatLngInfo
@@ -65,8 +57,17 @@ class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
     list_display = ('tabular_info', 'layer_name', 'created',)# 'dv_file', 'delimiter')
     save_on_top = True
 
+
+"""
+from apps.gis_tabular.models import TestIt
+
+class TestItAdmin(admin.ModelAdmin):
+    list_display = ('name', 'column_names', 'created',)# 'dv_file', 'delimiter')
+    save_on_top = True
+admin.site.register(TestIt, TestItAdmin)
+"""
+
+
 admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
 admin.site.register(WorldMapLatLngInfo, WorldMapTabularLayerInfoAdmin)
 admin.site.register(WorldMapJoinLayerInfo, WorldMapTabularLayerInfoAdmin)
-
-#admin.site.register(SimpleTabularTest, SimpleTabularTestAdmin)

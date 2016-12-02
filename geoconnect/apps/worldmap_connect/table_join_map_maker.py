@@ -5,7 +5,6 @@ import logging
 import requests
 
 from django.conf import settings
-#from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db.models import FileField
 from requests.exceptions import ConnectionError as RequestsConnectionError
@@ -109,7 +108,7 @@ class TableJoinMapMaker(object):
             self.add_error('The Tabular File object does not have a "delimiter"')
 
 
-    def is_formatted_column_needed(self, data_frame, join_target_info_snippet):
+    def is_formatted_column_needed(self, data_frame, single_join_target_info):
         """
         This is called by "format_data_table_for_join" -- it is only called
         when the target column is a string and/or specifies zero-padding
@@ -134,7 +133,7 @@ class TableJoinMapMaker(object):
         #   Our chosen column is character but the target doesn't have
         #   a zero padding requirement
         #
-        if not join_target_info_snippet.requires_zero_padding():
+        if not single_join_target_info.requires_zero_padding():
             return False
 
         # --------------------------------------------
@@ -151,7 +150,7 @@ class TableJoinMapMaker(object):
         #   - Make a filter to count how many values have
         #       the correct length
         # --------------------------------------------
-        filter_criteria = (df[temp_col].str.len() == join_target_info_snippet.zero_pad_length)
+        filter_criteria = (df[temp_col].str.len() == single_join_target_info.zero_pad_length)
         num_short_rows = len(df.loc[filter_criteria])
 
         # Drop the temp column
@@ -169,7 +168,7 @@ class TableJoinMapMaker(object):
 
 
 
-    def format_data_table_for_join(self, join_target_info_snippet):
+    def format_data_table_for_join(self, single_join_target_info):
         """
         Create a new file and add a formatted column that's zero-padded
 
@@ -181,18 +180,18 @@ class TableJoinMapMaker(object):
             - creating a *new*, formatted column and
             - making new column the join column
         """
-        if join_target_info_snippet is None:
-            self.add_error('join_target_info_snippet cannot be None')
+        if single_join_target_info is None:
+            self.add_error('single_join_target_info cannot be None')
             return False
 
         # Set instance wide value for zero_pad_length
         #
-        zero_pad_length = join_target_info_snippet.zero_pad_length
+        zero_pad_length = single_join_target_info.zero_pad_length
 
         # ----------------------------------------
         # Do we need to do any formatting at all?  (Looking at the target only)
         # ----------------------------------------
-        if not join_target_info_snippet.does_join_column_potentially_need_formatting():
+        if not single_join_target_info.does_join_column_potentially_need_formatting():
             return True
 
         # ----------------------------------------
@@ -230,7 +229,6 @@ class TableJoinMapMaker(object):
         # --------------------------------------------
         # (1b) Is the join column in the data frame?
         # --------------------------------------------
-        #import ipdb; ipdb.set_trace()
         if not self.table_attribute_for_join in df.columns:
             self.add_error('Failed to find column "%s" for formatting.'\
                 % self.table_attribute_for_join)
@@ -240,7 +238,7 @@ class TableJoinMapMaker(object):
         # (1c) Do we need a formatted column?
         #   The data may already be formatted
         # --------------------------------------------
-        if not self.is_formatted_column_needed(df, join_target_info_snippet):
+        if not self.is_formatted_column_needed(df, single_join_target_info):
             # The existing column may be used for the join
             return True
 
@@ -255,13 +253,13 @@ class TableJoinMapMaker(object):
 
         # What type of column formatting?
         #
-        if join_target_info_snippet.requires_zero_padding():
+        if single_join_target_info.requires_zero_padding():
             #
             # zero pad formatting
             #
             zero_pad_fmt = '{0:0>%s}' % zero_pad_length
             func_col_fmt = lambda x: zero_pad_fmt.format(x)
-        elif join_target_info_snippet.is_target_column_string():
+        elif single_join_target_info.is_target_column_string():
             #
             # simple convert to string
             #
@@ -346,24 +344,24 @@ class TableJoinMapMaker(object):
         # Based on the target layer ID,
         # Retrieve the layer name, column name, and zero_pad_length
         # -------------------------------------------
-        join_target_info = get_latest_jointarget_information()
+        all_join_target_info = get_latest_jointarget_information()
 
-        join_target_info_snippet = join_target_info.get_target_layer_name_column(self.target_layer_id)
+        single_join_target_info = all_join_target_info.get_single_join_target_info(self.target_layer_id)
 
-        if join_target_info_snippet is None:
+        if single_join_target_info is None:
             self.add_error('Failed to retrieve target layer information.')
             return False
 
-        #join_target_info_snippet.show()
+        #single_join_target_info.show()
 
         # Update instance info
         #
-        self.zero_pad_length = join_target_info_snippet.zero_pad_length
+        self.zero_pad_length = single_join_target_info.zero_pad_length
 
         # --------------------------------------------------
         # Do we need to format the data in the join column?
         # --------------------------------------------------
-        format_success = self.format_data_table_for_join(join_target_info_snippet)
+        format_success = self.format_data_table_for_join(single_join_target_info)
         if not format_success:
             return False
 
@@ -375,8 +373,8 @@ class TableJoinMapMaker(object):
                         abstract=self.datatable_obj.get_abstract_for_join(),
                         delimiter=self.datatable_obj.delimiter,
                         table_attribute=self.table_attribute_for_join,
-                        layer_name=join_target_info_snippet.target_layer_name,
-                        layer_attribute=join_target_info_snippet.target_column_name\
+                        layer_name=single_join_target_info.target_layer_name,
+                        layer_attribute=single_join_target_info.target_column_name\
                         )
 
         # Add dataverse dict info

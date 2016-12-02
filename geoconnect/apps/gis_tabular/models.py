@@ -2,24 +2,24 @@
 Models to save the Tabular information from Dataverse
 as well as the mapping results from WorldMap
 """
-from os.path import basename
+import json
 from hashlib import md5
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from urlparse import urlparse
+
+import jsonfield  # using jsonfield.JSONField
+
 from django.db import models
-from jsonfield import JSONField
-from urlparse import urlparse
 from django import forms
-from apps.core.models import TimeStampedModel
-from urlparse import urlparse
-from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
-from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
-from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseMapLayerMetadataValidationForm,\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
+
+from apps.core.models import TimeStampedModel
+from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
+from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+
 
 #MapLayerMetadataValidationForm
 
@@ -32,72 +32,6 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TABULAR_DELIMITER = '\t'
-
-class SimpleTabularTest(TimeStampedModel):
-    """
-    Used to mimic tabular information from Dataverse
-    """
-    name = models.CharField(max_length=255, blank=True)        #   file basename
-
-    dv_file = models.FileField(upload_to='tab_files/%Y/%m/%d',\
-                    blank=True, null=True, storage=dv_file_system_storage)
-
-    delimiter = models.CharField(max_length=10, default=DEFAULT_TABULAR_DELIMITER)
-
-    is_file_readable = models.BooleanField(default=False)
-
-    num_rows = models.IntegerField(default=0)
-    num_columns = models.IntegerField(default=0)
-
-    column_names = JSONField(blank=True, help_text='Saved as a json list')
-
-    # User mediated choices
-    has_header_row = models.BooleanField(default=True)
-    chosen_column = models.CharField(max_length=155, blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def test_page(self):
-        """
-        Link to a test page using the 'view_tabular_file' url
-        """
-        if not self.id:
-            return 'n/a'
-        lnk = reverse('view_tabular_file', kwargs=dict(tabular_id=self.id))
-        return '<a href="%s" target="_blank">test page</a>' % lnk
-    test_page.allow_tags = True
-
-    def get_dv_file_basename(self):
-        """
-        Return the file basename -- e.g. strip the rest of the path
-        """
-        if not self.dv_file:
-            return None
-
-        return basename(self.dv_file.name)
-
-    class Meta:
-        verbose_name = 'GIS Simple Tabular (for dev)'
-        verbose_name_plural = verbose_name
-
-    def get_worldmap_info(self):
-        """
-        Retrieve any WorldMap info:
-            - a WorldMapJoinLayerInfo object or
-            - a WorldMapLatLngInfo
-        """
-        # Is there a related WorldMapLatLngInfo object?
-        #
-        worldmap_info = self.worldmaplatlnginfo_set.first()
-        if worldmap_info is not None:   # Yes, send it
-            return worldmap_info
-
-        # Return an available WorldMapJoinLayerInfo object or None
-        #
-        return self.worldmapjoinlayerinfo_set.first()
-
-
 
 class TabularFileInfo(GISDataFile):
     """
@@ -112,7 +46,7 @@ class TabularFileInfo(GISDataFile):
     num_rows = models.IntegerField(default=0)
     num_columns = models.IntegerField(default=0)
 
-    column_names = JSONField(blank=True, help_text='Saved as a json list')
+    column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
 
     # User mediated choices
     has_header_row = models.BooleanField(default=True)
@@ -198,9 +132,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
 
-    core_data = JSONField()
-    attribute_data = JSONField()
-    download_links = JSONField(blank=True)
+    core_data = jsonfield.JSONField()
+    attribute_data = jsonfield.JSONField()
+    download_links = jsonfield.JSONField(blank=True)
 
     # for object identification
     md5 = models.CharField(max_length=40,\
@@ -264,7 +198,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('tabular_info cannot be None')
             return None
 
-        if  json_dict is None:
+        if json_dict is None:
             LOGGER.error('json_dict cannot be None')
             return None
 
@@ -278,17 +212,29 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
         # -----------------------------------------
         # Get attribute data (required)
+        # Note: Currently this is an escaped string within core data...
         # -----------------------------------------
         if not 'attribute_info' in core_data:
             LOGGER.error('The core_data must have a "attribute_info" key')
             return None
-        attribute_data = core_data['attribute_info']
+
+        try:
+            attribute_data = eval(core_data['attribute_info'])
+        except:
+            LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
+            return None
+        #    attribute_data = ''
 
         # -----------------------------------------
         # Get download_links (optional)
+        # Note: Currently this is an escaped string within core data...
         # -----------------------------------------
         if 'download_links' in core_data:
-            download_links = core_data['download_links']
+            try:
+                download_links = eval(core_data['download_links'])
+            except:
+                LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
+                download_links = ''
         else:
             download_links = ''
 
@@ -408,26 +354,6 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         pass
 
 
-    '''
-    def update_dataverse(self):
-        if not self.id:
-            return 'n/a'
-        lnk = reverse('send_metadata_to_dataverse', kwargs={ 'import_success_id': self.id})
-        return lnk
-    update_dataverse.allow_tags = True
-
-
-
-    def dv_params(self):
-        if not self.id:
-            return 'n/a'
-
-        lnk = reverse('show_import_success_params', kwargs={ 'import_success_id' : self.id})
-
-        return '<a href="%s">dv params</a>' % lnk
-    dv_params.allow_tags = True
-    '''
-
     def get_dataverse_server_url(self):
         """
         Retrieve the Dataverse base url to be used
@@ -537,8 +463,9 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     #                    help_text="Join attribute created")
 
     def save(self, *args, **kwargs):
+
         if not self.id:
-            super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
+            super(WorldMapJoinLayerInfo, self).save(*args, **kwargs)
 
         self.layer_name = self.core_data.get('layer_typename', None)
         if self.layer_name is None:
@@ -546,7 +473,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
 
         self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
-        super(WorldMapTabularLayerInfo, self).save(*args, **kwargs)
+        super(WorldMapJoinLayerInfo, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'WorldMap Tabular Join Layer Information'
@@ -695,6 +622,12 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         return dict(layer_name=self.layer_name,
                 data_source_type=TYPE_LAT_LNG_LAYER,
                 raw_attribute_info=self.attribute_data)
+
+
+class TestIt(TimeStampedModel):
+    name = models.CharField(max_length=255, blank=True)        #   file basename
+
+    column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
 
 
 """

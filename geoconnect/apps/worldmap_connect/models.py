@@ -9,9 +9,7 @@ from urlparse import urlparse
 from django.db import models
 from django import forms
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-
-from django.conf import settings
+from django.template.defaultfilters import slugify
 
 from jsonfield import JSONField
 
@@ -25,8 +23,7 @@ from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetada
                                                 , GeoconnectToDataverseDeleteMapLayerMetadataForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 
-from geo_utils.json_field_reader import JSONFieldReader
-from geo_utils.message_helper_json import MessageHelperJSON
+from geo_utils.json_field_reader import JSONHelper
 from geo_utils.msg_util import *
 
 from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
@@ -246,7 +243,7 @@ class WorldMapLayerInfo(MapLayerMetadata):
     def add_attribute_info_as_json_string(self, json_string):
         assert json_string is not None, "json_string cannot be None"
 
-        if not JSONFieldReader.is_string_convertible_json(json_string):
+        if not JSONHelper.is_string_convertible_json(json_string):
             raise TypeError('Could not convert JSON to python: %s' % json_string)
 
         self.attribute_info = json_string
@@ -255,10 +252,10 @@ class WorldMapLayerInfo(MapLayerMetadata):
     def add_attribute_info(self, l=[]):
         assert isinstance(l, list), "l must be a list.  Found class/type (%s/%s)" % (l.__class__.__name__, type(l))
 
-        self.attribute_info = JSONFieldReader.get_python_val_as_json_string(l)
+        self.attribute_info = JSONHelper.get_python_val_as_json_string(l)
 
     def get_attribute_info(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.attribute_info)
+        return JSONHelper.to_python(self.attribute_info)
 
     def get_dict_for_classify_form(self):
         """
@@ -360,7 +357,7 @@ class JoinTargetInformation(TimeStampedModel):
         if not self.id:
             super(JoinTargetInformation, self).save(*args, **kwargs)
 
-        jt_formatter = JoinTargetFormatter(self)
+        jt_formatter = JoinTargetFormatter(self.target_info)
         self.is_valid_target_info = jt_formatter.is_valid()
 
         super(JoinTargetInformation, self).save(*args, **kwargs)
@@ -397,13 +394,13 @@ class JoinTargetInformation(TimeStampedModel):
         # Get all the join targets
         return jt_formatter.get_available_layers_list_by_type(chosen_geocode_type)
 
-    def get_target_layer_name_column(self, target_layer_id):
+    def get_single_join_target_info(self, target_layer_id):
         """
         Given a target layer id, retrieve the target name
         """
         jt_formatter = JoinTargetFormatter(self.target_info)
 
-        return jt_formatter.get_target_layer_name_column(target_layer_id)
+        return jt_formatter.get_single_join_target_info(target_layer_id)
 
 
     def get_join_targets_by_type(self, chosen_geocode_type):
@@ -415,6 +412,23 @@ class JoinTargetInformation(TimeStampedModel):
         verbose_name = 'Join Target information'
         verbose_name_plural = verbose_name
 
+'''
+class APIValidationSchema(TimeStampedModel):
+    """May be used to evaluate API results such as JoinTargetInformation"""
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, blank=True)
+    json_schema = JSONField(load_kwargs={'object_pairs_hook': OrderedDict})
+    notes = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        # create the slug
+        if self.name:
+            self.slug = slugify(self.name)
+
+        super(APISchema, self).save(*args, **kwargs)
+
+'''
 
 """
 from apps.gis_basic_file.models import *

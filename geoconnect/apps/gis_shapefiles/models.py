@@ -1,15 +1,13 @@
 import os
 from hashlib import md5
 
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from django.db import models
 
-from apps.core.models import TimeStampedModel
+import jsonfield # jsonfield.JSONField
 
+from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
-from geo_utils.json_field_reader import JSONFieldReader
 
 SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
@@ -26,26 +24,22 @@ class ShapefileInfo(GISDataFile):
 
     number_of_features = models.IntegerField(default=0)
     bounding_box = models.CharField(max_length=255, blank=True)
-    column_names = models.TextField(blank=True, help_text='Saved as a json list')
-    column_info = models.TextField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
+
+    column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
+    column_info = jsonfield.JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
 
     def get_file_info(self):
         return self.singlefileinfo_set.all()
 
     def add_bounding_box(self, l=[]):
-        #print 'really add_bounding_box', l
-        #print 'json string', JSONFieldReader.get_python_val_as_json_string(l)
-        self.bounding_box = JSONFieldReader.get_python_val_as_json_string(l)
-
-    def get_bounding_box(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.bounding_box)
-
+        self.bounding_box = l
 
     def get_column_count(self):
-        cols = self.get_column_names()
-        if cols:
-            return len(cols)
+        if not self.column_names:
+            return 0
+        else:
+            return len(self.column_names)
 
     def add_column_names_using_fields(self, shp_reader_fields):
         if shp_reader_fields is None:
@@ -59,17 +53,14 @@ class ShapefileInfo(GISDataFile):
             return
 
     def add_column_names(self, l=[]):
-        self.column_names = JSONFieldReader.get_python_val_as_json_string(l)
+        """Set column names attribute"""
+        self.column_names = l
 
-    def get_column_names(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.column_names)
 
     def add_column_info(self, l=[]):
         # Character, Numbers, Longs, Dates, or Memo.
-        self.column_info = JSONFieldReader.get_python_val_as_json_string(l)
+        self.column_info = l
 
-    def get_column_info(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.column_info)
 
     def get_shp_fileinfo_obj(self):
         l = SingleFileInfo.objects.filter(shapefile_info=self, extension='.shp')

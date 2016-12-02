@@ -227,12 +227,19 @@ def view_classify_layer_form(request, import_success_md5):
     # --------------------------------------------------------------
     #   Looks good, update the WorldMapLayerInfo's attribute info
     # --------------------------------------------------------------
+    #import ipdb; ipdb.set_trace()
     if hasattr(worldmap_layerinfo, 'add_attribute_info_as_json_string'):
+        # handle shapefiles
         worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
         worldmap_layerinfo.save()
     elif hasattr(worldmap_layerinfo, 'attribute_info'):
+        # handle tabular files
         worldmap_layerinfo.attribute_info = f_val.cleaned_data['attribute_info']
         worldmap_layerinfo.save()
+    else:
+        print (dir(worldmap_layerinfo))
+        print (type(worldmap_layerinfo))
+        print ('nada?')
 
     # --------------------------------------------------------------
     # Refresh the classify form with the latest WorldMap parameter information

@@ -1,6 +1,6 @@
 import logging
 
-from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, Http404
+from django.http import HttpResponse
 from django.views.generic import View
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -12,15 +12,14 @@ from apps.worldmap_connect.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+#from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
+#    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
-#from geo_utils.json_field_reader import JSONFieldReader
 
 from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
@@ -28,7 +27,7 @@ from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
 
 logger = logging.getLogger(__name__)
 
-from geo_utils.msg_util import *
+from geo_utils.msg_util import msg, msgt
 
 
 """
@@ -42,6 +41,7 @@ Handle AJAX requests to Visualize a Layer
 
 
 def render_ajax_basic_err_msg(err_note, shapefile_info=None):
+    """Convenience method for returning an error message via AJAX"""
 
     d = {   'DATAVERSE_SERVER_URL' : settings.DATAVERSE_SERVER_URL\
             , 'ERR_NOTE' : err_note\
@@ -55,7 +55,8 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
 
     #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-    assert type(worldmap_layerinfo) is WorldMapLayerInfo, "worldmap_layerinfo must be a WorldMapLayerInfo object"
+    assert type(worldmap_layerinfo) is WorldMapLayerInfo,\
+        "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
     delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
                                         , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
@@ -117,24 +118,22 @@ class ViewAjaxVisualizeShapefile(View):
         msg('render html')
         visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
         breadcrumb_html = render_breadcrumb_div_for_style_step()
-        main_title_panel_html=render_main_panel_title_for_style_step(shapefile_info)
+        main_title_panel_html = render_main_panel_title_for_style_step(shapefile_info)
 
         msg('create  json_msg')
         json_msg = MessageHelperJSON.get_json_msg(success=True
-                                        , msg='Success!'
-                                        , data_dict=dict(id_main_panel_content=visualize_html\
-                                                    #, id_main_panel_title=STEP2_VISUALIZE\
-                                                    , id_main_panel_title=main_title_panel_html\
-                                                    , id_breadcrumb=breadcrumb_html
-                                                    )\
-                                        )
+                        , msg='Success!'\
+                        , data_dict=dict(id_main_panel_content=visualize_html\
+                            #, id_main_panel_title=STEP2_VISUALIZE\
+                                    , id_main_panel_title=main_title_panel_html\
+                                    , id_breadcrumb=breadcrumb_html
+                                        )\
+                        )
         msg('send  json_msg')
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
     def get(self, request, shp_md5):
-
-        d = {}
 
         # (1) Retrieve the ShapefileInfo object
         #
@@ -149,7 +148,7 @@ class ViewAjaxVisualizeShapefile(View):
                                  , msg=err_note\
                                  , data_dict=dict(id_main_panel_content=err_note_html)
             )
-            logger.error('Shapefile not found for hash: %s' % shp_md5)
+            logger.error('Shapefile not found for hash: %s', shp_md5)
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
 
