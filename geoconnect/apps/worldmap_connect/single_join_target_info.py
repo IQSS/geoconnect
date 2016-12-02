@@ -3,8 +3,6 @@
 class SingleJoinTargetInfo(object):
     """Convenience class for passing JoinTarget information from WorldMap"""
 
-
-    #def __init__(self, target_layer_name, target_column_name, target_attribute_type, zero_pad_length):
     def __init__(self, target_info):
         """target_info is JSON information"""
         assert target_info is not None, "target_info cannot be None"
@@ -12,6 +10,7 @@ class SingleJoinTargetInfo(object):
         # Add JSON Schema evaluation here!
         self.target_info = target_info
 
+        self.target_id = target_info['id']
         self.target_layer_name = target_info['layer']
         self.target_column_name = target_info['attribute']['attribute']
         self.target_attribute_type = target_info['attribute']['type']
