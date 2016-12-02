@@ -3,9 +3,8 @@ from unittest import skip
 
 from django.test import TestCase
 
-from geo_utils.json_field_reader import JSONHelper
 from apps.gis_tabular.models import TestIt
-from msg_util import *
+from msg_util import msgt
 
 
 class JSONFieldTester(TestCase):
