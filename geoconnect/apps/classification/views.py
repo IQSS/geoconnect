@@ -237,9 +237,10 @@ def view_classify_layer_form(request, import_success_md5):
         worldmap_layerinfo.attribute_info = f_val.cleaned_data['attribute_info']
         worldmap_layerinfo.save()
     else:
-        print dir(worldmap_layerinfo)
-        print type(worldmap_layerinfo)
-        print 'nada?'
+        print (dir(worldmap_layerinfo))
+        print (type(worldmap_layerinfo))
+        print ('nada?')
+
     # --------------------------------------------------------------
     # Refresh the classify form with the latest WorldMap parameter information
     # --------------------------------------------------------------
