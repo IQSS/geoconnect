@@ -10,7 +10,7 @@ from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
-from geo_utils.json_field_reader import JSONFieldReader
+from geo_utils.json_field_reader import JSONHelper
 
 
 class BaseColumnStats(TimeStampedModel):

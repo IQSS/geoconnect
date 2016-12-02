@@ -4,10 +4,42 @@ import os
 # logging!!!
 from msg_util import *
 
+from jsonfield.encoder import JSONEncoder as JSONExtraEncoder
+#from geo_utils.json_encoder import JSONExtraEncoder
 
-class JSONFieldReader:
+
+class JSONHelper:
     """Convenience class used to move text values to JSON and vice-versa for Django TextFields
     """
+
+    @staticmethod
+    def is_py_obj_encodable(obj):
+        """Used for checking if a python object is JSON encodable.
+        3rd party encoder checks date/time/timedelta,
+        decimal types, generators and other basic python objects"""
+
+        try:
+            JSONExtraEncoder().encode(obj)
+            return True
+        except:
+            return False
+
+    @staticmethod
+    def to_python_or_none(json_string):
+        """For data received via API that we want to store in a jsonfield.JSONField
+        An example would be the data regarding a new TableJoin
+
+        1st check if the string can be load to a python object.
+        Note: This will (or at least should) be replaced by using JSON schema
+        """
+        try:
+            return json.loads(json_string)
+        except:
+            return None
+
+    @staticmethod
+    def to_python(json_string):
+        return JSONHelper.get_json_string_as_python_val(json_string)
 
     @staticmethod
     def get_json_string_as_python_val(json_string):

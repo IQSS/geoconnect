@@ -57,6 +57,17 @@ class WorldMapTabularLayerInfoAdmin(admin.ModelAdmin):
     list_display = ('tabular_info', 'layer_name', 'created',)# 'dv_file', 'delimiter')
     save_on_top = True
 
+
+"""
+from apps.gis_tabular.models import TestIt
+
+class TestItAdmin(admin.ModelAdmin):
+    list_display = ('name', 'column_names', 'created',)# 'dv_file', 'delimiter')
+    save_on_top = True
+admin.site.register(TestIt, TestItAdmin)
+"""
+
+
 admin.site.register(TabularFileInfo, TabularFileInfoAdmin)
 admin.site.register(WorldMapLatLngInfo, WorldMapTabularLayerInfoAdmin)
 admin.site.register(WorldMapJoinLayerInfo, WorldMapTabularLayerInfoAdmin)

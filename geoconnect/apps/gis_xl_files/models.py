@@ -9,7 +9,7 @@ from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
-from geo_utils.json_field_reader import JSONFieldReader
+from geo_utils.json_field_reader import JSONHelper
 
 
 class GISExcelFile(GISDataFile):
@@ -29,11 +29,11 @@ class GISExcelFile(GISDataFile):
     
     def add_bounding_box(self, l=[]):
         print 'really add_bounding_box', l
-        print 'json string', JSONFieldReader.get_python_val_as_json_string(l)
-        self.bounding_box = JSONFieldReader.get_python_val_as_json_string(l)
+        print 'json string', JSONHelper.get_python_val_as_json_string(l)
+        self.bounding_box = JSONHelper.get_python_val_as_json_string(l)
 
     def get_bounding_box(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.bounding_box)
+        return JSONHelper.to_python(self.bounding_box)
 
     
     def get_column_count(self):
@@ -48,17 +48,17 @@ class GISExcelFile(GISDataFile):
 
         if not type(l) in (list, tuple):
             return
-        self.column_names = JSONFieldReader.get_python_val_as_json_string(l)
+        self.column_names = JSONHelper.get_python_val_as_json_string(l)
 
     def get_column_names(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.column_names)
+        return JSONHelper.to_python(self.column_names)
 
     #def add_column_info(self, l=[]):
     # Character, Numbers, Longs, Dates, or Memo. 
-    #    self.column_info = JSONFieldReader.get_python_val_as_json_string(l)
+    #    self.column_info = JSONHelper.get_python_val_as_json_string(l)
 
     #def get_column_info(self):
-    #    return JSONFieldReader.get_json_string_as_python_val(self.column_info)
+    #    return JSONHelper.to_python(self.column_info)
        
     def get_basename(self):
         return os.path.basename(self.name)

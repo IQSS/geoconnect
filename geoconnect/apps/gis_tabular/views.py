@@ -62,7 +62,7 @@ def view_existing_map(request, worldmap_info=None):
     main_panel_title = render_main_panel_title_for_style_step(worldmap_info.tabular_info)
 
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
-        attribute_data=worldmap_info.get_attribute_data(),\
+        attribute_data=worldmap_info.attribute_data,\
         tabular_map_div=build_tabular_map_html(request, worldmap_info),\
         tabular_info=worldmap_info.tabular_info,\
         #id_main_panel_title=main_panel_title,\
@@ -139,10 +139,12 @@ def view_unmatched_join_rows(request, tab_md5):
     if worldmap_info.core_data and\
         'unmatched_records_list' in worldmap_info.core_data:
         # Unmatched records exist
-        unmatched_rows_html = render_to_string('gis_tabular/unmatched_records.html',\
-            dict(ummatched_rows=worldmap_info.get_core_data()['unmatched_records_list'],\
-                column_names=worldmap_info.get_attribute_data(),
-            ),\
+        unmatched_row_dict = dict(
+            ummatched_rows=worldmap_info.core_data.get('unmatched_records_list', None),
+            column_names=worldmap_info.attribute_data)
+
+        unmatched_rows_html = render_to_string('gis_tabular/unmatched_records.html',
+            unmatched_row_dict,
             context_instance=RequestContext(request))
 
         return HttpResponse(unmatched_rows_html)

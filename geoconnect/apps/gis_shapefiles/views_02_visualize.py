@@ -20,7 +20,7 @@ from shared_dataverse_information.layer_classification.forms import\
 from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
-#from geo_utils.json_field_reader import JSONFieldReader
+#from geo_utils.json_field_reader import JSONHelper
 
 from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\

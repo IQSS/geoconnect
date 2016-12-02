@@ -9,7 +9,7 @@ import logging
 
 LOGGER = logging.getLogger('apps.worldmap_connect.utils')
 
-JOIN_TARGET_UPDATE_TIME = 10 * 60 # 10 minutes
+JOIN_TARGET_UPDATE_TIME = 1 * 60 # 10 minutes
 
 
 
@@ -17,19 +17,18 @@ def get_latest_jointarget_information():
     """
     Retrieve recent JoinTarget Information from the database.
 
-    If recent information is not available, use the WorldMap API and store
+    If recent information is not available in the db, use the WorldMap API and store
     the new information in the db.
     """
-
     # ---------------------------------
-    # (1) Is available JoinTarget info from db 
+    # (1) Is available JoinTarget info from db
     # ---------------------------------
     recent_time_window = timezone.now() + timedelta(seconds=(-1 * JOIN_TARGET_UPDATE_TIME))
 
-    joint_target = JoinTargetInformation.objects.filter(created__gte=recent_time_window\
+    join_target = JoinTargetInformation.objects.filter(created__gte=recent_time_window\
                     ).first()
-    if joint_target is not None:
-        return joint_target
+    if join_target is not None:
+        return join_target
 
     # ---------------------------------
     # (2) Get JoinTarget info from the WorldMap API
@@ -37,17 +36,17 @@ def get_latest_jointarget_information():
     # ---------------------------------
     (success, dict_info_or_err) = get_join_targets()
     if success:
-        joint_target = JoinTargetInformation(name=timezone.now().strftime("%Y-%m-%d %H:%M:%S"),\
+        join_target = JoinTargetInformation(name=timezone.now().strftime("%Y-%m-%d %H:%M:%S"),\
                 target_info=dict_info_or_err)
-        joint_target.save()
-        return joint_target
+        join_target.save()
+        return join_target
 
     # ---------------------------------
     # (3) Get JoinTarget info from database --
     #   even if it's old
     # ---------------------------------
-    joint_target = JoinTargetInformation.objects.first()
-    if joint_target is None:
+    join_target = JoinTargetInformation.objects.first()
+    if join_target is None:
         LOGGER.error('No JoinTargetInformation available in the database \
         (failed attempt to retrieve it from WorldMap): %s', dict_info_or_err)
         return None
@@ -55,7 +54,7 @@ def get_latest_jointarget_information():
     LOGGER.error('Failed to retrieve timely JoinTargetInformation from WorldMap\
      (used last avaialable from the database): %s', dict_info_or_err)
 
-    return joint_target
+    return join_target
 
 def get_geocode_types_and_join_layers():
     """

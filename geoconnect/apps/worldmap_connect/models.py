@@ -23,7 +23,7 @@ from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetada
                                                 , GeoconnectToDataverseDeleteMapLayerMetadataForm
 from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
 
-from geo_utils.json_field_reader import JSONFieldReader
+from geo_utils.json_field_reader import JSONHelper
 from geo_utils.msg_util import *
 
 from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
@@ -243,7 +243,7 @@ class WorldMapLayerInfo(MapLayerMetadata):
     def add_attribute_info_as_json_string(self, json_string):
         assert json_string is not None, "json_string cannot be None"
 
-        if not JSONFieldReader.is_string_convertible_json(json_string):
+        if not JSONHelper.is_string_convertible_json(json_string):
             raise TypeError('Could not convert JSON to python: %s' % json_string)
 
         self.attribute_info = json_string
@@ -252,10 +252,10 @@ class WorldMapLayerInfo(MapLayerMetadata):
     def add_attribute_info(self, l=[]):
         assert isinstance(l, list), "l must be a list.  Found class/type (%s/%s)" % (l.__class__.__name__, type(l))
 
-        self.attribute_info = JSONFieldReader.get_python_val_as_json_string(l)
+        self.attribute_info = JSONHelper.get_python_val_as_json_string(l)
 
     def get_attribute_info(self):
-        return JSONFieldReader.get_json_string_as_python_val(self.attribute_info)
+        return JSONHelper.to_python(self.attribute_info)
 
     def get_dict_for_classify_form(self):
         """

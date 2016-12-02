@@ -47,12 +47,6 @@ class JoinTargetInformationAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('name', 'created', 'modified')
 
-'''
-class APIValidationSchemaAdmin(admin.ModelAdmin):
-    """May be used to evaluate API results such as APIValidationSchema"""
-    save_on_top = True
-    list_display = ('name', 'notes', 'created', 'modified')
-'''
 
 admin.site.register(WorldMapImportAttempt, WorldMapImportAttemptAdmin)
 admin.site.register(WorldMapImportFail, WorldMapImportFailAdmin)

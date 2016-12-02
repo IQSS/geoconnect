@@ -64,11 +64,9 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Create form with initial + POST data
     # -----------------------------------------
-    print 'tabular_info.get_tabular_column_names()', type(tabular_info.get_tabular_column_names())
-    print 'tabular_info.get_tabular_column_names()', tabular_info.get_tabular_column_names()
     form_single_column = ChooseSingleColumnForm(tabular_info.id,\
                     available_layers_list,\
-                    tabular_info.get_tabular_column_names(),\
+                    tabular_info.column_names,\
                     request.POST)
 
     # -----------------------------------------
