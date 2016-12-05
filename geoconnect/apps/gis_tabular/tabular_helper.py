@@ -25,7 +25,7 @@ class TabFileStats(object):
         self.fname = fname
 
         self.delimiter = str(delim)
-        print 'init delim:', self.delimiter, len(self.delimiter)
+        #print 'init delim:', self.delimiter, len(self.delimiter)
         #'\t' #str(delim)  #b','    #delim
         self.tabular_info = tabular_info
 
@@ -71,7 +71,6 @@ class TabFileStats(object):
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
-        print 'self.delimiter', self.delimiter, len(self.delimiter)
 
         try:
             df = pd.read_csv(self.fname,\

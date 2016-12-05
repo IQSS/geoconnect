@@ -258,11 +258,11 @@ def view_tabular_file(request, tab_md5):
         geocode_type_list += geocode_types_from_worldmap
 
     # Separate list of all join layers (which are filtered by type on form)
-    print 'available_layers_list', available_layers_list
+    #print 'available_layers_list', available_layers_list
     # ----------------------------------
     # Create a Django form for table join column selection
     # ----------------------------------
-    print 'tab_file_stats.column_names', type(tab_file_stats.column_names)
+    #print 'tab_file_stats.column_names', type(tab_file_stats.column_names)
 
     if available_layers_list and len(available_layers_list) > 0:
         form_single_column = ChooseSingleColumnForm(

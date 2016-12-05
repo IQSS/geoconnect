@@ -75,8 +75,9 @@ class LatLngColumnsForm(forms.Form):
     def __init__(self, tabular_file_info_id, column_names, *args, **kwargs):
         super(LatLngColumnsForm, self).__init__(*args, **kwargs)
         assert column_names is not None, "You must initiate this form with column names"
+
         colname_choices = [(c, c) for c in column_names if c]
-        print 'colname_choices', colname_choices
+        #print 'colname_choices', colname_choices
         self.fields['tabular_file_info_id'].initial = tabular_file_info_id
         self.fields['latitude'].choices = colname_choices
         self.fields['longitude'].choices = colname_choices

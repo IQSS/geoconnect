@@ -19,6 +19,7 @@ from shared_dataverse_information.map_layer_metadata.forms import\
 from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+from geo_utils.json_field_reader import JSONHelper
 
 
 #MapLayerMetadataValidationForm
@@ -181,6 +182,7 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
         assert False, "This method must be defined in inheriting models"
 
+
     @staticmethod
     def build_from_worldmap_json(tabular_info, json_dict):
         """
@@ -202,6 +204,10 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('json_dict cannot be None')
             return None
 
+        if not hasattr(json_dict, 'has_key'):
+            LOGGER.error('json_dict must be a dict.  not type: [%s]', type(json_dict))
+            return None
+
         # -----------------------------------------
         # Get core data (required)
         # -----------------------------------------
@@ -218,9 +224,8 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('The core_data must have a "attribute_info" key')
             return None
 
-        try:
-            attribute_data = eval(core_data['attribute_info'])
-        except:
+        attribute_data = JSONHelper.to_python_or_none(core_data['attribute_info'])
+        if attribute_data is None:
             LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
             return None
         #    attribute_data = ''
@@ -230,9 +235,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         # Note: Currently this is an escaped string within core data...
         # -----------------------------------------
         if 'download_links' in core_data:
-            try:
-                download_links = eval(core_data['download_links'])
-            except:
+            download_links =  JSONHelper.to_python_or_none(core_data['download_links'])
+
+            if download_links is None:
                 LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
                 download_links = ''
         else:
