@@ -1,19 +1,18 @@
-
+  /*
+    This is called from the shapefile page --when-- a user
+    clicks "Visualize on Worldmap"
+    Note: "success" HTML generated at ViewAjaxVisualizeShapefile.generate_json_success_response
+        -> eventual template: gis_shapefiles/view_04_ajax_style_layer.html
+  */
   function attempt_visualization(){
 
     $("#id_main_panel_content").html($("#id_div_attempt_visualization_msg").html());
 
         var attempt_to_visualize_url = '{% url 'view_ajax_attempt_visualization' shapefile_info.md5 %}';
-        var jqxhr = $.get( attempt_to_visualize_url, function(json_resp) {
+        var jqxhr = $.get(attempt_to_visualize_url, function(json_resp){
 
-              console.log(json_resp);
-              // If new form/message data is in the response, then update the page
-             //  if ((json_resp.data)&&(json_resp.data.div_content)){
-             //    $( "#div_classify_form" ).html(json_resp.data.div_content);
-              //   $( "#id_frm_style_submit" ).on( "click", submit_classify_form );
-
-              // }
-           })    
+              //console.log(json_resp);
+           })
            .done(function(json_resp) {
               if (json_resp.success){
                    // main panel update
@@ -26,7 +25,7 @@
                     if (json_resp.data.hasOwnProperty('id_main_panel_title')){
                          //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
                          $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
-                    }                    
+                    }
                     // breadcrumb update
                     if(json_resp.data.hasOwnProperty('id_breadcrumb')){
                         $( "#id_breadcrumb" ).replaceWith(json_resp.data.id_breadcrumb);
@@ -35,8 +34,8 @@
                     if ($("#id-first-time-alert").length>0) {
                        $("#id-first-time-alert").hide();
                     }
-                    
-                    
+
+
               }else{
                   if (json_resp.data.hasOwnProperty('id_main_panel_content')){
                       $("#id_main_panel_content").html(json_resp.data.id_main_panel_content);

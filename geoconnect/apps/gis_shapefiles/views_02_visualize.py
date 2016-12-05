@@ -12,8 +12,7 @@ from apps.worldmap_connect.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-#from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-#    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP3_STYLE
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
@@ -72,6 +71,7 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
             , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
             , show_visualize_success_msg=True\
         )
+    d[GEOCONNECT_STEP_KEY] = STEP3_STYLE    # Used to display delete button
 
     #d['classify_form'] = classify_form
     #d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER

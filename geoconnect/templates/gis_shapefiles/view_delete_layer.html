@@ -20,7 +20,7 @@
 
 	        {% if WORLDMAP_DATA_DELETE_FAILURE %}
 	            <p><span class="label label-danger">No</span> Failed to delete map metadata from Dataverse.</p>
-                <p>Message: {{ ERR_MSG }}</p>
+                <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
                 <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
     		       and try again.</p>
@@ -32,7 +32,7 @@
     	        <p><span class="label label-success">Yes</span> Map is deleted from WorldMap</p>
     	        <p><span class="label label-danger">No</span> Failed to delete map metadata from Dataverse.</p>
 
-                <p>Message: {{ ERR_MSG }}</p>
+                <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
                 <p>
 					<a href="{{ DATAVERSE_SERVER_URL }}" class="btn-success btn-sm">Return to the Dataverse</a>
