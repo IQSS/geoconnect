@@ -15,6 +15,8 @@ from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.msg_util import msg
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.classification.utils import get_worldmap_info_object
+from apps.gis_tabular.models import WorldMapTabularLayerInfo
+
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from shared_dataverse_information.layer_classification.forms_api import\
@@ -232,9 +234,12 @@ def view_classify_layer_form(request, import_success_md5):
         # handle shapefiles
         worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])
         worldmap_layerinfo.save()
-    elif hasattr(worldmap_layerinfo, 'attribute_info'):
+    elif hasattr(worldmap_layerinfo, 'attribute_data'):
         # handle tabular files
-        worldmap_layerinfo.attribute_info = f_val.cleaned_data['attribute_info']
+        worldmap_layerinfo.attribute_info = \
+            WorldMapTabularLayerInfo.format_attribute_maplink_data_from_string(f_val.cleaned_data['attribute_info'])
+        worldmap_layerinfo.download_links = \
+            WorldMapTabularLayerInfo.format_attribute_maplink_data_from_string(f_val.cleaned_data['download_links'])
         worldmap_layerinfo.save()
     else:
         print (dir(worldmap_layerinfo))

@@ -181,6 +181,16 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         """
         assert False, "This method must be defined in inheriting models"
 
+
+    @staticmethod
+    def format_attribute_maplink_data_from_string(pyobj_string):
+        try:
+            return eval(pyobj_string)
+        except:
+            LOGGER.error('Failed to use eval to convert string to python object: %s' % pyobj_string)
+            return None
+
+
     @staticmethod
     def build_from_worldmap_json(tabular_info, json_dict):
         """
@@ -218,9 +228,8 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('The core_data must have a "attribute_info" key')
             return None
 
-        try:
-            attribute_data = eval(core_data['attribute_info'])
-        except:
+        attribute_data = WorldMapTabularLayerInfo.format_attribute_maplink_data_from_string(core_data['attribute_info'])
+        if attribute_data is None:
             LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
             return None
         #    attribute_data = ''
@@ -230,9 +239,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         # Note: Currently this is an escaped string within core data...
         # -----------------------------------------
         if 'download_links' in core_data:
-            try:
-                download_links = eval(core_data['download_links'])
-            except:
+            download_links =  WorldMapTabularLayerInfo.format_attribute_maplink_data_from_string(core_data['download_links'])
+
+            if download_links is None:
                 LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
                 download_links = ''
         else:
