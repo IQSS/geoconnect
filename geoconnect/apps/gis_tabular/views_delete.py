@@ -27,8 +27,6 @@ def view_delete_tabular_map(request):
     if not request.POST:
         raise Http404('Delete Not Found.')
 
-    msg('view_delete_tabular_map - 1')
-
     d = get_common_lookup(request)
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
@@ -36,19 +34,13 @@ def view_delete_tabular_map(request):
     # Check the delete request
     f = DeleteTabularMapForm(request.POST)
 
-    msg('view_delete_tabular_map - 2')
-
     if not f.is_valid():
-        msg('view_delete_tabular_map - 2a')
-
         d['ERROR_FOUND'] = True
         d['FAILED_TO_VALIDATE'] = True
         return render_to_response('gis_tabular/view_delete_layer.html', d\
                                  , context_instance=RequestContext(request))
 
     # Form params look good
-    msg('view_delete_tabular_map - 3')
-
     worldmap_layer_info = f.get_worldmap_layer_info()
     if not worldmap_layer_info:
         raise Http404('WorldMap Layer info no longer available')
@@ -59,13 +51,10 @@ def view_delete_tabular_map(request):
     # -----------------------------------
     # Delete map from WorldMap
     # -----------------------------------
-    msg('view_delete_tabular_map - 4')
-
     flag_delete_local_worldmap_info = False
 
     (success, err_msg_or_None) = delete_map_layer(tabular_info, worldmap_layer_info)
     if success is False:
-        msg('view_delete_tabular_map - 4a')
         logger.error("Faild to delete WORLDMAP layer: %s", err_msg_or_None)
 
         if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
@@ -86,7 +75,6 @@ def view_delete_tabular_map(request):
     # Delete metadata from dataverse
     # -----------------------------------
 
-    msg('view_delete_tabular_map - 5')
     (success2, err_msg_or_None2) = MetadataUpdater.delete_dataverse_map_metadata(worldmap_layer_info)
 
     # Delete the Geoconnect WorldMap info -- regardless of
@@ -95,7 +83,6 @@ def view_delete_tabular_map(request):
         worldmap_layer_info.delete()
 
     if success2 is False:
-        msg('view_delete_tabular_map - 5a')
         logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
         d['ERROR_FOUND'] = True

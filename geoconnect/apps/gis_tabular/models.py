@@ -212,6 +212,10 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('json_dict cannot be None')
             return None
 
+        if not hasattr(json_dict, 'has_key'):
+            LOGGER.error('json_dict must be a dict.  not type: [%s]', type(json_dict))
+            return None
+
         # -----------------------------------------
         # Get core data (required)
         # -----------------------------------------

@@ -229,7 +229,6 @@ def view_classify_layer_form(request, import_success_md5):
     # --------------------------------------------------------------
     #   Looks good, update the WorldMapLayerInfo's attribute info
     # --------------------------------------------------------------
-    #import ipdb; ipdb.set_trace()
     if hasattr(worldmap_layerinfo, 'add_attribute_info_as_json_string'):
         # handle shapefiles
         worldmap_layerinfo.add_attribute_info_as_json_string(f_val.cleaned_data['attribute_info'])

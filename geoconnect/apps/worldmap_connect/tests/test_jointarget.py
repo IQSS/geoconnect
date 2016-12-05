@@ -17,7 +17,7 @@ class JoinTargetInformationTestCase(TestCase):
     """
 
     def setUp(self):
-        print ('load fixtures')
+        print ('load JSON file')
         json_data = open(JOIN_TARGETS_FILENAME, 'r').read()
         self.join_targets_json = json.loads(json_data)
 
@@ -59,27 +59,6 @@ class JoinTargetInformationTestCase(TestCase):
                 self.assertEqual(target_info.does_join_column_potentially_need_formatting(), False)
 
 
-
-    def xtest_join_target_formatter(self):
-        """Test formattter"""
-
-        # Retrieve the test JoinTargetInformation objects
-        #
-        join_target_info = JoinTargetInformation.objects.first()
-
-        print 'join_target_info', join_target_info
-        # Test "get_geocode_types()"
-        #
-        geocode_types = join_target_info.get_geocode_types()
-        print 'geocode_types', geocode_types
-        self.assertEqual(geocode_types, [('US Census Tract', 'us-census-tract')])
-
-        # Test "get_join_targets_by_type(--geocode type or None--)"
-        #
-        jtargets_by_type = join_target_info.get_join_targets_by_type('us-census-tract')
-        print 'jtargets_by_type', jtargets_by_type
-        self.assertEqual(jtargets_by_type, [('US Census Tract (2010)', 3)])
-        #self.assertEqual(cat.speak(), 'The cat says "meow"')
 
 """
 jt_name = 'tcase-{0}'.format(timezone.now().strftime("%Y-%m-%d %H:%M:%S"))
