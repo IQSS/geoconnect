@@ -12,7 +12,7 @@ from geo_utils.msg_util import msgt, msg
 
 JSON_JOIN_TEST_FILENAME = join(dirname(__file__), 'input', 'core_data_join.json')
 
-class WorldMapTabularLTestCase(TestCase):
+class WorldMapTabularInfoTestCase(TestCase):
     """
     Test basic params
     """
@@ -83,3 +83,6 @@ class WorldMapTabularLTestCase(TestCase):
         # Are the column_names correct?
         expected_colnames = ['BG_ID_10', 'DisSens_2010', 'PublicDenigration_2010', 'PrivateNeglect_2010', 'Housing_2010', 'UncivilUse_2010', 'BigBuild_2010', 'Trash_2010', 'Graffiti_2010', 'DisSens_2011', 'PublicDenigration_2011', 'PrivateNeglect_2011', 'Housing_2011', 'UncivilUse_2011', 'BigBuild_2011', 'Trash_2011', 'Graffiti_2011', 'DisSens_2012', 'PublicDenigration_2012', 'PrivateNeglect_2012', 'Housing_2012', 'UncivilUse_2012', 'BigBuild_2012', 'Trash_2012', 'Graffiti_2012', 'DisSens_2013', 'PublicDenigration_2013', 'PrivateNeglect_2013', 'Housing_2013', 'UncivilUse_2013', 'BigBuild_2013', 'Trash_2013', 'Graffiti_2013', 'DisSens_2014', 'PublicDenigration_2014', 'PrivateNeglect_2014', 'Housing_2014', 'UncivilUse_2014', 'BigBuild_2014', 'Trash_2014', 'Graffiti_2014', 'DisSens_long', 'PublicDenigration_long', 'PrivateNeglect_long', 'Housing_long', 'UncivilUse_long', 'BigBuild_long', 'Trash_long', 'Graffiti_long']
         self.assertEqual(tab_file_info.column_names, expected_colnames)
+
+    def test_03_test_static_method(self):
+        msgt(self.test_03_test_static_method.__doc__)
