@@ -24,25 +24,30 @@ def view_delete_map(request):
     if not request.POST:
         raise Http404('Delete Not Found.')
 
-    d = get_common_lookup(request)
-    d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
-    d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
+    lu = get_common_lookup(request)
+    lu['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
+    lu['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
 
     # Check the delete request
     f = DeleteMapForm(request.POST)
 
     if not f.is_valid():
-        d['ERROR_FOUND'] = True
-        d['FAILED_TO_VALIDATE'] = True
-        return render_to_response('gis_shapefiles/view_delete_layer.html', d\
-                                 , context_instance=RequestContext(request))
+        lu['ERROR_FOUND'] = True
+        lu['FAILED_TO_VALIDATE'] = True
+        return render_to_response('gis_shapefiles/view_delete_layer.html',
+                                    lu,
+                                    context_instance=RequestContext(request))
 
     # Form params look good
     gis_data_file = f.get_gis_data_file_object()
     worldmap_layer_info = f.get_worldmap_layer_info()
 
-    d['gis_data_file'] = gis_data_file
+    lu['gis_data_file'] = gis_data_file
+    if gis_data_file:
+        lu['return_to_dataverse_url'] = gis_data_file.return_to_dataverse_url
 
+
+    #import ipdb; ipdb.set_trace()
     # -----------------------------------
     # Delete map from WorldMap
     # -----------------------------------
@@ -53,11 +58,12 @@ def view_delete_map(request):
         if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
             pass
         else:
-            d['ERROR_FOUND'] = True
-            d['WORLDMAP_DATA_DELETE_FAILURE'] = True
-            d['ERR_MSG'] = err_msg_or_None
-            return render_to_response('gis_shapefiles/view_delete_layer.html', d\
-                                     , context_instance=RequestContext(request))
+            lu['ERROR_FOUND'] = True
+            lu['WORLDMAP_DATA_DELETE_FAILURE'] = True
+            lu['ERR_MSG'] = err_msg_or_None
+            return render_to_response('gis_shapefiles/view_delete_layer.html',
+                                        lu,
+                                        context_instance=RequestContext(request))
 
     # At this point, the layer no longer exists on WorldMap
     #
@@ -72,18 +78,21 @@ def view_delete_map(request):
     if success2 is False:
         logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
-        d['ERROR_FOUND'] = True
-        d['DATAVERSE_DATA_DELETE_FAILURE'] = True
-        d['ERR_MSG'] = err_msg_or_None2
-        return render_to_response('gis_shapefiles/view_delete_layer.html', d\
-                                     , context_instance=RequestContext(request))
+        lu['ERROR_FOUND'] = True
+        lu['DATAVERSE_DATA_DELETE_FAILURE'] = True
+        lu['ERR_MSG'] = err_msg_or_None2
+        return render_to_response('gis_shapefiles/view_delete_layer.html',
+                                    lu,
+                                    context_instance=RequestContext(request))
 
 
 
-    d['DELETE_SUCCESS'] = True
+    lu['DELETE_SUCCESS'] = True
 
-    return render_to_response('gis_shapefiles/view_delete_layer.html', d\
-                            , context_instance=RequestContext(request))
+    return render_to_response('gis_shapefiles/view_delete_layer.html',
+                                    lu,
+                                    context_instance=RequestContext(request))
+
 
 '''
 python manage.py shell

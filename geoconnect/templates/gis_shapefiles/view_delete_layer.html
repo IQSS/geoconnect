@@ -15,7 +15,8 @@
     		    <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
     		       and try again.</p>
 
-    		    <p>Or <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a></p>
+    		    <p>Or {% include "gis_tabular/return_to_dataverse.html" %}
+			</p>
     	    {% endif %}
 
 	        {% if WORLDMAP_DATA_DELETE_FAILURE %}
@@ -25,7 +26,7 @@
                 <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
     		       and try again.</p>
 
-    		    <p><br />Or <a href="{{ DATAVERSE_SERVER_URL }}">Return to the Dataverse</a></p>
+    		    <p><br />Or {% include "gis_tabular/return_to_dataverse.html" %}</p>
     	    {% endif %}
 
     	    {% if DATAVERSE_DATA_DELETE_FAILURE %}
@@ -34,10 +35,11 @@
 
                 <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
-                <p>
-					<a href="{{ DATAVERSE_SERVER_URL }}" class="btn-success btn-sm">Return to the Dataverse</a>
 
-					<a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b> </a>
+                <p>
+					{% include "gis_tabular/return_to_dataverse.html" %}
+
+					<a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b> </a>
                 </p>
     	    {% endif %}
     	    </div>
@@ -53,9 +55,9 @@
     <div class="panel panel-default">
         <div class="panel-heading">Would you like to Re-Map this file?</div>
         <div class="panel-body">
-            <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn-success btn-sm">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
+            <p><a href="{% url 'view_shapefile' gis_data_file.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_file.datafile_label }}</b></a>
 
-            <br /><br />or  {% include "gis_shapefiles/link-back-to-dataverse.html" %}</p>
+            <br /><br />or {% include "gis_tabular/return_to_dataverse.html" %}</p>
 
             <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
 
