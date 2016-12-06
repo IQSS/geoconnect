@@ -13,10 +13,7 @@ from geo_utils.template_constants import FAILED_TO_RETRIEVE_DATAVERSE_FILE,\
     FAILED_BAD_STATUS_CODE_FROM_WORLDMAP,\
     FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
 
-from apps.layer_types.static_vals import is_dv_type_shapefile,\
-            is_dv_type_tabular,\
-            is_dv_type_geotiff,\
-            is_valid_dv_type
+from apps.layer_types.static_vals import is_valid_dv_type
 
 URL_PARAM_CALLBACK = 'cb'
 DV_DATA_KEY_MAPPING_TYPE = 'mapping_type'
@@ -38,7 +35,6 @@ class InitialRequestHelper(object):
         self.request = request
         self.dataverse_token = dataverse_token
 
-
         self.callback_url = None
         self.mapping_type = None
         self.dv_data_dict = None
@@ -52,6 +48,7 @@ class InitialRequestHelper(object):
         self.handle_initial_request()
 
     def add_err_msg(self, msg, err_type=None):
+        """Add error message for use by view"""
         #LOGGER.error(msg)
         self.has_err = True
         self.err_msg = msg
@@ -66,7 +63,7 @@ class InitialRequestHelper(object):
         if not self.make_callback():
             return False
 
-        return True
+        return self.retrieve_mapping_type()
 
 
     def load_callback_url(self):
@@ -83,7 +80,7 @@ class InitialRequestHelper(object):
             self.add_err_msg("URL must have the callback parameter: %s" % URL_PARAM_CALLBACK)
             return False
 
-        self.callback_url = self.request.GET[URL_PARAM_CALLBACK].strip() # + "?%s" % urlencode(dict(key='pete'))
+        self.callback_url = self.request.GET[URL_PARAM_CALLBACK].strip()
 
         # basic check, not actually checking for a valid url
         if self.callback_url == '':
@@ -107,8 +104,9 @@ class InitialRequestHelper(object):
             r = requests.post(self.callback_url, data=json.dumps(token_data))
         except requests.exceptions.ConnectionError as e:
 
-            err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
-                                % (callback_url, e.message)
+            err_msg = ('<p><b>Details for administrator:</b>'\
+                      ' Could not contact the Dataverse server:'\
+                      ' %s</p><p>%s</p>') % (self.callback_url, e.message)
             self.add_err_msg(err_msg, FAILED_TO_RETRIEVE_DATAVERSE_FILE)
             return False
 
@@ -118,8 +116,8 @@ class InitialRequestHelper(object):
         # ------------------------------
         if not r.status_code == 200:
             err_msg1 = 'Status code from dataverse: %s' % (r.status_code)
-            err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-            self.add_err_msg(err_msg1, FAILED_TO_RETRIEVE_DATAVERSE_FILE)
+            #err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
+            self.add_err_msg(err_msg1, FAILED_BAD_STATUS_CODE_FROM_WORLDMAP)
             return False
 
         # ------------------------------
@@ -128,14 +126,15 @@ class InitialRequestHelper(object):
         try:
             jresp = r.json()
         except ValueError:
-            err_msg1 = 'Failed to convert response to JSON\nStatus code from dataverse: %s' % (r.status_code)
-            err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-            LOGGER.error(err_msg2)
+            err_msg1 = ('Failed to convert response to JSON\n'\
+                        'Status code from dataverse: %s') % (r.status_code)
+            #err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
+            #LOGGER.error(err_msg2)
             self.add_err_msg(err_msg1, FAILED_TO_CONVERT_RESPONSE_TO_JSON)
             return False
 
 
-        print json.dumps(jresp, indent=4)
+        #print json.dumps(jresp, indent=4)
 
         # ------------------------------
         # Examine response
@@ -158,18 +157,28 @@ class InitialRequestHelper(object):
             self.add_err_msg('Dataverse data did not contain key: "data"')
             return False
 
+        return True
+
+    def retrieve_mapping_type(self):
+
+        if self.has_err:
+            return False
+
         # Retrieve the mapping type from the data
         #
         if not self.dv_data_dict.has_key(DV_DATA_KEY_MAPPING_TYPE):
-            additional_note = '(This will happen for Dataverse versions prior to 4.3 where a mapping_type is not specified.)'
-            self.add_err_msg('Dataverse data did not contain key: ""%s". (%s)' % (DV_DATA_KEY_MAPPING_TYPE, additional_note))
+            additional_note = ('(This will happen for Dataverse versions'\
+                        ' prior to 4.3 where a mapping_type is not specified.)')
+            self.add_err_msg('Dataverse data did not contain key: ""%s". (%s)'\
+                    % (DV_DATA_KEY_MAPPING_TYPE, additional_note))
             return False
 
         # Load the mapping type
         self.mapping_type = self.dv_data_dict.pop(DV_DATA_KEY_MAPPING_TYPE, None)
 
         if not is_valid_dv_type(self.mapping_type):
-            err_msg = 'The mapping_type for this metadata was not valid.  Found: %s' % mapping_type
+            err_msg = ('The mapping_type for this metadata was not valid.'\
+                      '  Found: %s') % self.mapping_type
             self.add_err_msg(err_msg, FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE)
             return False
 

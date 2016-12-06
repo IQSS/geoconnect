@@ -1,9 +1,6 @@
 """
 Views to handle Dataverse initial requests
 """
-import json
-import requests
-
 from django.shortcuts import render_to_response
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,11 +8,9 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from geo_utils.msg_util import *
+from geo_utils.msg_util import msg, msgt
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
-from apps.layer_types.static_vals import DV_MAP_TYPE_SHAPEFILE,\
-                DV_MAP_TYPE_TABULAR
 from apps.layer_types.static_vals import is_valid_dv_type,\
                 is_dv_type_shapefile,\
                 is_dv_type_tabular,\
@@ -34,13 +29,11 @@ from geo_utils.view_util import get_common_lookup
 import logging
 LOGGER = logging.getLogger(__name__)
 
-from geo_utils.template_constants import FAILED_TO_RETRIEVE_DATAVERSE_FILE,\
-    FAILED_TO_CONVERT_RESPONSE_TO_JSON,\
-    FAILED_BAD_STATUS_CODE_FROM_WORLDMAP,\
-    FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
+from geo_utils.template_constants import FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
 
 
 def view_formatted_error_page(request, error_type, err_msg=None):
+    """Show an error page"""
 
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'
@@ -68,25 +61,26 @@ def view_mapit_incoming_token64(request, dataverse_token):
     # (1) Check incoming url for a callback url
     # and use the url to retrieve the DataverseInfo via a POST
     #
-    requestHelper = InitialRequestHelper(request, dataverse_token)
-    if requestHelper.has_err:
-        return view_formatted_error_page(request,
-                            requestHelper.err_type,
-                            requestHelper.err_msg)
+    request_helper = InitialRequestHelper(request, dataverse_token)
+    if request_helper.has_err:
+        return view_formatted_error_page(request,\
+                            request_helper.err_type,\
+                            request_helper.err_msg)
 
 
     # (2) Route the request depending on the type of data returned
     #
-    mapping_type = requestHelper.mapping_type
+    mapping_type = request_helper.mapping_type
 
     #  Is the mapping type valid?
+    #  Knowingly redundant, also checked in requestHelper
     #
-    if not is_valid_dv_type(mapping_type):    # knowingly redundant, also checked in requestHelper
+    if not is_valid_dv_type(mapping_type):
 
         err_msg = 'The mapping_type for this metadata was not valid.  Found: %s' % mapping_type
 
-        return view_formatted_error_page(request,
-                            FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE,
+        return view_formatted_error_page(request,\
+                            FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE,\
                             err_msg)
 
     #  Is the mapping type active?
@@ -99,14 +93,14 @@ def view_mapit_incoming_token64(request, dataverse_token):
     #
     if is_dv_type_shapefile(mapping_type):
         return process_shapefile_info(request,\
-                            requestHelper.dataverse_token,\
-                            requestHelper.dv_data_dict)
+                            request_helper.dataverse_token,\
+                            request_helper.dv_data_dict)
 
     elif is_dv_type_tabular(mapping_type):
 
         return process_tabular_file_info(request,\
-                            requestHelper.dataverse_token,\
-                            requestHelper.dv_data_dict)
+                            request_helper.dataverse_token,\
+                            request_helper.dv_data_dict)
 
     elif is_dv_type_geotiff(mapping_type):
 
@@ -131,8 +125,8 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
                                          , tab_md5_or_err_msg.err_type\
                                          , tab_md5_or_err_msg.err_msg)
 
-    view_tab_file_first_time_url =  reverse('view_tabular_file'\
-                                    , kwargs={ 'tab_md5' : tab_md5_or_err_msg })
+    view_tab_file_first_time_url = reverse('view_tabular_file'\
+                                    , kwargs=dict(tab_md5=tab_md5_or_err_msg))
 
     return HttpResponseRedirect(view_tab_file_first_time_url)
 
@@ -152,7 +146,7 @@ def process_shapefile_info(request, dataverse_token, data_dict):
                                          , shp_md5_or_err_msg.err_type\
                                          , shp_md5_or_err_msg.err_msg)
 
-    view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
-                                    , kwargs={ 'shp_md5' : shp_md5_or_err_msg })
+    view_shapefile_first_time_url = reverse('view_shapefile_first_time'\
+                                    , kwargs=dict(shp_md5=shp_md5_or_err_msg))
 
     return HttpResponseRedirect(view_shapefile_first_time_url)
