@@ -41,6 +41,7 @@
 			<th># Features</th>
 			<td>{{ shapefile_info.number_of_features|intcomma }}</td>
 		</tr>
+        {% comment %}
 		<tr>
 			<th>Files</th>
 			<td>	<ul class="list-unstyled">
@@ -50,6 +51,7 @@
 					</ul>
 				</td>
 		</tr>
+        {% endcomment %}
 		<tr>
 			<th># Fields</th>
 			<td>{{ shapefile_info.get_column_count|intcomma }}

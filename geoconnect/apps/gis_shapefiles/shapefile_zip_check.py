@@ -1,5 +1,6 @@
 import os
-from os.path import isfile
+from os.path import isdir, isfile
+import shutil
 import shapefile
 import zipfile
 import cStringIO
@@ -250,7 +251,6 @@ class ShapefileZipCheck(object):
             self.add_error(err_msg, ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE)
             return False
 
-
         # add column names
         # -----------------
         shapefile_info.add_column_info(shp_reader.fields[1:])
@@ -263,6 +263,17 @@ class ShapefileZipCheck(object):
         except:
             shapefile_info.add_bounding_box('')
 
+        # ----------------------
+        # Remove the scratch directory
+        # ----------------------
+        shp_reader = None
+        if isdir(scratch_directory):
+            shutil.rmtree(scratch_directory)
+            shapefile_info.extracted_shapefile_load_path = ''
+
+        # ----------------------
+        # Save the metadata!!
+        # ----------------------
         shapefile_info.save()
 
         return True

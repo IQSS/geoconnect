@@ -46,9 +46,3 @@ urlpatterns += patterns('apps.gis_shapefiles.views_delete',
 #urlpatterns += patterns('folium_maker.views',
 #    url(r'^folium-test/(?P<shp_md5>\w{32})/$', 'view_try_folium', name="view_try_folium"),
 #)
-
-
-
-#urlpatterns += patterns('gis_shapefiles.views_field_check',
-#    url(r'^shp/(?P<shp_md5>\w{32})/(?P<field_name>\w{1,200})/(?P<column_index>\d{1,7})/$', #'view_field_stats', name="view_field_stats"),
-#)

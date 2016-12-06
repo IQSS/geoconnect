@@ -29,9 +29,10 @@ class ShapefileInfo(GISDataFile):
     column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
     column_info = jsonfield.JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
+    #file_names = jsonfield.JSONField(blank=True, help_text='Files within the .zip')
 
-    def get_file_info(self):
-        return self.singlefileinfo_set.all()
+    #def get_file_info(self):
+    #    return self.file_names
 
     def add_bounding_box(self, l=[]):
         self.bounding_box = l
@@ -62,20 +63,6 @@ class ShapefileInfo(GISDataFile):
         # Character, Numbers, Longs, Dates, or Memo.
         self.column_info = l
 
-
-    def get_shp_fileinfo_obj(self):
-        l = SingleFileInfo.objects.filter(shapefile_info=self, extension='.shp')
-        cnt = l.count()
-        if cnt == 0:
-            return None
-        elif cnt == 1:
-            return l[0]
-        # cnt > 1
-        selected_info = l[0]
-        SingleFileInfo.objects.exclude(id=l[0].id).filter(shapefile_info=self, extension='.shp').delete()  # delete others
-
-        return selected_info
-
     def get_basename(self):
         return os.path.basename(self.name)
 
@@ -97,53 +84,3 @@ class ShapefileInfo(GISDataFile):
         #unique_together = ('name', 'shapefile_group')
         verbose_name = 'Shapefile Information'
         verbose_name_plural = 'Shapefile Information'
-
-
-class SingleFileInfo(TimeStampedModel):
-    """
-    For a shapefile set, this is metadata on the individual files.
-    """
-    name = models.CharField(max_length=255)
-    shapefile_info = models.ForeignKey(ShapefileInfo)
-    extension= models.CharField(max_length=40, blank=True, help_text='auto-filled on save')
-    filesize = models.IntegerField(help_text='in bytes')
-    is_required_shapefile = models.BooleanField(default=False, help_text='auto-filled on save')
-
-    extracted_file_path = models.CharField(max_length=255, blank=True)
-
-    md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-
-    def get_human_readable_filesize(self):
-        """Get human readable filesize, e.g. 13.7 MB"""
-        return sizeof_fmt(self.filesize)
-
-    def filesize_text(self):
-        """Display human readable filesize in the admin"""
-        return self.get_human_readable_filesize()
-    filesize_text.allow_tags=True
-
-    def save(self, *args, **kwargs):
-        # Set file extension
-        fparts = self.name.split('.')
-        if len(fparts) > 1:
-            self.extension = '.%s' % fparts[-1].lower()
-
-        # Set is_mandatory_shapefile
-        if self.extension in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
-            self.is_mandatory_shapefile = True
-        else:
-            self.is_mandatory_shapefile = False
-
-        if not self.id:
-            super(SingleFileInfo, self).save(*args, **kwargs)
-        self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
-
-        super(SingleFileInfo, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('-modified', 'name')
-        verbose_name = 'Single File Information'
-        verbose_name_plural = verbose_name
