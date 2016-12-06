@@ -88,10 +88,10 @@ def view_map_tabular_file_form(request):
     # Use the WorldMap API and
     # try to create a layer
     # -----------------------------------------
-    tj_map_maker = TableJoinMapMaker(tabular_info,\
-                        dataverse_metadata_dict,\
-                        form_single_column.cleaned_data.get('chosen_column'),\
-                        form_single_column.cleaned_data.get('chosen_layer'),\
+    tj_map_maker = TableJoinMapMaker(tabular_info,
+                        dataverse_metadata_dict,
+                        form_single_column.cleaned_data.get('chosen_column'),
+                        form_single_column.cleaned_data.get('chosen_layer'),
                         )
     success = tj_map_maker.run_map_create()
     msg('success: %s' % success)

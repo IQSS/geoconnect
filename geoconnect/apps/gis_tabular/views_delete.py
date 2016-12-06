@@ -55,7 +55,7 @@ def view_delete_tabular_map(request):
 
     (success, err_msg_or_None) = delete_map_layer(tabular_info, worldmap_layer_info)
     if success is False:
-        logger.error("Faild to delete WORLDMAP layer: %s", err_msg_or_None)
+        logger.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
 
         if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
             pass

@@ -37,7 +37,7 @@
                 <hr />
                 <p>Please {% include "gis_tabular/return_to_dataverse.html" %}
 
-                  <br /><br />or  <a href="{% url 'view_tabular_file' tabular_info.md5 %}"  class="btn-success btn-sm">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
+                  <br /><br />or  <a href="{% url 'view_tabular_file' tabular_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
                 </p>
     	    {% endif %}
     	    </div>
@@ -53,7 +53,7 @@
 	    <div class="panel panel-default">
 	        <div class="panel-heading">Would you like to Re-Map this file?</div>
 	        <div class="panel-body">
-            	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn-success btn-sm">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
+            	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
 
 	            <br /><br />
 				{% include "gis_tabular/return_to_dataverse.html" %}
