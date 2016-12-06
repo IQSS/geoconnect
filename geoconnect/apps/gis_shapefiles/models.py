@@ -9,7 +9,8 @@ from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
 
-SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
+SHAPEFILE_EXTENSION_SHP = '.shp'
+SHAPEFILE_MANDATORY_EXTENSIONS = [SHAPEFILE_EXTENSION_SHP, '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
 class ShapefileInfo(GISDataFile):

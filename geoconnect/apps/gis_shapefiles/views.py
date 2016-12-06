@@ -10,10 +10,18 @@ from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 
+from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+        ZIPCHECK_MULTIPLE_SHAPEFILES,\
+        ZIPCHECK_NO_FILE_TO_CHECK,\
+        ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE
+
 from apps.gis_shapefiles.forms import ShapefileInfoForm
 from apps.gis_shapefiles.models import ShapefileInfo, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 #from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
+
+
+from apps.gis_shapefiles.shapefile_examine_util import ShapefileExamineUtil
 
 from apps.worldmap_connect.models import WorldMapImportAttempt
 from apps.gis_shapefiles.shp_services import add_worldmap_layerinfo_if_exists
@@ -106,9 +114,19 @@ def view_shapefile(request, shp_md5, **kwargs):
     logger.debug('view_shapefile')
 
     # -------------------------------------------
+    # Attempt to retrieve the shapefile information
+    # -------------------------------------------
+    try:
+        shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
+    except ShapefileInfo.DoesNotExist:
+        logger.error('Shapefile not found for hash: %s' % shp_md5)
+        raise Http404('Shapefile not found.')
+
+    # -------------------------------------------
     # Gather common parameters for the template
     # -------------------------------------------
     d = get_common_lookup(request)
+    d['shapefile_info'] = shapefile_info
     d['page_title'] = 'Examine Shapefile'
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
@@ -122,19 +140,6 @@ def view_shapefile(request, shp_md5, **kwargs):
     # Added to template later...
     just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
 
-
-    # -------------------------------------------
-    # Attempt to retrieve the shapefile information
-    # -------------------------------------------
-    try:
-        shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
-        d['shapefile_info'] = shapefile_info
-
-    except ShapefileInfo.DoesNotExist:
-        logger.error('Shapefile not found for hash: %s' % shp_md5)
-        raise Http404('Shapefile not found.')
-
-    logger.debug('shapefile_info: %s' % shapefile_info)
 
 
     # -------------------------------------------
@@ -156,7 +161,7 @@ def view_shapefile(request, shp_md5, **kwargs):
         # Error: No shapefiles found
         #   Show error message
         # -----------------------------
-        if zip_checker.err_detected:
+        if zip_checker.has_err:
             return view_zip_checker_error(request, shapefile_info, zip_checker, d)
 
         # -----------------------------
@@ -169,14 +174,15 @@ def view_shapefile(request, shp_md5, **kwargs):
         shapefile_info.save()
 
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
-        (success, err_msg_or_none) = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
+        success = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
         if not success:
             d['Err_Found'] = True
-            if zip_checker.err_could_not_process_shapefile:
+            if zip_checker.err_type == ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE:
                 d['Err_Shapefile_Could_Not_Be_Opened'] = True
                 d['zip_name_list'] = zip_checker.get_zipfile_names()
             else:
-                d['Err_Msg'] = err_msg_or_none
+                d['Err_Msg'] = zip_checker.err_msg
+
             shapefile_info.has_shapefile = False
             shapefile_info.save()
             logger.error('Shapefile not loaded. (%s)' % shp_md5)
@@ -264,8 +270,12 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
     # Update for user template
     d['Err_Found'] = True
 
-    if zip_checker.err_no_file_to_check:
-        logger.debug('Error: No file to check')
+    error_type = zip_checker.error_type
+
+    '''
+    ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE = 'ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE'
+    '''
+    if error_type == ZIPCHECK_NO_FILE_TO_CHECK:
 
         # Update shapefile_info object
         shapefile_info.name = '(no file to check)'
@@ -277,8 +287,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         #d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         zip_checker.close_zip()
 
-    elif zip_checker.err_no_shapefiles:
-        logger.debug('Error: No shapefiles found')
+    elif error_type == ZIPCHECK_NO_SHAPEFILES_FOUND:
 
         # Update shapefile_info object
         shapefile_info.name = '(not a shapefile)'
@@ -290,7 +299,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         zip_checker.close_zip()
 
-    elif zip_checker.err_multiple_shapefiles:
+    elif error_type == ZIPCHECK_MULTIPLE_SHAPEFILES:
         # Error: More than one shapefile in the .zip
         #
         shapefile_info.name = '(multiple shapefiles found)'
