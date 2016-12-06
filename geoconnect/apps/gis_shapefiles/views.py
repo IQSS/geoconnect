@@ -49,18 +49,12 @@ def view_delete_worldmap_visualization_attempts(request):
 @login_required
 def view_examine_dataset(request):
     """
-    Display a list of :model:`gis_shapefiles.ShapefileInfo` objects, each linked to a detail page.
-    For testing, allow the upload of a new shapefile object.
+    For TESTING, allow the upload of a new shapefile object.
 
-    **Context**
+    Display a list of "ShapefileInfo" objects, each linked to a detail page.
 
-    ``RequestContext``
-
-    :ShapefileInfoForm: Check for a ShapefileInfoForm object in the request.POST
-
-    **Template:**
-
-    :template:`gis_shapefiles/view_01_examine_zip.html`
+    - Check for a ShapefileInfoForm object in the request.POST
+    - Template: "gis_shapefiles/view_01_examine_zip.html"
     """
     #return HttpResponse('view_google_map')
     d = { 'page_title' : 'Shapefiles: Test Upload Page'\
@@ -88,7 +82,7 @@ def view_examine_dataset(request):
     return render_to_response('gis_shapefiles/view_01_examine_zip.html', d\
                             , context_instance=RequestContext(request))
 
-#@login_required
+
 def view_shapefile_first_time(request, shp_md5):
     return view_shapefile(request, shp_md5, first_time_notify=True)
 

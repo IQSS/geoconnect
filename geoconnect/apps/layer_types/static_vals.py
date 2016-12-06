@@ -15,6 +15,18 @@ DV_FILE_TYPES = (DV_MAP_TYPE_SHAPEFILE,\
                 DV_MAP_TYPE_GEOTIFF)
 DV_FILE_TYPE_CHOICES = [(x, x) for x in DV_FILE_TYPES]
 
+def is_valid_dv_type(map_type):
+    return map_type in DV_FILE_TYPES
+
+def is_dv_type_shapefile(map_type):
+    return map_type == DV_MAP_TYPE_SHAPEFILE
+
+def is_dv_type_tabular(map_type):
+    return map_type == DV_MAP_TYPE_SHAPEFILE
+
+def is_dv_type_geotiff(map_type):
+    return map_type == DV_MAP_TYPE_GEOTIFF
+
 # --------------------------------------
 # Used for classification purposes
 # --------------------------------------
