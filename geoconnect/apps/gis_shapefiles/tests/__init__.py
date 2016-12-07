@@ -1,2 +1,2 @@
 # import the tests
-from apps.gis_shapefiles.tests.shapefile_zip_test import *
+#from apps.gis_shapefiles.tests.test_shapefile_zip import *

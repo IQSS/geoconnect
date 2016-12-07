@@ -218,7 +218,7 @@ class ShapefileZipCheck(object):
             shp_part_name = name_to_extract + shp_ext
 
             # Extract the file to a scratch directory
-            self.zip_obj.extract(shp_part_name, scratch_directory)
+            zip_part_path = self.zip_obj.extract(shp_part_name, scratch_directory)
 
         # ------------------------------------
         # Can we read the '.shp' file?
