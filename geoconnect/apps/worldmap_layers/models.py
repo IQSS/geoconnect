@@ -1,9 +1,24 @@
 """Abstract model describing WorldMap Layers"""
+from abc import abstractmethod
+from urlparse import urlparse
+import logging
 
 from django.db import models
+from django import forms
+
 import jsonfield  # using jsonfield.JSONField
 
-import logging
+from shared_dataverse_information.dataverse_info.forms_existing_layer\
+    import CheckForExistingLayerForm
+
+from shared_dataverse_information.map_layer_metadata.forms import\
+    MapLayerMetadataValidationForm,\
+    GeoconnectToDataverseMapLayerMetadataValidationForm,\
+    GeoconnectToDataverseDeleteMapLayerMetadataForm
+    
+from apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
+        TYPE_SHAPEFILE_LAYER,\
+        TYPE_LAT_LNG_LAYER
 
 from apps.core.models import TimeStampedModel
 from geo_utils.json_field_reader import JSONHelper
@@ -32,6 +47,47 @@ class WorldMapLayerInfo(TimeStampedModel):
         ordering = ('-created',)
         verbose_name = 'WorldMapLayerInfo'
         verbose_name_plural = verbose_name
+
+    @abstractmethod
+    def get_layer_type(self):
+        """return type such as:
+        TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER, TYPE_SHAPEFILE_LAYER, etc"""
+
+    @abstractmethod
+    def get_gis_data_info(self):
+        """Return the attribute holding gis_data_file
+        e.g. return self.tabular_info
+        OR   return self.shapefile_info, etc"""
+
+    @abstractmethod
+    def get_description_for_core_data(self):
+        """Return a description of the map layer source.
+        e.g. 'Layer created from tabular file'"""
+
+
+    def is_shapefile_layer(self):
+        """Is this the result of mapping a zipped shapefile?"""
+
+        return self.get_layer_type() == TYPE_SHAPEFILE_LAYER
+
+    def is_lat_lng_layer(self):
+        """Is this the result of mapping Lat/Lng columns?"""
+
+        return self.get_layer_type() == TYPE_LAT_LNG_LAYER
+
+    def is_join_layer(self):
+        """Is this the result of joining an existing layer?"""
+
+        return self.get_layer_type() == TYPE_JOIN_LAYER
+
+    def get_dict_for_classify_form(self):
+        """
+        Parameters used for populating the classification form
+        # Override in concrete class
+        """
+        return dict(layer_name=self.layer_name,\
+                data_source_type=self.get_layer_type(),\
+                raw_attribute_info=self.attribute_data)
 
 
     @staticmethod
@@ -118,17 +174,12 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         WorldMapLayerInfoType = worldmap_info.__class__
 
-        if hasattr(WorldMapLayerInfoType,'shapefile_info'):
-            filters = dict(shapefile_info=worldmap_info.shapefile_info,\
-                        layer_name=worldmap_info.layer_name)
+        if worldmap_info.is_shapefile_layer():
+            filters = dict(shapefile_info=worldmap_info.get_gis_data_info(),\
+                layer_name=worldmap_info.layer_name)
         else:
-            filters = dict(tabular_info=worldmap_info.tabular_info,\
+            filters = dict(tabular_info=worldmap_info.get_gis_data_info(),\
                         layer_name=worldmap_info.layer_name)
-
-        # Delete similar objects - same tabular file + same WorldMap layer
-        # Bit of a hack due to fuzzy requirements early on
-        # whether a tab file can have more than one map
-        #
 
         # Pull objects except the current "worldmap_info"
         #
@@ -138,3 +189,154 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         # Delete the older objects
         older_info_objects.delete()
+
+
+    def get_layer_url_base(self):
+        """
+        Return the layer url base. Examples:
+            - http://worldmap.harvard.edu
+            - http(s)://worldmap.harvard.edu
+        """
+        if not self.core_data:
+            return None
+
+        layer_link = self.core_data.get('layer_link', None)
+        if layer_link is None:
+            return None
+
+        parsed_url = urlparse(layer_link)
+
+        return '%s://%s' % (parsed_url.scheme, parsed_url.netloc)
+
+
+    def get_params_to_check_for_existing_layer_metadata(self):
+        """Return dict of params used to check WorldMap
+        for existing layer metadata"""
+
+        gis_data_info = self.get_gis_data_info()
+        assert gis_data_info is not None, "gis_data_info cannot be None"
+
+        f = CheckForExistingLayerForm(gis_data_info.__dict__)
+        if not f.is_valid():
+            raise forms.ValidationError(\
+                'CheckForExistingLayerForm params did not validate: %s'\
+                 % f.errors)
+
+        return f.cleaned_data
+
+    def get_params_for_dv_delete_layer_metadata(self):
+        """Return dict of params used to delete an
+        WorldMap metadata from Dataverse"""
+
+        gis_data_info = self.get_gis_data_info()
+        assert gis_data_info is not None, "gis_data_info cannot be None"
+
+        f = GeoconnectToDataverseDeleteMapLayerMetadataForm(\
+                {'dv_session_token' : gis_data_info.dv_session_token})
+
+        if not f.is_valid():
+            raise forms.ValidationError(\
+                'WorldMapLayerInfo DELETE params did not validate: %s' %\
+                 f.errors)
+
+        return f.format_for_dataverse_api()
+
+
+    def get_legend_img_url(self):
+        """
+        Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
+        """
+        if not self.core_data:
+            return None
+
+        params = (('request', 'GetLegendGraphic')\
+                   , ('format', 'image/png')\
+                   , ('width', 20)\
+                   , ('height', 20)\
+                   , ('layer', self.layer_name)\
+                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
+                )
+        print ('params:', params)
+        param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
+        print ('\n\nparam_str:', param_str)
+
+        return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
+
+        """
+        Example of how an image tag is formed:
+        <img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
+        """
+
+    def get_dataverse_server_url(self):
+        """
+        Retrieve the Dataverse base url to be used
+        for using the Dataverse API
+        """
+        wm_info = self.get_gis_data_info()
+
+        if not wm_info:
+            return None
+
+        return wm_info.get_dataverse_server_url()
+
+    def get_data_dict(self, json_format=False):
+        """
+        Used for processing model data.
+        """
+        f = MapLayerMetadataValidationForm(self.core_data)
+        if not f.is_valid():
+            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
+
+        if not json_format:
+            return f.cleaned_data
+
+        try:
+            return json.dumps(f.cleaned_data)
+        except:
+            raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
+
+    def get_params_for_dv_update(self):
+        """
+        Format data to send to the Dataverse
+        """
+        self.verify_layer_link_format()
+        if self.core_data and self.core_data.get('joinDescription') is None:
+            self.core_data['joinDescription'] = self.get_description_for_core_data()
+            self.save()
+
+        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
+        if not f.is_valid():
+            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
+
+        gis_data_info = self.get_gis_data_info()
+        if gis_data_info is None:
+            raise forms.ValidationError('Serious error!  Could not find gis_data_info: %s' % f.errors)
+
+        return f.format_data_for_dataverse_api(gis_data_info.dv_session_token,\
+                        join_description=self.get_description_for_core_data())
+
+
+    def verify_layer_link_format(self):
+        """
+        Hack to make sure the layer_link is a full url and not just the path
+
+        e.g., If it's just the path, take the rest of the url from the embed_link
+        """
+        layer_link = self.core_data.get('layer_link', None)
+
+        # Is it just a path?
+        if layer_link and layer_link.startswith('/'):
+            full_link = self.core_data.get('embed_link', None)
+            if not full_link:
+                full_link = self.core_data.get('map_image_link',  None)
+            # Does the embed link a full url
+            if full_link and full_link.lower().startswith('http'):
+                # Parse the embed link and use it to reformat the layer_link
+                url_parts = urlparse(full_link)
+
+                # Full layer link
+                layer_link = '%s://%s%s' % (url_parts.scheme,
+                                url_parts.netloc,
+                                layer_link)
+                self.core_data['layer_link'] = layer_link
+                self.save()

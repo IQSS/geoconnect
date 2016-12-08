@@ -115,12 +115,17 @@ class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
         verbose_name = 'WorldMapShapefileLayerInfo'
         verbose_name_plural = verbose_name
 
+    def get_layer_type(self):
+        return TYPE_SHAPEFILE_LAYER
 
-    def get_worldmap_info(self):
-        """
-        Must be defined in concrete classes
-        """
-        assert False, "This method must be defined in inheriting models"
+    def get_gis_data_info(self):
+        """Return the attribute holding gis_data_file"""
+        return self.shapefile_info
+
+    def get_description_for_core_data(self):
+        """Define this depending on the subclass"""
+
+        return 'Layer created my mapping a zipped Shapefile.'
 
 
     @staticmethod
@@ -157,156 +162,3 @@ class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
         WorldMapLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
 
         return wm_info
-
-
-
-    def get_layer_url_base(self):
-        """
-        Return the layer url base. Examples:
-            - http://worldmap.harvard.edu
-            - http(s)://worldmap.harvard.edu
-        """
-        if not self.core_data:
-            return None
-
-        layer_link = self.core_data.get('layer_link', None)
-        if layer_link is None:
-            return None
-
-        parsed_url = urlparse(layer_link)
-
-        return '%s://%s' % (parsed_url.scheme, parsed_url.netloc)
-
-
-    def get_legend_img_url(self):
-        """
-        Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
-        """
-        if not self.core_data:
-            return None
-
-        params = (('request', 'GetLegendGraphic')\
-                   , ('format', 'image/png')\
-                   , ('width', 20)\
-                   , ('height', 20)\
-                   , ('layer', self.layer_name)\
-                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
-                )
-        print ('params:', params)
-        param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
-        print ('\n\nparam_str:', param_str)
-
-        return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
-
-        """
-        Example of how an image tag is formed:
-        <img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
-        """
-
-    def get_dict_for_classify_form(self):
-        """
-        Parameters used for populating the classification form
-        # Override in concrete class
-        """
-        return dict(layer_name=self.layer_name,
-                data_source_type=TYPE_SHAPEFILE_LAYER,
-                raw_attribute_info=self.attribute_data)
-
-
-    def get_dataverse_server_url(self):
-        """
-        Retrieve the Dataverse base url to be used
-        for using the Dataverse API
-        """
-        if not self.shapefile_info:
-            return None
-
-        return self.shapefile_info.get_dataverse_server_url()
-
-
-    def get_data_dict(self, json_format=False):
-        """
-        Used for processing model data.
-        """
-        f = MapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        if not json_format:
-            return f.cleaned_data
-
-        try:
-            return json.dumps(f.cleaned_data)
-        except:
-            raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
-
-
-    def get_params_to_check_for_existing_layer_metadata(self):
-
-        assert self.shapefile_info is not None, "self.shapefile_info cannot be None"
-
-        f = CheckForExistingLayerForm(self.shapefile_info.__dict__)
-        if not f.is_valid():
-            raise forms.ValidationError(\
-                'CheckForExistingLayerForm params did not validate: %s'\
-                 % f.errors)
-
-        return f.cleaned_data
-
-
-    def get_params_for_dv_delete_layer_metadata(self):
-
-        f = GeoconnectToDataverseDeleteMapLayerMetadataForm(\
-                {'dv_session_token' : self.tabular_info.dv_session_token})
-        if not f.is_valid():
-            raise forms.ValidationError(\
-                'WorldMapLayerInfo DELETE params did not validate: %s' %\
-                 f.errors)
-
-        return f.format_for_dataverse_api()
-
-    #@staticmethod
-    #def get_existing_info(**params_for_existing_check):
-
-
-    def verify_layer_link_format(self):
-        """
-        Hack to make sure the layer_link is a full url and not just the path
-
-        e.g., If it's just the path, take the rest of the url from the embed_link
-        """
-        layer_link = self.core_data.get('layer_link', None)
-
-        # Is it just a path?
-        if layer_link and layer_link.startswith('/'):
-            full_link = self.core_data.get('embed_link', None)
-            if not full_link:
-                full_link = self.core_data.get('map_image_link',  None)
-            # Does the embed link a full url
-            if full_link and full_link.lower().startswith('http'):
-                # Parse the embed link and use it to reformat the layer_link
-                url_parts = urlparse(full_link)
-
-                # Full layer link
-                layer_link = '%s://%s%s' % (url_parts.scheme,
-                                url_parts.netloc,
-                                layer_link)
-                self.core_data['layer_link'] = layer_link
-                self.save()
-
-
-    def get_params_for_dv_update(self):
-        """
-        Format data to send to the Dataverse
-        """
-        # Hack for the layer_link
-        self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
-            self.core_data['joinDescription'] = 'Layer created from tabular file'
-            self.save()
-
-        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token)

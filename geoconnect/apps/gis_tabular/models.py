@@ -2,19 +2,11 @@
 Models to save the Tabular information from Dataverse
 as well as the mapping results from WorldMap
 """
-import json
 from hashlib import md5
-from urlparse import urlparse
 
 import jsonfield  # using jsonfield.JSONField
 
 from django.db import models
-from django import forms
-
-from shared_dataverse_information.dataverse_info.forms_existing_layer import CheckForExistingLayerForm
-from shared_dataverse_information.map_layer_metadata.forms import\
-    GeoconnectToDataverseMapLayerMetadataValidationForm,\
-    GeoconnectToDataverseDeleteMapLayerMetadataForm
 
 from apps.core.models import TimeStampedModel
 
@@ -22,15 +14,6 @@ from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 from apps.worldmap_layers.models import WorldMapLayerInfo
 
-from geo_utils.json_field_reader import JSONHelper
-
-
-#MapLayerMetadataValidationForm
-
-
-SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
-WORLDMAP_MANDATORY_IMPORT_EXTENSIONS = SHAPEFILE_MANDATORY_EXTENSIONS\
-    + ['.prj']   # '.prj' required for WorldMap shapefile ingest
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -71,9 +54,7 @@ class TabularFileInfo(GISDataFile):
         return len(self.column_names)
 
     def save(self, *args, **kwargs):
-        """
-        - Set the md5 attribute on save
-        """
+        """Set the md5 attribute on save"""
         if not self.id:
             super(TabularFileInfo, self).save(*args, **kwargs)
         self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
@@ -134,23 +115,14 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
 
     tabular_info = models.ForeignKey(TabularFileInfo)
 
-    #layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
-
-    #core_data = jsonfield.JSONField()
-    #attribute_data = jsonfield.JSONField()
-    #download_links = jsonfield.JSONField(blank=True)
-
-    # for object identification
-    #md5 = models.CharField(max_length=40,\
-    #                blank=True,\
-    #                db_index=True,\
-    #                help_text='auto-filled on save')
-
     class Meta:
         abstract = True
         ordering = ('-created',)
         verbose_name = 'WorldMapTabularLayerInfo'
         verbose_name_plural = verbose_name
+
+    def get_gis_data_info(self):
+        return self.tabular_info
 
     def get_unmapped_record_count(self):
         """
@@ -163,27 +135,6 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
         Check the mapping result for the number of mapped records
         """
         assert False, "This must be implemented in concrete classes"
-
-
-    def is_lat_lng_layer(self):
-        """
-        Is this the result of mapping Lat/Lng columns?
-        (Overridden in concrete class)
-        """
-        return False
-
-    def is_join_layer(self):
-        """
-        Is this the result of joining an existing layer?
-        (Overridden in concrete class)
-        """
-        return False
-
-    def get_worldmap_info(self):
-        """
-        Must be defined in concrete classes
-        """
-        assert False, "This method must be defined in inheriting models"
 
 
     @staticmethod
@@ -237,156 +188,8 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
 
 
 
-    def get_layer_url_base(self):
-        """
-        Return the layer url base. Examples:
-            - http://worldmap.harvard.edu
-            - http(s)://worldmap.harvard.edu
-        """
-        if not self.core_data:
-            return None
 
-        layer_link = self.core_data.get('layer_link', None)
-        if layer_link is None:
-            return None
-
-        parsed_url = urlparse(layer_link)
-
-        return '%s://%s' % (parsed_url.scheme, parsed_url.netloc)
-
-    def get_legend_img_url(self):
-        """
-        Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
-        """
-        if not self.core_data:
-            return None
-
-        params = (('request', 'GetLegendGraphic')\
-                   , ('format', 'image/png')\
-                   , ('width', 20)\
-                   , ('height', 20)\
-                   , ('layer', self.layer_name)\
-                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
-                )
-        print ('params:', params)
-        param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
-        print ('\n\nparam_str:', param_str)
-
-        return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
-
-        """
-        Example of how an image tag is formed:
-        <img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
-        """
-
-    def get_dict_for_classify_form(self):
-        """
-        Parameters used for populating the classification form
-        # Override in concrete class
-        """
-        pass
-
-
-    def get_dataverse_server_url(self):
-        """
-        Retrieve the Dataverse base url to be used
-        for using the Dataverse API
-        """
-        if not self.tabular_info:
-            return None
-
-        return self.tabular_info.get_dataverse_server_url()
-
-
-    def get_data_dict(self, json_format=False):
-        """
-        Used for processing model data.
-        """
-        f = MapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        if not json_format:
-            return f.cleaned_data
-
-        try:
-            return json.dumps(f.cleaned_data)
-        except:
-            raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
-
-
-    def get_params_to_check_for_existing_layer_metadata(self):
-
-        assert self.tabular_info is not None, "self.tabular_info cannot be None"
-
-        f = CheckForExistingLayerForm(self.tabular_info.__dict__)
-        if not f.is_valid():
-            raise forms.ValidationError(\
-                'CheckForExistingLayerForm params did not validate: %s'\
-                 % f.errors)
-
-        return f.cleaned_data
-
-
-    def get_params_for_dv_delete_layer_metadata(self):
-
-        f = GeoconnectToDataverseDeleteMapLayerMetadataForm(\
-                {'dv_session_token' : self.tabular_info.dv_session_token})
-        if not f.is_valid():
-            raise forms.ValidationError(\
-                'WorldMapLayerInfo DELETE params did not validate: %s' %\
-                 f.errors)
-
-        return f.format_for_dataverse_api()
-
-    #@staticmethod
-    #def get_existing_info(**params_for_existing_check):
-
-
-    def verify_layer_link_format(self):
-        """
-        Hack to make sure the layer_link is a full url and not just the path
-
-        e.g., If it's just the path, take the rest of the url from the embed_link
-        """
-        layer_link = self.core_data.get('layer_link', None)
-
-        # Is it just a path?
-        if layer_link and layer_link.startswith('/'):
-            full_link = self.core_data.get('embed_link', None)
-            if not full_link:
-                full_link = self.core_data.get('map_image_link',  None)
-            # Does the embed link a full url
-            if full_link and full_link.lower().startswith('http'):
-                # Parse the embed link and use it to reformat the layer_link
-                url_parts = urlparse(full_link)
-
-                # Full layer link
-                layer_link = '%s://%s%s' % (url_parts.scheme,
-                                url_parts.netloc,
-                                layer_link)
-                self.core_data['layer_link'] = layer_link
-                self.save()
-
-
-    def get_params_for_dv_update(self):
-        """
-        Format data to send to the Dataverse
-        """
-        # Hack for the layer_link
-        self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
-            self.core_data['joinDescription'] = 'Layer created from tabular file'
-            self.save()
-
-        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token)
-
-
-class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
+class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     """
     New Layer created by Joining a DataTable to an Existing Layer
     """
@@ -412,21 +215,19 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         verbose_name = 'WorldMap Tabular Join Layer Information'
         verbose_name_plural = verbose_name
 
-    def is_lat_lng_layer(self):
-        return False
+    def get_description_for_core_data(self):
+        """Define this depending on the subclass"""
+        return 'Layer created from joining to an existing layer'
 
-    def is_join_layer(self):
-        return True
+    def get_layer_type(self):
+        """Return the layer type--to distinguish from layers created
+        via shapefiles, lat/lng columns, etc"""
+        return TYPE_JOIN_LAYER
 
     def did_any_rows_map(self):
-        """
-        Check the mapping result for the number of mapped records
-        """
+        """Check the mapping result for the number of mapped records"""
         if not self.core_data:
             return False
-
-        #if not 'matched_records_count' in  self.core_data:
-        #    return False
 
         if self.core_data.get('matched_records_count', 0) > 0:
             return True
@@ -434,8 +235,7 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         return False
 
     def get_unmapped_record_count(self):
-        """
-        Return the unmapped record count.
+        """Return the unmapped record count.
 
         If no data is available, return -1
         """
@@ -444,36 +244,6 @@ class  WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
         return self.core_data.get('unmatched_record_count', -1)
 
-
-    def get_params_for_dv_update(self):
-        """
-        Format data to send to the Dataverse
-        """
-        self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
-            self.core_data['joinDescription'] = 'Layer created from joining to an existing layer'
-            self.save()
-
-        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token,\
-                        join_description=self.core_data['joinDescription'])
-
-    def get_dict_for_classify_form(self):
-        """
-        Parameters used for populating the classification form
-        # Override in concrete class
-        """
-        return dict(layer_name=self.layer_name,
-                data_source_type=TYPE_JOIN_LAYER,
-                raw_attribute_info=self.attribute_data)
-
-"""
-from apps.gis_tabular.models import *
-w = WorldMapJoinLayerInfo.objects.first()
-"""
 
 
 class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
@@ -499,23 +269,13 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         verbose_name = 'WorldMap Latitude/Longitude Layer Information'
         verbose_name_plural = verbose_name
 
+    def get_layer_type(self):
+        return TYPE_LAT_LNG_LAYER
 
-    def get_params_for_dv_update(self):
-        """
-        Format data to send to the Dataverse
-        """
-        self.verify_layer_link_format()
-        if self.core_data and self.core_data.get('joinDescription') is None:
-            self.core_data['joinDescription'] = 'Layer created from mapping the Latitude and Longitude columnns'
-            self.save()
-
-        f = GeoconnectToDataverseMapLayerMetadataValidationForm(self.core_data)
-        if not f.is_valid():
-            raise forms.ValidationError('WorldMapLayerInfo params did not validate: %s' % f.errors)
-
-        return f.format_data_for_dataverse_api(self.tabular_info.dv_session_token,\
-                        join_description=self.core_data['joinDescription'])
-
+    def get_description_for_core_data(self):
+        """Define this depending on the subclass"""
+        return ('Layer created by mapping Latitude and Longitude'
+                ' columns contained in the tabular file')
 
     def did_any_rows_map(self):
         """
@@ -540,21 +300,6 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
 
         return self.core_data.get('unmapped_record_count', -1)
 
-
-    def is_lat_lng_layer(self):
-        return True
-
-    def is_join_layer(self):
-        return False
-
-    def get_dict_for_classify_form(self):
-        """
-        Parameters used for populating the classification form
-        # Override in concrete class
-        """
-        return dict(layer_name=self.layer_name,
-                data_source_type=TYPE_LAT_LNG_LAYER,
-                raw_attribute_info=self.attribute_data)
 
 
 class TestIt(TimeStampedModel):
