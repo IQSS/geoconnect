@@ -193,7 +193,7 @@ class ViewAjaxVisualizeShapefile(View):
             msg(send_shp_service.err_msgs)
             # (3b) Uh oh!  Failed to visualize
             #
-            err_note = "Sorry!  The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
+            err_note = "Sorry! The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
 
             err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
             json_msg = MessageHelperJSON.get_json_msg(success=False\

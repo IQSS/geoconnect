@@ -33,7 +33,7 @@ class DeleteTabularMapForm(forms.Form):
         # grab the most recent object
         worldmap_info = SelectedWorldMapLayerInfoType.objects.filter(md5=tab_md5).first()
 
-        WorldMapTabularLayerInfo.clear_duplicate_worldmap_info_objects(worldmap_info)
+        SelectedWorldMapLayerInfoType.clear_duplicate_worldmap_info_objects(worldmap_info)
 
         return worldmap_info
 

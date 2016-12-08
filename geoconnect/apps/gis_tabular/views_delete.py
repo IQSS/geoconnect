@@ -83,7 +83,7 @@ def view_delete_tabular_map(request):
         worldmap_layer_info.delete()
 
     if success2 is False:
-        logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
+        logger.error("Failed to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
         d['ERROR_FOUND'] = True
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True

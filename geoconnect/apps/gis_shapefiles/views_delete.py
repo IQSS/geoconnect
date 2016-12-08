@@ -47,13 +47,12 @@ def view_delete_map(request):
         lu['return_to_dataverse_url'] = gis_data_file.return_to_dataverse_url
 
 
-    #import ipdb; ipdb.set_trace()
     # -----------------------------------
     # Delete map from WorldMap
     # -----------------------------------
     (success, err_msg_or_None) = delete_map_layer(gis_data_file, worldmap_layer_info)
     if success is False:
-        logger.error("Faild to delete WORLDMAP layer: %s", err_msg_or_None)
+        logger.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
 
         if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
             pass
@@ -76,7 +75,7 @@ def view_delete_map(request):
 
     (success2, err_msg_or_None2) = MetadataUpdater.delete_dataverse_map_metadata(worldmap_layer_info)
     if success2 is False:
-        logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
+        logger.error("Failed to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
         lu['ERROR_FOUND'] = True
         lu['DATAVERSE_DATA_DELETE_FAILURE'] = True

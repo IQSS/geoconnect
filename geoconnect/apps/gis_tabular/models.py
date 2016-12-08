@@ -17,8 +17,11 @@ from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
 
 from apps.core.models import TimeStampedModel
+
 from apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
+from apps.worldmap_layers.models import WorldMapLayerInfo
+
 from geo_utils.json_field_reader import JSONHelper
 
 
@@ -120,7 +123,7 @@ class TabularFileInfo(GISDataFile):
 
 
 
-class WorldMapTabularLayerInfo(TimeStampedModel):
+class WorldMapTabularLayerInfo(WorldMapLayerInfo):
     """
     Store the results of a new layer created by:
         (1) Successfully joining a tabular file to an existing layer
@@ -131,17 +134,17 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
 
     tabular_info = models.ForeignKey(TabularFileInfo)
 
-    layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
+    #layer_name = models.CharField(max_length=255, blank=True, help_text='auto-filled on save')
 
-    core_data = jsonfield.JSONField()
-    attribute_data = jsonfield.JSONField()
-    download_links = jsonfield.JSONField(blank=True)
+    #core_data = jsonfield.JSONField()
+    #attribute_data = jsonfield.JSONField()
+    #download_links = jsonfield.JSONField(blank=True)
 
     # for object identification
-    md5 = models.CharField(max_length=40,\
-                    blank=True,\
-                    db_index=True,\
-                    help_text='auto-filled on save')
+    #md5 = models.CharField(max_length=40,\
+    #                blank=True,\
+    #                db_index=True,\
+    #                help_text='auto-filled on save')
 
     class Meta:
         abstract = True
@@ -190,12 +193,8 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         a python dictionary containing information
         returned from the WorldMapLayerInfo.
 
-        (Also used to check if a layer exists)
+        (Also used to for formatting when checking if a layer exists)
         """
-        #print 'build_from_worldmap_json'
-        #print 'tabular_info', tabular_info
-        #print 'json_dict', json_dict
-
         if tabular_info is None:
             LOGGER.error('tabular_info cannot be None')
             return None
@@ -204,52 +203,12 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
             LOGGER.error('json_dict cannot be None')
             return None
 
-        if not hasattr(json_dict, 'has_key'):
-            LOGGER.error('json_dict must be a dict.  not type: [%s]', type(json_dict))
+        init_data = WorldMapLayerInfo.build_dict_from_worldmap_json(json_dict)
+        if init_data is None:
+            LOGGER.error('Failed to build WorldMapLayerInfo from WorldMap JSON: %s', json_dict)
             return None
 
-        # -----------------------------------------
-        # Get core data (required)
-        # -----------------------------------------
-        if not 'data' in json_dict:
-            LOGGER.error('The json_dict must have a "data" key')
-            return None
-        core_data = json_dict['data']
-
-        # -----------------------------------------
-        # Get attribute data (required)
-        # Note: Currently this is an escaped string within core data...
-        # -----------------------------------------
-        if not 'attribute_info' in core_data:
-            LOGGER.error('The core_data must have a "attribute_info" key')
-            return None
-
-        attribute_data = JSONHelper.to_python_or_none(core_data['attribute_info'])
-        if attribute_data is None:
-            LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
-            return None
-        #    attribute_data = ''
-
-        # -----------------------------------------
-        # Get download_links (optional)
-        # Note: Currently this is an escaped string within core data...
-        # -----------------------------------------
-        if 'download_links' in core_data:
-            download_links =  JSONHelper.to_python_or_none(core_data['download_links'])
-
-            if download_links is None:
-                LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
-                download_links = ''
-        else:
-            download_links = ''
-
-        # -----------------------------------------
-        # Gather initial values
-        # -----------------------------------------
-        init_data = dict(tabular_info=tabular_info,\
-                    core_data=core_data,\
-                    attribute_data=attribute_data,\
-                    download_links=download_links)
+        init_data['tabular_info'] = tabular_info
 
         # -----------------------------------------
         # Is this a tabular join or lat/lng map?
@@ -257,7 +216,8 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         attrs_indicating_a_join = ('tablejoin_id',\
                 'join_layer_id',\
                 'join_layer_typename')
-        if all(k in core_data for k in attrs_indicating_a_join):
+
+        if all(k in init_data.get('core_data', []) for k in attrs_indicating_a_join):
             # Looks like a TableJoin
             SelectedWorldMapLayerInfoType = WorldMapJoinLayerInfo
         else:
@@ -271,41 +231,9 @@ class WorldMapTabularLayerInfo(TimeStampedModel):
         wm_info.save()
 
         # Clear dupe layers, if any
-        WorldMapTabularLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
+        WorldMapLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
 
         return wm_info
-
-    @staticmethod
-    def clear_duplicate_worldmap_info_objects(worldmap_info):
-        """
-        wm_info_object - instance of a WorldMapLatLngInfo or WorldMapJoinLayerInfo
-        """
-        if worldmap_info is None or not worldmap_info.id:
-            # Make sure the object has been saved -- e.g. has an 'id'
-            return
-        assert hasattr(worldmap_info, 'is_lat_lng_layer'),\
-            ("wm_info_object must be a WorldMapJoinLayerInfo"
-             " or WorldMapLatLngInfo object")
-
-        if worldmap_info.is_lat_lng_layer():
-            SelectedWorldMapLayerInfoType = WorldMapLatLngInfo
-        else:
-            SelectedWorldMapLayerInfoType = WorldMapJoinLayerInfo
-
-        # Delete similar objects - same tabular file + same WorldMap layer
-        # Bit of a hack due to fuzzy requirements early on
-        # whether a tab file can have more than one map -- currently allowing
-        #
-        filters = dict(tabular_info=worldmap_info.tabular_info,\
-                        layer_name=worldmap_info.layer_name)
-
-        # Pull objects except the current "worldmap_info"
-        #
-        older_info_objects = SelectedWorldMapLayerInfoType.objects.filter(\
-                        **filters).exclude(id=worldmap_info.id)
-
-        # Delete the older objects
-        older_info_objects.delete()
 
 
 

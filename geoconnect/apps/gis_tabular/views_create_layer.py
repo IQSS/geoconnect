@@ -101,7 +101,6 @@ def view_map_tabular_file_form(request):
         msg('error msg: %s' % json_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
-
     # -----------------------------------------
     # Succeeded!  Create a WorldMapTabularLayerInfo object
     # -----------------------------------------

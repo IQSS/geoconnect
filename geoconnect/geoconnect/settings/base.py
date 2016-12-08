@@ -219,10 +219,12 @@ LOCAL_APPS = (
     'apps.content_pages',
     'apps.registered_dataverse',    # relies on gis_basic_file
     'apps.style_layer_information',
+
+    'apps.worldmap_layers', # abstract model
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
-    'apps.worldmap_connect',
     'apps.gis_tabular',
+    'apps.worldmap_connect',
     #'apps.column_stats',
     #'folium_maker',     # quick experiment
 )
