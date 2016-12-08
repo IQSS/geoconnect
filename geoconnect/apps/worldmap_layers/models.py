@@ -15,7 +15,7 @@ from shared_dataverse_information.map_layer_metadata.forms import\
     MapLayerMetadataValidationForm,\
     GeoconnectToDataverseMapLayerMetadataValidationForm,\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
-    
+
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
         TYPE_SHAPEFILE_LAYER,\
         TYPE_LAT_LNG_LAYER
@@ -44,7 +44,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
     class Meta:
         abstract = True
-        ordering = ('-created',)
+        ordering = ('-modified', '-created')
         verbose_name = 'WorldMapLayerInfo'
         verbose_name_plural = verbose_name
 

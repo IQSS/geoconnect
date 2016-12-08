@@ -8,7 +8,8 @@ from django.template import RequestContext
 from django.conf import settings
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_connect.models import WorldMapLayerInfo
+#from apps.worldmap_connect.models import WorldMapLayerInfo
+from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 

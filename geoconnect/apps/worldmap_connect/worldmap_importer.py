@@ -39,7 +39,7 @@ class WorldMapImporter:
         :param timeout_seconds: Optional. Number of seconds request is
             given until an exception is raised
         :type timeout_seconds: int or float
-        """ 
+        """
         self.api_import_url = ADD_SHAPEFILE_API_PATH
         self.timeout_seconds = timeout_seconds
         self.return_type_json = return_type_json
@@ -95,8 +95,8 @@ class WorldMapImporter:
 
         # quick hack here - so that the layer owner is the
         # worldmap account holder
-        layer_params['worldmap_username'] = settings.WORLDMAP_ACCOUNT_USERNAME
 
+        #layer_params['worldmap_username'] = settings.WORLDMAP_ACCOUNT_USERNAME
 
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
 

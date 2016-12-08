@@ -1,5 +1,6 @@
 import os
 from hashlib import md5
+import logging
 
 from django.db import models
 
@@ -15,6 +16,9 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 SHAPEFILE_EXTENSION_SHP = '.shp'
 SHAPEFILE_MANDATORY_EXTENSIONS = [SHAPEFILE_EXTENSION_SHP, '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
+
+LOGGER = logging.getLogger(__name__)
+
 
 class ShapefileInfo(GISDataFile):
     """Expects a .zip file upload

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from apps.gis_basic_file.admin import GISDataFileAdmin
 
-from apps.gis_shapefiles.models import ShapefileInfo
+from apps.gis_shapefiles.models import ShapefileInfo, WorldMapShapefileLayerInfo
 from apps.gis_shapefiles.admin_forms import ShapefileInfoAdminForm
 
 from geo_utils.admin_util import make_changelist_updates
@@ -41,3 +41,9 @@ class ShapefileInfoAdmin(GISDataFileAdmin):
                  ] + fs
         return fs
 admin.site.register(ShapefileInfo, ShapefileInfoAdmin)
+
+
+class WorldMapShapefileLayerInfoAdmin(admin.ModelAdmin):
+    save_on_top = True
+    list_display = ('shapefile_info', 'layer_name', 'created', 'modified', 'md5',)
+admin.site.register(WorldMapShapefileLayerInfo, WorldMapShapefileLayerInfoAdmin)

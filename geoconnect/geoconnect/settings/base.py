@@ -326,6 +326,9 @@ WORLDMAP_ACCOUNT_PASSWORD = None
 WORLDMAP_DEFAULT_TIMEOUT = 8*60 # seconds
 WORLDMAP_SHORT_TIMEOUT = 2*60 # seconds, for non-layer making requests
 
+# Go and get info from WorldMap instead of using saved info
+WORLDMAP_LAYER_EXPIRATION = 15 * 60 # 15 minutes
+
 # Old WorldMap connection info - leaving as placeholder 2/3 until
 # updated geoconnect fully ready
 WORLDMAP_TOKEN_NAME_FOR_DV = 'geoconnect_token'

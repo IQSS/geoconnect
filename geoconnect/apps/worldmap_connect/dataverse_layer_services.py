@@ -220,7 +220,7 @@ def get_layer_info_using_dv_info(params_dict):
     # Make the request
     #--------------------------------------
     try:
-        r = requests.post(GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
+        resp = requests.post(GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH\
                         , data=data_params\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
@@ -239,26 +239,26 @@ def get_layer_info_using_dv_info(params_dict):
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
         return False, err_msg
 
-    print (r.text)
-    print (r.status_code)
+    print (resp.text)
+    print (resp.status_code)
 
     #--------------------------------------
     # Response looks good
     #--------------------------------------
-    if r.status_code == 200:
+    if resp.status_code == 200:
         try:
-            response_dict = r.json()
+            response_dict = resp.json()
         except ValueError:
             err_msg = "Failed to convert response to JSON."
-            LOGGER.error(err_msg + "Status code: 200.\nResponse text: %s" % r.text)
+            LOGGER.error(err_msg + "Status code: 200.\nResponse text: %s" % resp.text)
             return False, err_msg
 
-        return True, response_dict
+        return response_dict.get('success', False), response_dict
 
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
-    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+    err_msg = "Status code: %s\nError: %s" % (resp.status_code, resp.text)
     return False, err_msg
 
 def get_join_targets_as_json():
