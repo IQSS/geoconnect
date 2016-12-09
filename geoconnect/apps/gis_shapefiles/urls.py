@@ -34,11 +34,6 @@ urlpatterns += patterns('apps.gis_shapefiles.views_02_visualize',
    url(r'^ajax-visualize/(?P<shp_md5>\w{1,32})/$', ViewAjaxVisualizeShapefile.as_view(), name="view_ajax_attempt_visualization"),
 )
 
-urlpatterns += patterns('apps.gis_shapefiles.views_delete',
-
-    url(r'^delete-map/$', 'view_delete_map', name="view_delete_map"),
-)
-
 #urlpatterns += patterns('apps.gis_shapefiles.view_quick_test',
 #    url(r'^test-embed/?$', 'view_test_embed', name="view_test_embed"),
 #)

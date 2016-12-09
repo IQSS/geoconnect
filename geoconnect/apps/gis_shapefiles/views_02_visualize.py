@@ -17,7 +17,6 @@ from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
-from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
 
@@ -52,15 +51,13 @@ def render_ajax_basic_err_msg(err_note, shapefile_info=None):
 
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
-
+    assert False, "this should be deleted"
     #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
     assert isinstance(worldmap_layerinfo, WorldMapLayerInfo),\
         "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
-    delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
-                                        , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
-                                    )
+
 
     classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
 
