@@ -13,7 +13,7 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
@@ -55,7 +55,7 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
 
     #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-    assert type(worldmap_layerinfo) is WorldMapLayerInfo,\
+    assert isinstance(worldmap_layerinfo, WorldMapLayerInfo),\
         "worldmap_layerinfo must be a WorldMapLayerInfo object"
 
     delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
@@ -67,20 +67,27 @@ def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
 
     d = dict(shapefile_info=shapefile_info\
             , worldmap_layerinfo=worldmap_layerinfo\
+            , core_data=worldmap_layerinfo.core_data\
+            , download_links=worldmap_layerinfo.download_links\
+            , attribute_data=worldmap_layerinfo.attribute_data\
             , classify_form=classify_form\
             , delete_form=delete_form\
             , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
             , show_visualize_success_msg=True\
         )
-    d[GEOCONNECT_STEP_KEY] = STEP3_STYLE    # Used to display delete button
+
+
+    d[GEOCONNECT_STEP_KEY] = STEP2_STYLE    # Used to display delete button
 
     #d['classify_form'] = classify_form
     #d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
-
-    return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
-                    , d\
-                    , context_instance=RequestContext(request)\
-                    )
+    return render_to_string('gis_tabular/view_tabular_map_div.html',\
+                        d,\
+                        context_instance=RequestContext(request))
+    #return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
+    #                , d\
+    #                , context_instance=RequestContext(request)\
+    #                )
 
     # -----------------------------
     # Without classify form:
@@ -125,7 +132,6 @@ class ViewAjaxVisualizeShapefile(View):
         json_msg = MessageHelperJSON.get_json_msg(success=True
                         , msg='Success!'\
                         , data_dict=dict(id_main_panel_content=visualize_html\
-                            #, id_main_panel_title=STEP2_VISUALIZE\
                                     , id_main_panel_title=main_title_panel_html\
                                     , id_breadcrumb=breadcrumb_html
                                         )\

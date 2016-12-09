@@ -24,7 +24,7 @@ from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE
 from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -71,7 +71,7 @@ def view_existing_map(request, worldmap_info=None):
         test_files=TabularFileInfo.objects.all(),\
         )
 
-    template_dict[GEOCONNECT_STEP_KEY] = STEP3_STYLE
+    template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
     return render_to_response('gis_tabular/view_tabular_map.html',\
@@ -98,7 +98,7 @@ def build_tabular_map_html(request, worldmap_info):
 
     delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
 
-    template_dict = get_common_lookup(request)
+    template_dict = get_common_lookup(request) 
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
             core_data=worldmap_info.core_data,\
@@ -112,7 +112,7 @@ def build_tabular_map_html(request, worldmap_info):
     # --------------------------------
     # Classification form attributes
     # --------------------------------
-    classify_params = {GEOCONNECT_STEP_KEY : STEP3_STYLE,\
+    classify_params = {GEOCONNECT_STEP_KEY : STEP2_STYLE,\
             'ATTRIBUTE_VALUE_DELIMITER' : ATTRIBUTE_VALUE_DELIMITER,\
             'classify_form' : ClassifyLayerForm(\
                 **worldmap_info.get_dict_for_classify_form())}

@@ -93,11 +93,6 @@ class WorldMapImporter:
             LOGGER.error(err_msg)
             return self.get_result_msg(False, err_msg)
 
-        # quick hack here - so that the layer owner is the
-        # worldmap account holder
-
-        #layer_params['worldmap_username'] = settings.WORLDMAP_ACCOUNT_USERNAME
-
         shp_file_param = {'content': open(fullpath_to_file, 'rb')}
 
         # Send the request to WorldMap

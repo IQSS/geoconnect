@@ -22,7 +22,7 @@
 	{% endif %}
 
     {% if not Err_Found %}
-        {% if first_time_notify  and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
+        {% if first_time_notify and GEOCONNECT_STEP_KEY == STEP1_EXAMINE %}
     <!-- First time file is loaded, show a notification -->
     <div id="id-first-time-alert" class="alert alert-success alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -44,19 +44,11 @@
 	    {% endif %}
 		{% if shapefile_info and not Err_Found %}
             <!-- We have a shapefile here -->
-            {% if GEOCONNECT_STEP_KEY == STEP2_VISUALIZE %}
-
-                {#% include "gis_shapefiles/view_03_visualize_layer.html" %#}
-
-            {% else %}{% if GEOCONNECT_STEP_KEY == STEP3_STYLE %}
-
+            {% if GEOCONNECT_STEP_KEY == STEP2_STYLE %}
 		        {% include "gis_shapefiles/view_04_ajax_style_layer.html" %}
-
             {% else %}
-
 			    {% include "gis_shapefiles/view_02a_shp_table.html" %}
-
-            {% endif %}{% endif %}
+            {% endif %}
 
 		{% endif %}
 

@@ -80,6 +80,16 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         return self.get_layer_type() == TYPE_JOIN_LAYER
 
+
+    def get_core_data_dict_for_views(self):
+        """
+        Parameters used for HTML views of map data:
+            core_data, attribute_data, download_links
+        """
+        return dict(worldmap_layerinfo=self,
+                core_data=self.core_data,
+                attribute_data=self.attribute_data,                download_links=self.download_links)
+
     def get_dict_for_classify_form(self):
         """
         Parameters used for populating the classification form

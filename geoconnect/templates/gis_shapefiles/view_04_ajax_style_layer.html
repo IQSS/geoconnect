@@ -20,16 +20,13 @@
         {% endif %}
 
         Use the form below the map to style it.
-        &nbsp; <small><a href="{{ worldmap_layerinfo.layer_link }}" target="_blank">(View on WorldMap)</a></small>
+        &nbsp; <small><a href="{{ core_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
 
             <!-- WorldMap Layer in iframe -->
             <div>
 
-                {% comment %}
-                <iframe width="100%" height=900>{{ worldmap_layerinfo.embed_map_link }}</iframe>
-                {% endcomment %}
                 <div style="width:70%;float:left;">
-                        <iframe id="id_iframe_map" height="275" width="100%" src="{{ worldmap_layerinfo.embed_map_link }}"></iframe>
+                        <iframe id="id_iframe_map" height="275" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
                 </div>
 
                 <div style="width:30%;float:left;text-align:center;">

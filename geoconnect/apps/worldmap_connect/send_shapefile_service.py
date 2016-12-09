@@ -51,6 +51,27 @@ class SendShapefileService:
 
         assert isinstance(self.shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
 
+    #def check_for_existing_map(self):
+
+    def flow1_does_map_already_exist(self):
+        """Check for an existing map in the Geoconnect database
+        and on the WorldMap server"""
+
+        # (1) Does the self.shapefile_info have what it needs?  Mainly a legit zippped shapefile
+        #
+        if not self.verify_shapefile():
+            return False
+
+        # (2) Check if a successful import already exists (WorldMapLayerInfo), if it does, set the "self.worldmap_layerinfo"
+        if self.does_successful_import_already_exist():
+            return True
+
+        # (3) Check the WorldMap for an existing map layer
+        if self.check_worldmap_for_existing_layer():
+            return True
+
+        return False
+
     def send_shapefile_to_worldmap(self):
         """
         TO DO : Option to make this happen via async.
