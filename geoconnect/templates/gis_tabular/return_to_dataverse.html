@@ -6,13 +6,9 @@ If a map has already beeen created use:
 
 This is connected to modal boxes to verify keeping the map, etc.
 {% endcomment %}
-{% if gis_data_file and gis_data_file.return_to_dataverse_url %}
-<h1>get rid of this codepath</h1>
-    <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
-
-{% else %}{% if gis_data_info and gis_data_info.return_to_dataverse_url %}
+{% if gis_data_info and gis_data_info.return_to_dataverse_url %}
     <i>you got it...</i>
-    <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
+    <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
 
 {% else %}{% if return_to_dataverse_url %}
     <a href="{{ return_to_dataverse_url }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
@@ -25,4 +21,4 @@ This is connected to modal boxes to verify keeping the map, etc.
 
 {% else %}
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs">Return to the Dataverse</a>
-{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+{% endif %}{% endif %}{% endif %}{% endif %}
