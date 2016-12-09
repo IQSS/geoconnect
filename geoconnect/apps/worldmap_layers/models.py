@@ -17,7 +17,7 @@ from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
 
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
-        TYPE_SHAPEFILE_LAYER,\
+        DV_MAP_TYPE_SHAPEFILE,\
         TYPE_LAT_LNG_LAYER
 
 from apps.core.models import TimeStampedModel
@@ -67,18 +67,18 @@ class WorldMapLayerInfo(TimeStampedModel):
 
     def is_shapefile_layer(self):
         """Is this the result of mapping a zipped shapefile?"""
-
-        return self.get_layer_type() == TYPE_SHAPEFILE_LAYER
+        return False
+        #self.get_layer_type() == DV_MAP_TYPE_SHAPEFILE
 
     def is_lat_lng_layer(self):
         """Is this the result of mapping Lat/Lng columns?"""
-
-        return self.get_layer_type() == TYPE_LAT_LNG_LAYER
+        return False
+        #return self.get_layer_type() == TYPE_LAT_LNG_LAYER
 
     def is_join_layer(self):
         """Is this the result of joining an existing layer?"""
-
-        return self.get_layer_type() == TYPE_JOIN_LAYER
+        return False
+        #return self.get_layer_type() == TYPE_JOIN_LAYER
 
 
     def get_core_data_dict_for_views(self):

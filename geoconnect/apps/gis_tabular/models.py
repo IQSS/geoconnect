@@ -188,7 +188,6 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
 
 
 
-
 class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     """
     New Layer created by Joining a DataTable to an Existing Layer
@@ -218,6 +217,9 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
     def get_description_for_core_data(self):
         """Define this depending on the subclass"""
         return 'Layer created from joining to an existing layer'
+
+    def is_join_layer(self):
+        return True
 
     def get_layer_type(self):
         """Return the layer type--to distinguish from layers created
@@ -272,6 +274,9 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
     def get_layer_type(self):
         return TYPE_LAT_LNG_LAYER
 
+    def is_lat_lng_layer(self):
+        return True
+        
     def get_description_for_core_data(self):
         """Define this depending on the subclass"""
         return ('Layer created by mapping Latitude and Longitude'

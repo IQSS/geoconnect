@@ -39,14 +39,14 @@ Functions that interact with the WorldMap API to:
 LOGGER = logging.getLogger(__name__)
 
 
-def delete_map_layer(gis_data_file, worldmap_layer_info):
+def delete_map_layer(gis_data_info, worldmap_layer_info):
     """
     Delete a Layer from the WorldMap, using the WorldMap API
 
     returns (True, None)
         or (False, 'error message of some type')
     """
-    assert isinstance(gis_data_file, GISDataFile), "gis_data_file must be a GISDataFile object"
+    assert isinstance(gis_data_info, GISDataFile), "gis_data_file must be a GISDataFile object"
     #assert isinstance(worldmap_layer_info, WorldMapLayerInfo),\
     #        "worldmap_layer_info must be a WorldMapLayerInfo object"
 
@@ -54,37 +54,22 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
     # Does the GISDataFile object correspond
     #    to the WorldMapLayerInfo object?
     #--------------------------------------
-    if hasattr(worldmap_layer_info, 'import_attempt'):
-        # Shapefiles...
-        #
-        if worldmap_layer_info.import_attempt and worldmap_layer_info.import_attempt.gis_data_file:
-            if gis_data_file != worldmap_layer_info.import_attempt.gis_data_file:
-                err_msg = """Error the GISDataFile does not \
-            correspond to the WorldMapLayerInfo object. (shapefile)"""
-                LOGGER.error(err_msg)
-                return (False, err_msg)
-    elif hasattr(worldmap_layer_info, 'tabular_info'):
-        # Tabular files...
-        #
-        if worldmap_layer_info.tabular_info != gis_data_file:
-            err_msg = """Error the GISDataFile does not \
-            correspond to the WorldMapLayerInfo object. (tabular)"""
-            LOGGER.error(err_msg)
-            return (False, err_msg)
-
-        if worldmap_layer_info.is_join_layer():
-            return delete_join_layer(worldmap_layer_info)
-    else:
-        # Unknown
-        err_msg = "worldmap_layer_info is an unknown file type: %s" % type(worldmap_layer_info)
+    if worldmap_layer_info.get_gis_data_info() != gis_data_info:
+        err_msg = ('Error the GISDataFile does not correspond'
+                   ' to the WorldMapLayerInfo object.')
         LOGGER.error(err_msg)
         return (False, err_msg)
+
+    #   For join layers, remove the TableJoin object
+    #
+    if worldmap_layer_info.is_join_layer():
+        return delete_worldmap_tablejoin(worldmap_layer_info)
 
 
     #--------------------------------------
     # Prepare params for WorldMAP API call
     #--------------------------------------
-    data_params = get_dataverse_info_dict(gis_data_file)
+    data_params = get_dataverse_info_dict(gis_data_info)
     existing_layer_form = CheckForExistingLayerForm(data_params)
     if not existing_layer_form.is_valid():
         err_msg = """Error.  Validation failed. (CheckForExistingLayerForm)"""
@@ -129,7 +114,8 @@ def delete_map_layer(gis_data_file, worldmap_layer_info):
 
     return (False, err_msg)
 
-def delete_join_layer(worldmap_layer_info):
+
+def delete_worldmap_tablejoin(worldmap_layer_info):
     """
     Use the WorldMap API to delete a TableJoin object
     """

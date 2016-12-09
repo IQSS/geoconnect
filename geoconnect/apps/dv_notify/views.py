@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.classification.utils import get_worldmap_info_object
-from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
+from apps.layer_types.static_vals import DV_MAP_TYPE_SHAPEFILE,\
                 TYPE_JOIN_LAYER,\
                 TYPE_LAT_LNG_LAYER
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -19,7 +19,7 @@ def ajax_dv_notify_shapefile_map(request, worldmapinfo_md5):
     """
     Retrieve a WorldMapLayerInfo object (from a shapefile) and send it to Dataverse
     """
-    worldmap_layer_info = get_worldmap_info_object(TYPE_SHAPEFILE_LAYER, worldmapinfo_md5)
+    worldmap_layer_info = get_worldmap_info_object(DV_MAP_TYPE_SHAPEFILE, worldmapinfo_md5)
     if worldmap_layer_info is None:
         err_msg = 'WorldMapLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)

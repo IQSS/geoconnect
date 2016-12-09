@@ -36,8 +36,14 @@
                 <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
                 <p>Please {% include "gis_tabular/return_to_dataverse.html" %}
+					<br /><br />or
 
-                  <br /><br />or  <a href="{% url 'view_tabular_file' tabular_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
+					<!-- Re-map link -->
+				  	{% if is_tabular_layer %}
+                  		<a href="{% url 'view_tabular_file' gis_data_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
+				  	{% else %}{% if is_shapefile_layer %}
+						<a href="{% url 'view_shapefile' gis_data_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
+				  	{% endif %}{% endif %}
                 </p>
     	    {% endif %}
     	    </div>
@@ -46,14 +52,14 @@
 
 	{% if DELETE_SUCCESS %}
 	<div class="alert alert-success" style="padding:10px;">
-        Success!  The Map has been deleted for file <b>{{ tabular_info.datafile_label }}</b>.
+        Success!  The Map has been deleted for file <b>{{ gis_data_info.datafile_label }}</b>.
     </div>
 
 	    {% if tabular_info %}
 	    <div class="panel panel-default">
 	        <div class="panel-heading">Would you like to Re-Map this file?</div>
 	        <div class="panel-body">
-            	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ tabular_info.datafile_label }}</b></a>
+            	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
 
 	            <br /><br />
 				{% include "gis_tabular/return_to_dataverse.html" %}

@@ -14,7 +14,8 @@
         {% if is_tabular_delete %}
         <form action="{% url 'view_delete_tabular_map' %}" method="POST">
         {% else %}
-        <form action="{% url 'view_delete_map' %}" method="POST">
+        <form action="{% url 'view_delete_tabular_map' %}" method="POST">
+            <!--form action="{% url 'view_delete_map' %}" method="POST"-->
         {% endif %}
             {% if delete_form %}
                 {% csrf_token %}

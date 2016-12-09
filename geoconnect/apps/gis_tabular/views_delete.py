@@ -44,16 +44,24 @@ def view_delete_tabular_map(request):
     worldmap_layer_info = f.get_worldmap_layer_info()
     if not worldmap_layer_info:
         raise Http404('WorldMap Layer info no longer available')
-    tabular_info = worldmap_layer_info.tabular_info
 
-    d['tabular_info'] = tabular_info
+    # depending on the type: tabular_info, shapefile_info, etc
+    #
+    if worldmap_layer_info.is_shapefile_layer():
+        d['is_shapefile_layer'] = True
+    else:
+        d['is_tabular_layer'] = True
+
+    gis_data_info = worldmap_layer_info.get_gis_data_info()
+
+    d['gis_data_info'] = gis_data_info
 
     # -----------------------------------
     # Delete map from WorldMap
     # -----------------------------------
     flag_delete_local_worldmap_info = False
 
-    (success, err_msg_or_None) = delete_map_layer(tabular_info, worldmap_layer_info)
+    (success, err_msg_or_None) = delete_map_layer(gis_data_info, worldmap_layer_info)
     if success is False:
         logger.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
 

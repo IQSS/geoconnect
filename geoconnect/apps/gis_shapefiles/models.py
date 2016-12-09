@@ -122,6 +122,9 @@ class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
     def get_layer_type(self):
         return TYPE_SHAPEFILE_LAYER
 
+    def is_shapefile_layer(self):
+        return True
+
     def get_gis_data_info(self):
         """Return the attribute holding gis_data_file"""
         return self.shapefile_info
