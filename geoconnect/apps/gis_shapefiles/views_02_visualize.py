@@ -8,7 +8,6 @@ from django.template import RequestContext
 from django.conf import settings
 
 from apps.gis_shapefiles.models import ShapefileInfo
-#from apps.worldmap_connect.models import WorldMapLayerInfo
 from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
@@ -20,7 +19,6 @@ from shared_dataverse_information.layer_classification.forms import\
 
 from geo_utils.message_helper_json import MessageHelperJSON
 
-from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
     render_main_panel_title_for_style_step
 
@@ -51,8 +49,10 @@ def render_ajax_basic_err_msg(err_note, shapefile_info=None):
 
 def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
     """Render a chunk of HTML that will be passed back in an AJAX response"""
-    assert False, "this should be deleted"
-    #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
+
+    #assert False, "This should be similar to views.view_classify_shapefile!!!"
+
+
     assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
     assert isinstance(worldmap_layerinfo, WorldMapLayerInfo),\
         "worldmap_layerinfo must be a WorldMapLayerInfo object"
@@ -138,37 +138,6 @@ class ViewAjaxVisualizeShapefile(View):
 
 
     def get(self, request, shp_md5):
-
-        # (1) Retrieve the ShapefileInfo object
-        #
-        msgt('Retrieve the ShapefileInfo object')
-        try:
-            shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
-        except ShapefileInfo.DoesNotExist:
-            err_note = "Sorry!  The shapefile was not found."
-            err_note_html = render_ajax_basic_err_msg(err_note)
-
-            json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
-            logger.error('Shapefile not found for hash: %s', shp_md5)
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-
-        # (2) Check for a previous, successful visualization attempt
-        #   If one exists, send it over!
-        #
-        # UPDATE: use WorldMap API to check user and shapefile id
-        #
-        msgt('(2) Check for a previous, successful visualization attempt')
-
-        worldmap_layerinfo = get_successful_worldmap_attempt_from_shapefile(shapefile_info)
-        if worldmap_layerinfo is not None:
-            # (2a) Previous attempt found!!
-            msg('Previous attempt found!!')
-            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
-
 
         # (3) Let's visualize this on WorldMap!
         #

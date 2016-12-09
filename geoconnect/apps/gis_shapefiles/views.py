@@ -21,15 +21,6 @@ from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 from apps.worldmap_layers.models import WorldMapLayerInfo
 
-
-#from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
-
-
-from apps.gis_shapefiles.shapefile_examine_util import ShapefileExamineUtil
-
-from apps.worldmap_connect.models import WorldMapImportAttempt
-from apps.gis_shapefiles.shp_services import add_worldmap_layerinfo_if_exists
-
 from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.gis_tabular.forms_delete import DeleteTabularMapForm
@@ -40,22 +31,6 @@ from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
 from geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
-
-
-@login_required
-def view_delete_files(request):
-    if not settings.DEBUG:
-        return HttpResponse('only for testing!')
-    ShapefileInfo.objects.all().delete()
-    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
-
-
-@login_required
-def view_delete_worldmap_visualization_attempts(request):
-    if not settings.DEBUG:
-        return HttpResponse('only for testing!')
-    WorldMapImportAttempt.objects.all().delete()
-    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
 
 
 @login_required

@@ -14,9 +14,6 @@ urlpatterns = patterns('apps.gis_shapefiles.views',
 
     url(r'^view-shp/(?P<shp_md5>\w{32})/$', 'view_shapefile', name="view_shapefile"),
 
-    url(r'^delete-files/$', 'view_delete_files', name="view_delete_files"),
-    url(r'^delete-worldmap-import-attempts/$', 'view_delete_worldmap_visualization_attempts', name="view_delete_worldmap_visualization_attempts"),
-
 )
 
 urlpatterns += patterns('apps.gis_shapefiles.views_mapit',

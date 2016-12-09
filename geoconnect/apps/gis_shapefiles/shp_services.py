@@ -187,21 +187,3 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     shapefile_info.save()
 
     return True, shapefile_info.md5
-
-
-
-def get_successful_worldmap_attempt_from_shapefile(shapefile_info):
-    """
-    Given a ShapefileInfo object, check for and return a WorldMapLayerInfo object, if available
-
-    :param shapefile_info: ShapefileInfo object
-    :return: WorldMapLayerInfo object or None
-    """
-    assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-
-    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
-    if latest_import_attempt:
-        worldmap_layerinfo = latest_import_attempt.get_success_info()
-        if type(worldmap_layerinfo) is WorldMapLayerInfo:
-            return worldmap_layerinfo
-    return None
