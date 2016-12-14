@@ -24,7 +24,7 @@ from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_
 from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 
 #from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
-from apps.gis_tabular.views import build_tabular_map_html
+from apps.gis_tabular.views import build_map_html
 
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
     render_main_panel_title_for_style_step
@@ -123,7 +123,7 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_tabular_map_html(request, worldmap_tabular_info)
+    map_html = build_map_html(request, worldmap_tabular_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapTabularLayerInfo: %s (%d)",\
             worldmap_tabular_info, worldmap_tabular_info.id)
@@ -234,7 +234,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_tabular_map_html(request, worldmap_latlng_info)
+    map_html = build_map_html(request, worldmap_latlng_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapLatLngInfo: %s (%d)",\
             worldmap_latlng_info, worldmap_latlng_info.id)

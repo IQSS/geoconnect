@@ -32,7 +32,12 @@
     {% if delete_form %}
         {% include "gis_shapefiles/modal_delete_confirm.html" %}
     {% endif %}
+    {% if gis_file_info %}
+        <i>ok1...</i>
+        {% include "gis_shapefiles/modal_save_confirm.html" %}
+    {% endif %}
     {% if tabular_info %}
+        <i>recheck1...</i>
         {% include "gis_shapefiles/modal_save_confirm.html" %}
     {% endif %}
     {% include "classification/classify_form_dynamic_js.html" %}

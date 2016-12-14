@@ -38,9 +38,7 @@ class DeleteTabularMapForm(forms.Form):
     @staticmethod
     def get_form_with_initial_vals(worldmap_info):
         """
-        Build an initial form using one of these objects:
-            - WorldMapJoinLayerInfo
-            - WorldMapLatLngInfo
+        Build an initial form using a WorldMapLayerInfo object
         """
         assert isinstance(worldmap_info, WorldMapLayerInfo),\
             "worldmap_info must be a WorldMapLayerInfo object"

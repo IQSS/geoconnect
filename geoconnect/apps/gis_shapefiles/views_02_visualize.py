@@ -18,11 +18,13 @@ from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from geo_utils.message_helper_json import MessageHelperJSON
+from apps.gis_tabular.views import build_map_html
 
 from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
     render_main_panel_title_for_style_step
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
 
 from geo_utils.msg_util import msg, msgt
 
@@ -141,52 +143,68 @@ class ViewAjaxVisualizeShapefile(View):
 
         # (3) Let's visualize this on WorldMap!
         #
-        logger.debug('(3) Let\'s visualize this on WorldMap!')
+        LOGGER.debug('(3) Let\'s visualize this on WorldMap!')
 
         send_shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
 
-        logger.debug('(3a) send_shapefile_to_worldmap')
-        send_shp_service.send_shapefile_to_worldmap()
+        LOGGER.debug('(3a) send_shapefile_to_worldmap')
+        success = send_shp_service.send_shapefile_to_worldmap()
 
-        logger.debug('(3b) get_worldmap_layerinfo')
-        worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
-
-        # ------------------------
-        # It worked!
-        # ------------------------
-        if worldmap_layerinfo is not None:
-            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
+        # -----------------------------------
+        # Did shapefile create work?
+        # -----------------------------------
 
 
-        # -------------------------------
-        # Failed with known error
-        # -------------------------------
-        if send_shp_service.has_err:
-            msgt('(3c) It didn\'t worked!')
+        # NOPE!  Failed along the way!
+        # -----------------------------------
+        if not success:
+
             msg(send_shp_service.err_msgs)
-            # (3b) Uh oh!  Failed to visualize
-            #
+
             err_note = "Sorry! The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
 
-            err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
-            json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
+            err_note_html = render_ajax_basic_err_msg(err_note,\
+                                            send_shp_service.shapefile_info)
+
+            json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                        msg=err_note,\
+                        data_dict=dict(id_main_panel_content=err_note_html)
+                    )
 
             return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
+        # Yes!  We have a new map layer -
+        # -----------------------------------
+        worldmap_shapefile_layerinfo = send_shp_service.get_worldmap_layerinfo()
+        shapefile_info = worldmap_shapefile_layerinfo.get_gis_data_info()
 
-        # -------------------------------
-        # Failed with unanticipated error
-        # -------------------------------
-        msgt('(4) Unanticipated error')
-        err_note = "Sorry!  An error occurred.  A message was sent to the administrator."
-        err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
 
-        json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
+        assert worldmap_shapefile_layerinfo is not None,\
+            "Failure in SendShapefileService!  Said success but not worldmap_layerinfo (WorldMapShapefileLayerInfo)"
 
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        # ^^^^^^^^^
+        # -----------------------------------------
+        # Build the Map HTML chunk to replace the form
+        # -----------------------------------------
+        map_html = build_map_html(request, worldmap_shapefile_layerinfo)
+        if map_html is None:    # Failed!  Send an error
+            LOGGER.error("Failed to create map HTML using WorldMapShapefileLayerInfo: %s (%d)",\
+                worldmap_shapefile_layerinfo, worldmap_shapefile_layerinfo.id)
+            user_msg = 'Sorry! Failed to create map. Please try again. (code: s3)'
+            json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
+            return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+        # -----------------------------------------
+        # Looks good.  In the JSON response, send
+        #   back the map HTML
+        # -----------------------------------------
+        main_title_panel_html=render_main_panel_title_for_style_step(shapefile_info)
+        data_dict = dict(map_html=map_html,\
+                    id_breadcrumb=render_breadcrumb_div_for_style_step(),\
+                    id_main_panel_title=main_title_panel_html)
+
+        json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+        #return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)

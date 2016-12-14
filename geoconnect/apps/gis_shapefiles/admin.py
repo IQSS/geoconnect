@@ -7,7 +7,12 @@ from apps.gis_shapefiles.admin_forms import ShapefileInfoAdminForm
 from geo_utils.admin_util import make_changelist_updates
 
 
+class WorldMapShapefileLayerInfoInline(admin.TabularInline):
+    model = WorldMapShapefileLayerInfo
+    extra = 0
+
 class ShapefileInfoAdmin(GISDataFileAdmin):
+    inlines = [WorldMapShapefileLayerInfoInline]
     form = ShapefileInfoAdminForm
     save_on_top = True
     #list_display = ('name',  'number_of_features', 'column_names', 'modified'  )

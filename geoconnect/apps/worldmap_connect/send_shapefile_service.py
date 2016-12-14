@@ -80,6 +80,7 @@ class SendShapefileService:
 
         returns boolean indicating whether process worked
         """
+
         # (1) Does the self.shapefile_info have what it needs?  Mainly a legit zippped shapefile
         #
         if not self.verify_shapefile():
@@ -94,59 +95,17 @@ class SendShapefileService:
             return True
 
         # (4) Map the information!
-        if self.send_file_to_worldmap():
-            return True
-
-        # (5) Process the WorldMap response
-        #
-        if not self.process_worldmap_response():
-            return False
-
-        # (6) Update Dataverse with new WorldMap info
-        if not self.update_dataverse_with_worldmap_info():
-            return False
-
-        return True
-        #--------------------------------------------------------------------
-        #--------------------------------------------------------------------
-        # Original code below
-        #--------------------------------------------------------------------
-        # (1) Does the self.shapefile_info have what it needs?  Mainly a legit zippped shapefile
-        #
-        if not self.verify_shapefile():
-            return False
-
-        # (2) Check if a successful import already exists (WorldMapLayerInfo), if it does, set the "self.worldmap_layerinfo"
-        if self.does_successful_import_already_exist():
-            return True
-        elif self.has_err:      # This may have produced an error
-            return False
-
-
-        #elif self.has_err:      # This may have produced an error
-        #    return False
-
-        # (3) Make a WorldMapImportAttempt object and set it to "self.import_attempt_obj"
-        #
-        if not self.make_import_attempt_object():
-            return False
-
-
-        # (4) Use the WorldMapImporter object to send the layer to the WorldMap server
-        #
         if not self.send_file_to_worldmap():
             return False
 
-
         # (5) Process the WorldMap response
         #
         if not self.process_worldmap_response():
             return False
 
-
         # (6) Update Dataverse with new WorldMap info
-        if not self.update_dataverse_with_worldmap_info():
-            return False
+        #       If this fails, ie, Dataverse not available, keep going...
+        self.update_dataverse_with_worldmap_info()
 
         return True
 
@@ -271,6 +230,9 @@ class SendShapefileService:
 
         :returns: boolean
         """
+        if self.has_err:
+            return False
+
         LOGGER.debug('verify_shapefile')
         if not self.shapefile_info:
             self.add_err_msg('verify_shapefile: The shapefile set is None')
@@ -504,6 +466,9 @@ class SendShapefileService:
     def process_worldmap_response(self):
         """Examine the WorldMap response and process it"""
         LOGGER.debug(self.process_worldmap_response.__doc__)
+        if self.has_err:
+            return False
+
 
         if not type(self.worldmap_response) is dict:
             self.add_err_msg('process_worldmap_response: worldmap_response is None')
@@ -530,10 +495,10 @@ class SendShapefileService:
         # ------------------------------------------------------
         # Use form from MapLayerMetadata object to check results
         # ------------------------------------------------------
-        f = WorldMapToGeoconnectMapLayerMetadataValidationForm(wm_data)
-        if not f.is_valid():
+        validation_form = WorldMapToGeoconnectMapLayerMetadataValidationForm(wm_data)
+        if not validation_form.is_valid():
             err_msg = ('Validation of WorldMap response failed.'
-                        '  Errors:\n%s') % f.errors
+                        '  Errors:\n%s') % validation_form.errors
             self.add_err_msg(err_msg)
             #print f.errors
             return False
@@ -543,7 +508,10 @@ class SendShapefileService:
         # ------------------------------------------------------
         # Create and Save a new WorldMapLayerInfo object
         # ------------------------------------------------------
-        self.worldmap_layerinfo = WorldMapShapefileLayerInfo.build_from_worldmap_json(wm_data)
+        build_args = (self.shapefile_info, self.worldmap_response)
+        self.worldmap_layerinfo =\
+            WorldMapShapefileLayerInfo.build_from_worldmap_json(*build_args)
+
         #self.worldmap_layerinfo = WorldMapLayerInfo(**f.cleaned_data)
         #self.worldmap_layerinfo.import_attempt=self.import_attempt_obj
         self.worldmap_layerinfo.save()

@@ -20,6 +20,8 @@ from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 
+from apps.worldmap_layers.models import WorldMapLayerInfo
+
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
@@ -63,7 +65,7 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
         attribute_data=worldmap_info.attribute_data,\
-        tabular_map_div=build_tabular_map_html(request, worldmap_info),\
+        tabular_map_div=build_map_html(request, worldmap_info),\
         tabular_info=worldmap_info.tabular_info,\
         #id_main_panel_title=main_panel_title,\
         #id_breadcrumb=render_breadcrumb_div_for_style_step(),\
@@ -80,9 +82,9 @@ def view_existing_map(request, worldmap_info=None):
 
 
 
-def build_tabular_map_html(request, worldmap_info):
+def build_map_html(request, worldmap_info):
     """
-    Expects a WorldMapJoinLayerInfo or WorldMapLatLngInfo object
+    Expects a WorldMapLayerInfo object
 
     Create HTML string displaying:
         - Completed map via iframe
@@ -90,19 +92,20 @@ def build_tabular_map_html(request, worldmap_info):
         - User message about join
         - Attribute table
     """
-    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
-        isinstance(worldmap_info, WorldMapLatLngInfo)):
-        LOGGER.error('worldmap_info needs to be a WorldMapJoinLayerInfo\
-         or WorldMapLatLngInfo object. Not: %s', worldmap_info)
+    if not isinstance(worldmap_info, WorldMapLayerInfo):
+        err_msg = ('worldmap_info needs to be a WorldMapLayerInfo'
+                   ' object. Not type: %s')\
+                   % (type(worldmap_info))
+        LOGGER.error(err_msg)
         return None
 
     delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
 
-    template_dict = get_common_lookup(request) 
+    template_dict = get_common_lookup(request)
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
             core_data=worldmap_info.core_data,\
-            tabular_info=worldmap_info.tabular_info,\
+            gis_file_info=worldmap_info.get_gis_data_info(),\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
             delete_form=delete_form,\
@@ -112,10 +115,13 @@ def build_tabular_map_html(request, worldmap_info):
     # --------------------------------
     # Classification form attributes
     # --------------------------------
-    classify_params = {GEOCONNECT_STEP_KEY : STEP2_STYLE,\
+    classify_form = ClassifyLayerForm(\
+            **worldmap_info.get_dict_for_classify_form())
+
+    classify_params = {\
+            GEOCONNECT_STEP_KEY : STEP2_STYLE,\
             'ATTRIBUTE_VALUE_DELIMITER' : ATTRIBUTE_VALUE_DELIMITER,\
-            'classify_form' : ClassifyLayerForm(\
-                **worldmap_info.get_dict_for_classify_form())}
+            'classify_form' : classify_form}
 
     template_dict.update(classify_params)
 
@@ -285,7 +291,7 @@ def view_tabular_file(request, tab_md5):
 
     template_dict.update(dict(tabular_id=tabular_info.id,\
             tabular_md5=tabular_info.md5,\
-            tabular_info=tabular_info,\
+            gis_file_info=tabular_info,\
             tab_file_stats=tab_file_stats,\
             geocode_types=geocode_type_list,\
             NUM_PREVIEW_ROWS=num_preview_rows,\
