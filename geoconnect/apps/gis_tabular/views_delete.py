@@ -15,7 +15,7 @@ from geo_utils.msg_util import msg
 from geo_utils.view_util import get_common_lookup
 from geo_utils.geoconnect_step_names import PANEL_TITLE_DELETE_MAP,\
     PANEL_TITLE_REMAP
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
 
@@ -35,7 +35,7 @@ def view_delete_tabular_map(request):
     d['page_title'] = PANEL_TITLE_DELETE_MAP
 
     # Check the delete request
-    f = DeleteTabularMapForm(request.POST)
+    f = DeleteMapForm(request.POST)
 
     if not f.is_valid():
         d['ERROR_FOUND'] = True

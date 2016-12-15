@@ -95,7 +95,7 @@ class ViewAjaxVisualizeShapefile(View):
         # -----------------------------------------
         # Build the Map HTML to replace the form
         # -----------------------------------------
-        map_html = build_map_html(request, worldmap_shapefile_layerinfo)
+        map_html, user_message_html = build_map_html(request, worldmap_shapefile_layerinfo)
         if map_html is None:    # Failed!  Send an error
             LOGGER.error("Failed to create map HTML using WorldMapShapefileLayerInfo: %s (%d)",\
                 worldmap_shapefile_layerinfo, worldmap_shapefile_layerinfo.id)
@@ -108,8 +108,9 @@ class ViewAjaxVisualizeShapefile(View):
         # Looks good.  In the JSON response, send
         #   back the map HTML
         # -----------------------------------------
-        data_dict = dict(map_html=map_html,\
-                    id_main_panel_title=PANEL_TITLE_STYLE_MAP,\
+        data_dict = dict(map_html=map_html,
+                    user_message_html=user_message_html,
+                    id_main_panel_title=PANEL_TITLE_STYLE_MAP,
                     message='Success!  The shapefile was successfully mapped!')
 
         json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)

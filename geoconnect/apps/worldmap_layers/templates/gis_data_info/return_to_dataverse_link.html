@@ -3,7 +3,7 @@
 {% if worldmap_layerinfo %}<!-- Map already exists! Use Modal -->
 
     <form id="frm_update_dv">{% csrf_token %}</form>
-    (m) <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">{{ RETURN_TO_DV_TEXT }}</a>
+    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">{{ RETURN_TO_DV_TEXT }}</a>
 
 {% else %}<!-- No Map: Return directly! -->
 

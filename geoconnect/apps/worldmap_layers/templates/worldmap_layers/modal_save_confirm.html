@@ -18,7 +18,7 @@
         <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
 {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}keep2 - FIX
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
-{% else %}{% if gis_data_info and gis_data_info.return_to_dataverse_url %}keep3 - YES
+{% else %}{% if gis_data_info and gis_data_info.return_to_dataverse_url %}
         <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
 {% else %}keep4 - don't want this...
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs">Keep Map</a>

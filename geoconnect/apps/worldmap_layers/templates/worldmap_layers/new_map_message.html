@@ -1,12 +1,11 @@
-{% if worldmap_layerinfo and first_time_notify %}
+{% if worldmap_layerinfo %}
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-xs-12">
         <div class="alert {% spaceless %}
         {% if worldmap_layerinfo.get_unmapped_record_count > 0 %}
         alert-warning
         {% else %}alert-success{% endif %}
-        {% endspaceless %}">hello /
-            {% if worldmap_layerinfo %}goodbye{% endif %}
+        {% endspaceless %}">
           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             {% if worldmap_layerinfo.is_shapefile_layer %}
               <!-- shapefile layer message -->

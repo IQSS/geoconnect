@@ -8,7 +8,7 @@ from apps.classification.utils import get_worldmap_info_object
 LOGGER = logging.getLogger(__name__)
 
 
-class DeleteTabularMapForm(forms.Form):
+class DeleteMapForm(forms.Form):
 
     worldmap_tab_info_md5 = forms.CharField(widget=forms.HiddenInput())
     layer_type = forms.CharField(widget=forms.HiddenInput())
@@ -47,14 +47,14 @@ class DeleteTabularMapForm(forms.Form):
                     layer_type=worldmap_info.get_layer_type()\
                  )
 
-        delete_form = DeleteTabularMapForm(initial=params)
+        delete_form = DeleteMapForm(initial=params)
 
         return delete_form
 
 """
 from apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
 
 w = WorldMapJoinLayerInfo.objects.first()
-f = DeleteTabularMapForm.get_form_with_initial_vals(w)
+f = DeleteMapForm.get_form_with_initial_vals(w)
 """

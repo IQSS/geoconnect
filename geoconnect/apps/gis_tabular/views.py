@@ -17,7 +17,7 @@ from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
 
 from apps.worldmap_layers.models import WorldMapLayerInfo
 
@@ -54,9 +54,18 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = get_common_lookup(request)
 
+    map_html, user_message_html = build_map_html(request, worldmap_info)
+    if map_html is None:
+        LOGGER.error("Failed to create map HTML using worldmap_info: %s (%d)" %\
+            worldmap_info, worldmap_info.id)
+        user_msg = 'Sorry! Failed to create map. Please try again. (code:ve3)'
+        return HttpResponse(user_msg)
+
+
     template_dict = dict(worldmap_layerinfo=worldmap_info,
         attribute_data=worldmap_info.attribute_data,
-        tabular_map_div=build_map_html(request, worldmap_info),
+        tabular_map_div=map_html,
+        user_message_html=user_message_html,    # not used for existing maps
         gis_data_info=worldmap_info.get_gis_data_info(),
         test_files=TabularFileInfo.objects.all(),
         page_title=PANEL_TITLE_STYLE_MAP,
@@ -75,20 +84,22 @@ def build_map_html(request, worldmap_info):
     """
     Expects a WorldMapLayerInfo object
 
-    Create HTML string displaying:
-        - Completed map via iframe
-        - Download links using Geoserver functions
-        - User message about join
-        - Attribute table
+    Create 2 HTML strings:
+        1 - map_html
+            - Completed map via iframe
+            - Download links using Geoserver functions
+            - Attribute table
+        2 - user_message_html
+            - User message about join
     """
     if not isinstance(worldmap_info, WorldMapLayerInfo):
         err_msg = ('worldmap_info needs to be a WorldMapLayerInfo'
                    ' object. Not type: %s')\
                    % (type(worldmap_info))
         LOGGER.error(err_msg)
-        return None
+        return None, None
 
-    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
+    delete_form = DeleteMapForm.get_form_with_initial_vals(worldmap_info)
 
     template_dict = get_common_lookup(request)
 
@@ -113,9 +124,15 @@ def build_map_html(request, worldmap_info):
 
     template_dict.update(classify_params)
 
-    return render_to_string('worldmap_layers/map_with_classify.html',\
+    map_html = render_to_string('worldmap_layers/map_with_classify.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
+
+    user_message_html = render_to_string('worldmap_layers/new_map_message.html',\
+                            template_dict,\
+                            context_instance=RequestContext(request))
+
+    return (map_html, user_message_html)
 
 
 def view_unmatched_join_rows(request, tab_md5):

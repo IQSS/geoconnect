@@ -33,16 +33,12 @@ function getWorkingBtnMessage(){
      (4) breadcrumb
 ---------------------------------------- */
 function show_map_update_titles(json_resp){
-    logit(json_resp.message);
-    logit('exists? #msg_init_mapping_form:' + $('#msg_init_mapping_form').length)
-    logit('exists? #id_alert_container:' + $('#id_alert_container').length)
+    logit(json_resp.data);
 
-    // Update message
-    /*if ($('#msg_init_mapping_form').length){
-        $('#msg_init_mapping_form').show().empty().append(get_alert('success', json_resp.data.message));
-    }*/
     if ($('#id_alert_container').length){
-        $('#id_alert_container').show().empty().append(get_alert('success', json_resp.data.message));
+        // json_resp.data.user_message_html is already formatted HTML
+        $('#id_alert_container').show().empty().append(json_resp.data.user_message_html);
+        //var user_alert_msg = get_alert('success', json_resp.data.user_message_html);
     }
     // Show map
     if (json_resp.data.hasOwnProperty('map_html')){
@@ -52,10 +48,6 @@ function show_map_update_titles(json_resp){
     if (json_resp.data.hasOwnProperty('id_main_panel_title')){
          //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
          $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
-    }
-    // Breadcrumb update
-    if(json_resp.data.hasOwnProperty('id_breadcrumb')){
-        $( "#id_breadcrumb" ).replaceWith(json_resp.data.id_breadcrumb);
     }
 
 }

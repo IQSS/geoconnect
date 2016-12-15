@@ -123,7 +123,7 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_map_html(request, worldmap_tabular_info)
+    map_html, user_message_html = build_map_html(request, worldmap_tabular_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapTabularLayerInfo: %s (%d)",\
             worldmap_tabular_info, worldmap_tabular_info.id)
@@ -135,7 +135,8 @@ def view_map_tabular_file_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    data_dict = dict(map_html=map_html,\
+    data_dict = dict(map_html=map_html,
+                user_message_html=user_message_html,
                 id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
@@ -232,7 +233,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_map_html(request, worldmap_latlng_info)
+    map_html, user_message_html = build_map_html(request, worldmap_latlng_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapLatLngInfo: %s (%d)",\
             worldmap_latlng_info, worldmap_latlng_info.id)
@@ -245,7 +246,8 @@ def view_process_lat_lng_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    data_dict = dict(map_html=map_html,\
+    data_dict = dict(map_html=map_html,
+                user_message_html=user_message_html,
                 id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)

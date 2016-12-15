@@ -14,7 +14,7 @@
 
         // Disable submit button + hide message box
         $('#id_frm_lat_lng_submit').addClass('disabled').html(getWorkingBtnMessage());
-        $('#msg_init_mapping_form').empty().hide();
+        $('#id_alert_container').empty().hide();
 
         // Submit form
         var jqxhr = $.post(check_lat_lng_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
@@ -30,7 +30,7 @@
                 logit(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
+                $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -89,7 +89,7 @@
                 logit(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
+                $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -113,7 +113,7 @@
 
         // Disable submit button + hide message box
         $('#id_frm_single_column_submit').addClass('disabled').html(getWorkingBtnMessage());
-        $('#msg_init_mapping_form').empty().hide();
+        $('#id_alert_container').empty().hide();
 
         // Submit form
         var jqxhr = $.post(map_tabular_file_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
@@ -125,8 +125,9 @@
                 show_map_update_titles(json_resp);
                 //$('#id_progress_bar').hide();
             }else{
+
                 logit(json_resp.message);
-                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
+                $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })

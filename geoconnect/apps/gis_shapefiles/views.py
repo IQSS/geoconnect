@@ -23,7 +23,7 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
 from apps.gis_tabular.models import TabularFileInfo
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
@@ -88,7 +88,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
     if not shapefile_info:
         raise Http404('shapefile md5 not found!')
 
-    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_layerinfo)
+    delete_form = DeleteMapForm.get_form_with_initial_vals(worldmap_layerinfo)
 
     d.update(worldmap_layerinfo.get_core_data_dict_for_views())
 
