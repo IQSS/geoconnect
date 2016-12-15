@@ -25,7 +25,8 @@ from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE
+    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -58,6 +59,7 @@ def view_existing_map(request, worldmap_info=None):
         tabular_map_div=build_map_html(request, worldmap_info),
         gis_data_info=worldmap_info.get_gis_data_info(),
         test_files=TabularFileInfo.objects.all(),
+        page_title=PANEL_TITLE_STYLE_MAP,
         )
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
@@ -90,13 +92,13 @@ def build_map_html(request, worldmap_info):
 
     template_dict = get_common_lookup(request)
 
-    template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
-            core_data=worldmap_info.core_data,\
-            gis_data_info=worldmap_info.get_gis_data_info(),\
-            download_links=worldmap_info.download_links,\
-            attribute_data=worldmap_info.attribute_data,\
-            delete_form=delete_form
-            ))
+    template_dict.update(dict(worldmap_layerinfo=worldmap_info,
+            core_data=worldmap_info.core_data,
+            gis_data_info=worldmap_info.get_gis_data_info(),
+            download_links=worldmap_info.download_links,
+            attribute_data=worldmap_info.attribute_data,
+            delete_form=delete_form,
+            page_title=PANEL_TITLE_STYLE_MAP))
 
     # --------------------------------
     # Classification form attributes
@@ -275,16 +277,17 @@ def view_tabular_file(request, tab_md5):
 
     template_dict = get_common_lookup(request)
 
-    template_dict.update(dict(tabular_id=tabular_info.id,\
-            tabular_md5=tabular_info.md5,\
-            gis_data_info=tabular_info,\
-            tab_file_stats=tab_file_stats,\
-            geocode_types=geocode_type_list,\
-            NUM_PREVIEW_ROWS=num_preview_rows,\
-            test_files=TabularFileInfo.objects.all(),\
-            form_single_column=form_single_column,\
-            form_lat_lng=form_lat_lng,\
-            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE))
+    template_dict.update(dict(tabular_id=tabular_info.id,
+            tabular_md5=tabular_info.md5,
+            gis_data_info=tabular_info,
+            tab_file_stats=tab_file_stats,
+            geocode_types=geocode_type_list,
+            NUM_PREVIEW_ROWS=num_preview_rows,
+            test_files=TabularFileInfo.objects.all(),
+            form_single_column=form_single_column,
+            form_lat_lng=form_lat_lng,
+            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE,
+            page_title=PANEL_TITLE_MAP_DATA_FILE))
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS

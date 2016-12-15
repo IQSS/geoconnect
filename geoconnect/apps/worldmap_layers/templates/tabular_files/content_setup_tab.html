@@ -105,16 +105,4 @@
 
 {% include "gis_tabular/preview_rows.html" %}
 {% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
-
-{% if is_staff %}
-<div class="row">
-<div class="col-md-1">&nbsp;</div>
-<div class="col-md-10">
-<hr />
- <h4>dev/debug items</h4>
- {% include "gis_tabular/test_file_list.html" %}
- {% include "gis_tabular/debug_help.html" %}
-{% endif %}
-</div>
-<div class="col-md-1">&nbsp;</div>
 </div>

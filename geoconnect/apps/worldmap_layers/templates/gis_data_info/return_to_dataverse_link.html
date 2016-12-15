@@ -7,7 +7,7 @@
 
 {% else %}<!-- No Map: Return directly! -->
 
-    {% if gis_data_info and gis_data_info.return_to_dataverse_url %}a1 - YES
+    {% if gis_data_info and gis_data_info.return_to_dataverse_url %}
         <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">{{ RETURN_TO_DV_TEXT }}</a>
 
     {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}b1 - FIX

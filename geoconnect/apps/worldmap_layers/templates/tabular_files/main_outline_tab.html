@@ -28,9 +28,8 @@
 
 <div id="id_alert_container" style="display:none;"></div>
 
+<!-- start panel -->
 <div class="pull-left" style="width:100%;">
-
-    <!-- start panel -->
     <div class="panel panel-default">
             {% include "gis_data_info/panel_page_title.html" %}
 
@@ -42,6 +41,29 @@
             {% endif %}
         </div>
     </div>
-    <!-- end: panel -->
 </div>
+<!-- end: panel -->
+
+<!-- debug panel -->
+{% if is_staff %}
+<div class="pull-left" style="width:100%; padding:20px 30px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title" id="id_main_panel_title">
+                DEBUG INFO
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {% include "tabular_files/debug_file_list.html" %}
+            </div>
+            <div class="row">
+                {% include "tabular_files/debug_join_targets.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- end: debug panel -->
+
 {% endblock %}
