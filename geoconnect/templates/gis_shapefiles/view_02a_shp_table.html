@@ -20,17 +20,11 @@
 
 <div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
     <div class="col-xs-6">
-        {% include "gis_shapefiles/link-back-to-dataverse.html" %}
+        {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
 </div>
 
-    {% comment %}
-        The shapefile was successfully examined!
-        <p>Press the button below to create a Map Layer:</p>
-    {% endcomment %}
-
-
-
+    
 	<script>
 	$('#column_name_list').on('show.bs.collapse', function () {
 	  	$('#btn_show_cols').html('hide fields');

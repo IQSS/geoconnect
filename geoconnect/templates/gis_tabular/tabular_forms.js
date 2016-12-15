@@ -2,17 +2,7 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
 <script>
 
-    function logit(m){
-        console.log(m);
-    }
 
-    function get_alert(alert_type, err_msg){
-        return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
-    }
-
-    function getWorkingBtnMessage(){
-        return 'Working ... (This may take up to 45 seconds)';
-    }
     /* ------------------------------------------
         Submit the latitude/longitude form
     ------------------------------------------ */
@@ -24,7 +14,7 @@
 
         // Disable submit button + hide message box
         $('#id_frm_lat_lng_submit').addClass('disabled').html(getWorkingBtnMessage());
-        $('#msg_form_tabular').empty().hide();
+        $('#msg_init_mapping_form').empty().hide();
 
         // Submit form
         var jqxhr = $.post(check_lat_lng_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
@@ -35,17 +25,12 @@
             if (json_resp.success){
                 // Show map, update titles
                 show_map_update_titles(json_resp);
-                //$('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-                //if (json_resp.data.map_html){
-                //    $('#id_main_panel_content').html(json_resp.data.map_html);
-                //    $('#id_main_panel_title').html('you did it');
-                //}
 
             }else{
                 logit(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
+                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -104,7 +89,7 @@
                 logit(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
+                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -120,27 +105,6 @@
         //alert(target_layers_by_type_url);
     }
 
-    function show_map_update_titles(json_resp){
-
-        // Update message
-        $('#msg_form_tabular').show().empty().append(get_alert('success', json_resp.message));
-
-        // Show map
-        if (json_resp.data.hasOwnProperty('map_html')){
-            $('#id_main_panel_content').html(json_resp.data.map_html);
-        }
-        // Title update
-        if (json_resp.data.hasOwnProperty('id_main_panel_title')){
-             //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
-             $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
-        }
-        // Breadcrumb update
-        if(json_resp.data.hasOwnProperty('id_breadcrumb')){
-            $( "#id_breadcrumb" ).replaceWith(json_resp.data.id_breadcrumb);
-        }
-
-    }
-
     function submit_single_column_form(){
         logit('submit_single_column_form');
 
@@ -149,7 +113,7 @@
 
         // Disable submit button + hide message box
         $('#id_frm_single_column_submit').addClass('disabled').html(getWorkingBtnMessage());
-        $('#msg_form_tabular').empty().hide();
+        $('#msg_init_mapping_form').empty().hide();
 
         // Submit form
         var jqxhr = $.post(map_tabular_file_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
@@ -162,7 +126,7 @@
                 //$('#id_progress_bar').hide();
             }else{
                 logit(json_resp.message);
-                $('#msg_form_tabular').show().empty().append(get_alert('danger', json_resp.message));
+                $('#msg_init_mapping_form').show().empty().append(get_alert('danger', json_resp.message));
 
             }
           })
@@ -287,11 +251,5 @@
         logit($(this).html());
     })
     */
-
-
-
-
-
-
     });
 </script>

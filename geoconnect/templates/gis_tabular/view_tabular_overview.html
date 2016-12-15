@@ -5,6 +5,7 @@
 #preview-tbl{ margin: 0;}
 
 </style>
+<script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
 {% include "gis_tabular/tabular_forms.js" %}
 {% endblock %}
 
@@ -19,21 +20,20 @@
 <div class="panel-body" id="id_main_panel_content">
 
 
-<div class="row">
-    {#<div class="col-sm-1"></div>#}
-    <div class="col-sm-12">
-        
-        <h4 class="text-left">WorldMap Data</h4>
+    <div class="row">
+        <div class="col-sm-12">
 
-        <p>
-            {#<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>#}
-            Please select the type of geospatial data, and the WorldMap layer to join to.
-        </p>
+            <h4 class="text-left">WorldMap Data</h4>
+
+            <p>
+                Please select the type of geospatial data, and the WorldMap layer to join to.
+            </p>
+        </div>
     </div>
-</div>
-<div id="msg_form_tabular" style="display:none;"></div>
-<!-- START: tabular form -->
-<form class="form-horizontal" id="form_map_tabular_file" method="post">
+    <div id="msg_init_mapping_form" style="display:none;"></div>
+
+    <!-- START: tabular form -->
+    <form class="form-horizontal" id="form_map_tabular_file" method="post">
 
     {% csrf_token %}
     <div class="form-group">
@@ -119,9 +119,10 @@
             </div>
         </div>
     <!-- End: Latitude/Longitude form -->
-</form>
-<!-- END: tabular form -->
-3
+
+    </form>
+    <!-- END: tabular form -->
+
 
 {% include "gis_tabular/preview_rows.html" %}
 {% include "gis_shapefiles/delete_and_back_to_dv_links.html" %}

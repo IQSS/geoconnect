@@ -61,15 +61,12 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = get_common_lookup(request)
 
-    main_panel_title = render_main_panel_title_for_style_step(worldmap_info.tabular_info)
+    #main_panel_title = render_main_panel_title_for_style_step(worldmap_info.get_gis_data_info())
 
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
         attribute_data=worldmap_info.attribute_data,\
         tabular_map_div=build_map_html(request, worldmap_info),\
-        tabular_info=worldmap_info.tabular_info,\
-        #id_main_panel_title=main_panel_title,\
-        #id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-        # for testing
+        gis_data_info=worldmap_info.get_gis_data_info(),\
         test_files=TabularFileInfo.objects.all(),\
         )
 
@@ -105,11 +102,10 @@ def build_map_html(request, worldmap_info):
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
             core_data=worldmap_info.core_data,\
-            gis_file_info=worldmap_info.get_gis_data_info(),\
+            gis_data_info=worldmap_info.get_gis_data_info(),\
             download_links=worldmap_info.download_links,\
             attribute_data=worldmap_info.attribute_data,\
-            delete_form=delete_form,\
-            is_tabular_delete=True,\
+            delete_form=delete_form
             ))
 
     # --------------------------------
@@ -291,7 +287,7 @@ def view_tabular_file(request, tab_md5):
 
     template_dict.update(dict(tabular_id=tabular_info.id,\
             tabular_md5=tabular_info.md5,\
-            gis_file_info=tabular_info,\
+            gis_data_info=tabular_info,\
             tab_file_stats=tab_file_stats,\
             geocode_types=geocode_type_list,\
             NUM_PREVIEW_ROWS=num_preview_rows,\

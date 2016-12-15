@@ -97,7 +97,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify):
     d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
     d['first_time_notify'] = first_time_notify
 
-    return render_to_response('gis_shapefiles/view_shapefile_overview.html', d\
+    return render_to_response('shapefiles/main_outline.html', d\
                         , context_instance=RequestContext(request))
 
 
@@ -120,7 +120,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     Retrieve and view a :model:`gis_shapefiles.ShapefileInfo` object
 
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
-    :template:`gis_shapefiles/view_shapefile_overview.html`
+    :template:`shapefiles/main_outline.html`
     """
     logger.debug('-' * 40)
     logger.debug('view_shapefile')
@@ -128,8 +128,6 @@ def view_shapefile(request, shp_md5, **kwargs):
     # Flags for template - Is this the first time the file is being visualized?
     # -------------------------------------------
     first_time_notify = kwargs.get('first_time_notify', False)
-    if first_time_notify:
-        d['first_time_notify'] = True
 
 
     # (1) and (2) - Does a layer already exist
@@ -156,10 +154,13 @@ def view_shapefile(request, shp_md5, **kwargs):
     # Gather common parameters for the template
     # -------------------------------------------
     d = get_common_lookup(request)
+    d['gis_data_info'] = shapefile_info
     d['shapefile_info'] = shapefile_info
     d['page_title'] = 'Examine Shapefile'
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
+    if first_time_notify:
+        d['first_time_notify'] = True
 
     # -------------------------------------------
     # Early pass: Validate that this .zip is a shapefile--a single shapefile
@@ -206,7 +207,7 @@ def view_shapefile(request, shp_md5, **kwargs):
             shapefile_info.save()
             logger.error('Shapefile not loaded. (%s)' % shp_md5)
             zip_checker.close_zip()
-            return render_to_response('gis_shapefiles/view_shapefile_overview.html', d\
+            return render_to_response('shapefiles/main_outline.html', d\
                                         , context_instance=RequestContext(request))
 
     # -------------------------------------------
@@ -219,11 +220,11 @@ def view_shapefile(request, shp_md5, **kwargs):
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-        return render_to_response('gis_shapefiles/view_shapefile_overview.html', d\
+        return render_to_response('shapefiles/main_outline.html', d\
                                 , context_instance=RequestContext(request))
 
 
-    return render_to_response('gis_shapefiles/view_shapefile_overview.html', d\
+    return render_to_response('shapefiles/main_outline.html', d\
                             , context_instance=RequestContext(request))
 
 
@@ -288,5 +289,5 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         zip_checker.close_zip()
 
     # Send error to user
-    return render_to_response('gis_shapefiles/view_shapefile_overview.html', d\
+    return render_to_response('shapefiles/main_outline.html', d\
                             , context_instance=RequestContext(request))

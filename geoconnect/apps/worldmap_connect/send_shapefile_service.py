@@ -43,13 +43,14 @@ class SendShapefileService:
 
         if kwargs.has_key('shapefile_info'):
             self.shapefile_info = kwargs['shapefile_info']
+            assert isinstance(self.shapefile_info, ShapefileInfo),\
+                    "shapefile_info must be a ShapefileInfo object"
         elif kwargs.has_key('shp_md5'):
             self.shapefile_info = self.load_shapefile_from_md5(kwargs['shp_md5'])
         else:
             LOGGER.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
-        assert isinstance(self.shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
 
     #def check_for_existing_map(self):
 

@@ -18,13 +18,13 @@ def render_breadcrumb_div_for_style_step():
 
     return render_to_string('breadcrumb.html', template_dict)
 
-def render_main_panel_title_for_style_step(gis_file_info):
+def render_main_panel_title_for_style_step(gis_data_info):
     """
     Create HTML snippet for title of Main Panel
     """
-    assert hasattr(gis_file_info, 'datafile_label'), "shapefile_info must be a ShapefileInfo object"
+    assert hasattr(gis_data_info, 'datafile_label'), "shapefile_info must be a ShapefileInfo object"
 
-    template_dict = {'gis_file_info' : gis_file_info,\
+    template_dict = {'gis_data_info' : gis_data_info,\
                     GEOCONNECT_STEP_KEY : STEP2_STYLE}
     return render_to_string('gis_shapefiles/view_02_main_panel_title.html',\
         template_dict)

@@ -1,0 +1,10 @@
+<!-- start:  Back to Dataverse | Delete Map links-->
+<div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
+    <div class="col-xs-6">
+        {% include "gis_data_info/return_to_dataverse_link.html" %}
+    </div>
+    {% if worldmap_layerinfo %}
+    <div class="col-xs-6 text-right"><a data-toggle="modal" data-target="#delete_map_confirm" class="btn btn-xs btn-danger">Delete Map</a></div>
+    {% endif %}
+</div>
+<!-- end:  Back to Dataverse | Delete Map links-->

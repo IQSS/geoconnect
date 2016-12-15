@@ -14,18 +14,17 @@
       </div>
 
     <!-- (1)Keep Map button -->
-{% if tabular_info and tabular_info.return_to_dataverse_url %}
+{% if tabular_info and tabular_info.return_to_dataverse_url %}1
         <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
-{% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}
+{% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}2
     <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
-{% else %}{% if gis_data_file and gis_data_file.return_to_dataverse_url %}
+{% else %}{% if gis_data_file and gis_data_file.return_to_dataverse_url %}3
         <a href="{{ gis_data_file.return_to_dataverse_url }}" class="btn btn-success btn-xs">Keep Map</a>
-{% else %}
+{% else %}4
     <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-success btn-xs">Keep Map</a>
 {% endif %}{% endif %}{% endif %}
 
     <!-- (3) Delete Map -->
-{#    &nbsp;&nbsp;<a href="#delete_map_confirm" data-toggle="modal" data-target="#delete_map_confirm" class="btn btn-xs btn-danger">Delete Map</a> #}
     &nbsp;&nbsp;<a href="#delete_map_confirm" data-toggle="modal" data-dismiss="modal" class="btn btn-xs btn-danger">Delete Map</a>
 
     <!-- (2) Return to GeoConnect -->

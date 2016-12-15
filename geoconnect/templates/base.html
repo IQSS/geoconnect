@@ -19,14 +19,12 @@
         }
     </style>
 
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css"><!-- 3.1.1 -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/structure.css">
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="{{ STATIC_URL }}js/jquery-1.10.1.min.js"></script>
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
     {% block extra_js %}
     {% endblock %}
 
@@ -73,6 +71,7 @@
 		</div>
 	</nav>
     <!-- Header Panel -->
+    {% comment %}
     <div id="dataverseHeader" class="container" style="background:#F5F5F5;">
         <div class="dataverseHeaderBlock">
                 <div class="dataverseHeaderCell dataverseHeaderName" style="padding-bottom:0;">
@@ -82,12 +81,11 @@
                 </div>
         </div>
     </div>
-	<div class="container">
-	    {#<a href="{% url 'view_png_test' %}">png test</a>#}
+    {% endcomment %}
+    <div class="container">
 	{% block main_container %}
-		hallo
+		base.html: block main_container
 	{% endblock %}
 	</div>
-{#% include "sql_query_debug.html" %#}
   </body>
 </html>
