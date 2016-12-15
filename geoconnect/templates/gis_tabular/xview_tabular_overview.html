@@ -10,11 +10,19 @@
 {% endblock %}
 
 {% block main_container %}
+{% include "gis_data_info/citation.html" %}
 
+<div id="id_alert_container" style="display:none;"></div>
 
 <!-- start panel --><div class="panel panel-default">
 <div class="panel-heading">
-  {% include "gis_shapefiles/view_02_main_panel_title.html" %}
+    <h3 class="panel-title" id="id_main_panel_title">
+        {% if page_title %}
+            {{ page_title }}
+        {% else %}
+            Map Data File
+        {% endif %}
+    </h3>
 </div>
 
 <div class="panel-body" id="id_main_panel_content">

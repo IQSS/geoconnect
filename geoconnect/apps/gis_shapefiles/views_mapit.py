@@ -45,7 +45,7 @@ def view_formatted_error_page(request, error_type, err_msg=None):
         d[error_type] = True
     d['Dataverse_Connect_Err_Msg'] = err_msg
 
-    return render_to_response('shapefiles/main_outline.html'\
+    return render_to_response('shapefiles/main_outline_shp.html'\
                                 , d\
                                 , context_instance=RequestContext(request)\
                             )

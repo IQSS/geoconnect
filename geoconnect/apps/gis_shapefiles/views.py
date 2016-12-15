@@ -100,7 +100,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
     d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
     d['first_time_notify'] = first_time_notify
 
-    return render_to_response('shapefiles/main_outline.html', d\
+    return render_to_response('shapefiles/main_outline_shp.html', d\
                         , context_instance=RequestContext(request))
 
 
@@ -123,7 +123,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     Retrieve and view a :model:`gis_shapefiles.ShapefileInfo` object
 
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
-    :template:`shapefiles/main_outline.html`
+    :template:`shapefiles/main_outline_shp.html`
     """
     logger.debug('-' * 40)
     logger.debug('view_shapefile')
@@ -210,7 +210,7 @@ def view_shapefile(request, shp_md5, **kwargs):
             shapefile_info.save()
             logger.error('Shapefile not loaded. (%s)' % shp_md5)
             zip_checker.close_zip()
-            return render_to_response('shapefiles/main_outline.html', d\
+            return render_to_response('shapefiles/main_outline_shp.html', d\
                                         , context_instance=RequestContext(request))
 
     # -------------------------------------------
@@ -223,11 +223,11 @@ def view_shapefile(request, shp_md5, **kwargs):
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-        return render_to_response('shapefiles/main_outline.html', d\
+        return render_to_response('shapefiles/main_outline_shp.html', d\
                                 , context_instance=RequestContext(request))
 
 
-    return render_to_response('shapefiles/main_outline.html', d\
+    return render_to_response('shapefiles/main_outline_shp.html', d\
                             , context_instance=RequestContext(request))
 
 
@@ -292,5 +292,5 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         zip_checker.close_zip()
 
     # Send error to user
-    return render_to_response('shapefiles/main_outline.html', d\
+    return render_to_response('shapefiles/main_outline_shp.html', d\
                             , context_instance=RequestContext(request))

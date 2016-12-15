@@ -9,7 +9,7 @@
 
         <!-- start: panel -->
         <div class="panel panel-default">
-          <div class="panel-heading">Delete Error</div>
+          {% include "gis_data_info/panel_page_title.html" %}
           <div class="panel-body">
             {% if FAILED_TO_VALIDATE %}
     		    <p>Please use your browser's <a href="javascript:history.go(-1)">back button</a>
@@ -25,7 +25,7 @@
                 <p>Please use your browser's <a href="javascript:history.go(-1)" class="btn-success btn-sm">back button</a>
     		       and try again.</p>
 
-    		    <p><br />Or {% include "gis_tabular/return_to_dataverse.html" %}
+    		    <p><br />Or {% include "gis_data_info/return_to_dataverse_link.html" %}
 
     	    {% endif %}
 
@@ -35,7 +35,7 @@
 
                 <p>Message: {{ ERR_MSG|safe }}</p>
                 <hr />
-                <p>Please {% include "gis_tabular/return_to_dataverse.html" %}
+                <p>Please {% include "gis_data_info/return_to_dataverse_link.html" %}
 					<br /><br />or
 
 					<!-- Re-map link -->
@@ -57,12 +57,12 @@
 
 	    {% if tabular_info %}
 	    <div class="panel panel-default">
-	        <div class="panel-heading">Would you like to Re-Map this file?</div>
+            {% include "gis_data_info/panel_page_title.html" %}
 	        <div class="panel-body">
             	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
 
 	            <br /><br />
-				{% include "gis_tabular/return_to_dataverse.html" %}
+				{% include "gis_data_info/return_to_dataverse_link.html" %}
 
 	            <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
 

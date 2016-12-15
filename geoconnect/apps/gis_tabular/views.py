@@ -53,17 +53,17 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = get_common_lookup(request)
 
-    template_dict = dict(worldmap_layerinfo=worldmap_info,\
-        attribute_data=worldmap_info.attribute_data,\
-        tabular_map_div=build_map_html(request, worldmap_info),\
-        gis_data_info=worldmap_info.get_gis_data_info(),\
-        test_files=TabularFileInfo.objects.all(),\
+    template_dict = dict(worldmap_layerinfo=worldmap_info,
+        attribute_data=worldmap_info.attribute_data,
+        tabular_map_div=build_map_html(request, worldmap_info),
+        gis_data_info=worldmap_info.get_gis_data_info(),
+        test_files=TabularFileInfo.objects.all(),
         )
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('gis_tabular/view_tabular_map.html',\
+    return render_to_response('tabular_files/main_outline_tab.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
 
@@ -289,7 +289,7 @@ def view_tabular_file(request, tab_md5):
     template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('gis_tabular/view_tabular_overview.html',\
+    return render_to_response('tabular_files/main_outline_tab.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
 

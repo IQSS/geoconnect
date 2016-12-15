@@ -8,3 +8,5 @@ GEOCONNECT_STEP_KEY = 'GEOCONNECT_STEP_KEY'
 
 PANEL_TITLE_MAP_DATA_FILE = 'Map Data File'
 PANEL_TITLE_STYLE_MAP = 'Style Map'
+PANEL_TITLE_DELETE_MAP = 'Delete Map'
+PANEL_TITLE_REMAP = 'Would you like to Re-Map this file?'

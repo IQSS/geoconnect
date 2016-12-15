@@ -31,20 +31,11 @@
               feature{{ shapefile_info.number_of_features|pluralize }})
         </div>
     {% endif %}
-   <div id="id_alert_container" style="display:none;">
-   </div>
+   <div id="id_alert_container" style="display:none;"></div>
 
    <!-- start panel -->
    <div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title" id="id_main_panel_title">
-            {% if page_title %}
-                {{ page_title }}
-            {% else %}
-                Map Data File
-            {% endif %}
-        </h3>
-    </div>
+    {% include "gis_data_info/panel_page_title.html" %}
     <div class="panel-body" id="id_main_panel_content">
        	{% if not gis_data_info %}
             Please return to the dataverse.
@@ -57,7 +48,7 @@
                 {% include "worldmap_layers/map_with_classify.html" %}
 		        {#% include "gis_shapefiles/view_04_ajax_style_layer.html" %#}
             {% else %}
-			    {% include "shapefiles/content_map_data.html" %}
+			    {% include "shapefiles/content_setup_shp.html" %}
             {% endif %}
 
 		{% endif %}

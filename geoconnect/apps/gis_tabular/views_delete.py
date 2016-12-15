@@ -13,7 +13,8 @@ from django.conf import settings
 
 from geo_utils.msg_util import msg
 from geo_utils.view_util import get_common_lookup
-
+from geo_utils.geoconnect_step_names import PANEL_TITLE_DELETE_MAP,\
+    PANEL_TITLE_REMAP
 from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
@@ -31,13 +32,15 @@ def view_delete_tabular_map(request):
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
 
+    d['page_title'] = PANEL_TITLE_DELETE_MAP
+
     # Check the delete request
     f = DeleteTabularMapForm(request.POST)
 
     if not f.is_valid():
         d['ERROR_FOUND'] = True
         d['FAILED_TO_VALIDATE'] = True
-        return render_to_response('gis_tabular/view_delete_layer.html', d\
+        return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                  , context_instance=RequestContext(request))
 
     # Form params look good
@@ -71,7 +74,7 @@ def view_delete_tabular_map(request):
             d['ERROR_FOUND'] = True
             d['WORLDMAP_DATA_DELETE_FAILURE'] = True
             d['ERR_MSG'] = err_msg_or_None
-            return render_to_response('gis_tabular/view_delete_layer.html', d\
+            return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
     else:
         # At this point, the layer no longer exists on WorldMap,
@@ -97,12 +100,13 @@ def view_delete_tabular_map(request):
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
         d['ERR_MSG'] = err_msg_or_None2
 
-        return render_to_response('gis_tabular/view_delete_layer.html', d\
+        return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
 
     d['DELETE_SUCCESS'] = True
+    d['page_title'] = PANEL_TITLE_REMAP
 
-    return render_to_response('gis_tabular/view_delete_layer.html', d\
+    return render_to_response('worldmap_layers/view_delete_layer.html', d\
                             , context_instance=RequestContext(request))
 
 '''
