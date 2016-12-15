@@ -7,7 +7,7 @@
         <!-- Map exists and it was created from a shapefile -->
         <script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
         <script>
-          {% include "gis_shapefiles/ajax_attempt_visualization.js" %}
+          {% include "shapefiles/ajax_attempt_visualization.js" %}
         </script>
    {% endif %}
 {% endblock %}
@@ -57,7 +57,7 @@
                 {% include "worldmap_layers/map_with_classify.html" %}
 		        {#% include "gis_shapefiles/view_04_ajax_style_layer.html" %#}
             {% else %}
-			    {% include "gis_shapefiles/view_02a_shp_table.html" %}
+			    {% include "shapefiles/content_map_data.html" %}
             {% endif %}
 
 		{% endif %}

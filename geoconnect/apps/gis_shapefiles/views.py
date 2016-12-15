@@ -27,7 +27,9 @@ from apps.gis_tabular.forms_delete import DeleteTabularMapForm
 from apps.gis_tabular.models import TabularFileInfo
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    STEP1_EXAMINE, STEP2_STYLE
+    STEP1_EXAMINE, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
+
 from geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
@@ -77,7 +79,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
         "worldmap_layerinfo must be an instance of WorldMapLayerInfo"
 
     d = get_common_lookup(request)
-    d['page_title'] = 'Style Map'
+    d['page_title'] = PANEL_TITLE_STYLE_MAP
     d[GEOCONNECT_STEP_KEY] = STEP2_STYLE
 
     classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
@@ -157,7 +159,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     d = get_common_lookup(request)
     d['gis_data_info'] = shapefile_info
     d['shapefile_info'] = shapefile_info
-    d['page_title'] = 'Examine Shapefile'
+    d['page_title'] = PANEL_TITLE_MAP_DATA_FILE
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     if first_time_notify:

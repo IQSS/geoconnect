@@ -10,10 +10,9 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.conf import settings
 
 
-from apps.gis_tabular.models import TabularFileInfo # for testing
+#from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
@@ -37,13 +36,6 @@ from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from apps.gis_tabular.tab_services import add_worldmap_layerinfo_if_exists
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
-
-#from geo_utils.msg_util import *
-#from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
-#from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
-#from geo_utils.view_util import get_common_lookup
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -60,8 +52,6 @@ def view_existing_map(request, worldmap_info=None):
         return HttpResponse('Sorry! No WorldMap information was found.')
 
     template_dict = get_common_lookup(request)
-
-    #main_panel_title = render_main_panel_title_for_style_step(worldmap_info.get_gis_data_info())
 
     template_dict = dict(worldmap_layerinfo=worldmap_info,\
         attribute_data=worldmap_info.attribute_data,\

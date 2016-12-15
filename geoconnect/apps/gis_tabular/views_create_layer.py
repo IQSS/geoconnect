@@ -18,6 +18,9 @@ from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
+from geo_utils.geoconnect_step_names import PANEL_TITLE_MAP_DATA_FILE,\
+    PANEL_TITLE_STYLE_MAP
+
 from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
@@ -25,9 +28,6 @@ from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 
 #from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
 from apps.gis_tabular.views import build_map_html
-
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -135,10 +135,8 @@ def view_map_tabular_file_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
     data_dict = dict(map_html=map_html,\
-                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-                id_main_panel_title=main_title_panel_html)
+                id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
@@ -247,10 +245,8 @@ def view_process_lat_lng_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
     data_dict = dict(map_html=map_html,\
-                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-                id_main_panel_title=main_title_panel_html)
+                id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 

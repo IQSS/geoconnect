@@ -12,16 +12,14 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from geo_utils.message_helper_json import MessageHelperJSON
 from apps.gis_tabular.views import build_map_html
-
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
 
 LOGGER = logging.getLogger(__name__)
 
@@ -110,10 +108,8 @@ class ViewAjaxVisualizeShapefile(View):
         # Looks good.  In the JSON response, send
         #   back the map HTML
         # -----------------------------------------
-        main_title_panel_html=render_main_panel_title_for_style_step(shapefile_info)
         data_dict = dict(map_html=map_html,\
-                    id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-                    id_main_panel_title=main_title_panel_html,\
+                    id_main_panel_title=PANEL_TITLE_STYLE_MAP,\
                     message='Success!  The shapefile was successfully mapped!')
 
         json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
