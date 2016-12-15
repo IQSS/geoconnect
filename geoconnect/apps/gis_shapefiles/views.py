@@ -70,8 +70,8 @@ def view_examine_dataset(request):
                             , context_instance=RequestContext(request))
 
 
-def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify):
-    """Called by 'view_shapefile' -- no url associated with this view"""
+def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False):
+    """Called by 'view_shapefile' -- no direct url associated with this view"""
 
     assert isinstance(worldmap_layerinfo, WorldMapLayerInfo),\
         "worldmap_layerinfo must be an instance of WorldMapLayerInfo"
@@ -90,7 +90,8 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify):
 
     d.update(worldmap_layerinfo.get_core_data_dict_for_views())
 
-    d['shapefile_info'] = shapefile_info
+    d['gis_data_info'] = shapefile_info
+    #d['shapefile_info'] = shapefile_info
     d['classify_form'] = classify_form
     d['delete_form'] = delete_form
 

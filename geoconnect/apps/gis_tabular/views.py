@@ -121,7 +121,7 @@ def build_map_html(request, worldmap_info):
 
     template_dict.update(classify_params)
 
-    return render_to_string('gis_tabular/view_tabular_map_div.html',\
+    return render_to_string('worldmap_layers/map_with_classify.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
 

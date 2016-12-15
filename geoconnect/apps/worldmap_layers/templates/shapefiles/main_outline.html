@@ -14,6 +14,7 @@
 
 {% block main_container %}
 {% include "gis_data_info/citation.html" %}
+
 <div class="pull-left" style="width:100%;">
 
     {% if Err_Found or Dataverse_Connect_Err_Msg %}
@@ -36,7 +37,13 @@
    <!-- start panel -->
    <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title" id="id_main_panel_title">Map Data File</h3>
+        <h3 class="panel-title" id="id_main_panel_title">
+            {% if page_title %}
+                {{ page_title }}
+            {% else %}
+                Map Data File
+            {% endif %}
+        </h3>
     </div>
     <div class="panel-body" id="id_main_panel_content">
        	{% if not gis_data_info %}
@@ -47,7 +54,8 @@
         {% if not Err_Found %}
             {% if worldmap_layerinfo %}
                 <!-- We have a map here -->
-		        {% include "gis_shapefiles/view_04_ajax_style_layer.html" %}
+                {% include "worldmap_layers/map_with_classify.html" %}
+		        {#% include "gis_shapefiles/view_04_ajax_style_layer.html" %#}
             {% else %}
 			    {% include "gis_shapefiles/view_02a_shp_table.html" %}
             {% endif %}
@@ -58,8 +66,8 @@
 	    {% if is_staff %}
 
     		<p>Staff debug: Return to <a href="{% url 'view_examine_dataset' %}">Home</a>
-				{% if shapefile_info %}
-				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shapefile_info.id %}">Edit</a>
+				{% if gis_data_info.has_shapefile %}
+				&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' gis_data_info.id %}">Edit</a>
 				{% endif %}
                 {% if worldmap_layerinfo %}
                 &nbsp;|&nbsp; <a href="{% url 'ajax_dv_notify_shapefile_map' worldmap_layerinfo.md5  %}" target="_blank">Send Info to Dataverse</a>
@@ -69,10 +77,9 @@
     </div><!-- end main panel content -->
     </div><!-- end: panel -->
 
-    {% if shapefile_info %}
-        {#% include "gis_shapefiles/shapefile_info_panel.html" %#}
+    {% if gis_data_info.is_shapefile %}
+        {% include "gis_shapefiles/shapefile_info_panel.html" %}
     {% endif %}
-    {#% include "gis_shapefiles/link-back-to-dataverse.html" %#}
 
 </div>
 {% endblock %}

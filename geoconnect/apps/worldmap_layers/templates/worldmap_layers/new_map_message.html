@@ -1,0 +1,24 @@
+{% if worldmap_layerinfo and first_time_notify %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="alert {% spaceless %}
+        {% if worldmap_layerinfo.get_unmapped_record_count > 0 %}
+        alert-warning
+        {% else %}alert-success{% endif %}
+        {% endspaceless %}">hello /
+            {% if worldmap_layerinfo %}goodbye{% endif %}
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {% if worldmap_layerinfo.is_shapefile_layer %}
+              <!-- shapefile layer message -->
+              {% include "shapefiles/new_map_message_shape.html" %}
+            {% elif worldmap_layerinfo.is_join_layer %}
+                <!-- join layer message -->
+                {% include "tabular_files/new_map_message_join.html" %}
+            {% elif worldmap_layerinfo.is_lat_lng_layer %}
+                <!-- lat/lng layer message -->
+                {% include "tabular_files/new_map_message_lat_lng.html" %}
+            {% endif %}
+        </div><!-- end: alert -->
+    </div><!-- end: col -->
+</div><!-- end: row -->
+{% endif %}

@@ -8,7 +8,7 @@
         {% if FAILED_TO_CONVERT_RESPONSE_TO_JSON %}Sorry!  Failed to read data from the Dataverse.{% endif %}
         {% if FAILED_BAD_STATUS_CODE_FROM_WORLDMAP %}Sorry!  The Dataverse information was not converted properly.{% endif %}
         {% if FAILED_NOT_A_REGISTERED_DATAVERSE %}Sorry! This request is not from a Dataverse registered to use the WorldMap.{% endif %}
-        
+
             <br /><br /><small>{{ Dataverse_Connect_Err_Msg|safe|linebreaks }}</small>
             <br />
     </div>
@@ -39,7 +39,7 @@
                     {% endfor %}
                 </ol>
             </div><!-- end: panel body -->
-            
+
         </div><!-- end: panel -->
         {% endif %}
 
@@ -78,7 +78,7 @@
                     {% endfor %}
                 </ol>
                 {% endif %}
-                
+
             </div><!-- end: panel body -->
         </div><!-- end: panel -->
     {% endif %}
@@ -112,6 +112,6 @@
             </div><!-- end: panel body -->
         </div><!-- end: panel -->
     {% endif %}
-    {% include "gis_shapefiles/link-back-to-dataverse.html" %}<br />&nbsp;
+    {% include "worldmap_layers/delete_and_back_to_dv_links.html" %}<br />&nbsp;
 
 {% endif %}<!-- END: overall 'if' check -->

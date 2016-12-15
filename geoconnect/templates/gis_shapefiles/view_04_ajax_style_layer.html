@@ -2,14 +2,14 @@
 <!-- content for id_main_panel_content -->
       {% if worldmap_layerinfo %}
 
+        {% if delete_form %}
+          {% include "worldmap_layers/modal_delete_confirm.html" %}
+        {% endif %}
+
+        {% include "worldmap_layers/modal_save_confirm.html" %}
+
         {% if classify_form %}
-            {% if delete_form %}
-                {% include "gis_shapefiles/modal_delete_confirm.html" %}
-            {% endif %}
-            {% if worldmap_layerinfo %}
-                {% include "gis_shapefiles/modal_save_confirm.html" %}
-            {% endif %}
-            {% include "classification/classify_form_dynamic_js.html" %}
+          {% include "classification/classify_form_dynamic_js.html" %}
         {% endif %}
 
         {% if show_visualize_success_msg %}

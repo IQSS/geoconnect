@@ -28,7 +28,7 @@
     </div>
 </div>
 {% if is_staff %}
-    <p>Staff debug:
+    <p>Staff debug:core
         {% if worldmap_layerinfo.is_lat_lng_layer %}
             <a href="{% url 'ajax_dv_notify_latlng_map' worldmap_layerinfo.md5  %}" target="_blank">Send Info to Dataverse</a>
         {% elif worldmap_layerinfo.is_join_layer %}

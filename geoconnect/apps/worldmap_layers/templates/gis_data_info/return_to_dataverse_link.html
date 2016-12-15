@@ -3,20 +3,20 @@
 {% if worldmap_layerinfo %}<!-- Map already exists! Use Modal -->
 
     <form id="frm_update_dv">{% csrf_token %}</form>
-    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">{{ RETURN_TO_DV_TEXT }}</a>
+    (m) <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-xs btn-success">{{ RETURN_TO_DV_TEXT }}</a>
 
 {% else %}<!-- No Map: Return directly! -->
 
-    {% if gis_data_info and gis_data_info.return_to_dataverse_url %}a1
+    {% if gis_data_info and gis_data_info.return_to_dataverse_url %}a1 - YES
         <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">{{ RETURN_TO_DV_TEXT }}</a>
 
-    {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}b1
+    {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}b1 - FIX
         <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">{{ RETURN_TO_DV_TEXT }}</a>
 
-    {% else %}{% if tabular_info and tabular_info.return_to_dataverse_url %}c1
+    {% else %}{% if tabular_info and tabular_info.return_to_dataverse_url %}c1 - FIX
         <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-success btn-xs">{{ RETURN_TO_DV_TEXT }}</a>
 
-    {% else %}{% if return_to_dataverse_url %}d1 - NOPE
+    {% else %}{% if return_to_dataverse_url %}d1 - FIX
         <a href="{{ return_to_dataverse_url }}" class="btn btn-success btn-xs">{{ RETURN_TO_DV_TEXT }}</a>
 
     {% else %}e1 - only ON BAD ERR

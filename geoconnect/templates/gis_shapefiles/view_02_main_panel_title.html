@@ -1,11 +1,9 @@
-<h3 class="panel-title" id="id_main_panel_title">{{ GEOCONNECT_STEP_KEY }}
+<h3 class="panel-title" id="id_main_panel_title">
      {% if gis_data_info %}
         - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ gis_data_info.datafile_label }}</span>
-     {% endif %}
-     {% if tabular_info %}
+     {% elif tabular_info %}where's gis_data_info?
         - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ tabular_info.datafile_label }}</span>
-     {% endif %}
-     {% if worldmap_info %}
+     {% elif worldmap_info %}where's gis_data_info?
         - <span style="font-weight:plain; font-size:90%; color:#006699;">{{ worldmap_info.datafile_label }}</span>
      {% endif %}
  </h3>
