@@ -13,8 +13,9 @@ from django.conf import settings
 
 from geo_utils.msg_util import msg
 from geo_utils.view_util import get_common_lookup
-
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from geo_utils.geoconnect_step_names import PANEL_TITLE_DELETE_MAP,\
+    PANEL_TITLE_REMAP
+from apps.gis_tabular.forms_delete import DeleteMapForm
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.worldmap_connect.dataverse_layer_services import delete_map_layer
 
@@ -31,29 +32,39 @@ def view_delete_tabular_map(request):
     d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
     d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
 
+    d['page_title'] = PANEL_TITLE_DELETE_MAP
+
     # Check the delete request
-    f = DeleteTabularMapForm(request.POST)
+    f = DeleteMapForm(request.POST)
 
     if not f.is_valid():
         d['ERROR_FOUND'] = True
         d['FAILED_TO_VALIDATE'] = True
-        return render_to_response('gis_tabular/view_delete_layer.html', d\
+        return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                  , context_instance=RequestContext(request))
 
     # Form params look good
     worldmap_layer_info = f.get_worldmap_layer_info()
     if not worldmap_layer_info:
         raise Http404('WorldMap Layer info no longer available')
-    tabular_info = worldmap_layer_info.tabular_info
 
-    d['tabular_info'] = tabular_info
+    # depending on the type: tabular_info, shapefile_info, etc
+    #
+    if worldmap_layer_info.is_shapefile_layer():
+        d['is_shapefile_layer'] = True
+    else:
+        d['is_tabular_layer'] = True
+
+    gis_data_info = worldmap_layer_info.get_gis_data_info()
+
+    d['gis_data_info'] = gis_data_info
 
     # -----------------------------------
     # Delete map from WorldMap
     # -----------------------------------
     flag_delete_local_worldmap_info = False
 
-    (success, err_msg_or_None) = delete_map_layer(tabular_info, worldmap_layer_info)
+    (success, err_msg_or_None) = delete_map_layer(gis_data_info, worldmap_layer_info)
     if success is False:
         logger.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
 
@@ -63,7 +74,7 @@ def view_delete_tabular_map(request):
             d['ERROR_FOUND'] = True
             d['WORLDMAP_DATA_DELETE_FAILURE'] = True
             d['ERR_MSG'] = err_msg_or_None
-            return render_to_response('gis_tabular/view_delete_layer.html', d\
+            return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
     else:
         # At this point, the layer no longer exists on WorldMap,
@@ -83,18 +94,19 @@ def view_delete_tabular_map(request):
         worldmap_layer_info.delete()
 
     if success2 is False:
-        logger.error("Faild to delete Map Metadata from Dataverse: %s", err_msg_or_None)
+        logger.error("Failed to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
         d['ERROR_FOUND'] = True
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
         d['ERR_MSG'] = err_msg_or_None2
 
-        return render_to_response('gis_tabular/view_delete_layer.html', d\
+        return render_to_response('worldmap_layers/view_delete_layer.html', d\
                                      , context_instance=RequestContext(request))
 
     d['DELETE_SUCCESS'] = True
+    d['page_title'] = PANEL_TITLE_REMAP
 
-    return render_to_response('gis_tabular/view_delete_layer.html', d\
+    return render_to_response('worldmap_layers/view_delete_layer.html', d\
                             , context_instance=RequestContext(request))
 
 '''

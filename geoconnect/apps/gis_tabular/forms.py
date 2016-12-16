@@ -12,13 +12,7 @@ from django import forms
 from apps.gis_tabular.models import TabularFileInfo
 #from apps.worldmap_connect.jointarget_formatter import JoinTargetFormatter
 
-'''
-class DeleteMapForm(forms.Form):
 
-    gis_data_file_md5 = forms.CharField(widget=forms.HiddenInput())
-    worldmap_layer_info_md5 = forms.CharField(widget=forms.HiddenInput())
-    confirmation = forms.BooleanField(label="I understand all versions of this map will be deleted from WorldMap.", initial=False)
-'''
 
 GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
 

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block extra_js %}
+<style>
+/* Keep datatable header/body aligned */
+#preview-tbl{ margin: 0;}
+
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+</style>
+<script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
+    {% if not worldmap_layerinfo %}
+        <!-- For map Set-Up forms -->
+        {% include "tabular_files/tabular_forms.js" %}
+    {% endif %}
+{% endblock %}
+
+
+{% block main_container %}
+
+{% include "gis_data_info/citation.html" %}
+
+<div id="id_alert_container" style="display:none;"></div>
+
+<!-- start panel -->
+<div class="pull-left" style="width:100%;">
+    <div class="panel panel-default">
+            {% include "gis_data_info/panel_page_title.html" %}
+
+        <div class="panel-body" id="id_main_panel_content">
+            {% if worldmap_layerinfo %}<!-- Map exists: Show map + styling -->
+                {{ tabular_map_div }}
+            {% else %}<!-- Forms to setup map -->
+                {% include "tabular_files/content_setup_tab.html" %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- end: panel -->
+
+<!-- debug panel -->
+{% if is_staff %}
+<div class="pull-left" style="width:100%; padding:20px 30px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title" id="id_main_panel_title">
+                DEBUG INFO
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {% include "tabular_files/debug_file_list.html" %}
+            </div>
+            <div class="row">
+                {% include "tabular_files/debug_join_targets.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- end: debug panel -->
+
+{% endblock %}

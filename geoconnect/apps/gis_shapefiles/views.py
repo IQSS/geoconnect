@@ -10,57 +10,40 @@ from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 
+from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+        ZIPCHECK_MULTIPLE_SHAPEFILES,\
+        ZIPCHECK_NO_FILE_TO_CHECK,\
+        ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE
+
 from apps.gis_shapefiles.forms import ShapefileInfoForm
 from apps.gis_shapefiles.models import ShapefileInfo, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
 from apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
-#from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
-
-from apps.worldmap_connect.models import WorldMapImportAttempt
-from apps.gis_shapefiles.shp_services import add_worldmap_layerinfo_if_exists
+from apps.worldmap_connect.send_shapefile_service import SendShapefileService
+from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
-from apps.worldmap_connect.form_delete import DeleteMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
 from apps.gis_tabular.models import TabularFileInfo
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    STEP1_EXAMINE, STEP3_STYLE
+    STEP1_EXAMINE, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
+
 from geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
 
 
 @login_required
-def view_delete_files(request):
-    if not settings.DEBUG:
-        return HttpResponse('only for testing!')
-    ShapefileInfo.objects.all().delete()
-    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
-
-
-@login_required
-def view_delete_worldmap_visualization_attempts(request):
-    if not settings.DEBUG:
-        return HttpResponse('only for testing!')
-    WorldMapImportAttempt.objects.all().delete()
-    return HttpResponseRedirect(reverse('view_examine_dataset', args=()))
-
-
-@login_required
 def view_examine_dataset(request):
     """
-    Display a list of :model:`gis_shapefiles.ShapefileInfo` objects, each linked to a detail page.
-    For testing, allow the upload of a new shapefile object.
+    For TESTING, allow the upload of a new shapefile object.
 
-    **Context**
+    Display a list of "ShapefileInfo" objects, each linked to a detail page.
 
-    ``RequestContext``
-
-    :ShapefileInfoForm: Check for a ShapefileInfoForm object in the request.POST
-
-    **Template:**
-
-    :template:`gis_shapefiles/view_01_examine_zip.html`
+    - Check for a ShapefileInfoForm object in the request.POST
+    - Template: "gis_shapefiles/view_01_examine_zip.html"
     """
     #return HttpResponse('view_google_map')
     d = { 'page_title' : 'Shapefiles: Test Upload Page'\
@@ -88,45 +71,77 @@ def view_examine_dataset(request):
     return render_to_response('gis_shapefiles/view_01_examine_zip.html', d\
                             , context_instance=RequestContext(request))
 
-#@login_required
+
+def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False):
+    """Called by 'view_shapefile' -- no direct url associated with this view"""
+
+    assert isinstance(worldmap_layerinfo, WorldMapLayerInfo),\
+        "worldmap_layerinfo must be an instance of WorldMapLayerInfo"
+
+    d = get_common_lookup(request)
+    d['page_title'] = PANEL_TITLE_STYLE_MAP
+    d[GEOCONNECT_STEP_KEY] = STEP2_STYLE
+
+    classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
+
+    shapefile_info = worldmap_layerinfo.get_gis_data_info()
+    if not shapefile_info:
+        raise Http404('shapefile md5 not found!')
+
+    delete_form = DeleteMapForm.get_form_with_initial_vals(worldmap_layerinfo)
+
+    d.update(worldmap_layerinfo.get_core_data_dict_for_views())
+
+    d['gis_data_info'] = shapefile_info
+    #d['shapefile_info'] = shapefile_info
+    d['classify_form'] = classify_form
+    d['delete_form'] = delete_form
+
+    d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
+    d['first_time_notify'] = first_time_notify
+
+    return render_to_response('shapefiles/main_outline_shp.html', d\
+                        , context_instance=RequestContext(request))
+
+
+
 def view_shapefile_first_time(request, shp_md5):
     return view_shapefile(request, shp_md5, first_time_notify=True)
-
-
-def view_shapefile_visualize_attempt(request, shp_md5):
-    return view_shapefile(request, shp_md5, just_made_visualize_attempt=True)
-
 
 
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
     """
+    (1) Does a map of this shapefile exist in the db?
+
+    (2) Does a map of this shapefile exist in WorldMap?
+
+    (3) Show the initial page with "Visualize" button
+
     This is fantastically long and messy -- need to break it up
 
     Retrieve and view a :model:`gis_shapefiles.ShapefileInfo` object
 
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
-    :template:`gis_shapefiles/view_02_single_shapefile.html`
+    :template:`shapefiles/main_outline_shp.html`
     """
     logger.debug('-' * 40)
     logger.debug('view_shapefile')
-
-    # -------------------------------------------
-    # Gather common parameters for the template
-    # -------------------------------------------
-    d = get_common_lookup(request)
-    d['page_title'] = 'Examine Shapefile'
-    d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
-    d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
-
     # -------------------------------------------
     # Flags for template - Is this the first time the file is being visualized?
     # -------------------------------------------
     first_time_notify = kwargs.get('first_time_notify', False)
-    if first_time_notify:
-        d['first_time_notify'] = True
-    # Added to template later...
-    just_made_visualize_attempt = kwargs.get('just_made_visualize_attempt', False)
+
+
+    # (1) and (2) - Does a layer already exist
+    #
+    shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
+    if shp_service.flow1_does_map_already_exist():
+        worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
+        if worldmap_layerinfo is None:
+            return HttpResponse('<br />'.join(shp_service.err_msgs))
+        else:
+            return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
 
 
     # -------------------------------------------
@@ -134,14 +149,21 @@ def view_shapefile(request, shp_md5, **kwargs):
     # -------------------------------------------
     try:
         shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
-        d['shapefile_info'] = shapefile_info
-
     except ShapefileInfo.DoesNotExist:
         logger.error('Shapefile not found for hash: %s' % shp_md5)
         raise Http404('Shapefile not found.')
 
-    logger.debug('shapefile_info: %s' % shapefile_info)
-
+    # -------------------------------------------
+    # Gather common parameters for the template
+    # -------------------------------------------
+    d = get_common_lookup(request)
+    d['gis_data_info'] = shapefile_info
+    d['shapefile_info'] = shapefile_info
+    d['page_title'] = PANEL_TITLE_MAP_DATA_FILE
+    d['WORLDMAP_SERVER_URL'] = settings.WORLDMAP_SERVER_URL
+    d[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
+    if first_time_notify:
+        d['first_time_notify'] = True
 
     # -------------------------------------------
     # Early pass: Validate that this .zip is a shapefile--a single shapefile
@@ -162,7 +184,7 @@ def view_shapefile(request, shp_md5, **kwargs):
         # Error: No shapefiles found
         #   Show error message
         # -----------------------------
-        if zip_checker.err_detected:
+        if zip_checker.has_err:
             return view_zip_checker_error(request, shapefile_info, zip_checker, d)
 
         # -----------------------------
@@ -175,19 +197,20 @@ def view_shapefile(request, shp_md5, **kwargs):
         shapefile_info.save()
 
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
-        (success, err_msg_or_none) = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
+        success = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
         if not success:
             d['Err_Found'] = True
-            if zip_checker.err_could_not_process_shapefile:
+            if zip_checker.err_type == ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE:
                 d['Err_Shapefile_Could_Not_Be_Opened'] = True
                 d['zip_name_list'] = zip_checker.get_zipfile_names()
             else:
-                d['Err_Msg'] = err_msg_or_none
+                d['Err_Msg'] = zip_checker.err_msg
+
             shapefile_info.has_shapefile = False
             shapefile_info.save()
             logger.error('Shapefile not loaded. (%s)' % shp_md5)
             zip_checker.close_zip()
-            return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+            return render_to_response('shapefiles/main_outline_shp.html', d\
                                         , context_instance=RequestContext(request))
 
     # -------------------------------------------
@@ -200,54 +223,11 @@ def view_shapefile(request, shp_md5, **kwargs):
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-        return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+        return render_to_response('shapefiles/main_outline_shp.html', d\
                                 , context_instance=RequestContext(request))
 
-    # -------------------------------------------
-    #   Check if a visualization has already been attempted
-    # -------------------------------------------
-    latest_import_attempt = WorldMapImportAttempt.get_latest_attempt(shapefile_info)
-    if latest_import_attempt:
-        worldmap_layerinfo = latest_import_attempt.get_success_info()
-        if worldmap_layerinfo:
-            if just_made_visualize_attempt:
-                d['page_title'] = 'Visualize Shapefile'
-                d[GEOCONNECT_STEP_KEY] = STEP2_VISUALIZE
-            else:
-                d['page_title'] = 'Style Map'
-                d[GEOCONNECT_STEP_KEY] = STEP3_STYLE
 
-            classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
-
-            delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
-                                                , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
-                                            )
-            #d['form_inline'] = True
-            d['classify_form'] = classify_form
-            d['delete_form'] = delete_form
-            d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
-
-        d['worldmap_layerinfo'] = worldmap_layerinfo
-
-        # for debugging
-        d['import_fail_list'] = latest_import_attempt.get_fail_info()
-
-        return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
-                                , context_instance=RequestContext(request))
-
-    else:
-        # -------------------------------------------
-        #  Check for an existing WorldMap layer via the WorldMap API
-        #  This is so ugly....almost an infinite loop
-        # -------------------------------------------
-
-        if add_worldmap_layerinfo_if_exists(shapefile_info):
-            view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
-                                            , kwargs={ 'shp_md5' : shapefile_info.md5 })
-            return HttpResponseRedirect(view_shapefile_first_time_url)
-
-
-    return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+    return render_to_response('shapefiles/main_outline_shp.html', d\
                             , context_instance=RequestContext(request))
 
 
@@ -270,8 +250,12 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
     # Update for user template
     d['Err_Found'] = True
 
-    if zip_checker.err_no_file_to_check:
-        logger.debug('Error: No file to check')
+    error_type = zip_checker.error_type
+
+    '''
+    ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE = 'ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE'
+    '''
+    if error_type == ZIPCHECK_NO_FILE_TO_CHECK:
 
         # Update shapefile_info object
         shapefile_info.name = '(no file to check)'
@@ -283,8 +267,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         #d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         zip_checker.close_zip()
 
-    elif zip_checker.err_no_shapefiles:
-        logger.debug('Error: No shapefiles found')
+    elif error_type == ZIPCHECK_NO_SHAPEFILES_FOUND:
 
         # Update shapefile_info object
         shapefile_info.name = '(not a shapefile)'
@@ -296,7 +279,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         zip_checker.close_zip()
 
-    elif zip_checker.err_multiple_shapefiles:
+    elif error_type == ZIPCHECK_MULTIPLE_SHAPEFILES:
         # Error: More than one shapefile in the .zip
         #
         shapefile_info.name = '(multiple shapefiles found)'
@@ -309,5 +292,5 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         zip_checker.close_zip()
 
     # Send error to user
-    return render_to_response('gis_shapefiles/view_02_single_shapefile.html', d\
+    return render_to_response('shapefiles/main_outline_shp.html', d\
                             , context_instance=RequestContext(request))

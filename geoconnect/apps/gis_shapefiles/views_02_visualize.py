@@ -8,23 +8,21 @@ from django.template import RequestContext
 from django.conf import settings
 
 from apps.gis_shapefiles.models import ShapefileInfo
-from apps.worldmap_connect.models import WorldMapLayerInfo
+from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP3_STYLE
+from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
-from apps.worldmap_connect.form_delete import DeleteMapForm
 
 from geo_utils.message_helper_json import MessageHelperJSON
+from apps.gis_tabular.views import build_map_html
 
-from apps.gis_shapefiles.shp_services import get_successful_worldmap_attempt_from_shapefile
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
+LOGGER = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
 
 from geo_utils.msg_util import msg, msgt
 
@@ -49,46 +47,6 @@ def render_ajax_basic_err_msg(err_note, shapefile_info=None):
     return render_to_string('gis_shapefiles/view_02_ajax_basic_err.html', d)
 
 
-def render_visualize_content_div(request, shapefile_info, worldmap_layerinfo):
-    """Render a chunk of HTML that will be passed back in an AJAX response"""
-
-    #assert isinstance(request, HttpRequest), "request must be a HttpRequest object"
-    assert type(shapefile_info) is ShapefileInfo, "shapefile_info must be a ShapefileInfo object"
-    assert type(worldmap_layerinfo) is WorldMapLayerInfo,\
-        "worldmap_layerinfo must be a WorldMapLayerInfo object"
-
-    delete_form = DeleteMapForm(initial=dict(gis_data_file_md5=shapefile_info.md5\
-                                        , worldmap_layer_info_md5=worldmap_layerinfo.md5)\
-                                    )
-
-    classify_form = ClassifyLayerForm(**worldmap_layerinfo.get_dict_for_classify_form())
-
-
-    d = dict(shapefile_info=shapefile_info\
-            , worldmap_layerinfo=worldmap_layerinfo\
-            , classify_form=classify_form\
-            , delete_form=delete_form\
-            , ATTRIBUTE_VALUE_DELIMITER=ATTRIBUTE_VALUE_DELIMITER\
-            , show_visualize_success_msg=True\
-        )
-    d[GEOCONNECT_STEP_KEY] = STEP3_STYLE    # Used to display delete button
-
-    #d['classify_form'] = classify_form
-    #d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
-
-    return render_to_string('gis_shapefiles/view_04_ajax_style_layer.html'\
-                    , d\
-                    , context_instance=RequestContext(request)\
-                    )
-
-    # -----------------------------
-    # Without classify form:
-    # -----------------------------
-    #d = dict(shapefile_info=shapefile_info\
-    #        , worldmap_layerinfo=worldmap_layerinfo\
-    #    )
-    #return render_to_string('gis_shapefiles/view_03_visualize_layer.html'\
-
 
 class ViewAjaxVisualizeShapefile(View):
     """
@@ -96,124 +54,65 @@ class ViewAjaxVisualizeShapefile(View):
 
     Return a JSON response
     """
-    def generate_json_success_response(self, request, shapefile_info, worldmap_layerinfo):
-        """
-        Return JSON message indicating successful visualization
-
-        :param request: HttpRequest
-        :param shapefile_info: ShapefileInfo
-        :param worldmap_layerinfo: WorldMapLayerInfo
-        :return: { "success" : true
-                    , "message" : "Success!"
-                    , "data" : { "id_main_panel_content" : " ( map html ) "
-                            , "id_main_panel_title" : "( title panel html)"
-                            , "id_breadcrumb" : "(breadcrumb html)"
-                        }
-                }
-        """
-        #assert type(request) is HttpRequest, "request must be a HttpRequest object"
-        assert isinstance(shapefile_info, ShapefileInfo), "shapefile_info must be a ShapefileInfo object"
-        assert isinstance(worldmap_layerinfo, WorldMapLayerInfo), "worldmap_layerinfo must be a WorldMapLayerInfo object"
-
-        msg('render html')
-        visualize_html = render_visualize_content_div(request, shapefile_info, worldmap_layerinfo)
-        breadcrumb_html = render_breadcrumb_div_for_style_step()
-        main_title_panel_html = render_main_panel_title_for_style_step(shapefile_info)
-
-        msg('create  json_msg')
-        json_msg = MessageHelperJSON.get_json_msg(success=True
-                        , msg='Success!'\
-                        , data_dict=dict(id_main_panel_content=visualize_html\
-                            #, id_main_panel_title=STEP2_VISUALIZE\
-                                    , id_main_panel_title=main_title_panel_html\
-                                    , id_breadcrumb=breadcrumb_html
-                                        )\
-                        )
-        msg('send  json_msg')
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-
     def get(self, request, shp_md5):
+        """Use the SendShapefileService to create a map from a shapefile.
 
-        # (1) Retrieve the ShapefileInfo object
+        - SendShapefileService takes care of details starting with retrieving
+        the ShapefileInfo object
+        """
+
+        # OK if shp_md5 is None, SendShapefileService creates error message
         #
-        msgt('Retrieve the ShapefileInfo object')
-        try:
-            shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
-        except ShapefileInfo.DoesNotExist:
-            err_note = "Sorry!  The shapefile was not found."
-            err_note_html = render_ajax_basic_err_msg(err_note)
-
-            json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
-            logger.error('Shapefile not found for hash: %s', shp_md5)
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
-
-
-        # (2) Check for a previous, successful visualization attempt
-        #   If one exists, send it over!
-        #
-        # UPDATE: use WorldMap API to check user and shapefile id
-        #
-        msgt('(2) Check for a previous, successful visualization attempt')
-
-        worldmap_layerinfo = get_successful_worldmap_attempt_from_shapefile(shapefile_info)
-        if worldmap_layerinfo is not None:
-            # (2a) Previous attempt found!!
-            msg('Previous attempt found!!')
-            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
-
-
-        # (3) Let's visualize this on WorldMap!
-        #
-        logger.debug('(3) Let\'s visualize this on WorldMap!')
-
         send_shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
 
-        logger.debug('(3a) send_shapefile_to_worldmap')
-        send_shp_service.send_shapefile_to_worldmap()
+        # Send the shapefile to WorldMap
+        #
+        success = send_shp_service.send_shapefile_to_worldmap()
 
-        logger.debug('(3b) get_worldmap_layerinfo')
-        worldmap_layerinfo = send_shp_service.get_worldmap_layerinfo()
+        # -----------------------------------
+        # Did it work? NOPE!  Failed along the way!
+        # -----------------------------------
+        if not success:
+            err_note = "Sorry! The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
+            LOGGER.error(err_note)
+            err_note_html = render_ajax_basic_err_msg(err_note,\
+                                            send_shp_service.shapefile_info)
 
-        # ------------------------
-        # It worked!
-        # ------------------------
-        if worldmap_layerinfo is not None:
-            return self.generate_json_success_response(request, shapefile_info, worldmap_layerinfo)
+            json_msg = MessageHelperJSON.get_json_fail_msg(err_note_html, dict(id_main_panel_content=err_note_html))
 
-
-        # -------------------------------
-        # Failed with known error
-        # -------------------------------
-        if send_shp_service.has_err:
-            msgt('(3c) It didn\'t worked!')
-            msg(send_shp_service.err_msgs)
-            # (3b) Uh oh!  Failed to visualize
-            #
-            err_note = "Sorry!  The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
-
-            err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
-            json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
-
-            return HttpResponse(status=200, content=json_msg, content_type="application/json")
+            return HttpResponse(json_msg, mimetype="application/json", status=200)
 
 
-        # -------------------------------
-        # Failed with unanticipated error
-        # -------------------------------
-        msgt('(4) Unanticipated error')
-        err_note = "Sorry!  An error occurred.  A message was sent to the administrator."
-        err_note_html = render_ajax_basic_err_msg(err_note, shapefile_info)
+        # -----------------------------------
+        # Yes!  We have a new map layer
+        # -----------------------------------
+        worldmap_shapefile_layerinfo = send_shp_service.get_worldmap_layerinfo()
+        shapefile_info = worldmap_shapefile_layerinfo.get_gis_data_info()
 
-        json_msg = MessageHelperJSON.get_json_msg(success=False\
-                                 , msg=err_note\
-                                 , data_dict=dict(id_main_panel_content=err_note_html)
-            )
+        assert worldmap_shapefile_layerinfo is not None,\
+            "Failure in SendShapefileService!  Said success but not worldmap_layerinfo (WorldMapShapefileLayerInfo)"
 
-        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        # -----------------------------------------
+        # Build the Map HTML to replace the form
+        # -----------------------------------------
+        map_html, user_message_html = build_map_html(request, worldmap_shapefile_layerinfo)
+        if map_html is None:    # Failed!  Send an error
+            LOGGER.error("Failed to create map HTML using WorldMapShapefileLayerInfo: %s (%d)",\
+                worldmap_shapefile_layerinfo, worldmap_shapefile_layerinfo.id)
+
+            user_msg = 'Sorry! Failed to create map. Please try again. (code: s3)'
+            json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
+            return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+        # -----------------------------------------
+        # Looks good.  In the JSON response, send
+        #   back the map HTML
+        # -----------------------------------------
+        data_dict = dict(map_html=map_html,
+                    user_message_html=user_message_html,
+                    id_main_panel_title=PANEL_TITLE_STYLE_MAP,
+                    message='Success!  The shapefile was successfully mapped!')
+
+        json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=200)

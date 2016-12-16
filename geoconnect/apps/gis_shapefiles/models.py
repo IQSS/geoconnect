@@ -1,5 +1,6 @@
 import os
 from hashlib import md5
+import logging
 
 from django.db import models
 
@@ -8,9 +9,16 @@ import jsonfield # jsonfield.JSONField
 from apps.core.models import TimeStampedModel
 from apps.gis_basic_file.models import GISDataFile
 from geo_utils.fsize_human_readable import sizeof_fmt
+from geo_utils.json_field_reader import JSONHelper
+from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER
+from apps.worldmap_layers.models import WorldMapLayerInfo
 
-SHAPEFILE_MANDATORY_EXTENSIONS = ['.shp', '.shx', '.dbf',]
+SHAPEFILE_EXTENSION_SHP = '.shp'
+SHAPEFILE_MANDATORY_EXTENSIONS = [SHAPEFILE_EXTENSION_SHP, '.shx', '.dbf',]
 WORLDMAP_MANDATORY_IMPORT_EXTENSIONS =  SHAPEFILE_MANDATORY_EXTENSIONS + ['.prj']   # '.prj' required for WorldMap shapefile ingest
+
+LOGGER = logging.getLogger(__name__)
+
 
 class ShapefileInfo(GISDataFile):
     """Expects a .zip file upload
@@ -28,9 +36,10 @@ class ShapefileInfo(GISDataFile):
     column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
     column_info = jsonfield.JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
     extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
+    #file_names = jsonfield.JSONField(blank=True, help_text='Files within the .zip')
 
-    def get_file_info(self):
-        return self.singlefileinfo_set.all()
+    #def get_file_info(self):
+    #    return self.file_names
 
     def add_bounding_box(self, l=[]):
         self.bounding_box = l
@@ -61,20 +70,6 @@ class ShapefileInfo(GISDataFile):
         # Character, Numbers, Longs, Dates, or Memo.
         self.column_info = l
 
-
-    def get_shp_fileinfo_obj(self):
-        l = SingleFileInfo.objects.filter(shapefile_info=self, extension='.shp')
-        cnt = l.count()
-        if cnt == 0:
-            return None
-        elif cnt == 1:
-            return l[0]
-        # cnt > 1
-        selected_info = l[0]
-        SingleFileInfo.objects.exclude(id=l[0].id).filter(shapefile_info=self, extension='.shp').delete()  # delete others
-
-        return selected_info
-
     def get_basename(self):
         return os.path.basename(self.name)
 
@@ -98,51 +93,79 @@ class ShapefileInfo(GISDataFile):
         verbose_name_plural = 'Shapefile Information'
 
 
-class SingleFileInfo(TimeStampedModel):
+
+class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
     """
-    For a shapefile set, this is metadata on the individual files.
+    Store the results of a new layer created by mapping a shapefile
     """
-    name = models.CharField(max_length=255)
     shapefile_info = models.ForeignKey(ShapefileInfo)
-    extension= models.CharField(max_length=40, blank=True, help_text='auto-filled on save')
-    filesize = models.IntegerField(help_text='in bytes')
-    is_required_shapefile = models.BooleanField(default=False, help_text='auto-filled on save')
-
-    extracted_file_path = models.CharField(max_length=255, blank=True)
-
-    md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
-
-    def get_human_readable_filesize(self):
-        """Get human readable filesize, e.g. 13.7 MB"""
-        return sizeof_fmt(self.filesize)
-
-    def filesize_text(self):
-        """Display human readable filesize in the admin"""
-        return self.get_human_readable_filesize()
-    filesize_text.allow_tags=True
 
     def save(self, *args, **kwargs):
-        # Set file extension
-        fparts = self.name.split('.')
-        if len(fparts) > 1:
-            self.extension = '.%s' % fparts[-1].lower()
-
-        # Set is_mandatory_shapefile
-        if self.extension in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
-            self.is_mandatory_shapefile = True
-        else:
-            self.is_mandatory_shapefile = False
+        """When saving, set layer_name and md5"""
 
         if not self.id:
-            super(SingleFileInfo, self).save(*args, **kwargs)
-        self.md5 = md5('%s%s' % (self.id, self.name)).hexdigest()
+            super(WorldMapShapefileLayerInfo, self).save(*args, **kwargs)
 
-        super(SingleFileInfo, self).save(*args, **kwargs)
+        self.layer_name = self.core_data.get('layer_typename', None)
+        if self.layer_name is None:
+            self.layer_name = self.core_data.get('layer_name')
 
-    def __unicode__(self):
-        return self.name
+        self.md5 = md5('%s-%s' % (self.id, self.layer_name)).hexdigest()
+        super(WorldMapShapefileLayerInfo, self).save(*args, **kwargs)
+
 
     class Meta:
-        ordering = ('-modified', 'name')
-        verbose_name = 'Single File Information'
+        ordering = ('-created',)
+        verbose_name = 'WorldMapShapefileLayerInfo'
         verbose_name_plural = verbose_name
+
+    def get_layer_type(self):
+        return TYPE_SHAPEFILE_LAYER
+
+    def is_shapefile_layer(self):
+        return True
+
+    def get_gis_data_info(self):
+        """Return the attribute holding gis_data_file"""
+        return self.shapefile_info
+
+    def get_description_for_core_data(self):
+        """Define this depending on the subclass"""
+
+        return 'Layer created my mapping a zipped Shapefile.'
+
+
+    @staticmethod
+    def build_from_worldmap_json(shapefile_info, json_dict):
+        """
+        Create WorldMapTabularLayerInfo object using
+        a python dictionary containing information
+        returned from the WorldMapLayerInfo.
+
+        (Also used to for formatting when checking if a layer exists)
+        """
+        if not isinstance(shapefile_info, ShapefileInfo):
+            LOGGER.error('shapefile_info must be a ShapefileInfo object')
+            return None
+
+        if json_dict is None:
+            LOGGER.error('json_dict cannot be None')
+            return None
+
+        init_data = WorldMapLayerInfo.build_dict_from_worldmap_json(json_dict)
+        if init_data is None:
+            LOGGER.error('Failed to build WorldMapLayerInfo from WorldMap JSON: %s', json_dict)
+            return None
+
+        init_data['shapefile_info'] = shapefile_info
+
+        # Create the object
+        wm_info = WorldMapShapefileLayerInfo(**init_data)
+
+        # Save it
+        wm_info.save()
+
+        # Clear dupe layers, if any
+        WorldMapLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
+
+        return wm_info

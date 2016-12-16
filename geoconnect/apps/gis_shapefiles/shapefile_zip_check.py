@@ -1,10 +1,15 @@
-import os, sys
+import os
+from os.path import isdir, isfile
+import shutil
 import shapefile
 import zipfile
-import timeit
 import cStringIO
 
-from apps.gis_shapefiles.models import ShapefileInfo, SingleFileInfo, SHAPEFILE_MANDATORY_EXTENSIONS, WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
+from apps.gis_shapefiles.models import WORLDMAP_MANDATORY_IMPORT_EXTENSIONS, SHAPEFILE_EXTENSION_SHP
+from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+        ZIPCHECK_MULTIPLE_SHAPEFILES,\
+        ZIPCHECK_NO_FILE_TO_CHECK,\
+        ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE
 
 import logging
 #logger = logging.getLogger(__name__)
@@ -23,7 +28,7 @@ z = zipfile.ZipFile(fh, mode="r", compression=ZIP_STORED, allowZip64=True)
 z = zipfile.ZipFile(fh, mode="r", compression=zipfile.ZIP_STORED, allowZip64=True)
 
 """
-class ZipToStringIOConverter:
+class ZipToStringIOConverter(object):
 
     @staticmethod
     def from_django_file_field(django_field_file_obj):
@@ -41,7 +46,7 @@ class ZipToStringIOConverter:
         return cStringIO.StringIO(django_field_file_obj.read())
 
 
-class ShapefileZipCheck:
+class ShapefileZipCheck(object):
     """Check to see if a file or buffer (StringIO) is a valid zipefile that contains at least one shapefile set
 
     """
@@ -52,7 +57,9 @@ class ShapefileZipCheck:
 
     def __init__(self, zip_input, **kwargs):
         """
-        Inspect a .zip archive  to see if it contains one or more shapefile sets.
+        Inspect a .zip archive  to see if it contains a single shapefile set.
+
+        From the embedded ".shp" file, retrieve the number of features and column names
 
         Attributes:
             zip_input   full path to a file, StringIO object, url to a .zip, or Django file field
@@ -64,50 +71,64 @@ class ShapefileZipCheck:
 
             potential_shapefile_sets    dict with shapefile basename key + individual files
                 example: { 'CommunityCenters_Pag': [u'CommunityCenters_Pag.shx', u'CommunityCenters_Pag.cst', u'CommunityCenters_Pag.dbf', u'CommunityCenters_Pag.prj', u'CommunityCenters_Pag.shp']}
-            err_detected  boolean, is there a processing error?
+            has_err  boolean, is there a processing error?
             err_msg details regarding the error
         """
 
         # Potential Error flags
-        self.err_detected = False   # Always True on an error
+        self.has_err = False   # Always True on an error
+        self.error_msg = ''
+        self.error_type = None
+
         self.err_no_shapefiles = False
         self.err_multiple_shapefiles = False
         self.err_no_file_to_check = False
         self.err_could_not_process_shapefile = False
-        #self.err_no_file_to_check
+
         # Err msg
-        self.err_msg = ''
 
         # zip object
         self.zip_obj = None
 
         self.potential_shapefile_sets = {}
 
-        if zip_input is None:
-            self.err_detected = True
-            self.err_no_file_to_check = True
-            return
+        self.zip_input = zip_input
+
+        self.run_initial_check(**kwargs)
+
+    def run_initial_check(self, **kwargs):
+
+        if self.zip_input is None:
+            self.add_error(None, ZIPCHECK_NO_FILE_TO_CHECK)
+            return False
 
         if kwargs.get('is_url_to_zip') is True:
-            print 'NEED TO IMPLMENT URL ZIPFILE'
-            # Do nothing for now
-            self.zip_input = zip_input
+            raise Exception('Have not implemented getting a .zip from a url')
+
         elif kwargs.get('is_django_file_field') is True:
             #print 'is_django_file_field'
-            self.zip_input = ZipToStringIOConverter.from_django_file_field(zip_input)
+            self.zip_input = ZipToStringIOConverter.from_django_file_field(self.zip_input)
             if self.zip_input is None:
-                self.err_detected = True
-                self.err_msg = 'Failed to find data in Django FileField'
-                raise Exception('Failed to find data in Django FileField')
-        else:
-            self.zip_input = zip_input
+                err_msg = 'Failed to find data in Django FileField'
+                self.add_error(err_msg)
+                raise Exception(err_msg)    # Just blow up if this happens
 
+        return True
+
+    def add_error(self, err_msg, err_type=None):
+        """Store errors internal to this class"""
+
+        self.has_err = True
+        self.error_msg = err_msg
+        self.error_type = err_type
 
 
     def has_potential_shapefiles(self):
+        """Convenience method for checking for shapefile sets"""
         if len(self.potential_shapefile_sets) == 0:
             return False
         return True
+
 
     def get_shapefile_setnames(self):
         """
@@ -133,6 +154,7 @@ class ShapefileZipCheck:
             # log something!!
             return
 
+
     def load_shapefile_from_open_zip(self, shapefile_basename, shapefile_info):
         """
         Assumes that self.zip_obj has opened an archive that contains a valid shapefile set
@@ -141,204 +163,121 @@ class ShapefileZipCheck:
             Will be stripped of any preceding directory "foo/bar" becomes "bar"
         type: shapefile_basename: str
         """
+        if self.has_err:
+            return False
+
         if self.zip_obj is None:
-            msg = 'The shapefile was not open'
-            logger.error(msg)
-            return (False, msg)
+            self.add_error('The shapefile was not open')
+            return False
 
         if shapefile_basename is None:
-            msg = 'The shapefile name was not specified'
-            logger.error(msg)
-            return (False, msg)
+            self.add_error('The shapefile name was not specified')
+            return False
 
         if shapefile_info is None:
-            msg = 'The ShapefileInfo was not specified'
-            logger.error(msg)
-            return (False, msg)
+            self.add_error('The ShapefileInfo was not specified')
+            return False
 
         shapefile_basename = os.path.basename(shapefile_basename)
-        logger.info('shapefile_basename: %s' % shapefile_basename)
+        logger.info('shapefile_basename: %s', shapefile_basename)
 
+        # ------------------------------------
+        #    Go through keys to match basename.  In this case, may
+        #       be looking for 'bicycles':
+        #
+        #     { 'bicycles' : [ '.dbf', '.prj', '.sbn', '.sbx', '.shp', '.shx'],
+        #       'my_word_doc' : ['.docx'],
+        #       'README' : ['.md']
+        #      }
+        # ------------------------------------
         name_found = False
+        name_to_extract = None
         for archived_filename in self.potential_shapefile_sets.keys():
             if shapefile_basename == os.path.basename(archived_filename):
                 name_found = True
-                name_to_extract = archived_filename
+                name_to_extract = archived_filename # includes path info
                 break
 
         if not name_found:
-            msg = 'shapefile_basename not found in .zip: %s' % shapefile_basename
-            logger.error(msg)
-            return (False, msg)
+            err_msg = 'shapefile_basename not found in .zip: %s' % shapefile_basename
+            self.add_error(err_msg)
+            return False
 
-        # #------------------------
+        # ------------------------------------
+        # Update shapefilename using the basename
+        # ------------------------------------
         shapefile_info.name = shapefile_basename
         shapefile_info.save()
 
-        for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
-            fname = name_to_extract + ext
-            #logger.info('extracting: %s' % fname)
-            scratch_directory = shapefile_info.get_scratch_work_directory()
-            self.zip_obj.extract(fname, scratch_directory)
-            #logger.info('done: %s' % fname)
-            sfi = SingleFileInfo(name=os.path.basename(fname)\
-                                , shapefile_info=shapefile_info\
-                                , extension=ext\
-                                , filesize=0\
-                                , is_required_shapefile=True\
-                                , extracted_file_path=os.path.join(shapefile_info.get_scratch_work_directory(), fname)\
-                                )
-            sfi.save()
+        # ------------------------------------
+        # Extract the zipped file into a scratch directory
+        #   - Only extract the 4 files necessary for WorldMap
+        # ------------------------------------
+        scratch_directory = shapefile_info.get_scratch_work_directory()
+        for shp_ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
+            shp_part_name = name_to_extract + shp_ext
 
-        extracted_shapefile_load_path = os.path.join(shapefile_info.get_scratch_work_directory(), name_to_extract)
+            # Extract the file to a scratch directory
+            zip_part_path = self.zip_obj.extract(shp_part_name, scratch_directory)
+
+        # ------------------------------------
+        # Can we read the '.shp' file?
+        # ------------------------------------
+        extracted_shapefile_load_path = os.path.join(scratch_directory, name_to_extract)
         shapefile_info.extracted_shapefile_load_path = extracted_shapefile_load_path
 
+        full_shp_fname = extracted_shapefile_load_path + SHAPEFILE_EXTENSION_SHP
+        if not isfile(full_shp_fname):
+            self.add_error(".shp file not found! Tried: %s" % full_shp_fname)
+            return False
+
+        # ------------------------------------
+        # Try to process/pull info from the .shp file
+        # ------------------------------------
         try:
-           shp_reader = shapefile.Reader(extracted_shapefile_load_path + '.shp')
+            shp_reader = shapefile.Reader(full_shp_fname)
         except:
-            msg = 'Shapefile reader failed for file: %s' % (extracted_shapefile_load_path + '.shp')
-            logger.error(msg)
-            self.err_detected = True
-            self.err_could_not_process_shapefile = True
-            self.err_msg = msg
-            return (False, msg)
+            err_msg = 'Shapefile reader failed for file: %s' % (full_shp_fname)
+            self.add_error(err_msg, ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE)
+            return False
 
-        # add number of shapes
+
+        # ------------------------------------
+        # Extract feature count, column names, bounding box
+        # ------------------------------------
         shapefile_info.number_of_features = len(shp_reader.shapes())
-
         if shapefile_info.number_of_features == 0:
-            self.err_could_not_process_shapefile = False
-            return (False, "This shapefile does not have any geospatial features")
-
+            err_msg = "This shapefile does not have any geospatial features"
+            self.add_error(err_msg, ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE)
+            return False
 
         # add column names
+        # -----------------
         shapefile_info.add_column_info(shp_reader.fields[1:])
         shapefile_info.add_column_names_using_fields(shp_reader.fields)
 
         # add bounding box
-        #print 'add bounding box', shp_reader.bbox
-
+        # -----------------
         try:
             shapefile_info.add_bounding_box(list(shp_reader.bbox))
         except:
             shapefile_info.add_bounding_box('')
 
+        # ----------------------
+        # Remove the scratch directory
+        # ----------------------
+        shp_reader = None
+        if isdir(scratch_directory):
+            shutil.rmtree(scratch_directory)
+            shapefile_info.extracted_shapefile_load_path = ''
+
+        # ----------------------
+        # Save the metadata!!
+        # ----------------------
         shapefile_info.save()
 
-        #logger.info('ShapefileInfo updated!')
+        return True
 
-        return (True, None)
-
-
-
-
-    '''
-    NO LONGER USED, PULL OUT A SINGLE SHAPEFILE, EVEN WHEN THE .ZIP CONTAINS MULTIPLE SHAPEFILES
-
-    GEOCONNECT NO LONGER HANDLES THIS CASE.  DATAVERSE REORGANIZES .zip SO ONLY ONE SHAPEFILE PER ZIP
-
-    def load_shapefile(self, shp_group_obj, shapefile_basename):
-        """
-        shp_group_obj    ShapefileGroup object
-
-        shapefile_basename     Name of shapefile basename to remove from .zip;
-                                Will be stripped of any preceding directory "foo/bar" becomes "bar"
-
-        Load a shapefile and extract metadata:
-            - column names
-            - number of objects
-
-        :returns: (success, msg_or_shapefile_set)
-        """
-        if self.zip_obj is None:
-            msg = 'load_shapefile(...) failed.  self.zip_obj is None'
-            logger.error(msg)
-            return (False, msg)
-
-        if self.shp_group_obj is None:
-            msg = 'load_shapefile(...) failed.  shp_group_obj is None'
-            logger.error(msg)
-            return (False, msg)
-
-        if self.shapefile_basename is None:
-            msg = 'load_shapefile(...) failed.  shapefile_basename is None'
-            logger.error(msg)
-            return (False, msg)
-
-        # Retrieve shapefile basename
-        #
-        shapefile_basename = os.path.basename(shapefile_basename)
-        logger.info('shapefile_basename: %s' % shapefile_basename)
-
-        """
-        Check the case where the "shapefile_basename" is not the full name in the zipfile
-            e.g. User may pick :
-                    "income_in_boston"
-                But .zip archive has:
-                    "some_dir/income_in_boston"
-        """
-        name_found = False
-        logger.info('Checking .zip file list for basename: %s' % shapefile_basename)
-        for archived_filename in self.potential_shapefile_sets.keys():
-            # Look for the name
-            # Once it's found, move on
-            if shapefile_basename == os.path.basename(archived_filename):
-                name_found = True
-                name_to_extract = archived_filename
-                break
-
-        # Never found the shapefile basename in the .zip
-        if not name_found:
-            msg = 'shapefile_basename not found in .zip: %s' % shapefile_basename
-            logger.error(msg)
-            return (False, msg)
-
-        # create a shapefile set
-        single_shapefile_set = ShapefileInfo(name=name_to_extract\
-                                            , shapefile_group=shp_group_obj\
-                                            )
-        single_shapefile_set.save()
-
-        for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS:
-            fname = name_to_extract + ext
-            logger.info('extracting: %s' % fname)
-            self.zip_obj.extract(fname, shp_group_obj.get_scratch_work_directory())
-            logger.info('extracted: %s' % fname)
-            sfi = SingleFileInfo(name=os.path.basename(fname)\
-                                , shapefile_info=single_shapefile_set\
-                                , extension=ext\
-                                , filesize=0\
-                                , is_required_shapefile=True\
-                                , extracted_file_path=os.path.join(shp_group_obj.get_scratch_work_directory(), fname)\
-                                )
-            sfi.save()
-
-        extracted_shapefile_load_path = os.path.join(shp_group_obj.get_scratch_work_directory(), name_to_extract)
-        single_shapefile_set.extracted_shapefile_load_path = extracted_shapefile_load_path
-
-        shp_reader = shapefile.Reader(extracted_shapefile_load_path)
-
-        # add number of shapes
-        single_shapefile_set.number_of_features = len(shp_reader.shapes())
-
-        # add column names
-        single_shapefile_set.add_column_info(shp_reader.fields[1:])
-        single_shapefile_set.add_column_names_using_fields(shp_reader.fields)
-
-        # add bounding box
-        print 'add bounding box', shp_reader.bbox
-
-        try:
-            single_shapefile_set.add_bounding_box(list(shp_reader.bbox))
-        except:
-            single_shapefile_set.add_bounding_box('')
-
-        single_shapefile_set.save()
-
-        logger.info('new ShapefileInfo saved')
-
-        return (True, single_shapefile_set)
-    '''
 
     def get_zipfile_names(self):
         if self.zip_obj is None:
@@ -353,37 +292,39 @@ class ShapefileZipCheck:
 
         returns True or False and sets the dict self.potential_shapefile_sets
         """
-        if self.err_detected:
+        if self.has_err:
             return False
 
-
-        print ('fname: %s' % self.zip_input)
+        # ---------------------------
         # Is it a file?
-        if not os.path.isfile(self.zip_input):
-            self.err_detected = True
-            self.err_no_shapefiles = True
-            self.err_msg = 'File not found for zip_input: %s' % self.zip_input
-            logger.debug(self.err_msg )
+        # ---------------------------
+        if not isfile(self.zip_input):
+            self.add_error('File not found for zip_input: %s' % self.zip_input)
             return False
 
+        # ---------------------------
         # Is it a zip file?
+        # ---------------------------
         if not zipfile.is_zipfile(self.zip_input):
-            self.err_detected = True
-            self.err_no_shapefiles = True
-            self.err_msg = ShapefileZipCheck.ERR_MSG_NOT_ZIP_ARCHIVE
-            logger.debug(self.err_msg )
+            self.add_error(ShapefileZipCheck.ERR_MSG_NOT_ZIP_ARCHIVE,\
+                    ZIPCHECK_NO_SHAPEFILES_FOUND)
             return False
 
+        # ---------------------------
+        # Examine the zip file contents
+        # ---------------------------
         self.zip_obj = zipfile.ZipFile(self.zip_input, 'r')
 
-        #for l in z.infolist(): l.name,l.filename, l.date_time
-
+        # Get the file list
+        #
         zip_info_list = self.zip_obj.infolist()
-        logger.debug('zip_info_list: %s' % zip_info_list)
 
+        #  Remove names starting with "__"
+        #
         zip_info_list = [z for z in zip_info_list if not z.filename[:2] == '__']
 
-        # Create file groups to shake for needed shape files
+        # Create file groups to check for needed shape files
+        #
         file_groups = {}
 
         # Iterate through filenames.
@@ -394,10 +335,13 @@ class ShapefileZipCheck:
         #            , 'my_word_doc' : ['.docx']
         #
         for zip_info in zip_info_list:
-            n = zip_info.filename
-            if not len(n) >= 5 and n[-4]=='.':      # Does this name have a file extension ".xxx"
-                pass
-            file_groups.setdefault(n[:-4], []).append(n[-4:])
+            entry_name = zip_info.filename
+
+            # Make sure file name is at least 5 chars and
+            #   has a "." as 4th char from the right
+            # Does this name have a file extension ".xxx"
+            if len(entry_name) >= 5 and entry_name[-4] == '.':
+                file_groups.setdefault(entry_name[:-4], []).append(entry_name[-4:])
 
 
         #
@@ -410,22 +354,22 @@ class ShapefileZipCheck:
         shapefile_groups = []
         for k, extension_list in file_groups.iteritems():
             if all(ext.lower() in extension_list for ext in WORLDMAP_MANDATORY_IMPORT_EXTENSIONS):
-                shape_file_fnames = [ '%s%s' % (k, ext) for ext in extension_list ]
-                self.potential_shapefile_sets.update({ k : shape_file_fnames})
+                shape_file_fnames = ['%s%s' % (k, ext) for ext in extension_list]
+                self.potential_shapefile_sets.update({k : shape_file_fnames})
 
 
-        if len(self.potential_shapefile_sets) == 0:
-            self.err_detected = True
-            self.err_no_shapefiles = True
-            self.err_msg = ShapefileZipCheck.ERR_MSG_NO_SHAPEFILES_IN_ZIP_ARCHIVE
+        if len(self.potential_shapefile_sets) == 0:     # No shapefiles found
+            self.add_error(ShapefileZipCheck.ERR_MSG_NO_SHAPEFILES_IN_ZIP_ARCHIVE,\
+                ZIPCHECK_NO_SHAPEFILES_FOUND)
             return False
 
-        elif len(self.potential_shapefile_sets) > 1:
-            self.err_detected = True
-            self.err_multiple_shapefiles = True
-            self.err_msg = ShapefileZipCheck.ERR_MULTIPLE_SHAPEFILES_IN_ZIP_ARCHIVE
+        elif len(self.potential_shapefile_sets) > 1:    # Multiple shapefiles found
+            self.add_error(ShapefileZipCheck.ERR_MULTIPLE_SHAPEFILES_IN_ZIP_ARCHIVE,\
+                            ZIPCHECK_MULTIPLE_SHAPEFILES)
+            return False
 
         # Only 1 shapefile found
+        #
         return True
 
 

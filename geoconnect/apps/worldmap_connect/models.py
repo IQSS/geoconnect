@@ -16,7 +16,7 @@ from jsonfield import JSONField
 from apps.core.models import TimeStampedModel
 
 from apps.gis_basic_file.models import GISDataFile
-from apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER
+from apps.layer_types.static_vals import DV_MAP_TYPE_SHAPEFILE
 from shared_dataverse_information.map_layer_metadata.models import MapLayerMetadata
 from shared_dataverse_information.map_layer_metadata.forms import MapLayerMetadataValidationForm\
                                                 , GeoconnectToDataverseMapLayerMetadataValidationForm\
@@ -262,7 +262,7 @@ class WorldMapLayerInfo(MapLayerMetadata):
         Used for the classification form
         """
         return dict(layer_name=self.layer_name,
-                data_source_type=TYPE_SHAPEFILE_LAYER,
+                data_source_type=DV_MAP_TYPE_SHAPEFILE,
                 raw_attribute_info=self.get_attribute_info())
 
     def update_dataverse(self):

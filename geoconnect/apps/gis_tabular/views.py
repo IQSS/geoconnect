@@ -10,21 +10,23 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.conf import settings
 
 
-from apps.gis_tabular.models import TabularFileInfo # for testing
+#from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
-from apps.gis_tabular.forms_delete import DeleteTabularMapForm
+from apps.gis_tabular.forms_delete import DeleteMapForm
+
+from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
-    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP3_STYLE
+    GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE,\
+    PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
@@ -35,13 +37,6 @@ from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
 from apps.gis_tabular.tab_services import add_worldmap_layerinfo_if_exists
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
-
-#from geo_utils.msg_util import *
-#from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
-#from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
-#from geo_utils.view_util import get_common_lookup
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -59,69 +54,85 @@ def view_existing_map(request, worldmap_info=None):
 
     template_dict = get_common_lookup(request)
 
-    main_panel_title = render_main_panel_title_for_style_step(worldmap_info.tabular_info)
+    map_html, user_message_html = build_map_html(request, worldmap_info)
+    if map_html is None:
+        LOGGER.error("Failed to create map HTML using worldmap_info: %s (%d)" %\
+            worldmap_info, worldmap_info.id)
+        user_msg = 'Sorry! Failed to create map. Please try again. (code:ve3)'
+        return HttpResponse(user_msg)
 
-    template_dict = dict(worldmap_layerinfo=worldmap_info,\
-        attribute_data=worldmap_info.attribute_data,\
-        tabular_map_div=build_tabular_map_html(request, worldmap_info),\
-        tabular_info=worldmap_info.tabular_info,\
-        #id_main_panel_title=main_panel_title,\
-        #id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-        # for testing
-        test_files=TabularFileInfo.objects.all(),\
+
+    template_dict = dict(worldmap_layerinfo=worldmap_info,
+        attribute_data=worldmap_info.attribute_data,
+        tabular_map_div=map_html,
+        user_message_html=user_message_html,    # not used for existing maps
+        gis_data_info=worldmap_info.get_gis_data_info(),
+        test_files=TabularFileInfo.objects.all(),
+        page_title=PANEL_TITLE_STYLE_MAP,
         )
 
-    template_dict[GEOCONNECT_STEP_KEY] = STEP3_STYLE
+    template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('gis_tabular/view_tabular_map.html',\
+    return render_to_response('tabular_files/main_outline_tab.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
 
 
 
-def build_tabular_map_html(request, worldmap_info):
+def build_map_html(request, worldmap_info):
     """
-    Expects a WorldMapJoinLayerInfo or WorldMapLatLngInfo object
+    Expects a WorldMapLayerInfo object
 
-    Create HTML string displaying:
-        - Completed map via iframe
-        - Download links using Geoserver functions
-        - User message about join
-        - Attribute table
+    Create 2 HTML strings:
+        1 - map_html
+            - Completed map via iframe
+            - Download links using Geoserver functions
+            - Attribute table
+        2 - user_message_html
+            - User message about join
     """
-    if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
-        isinstance(worldmap_info, WorldMapLatLngInfo)):
-        LOGGER.error('worldmap_info needs to be a WorldMapJoinLayerInfo\
-         or WorldMapLatLngInfo object. Not: %s', worldmap_info)
-        return None
+    if not isinstance(worldmap_info, WorldMapLayerInfo):
+        err_msg = ('worldmap_info needs to be a WorldMapLayerInfo'
+                   ' object. Not type: %s')\
+                   % (type(worldmap_info))
+        LOGGER.error(err_msg)
+        return None, None
 
-    delete_form = DeleteTabularMapForm.get_form_with_initial_vals(worldmap_info)
+    delete_form = DeleteMapForm.get_form_with_initial_vals(worldmap_info)
 
     template_dict = get_common_lookup(request)
 
-    template_dict.update(dict(worldmap_layerinfo=worldmap_info,\
-            core_data=worldmap_info.core_data,\
-            tabular_info=worldmap_info.tabular_info,\
-            download_links=worldmap_info.download_links,\
-            attribute_data=worldmap_info.attribute_data,\
-            delete_form=delete_form,\
-            is_tabular_delete=True,\
-            ))
+    template_dict.update(dict(worldmap_layerinfo=worldmap_info,
+            core_data=worldmap_info.core_data,
+            gis_data_info=worldmap_info.get_gis_data_info(),
+            download_links=worldmap_info.download_links,
+            attribute_data=worldmap_info.attribute_data,
+            delete_form=delete_form,
+            page_title=PANEL_TITLE_STYLE_MAP))
 
     # --------------------------------
     # Classification form attributes
     # --------------------------------
-    classify_params = {GEOCONNECT_STEP_KEY : STEP3_STYLE,\
+    classify_form = ClassifyLayerForm(\
+            **worldmap_info.get_dict_for_classify_form())
+
+    classify_params = {\
+            GEOCONNECT_STEP_KEY : STEP2_STYLE,\
             'ATTRIBUTE_VALUE_DELIMITER' : ATTRIBUTE_VALUE_DELIMITER,\
-            'classify_form' : ClassifyLayerForm(\
-                **worldmap_info.get_dict_for_classify_form())}
+            'classify_form' : classify_form}
 
     template_dict.update(classify_params)
 
-    return render_to_string('gis_tabular/view_tabular_map_div.html',\
+    map_html = render_to_string('worldmap_layers/map_with_classify.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
+
+    user_message_html = render_to_string('worldmap_layers/new_map_message.html',\
+                            template_dict,\
+                            context_instance=RequestContext(request))
+
+    return (map_html, user_message_html)
 
 
 def view_unmatched_join_rows(request, tab_md5):
@@ -283,21 +294,22 @@ def view_tabular_file(request, tab_md5):
 
     template_dict = get_common_lookup(request)
 
-    template_dict.update(dict(tabular_id=tabular_info.id,\
-            tabular_md5=tabular_info.md5,\
-            tabular_info=tabular_info,\
-            tab_file_stats=tab_file_stats,\
-            geocode_types=geocode_type_list,\
-            NUM_PREVIEW_ROWS=num_preview_rows,\
-            test_files=TabularFileInfo.objects.all(),\
-            form_single_column=form_single_column,\
-            form_lat_lng=form_lat_lng,\
-            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE))
+    template_dict.update(dict(tabular_id=tabular_info.id,
+            tabular_md5=tabular_info.md5,
+            gis_data_info=tabular_info,
+            tab_file_stats=tab_file_stats,
+            geocode_types=geocode_type_list,
+            NUM_PREVIEW_ROWS=num_preview_rows,
+            test_files=TabularFileInfo.objects.all(),
+            form_single_column=form_single_column,
+            form_lat_lng=form_lat_lng,
+            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE,
+            page_title=PANEL_TITLE_MAP_DATA_FILE))
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('gis_tabular/view_tabular_overview.html',\
+    return render_to_response('tabular_files/main_outline_tab.html',\
                             template_dict,\
                             context_instance=RequestContext(request))
 

@@ -4,7 +4,7 @@ Set attributes used for nearly all views
 from django.conf import settings
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEPS,\
-    STEP1_EXAMINE, STEP3_STYLE
+    STEP1_EXAMINE, STEP2_STYLE
 
 def get_common_lookup(request, **kwargs):
     """
@@ -34,8 +34,7 @@ def get_common_lookup(request, **kwargs):
             DEBUG_MODE=settings.DEBUG,\
             GEOCONNECT_STEPS=GEOCONNECT_STEPS,\
             STEP1_EXAMINE=STEP1_EXAMINE,\
-            #STEP2_VISUALIZE=STEP2_VISUALIZE,\
-            STEP3_STYLE=STEP3_STYLE,\
+            STEP2_STYLE=STEP2_STYLE,\
             is_logged_in=is_logged_in,\
             is_staff=is_staff,\
             is_superuser=is_superuser)

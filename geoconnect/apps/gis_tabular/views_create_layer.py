@@ -18,16 +18,16 @@ from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
 from apps.dv_notify.metadata_updater import MetadataUpdater
 
+from geo_utils.geoconnect_step_names import PANEL_TITLE_MAP_DATA_FILE,\
+    PANEL_TITLE_STYLE_MAP
+
 from apps.worldmap_connect.utils import get_geocode_types_and_join_layers
 
 from apps.worldmap_connect.lat_lng_service import create_map_from_datatable_lat_lng
 from apps.worldmap_connect.table_join_map_maker import TableJoinMapMaker
 
 #from apps.gis_tabular.dataverse_test_info import DataverseTestInfo
-from apps.gis_tabular.views import build_tabular_map_html
-
-from apps.gis_basic_file.views import render_breadcrumb_div_for_style_step,\
-    render_main_panel_title_for_style_step
+from apps.gis_tabular.views import build_map_html
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -101,7 +101,6 @@ def view_map_tabular_file_form(request):
         msg('error msg: %s' % json_msg)
         return HttpResponse(json_msg, mimetype="application/json", status=200)
 
-
     # -----------------------------------------
     # Succeeded!  Create a WorldMapTabularLayerInfo object
     # -----------------------------------------
@@ -124,7 +123,7 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_tabular_map_html(request, worldmap_tabular_info)
+    map_html, user_message_html = build_map_html(request, worldmap_tabular_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapTabularLayerInfo: %s (%d)",\
             worldmap_tabular_info, worldmap_tabular_info.id)
@@ -136,10 +135,9 @@ def view_map_tabular_file_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
-    data_dict = dict(map_html=map_html,\
-                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-                id_main_panel_title=main_title_panel_html)
+    data_dict = dict(map_html=map_html,
+                user_message_html=user_message_html,
+                id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
@@ -235,7 +233,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
     # -----------------------------------------
-    map_html = build_tabular_map_html(request, worldmap_latlng_info)
+    map_html, user_message_html = build_map_html(request, worldmap_latlng_info)
     if map_html is None:    # Failed!  Send an error
         LOGGER.error("Failed to create map HTML using WorldMapLatLngInfo: %s (%d)",\
             worldmap_latlng_info, worldmap_latlng_info.id)
@@ -248,10 +246,9 @@ def view_process_lat_lng_form(request):
     # Looks good.  In the JSON response, send
     #   back the map HTML
     # -----------------------------------------
-    main_title_panel_html=render_main_panel_title_for_style_step(tabular_info)
-    data_dict = dict(map_html=map_html,\
-                id_breadcrumb=render_breadcrumb_div_for_style_step(),\
-                id_main_panel_title=main_title_panel_html)
+    data_dict = dict(map_html=map_html,
+                user_message_html=user_message_html,
+                id_main_panel_title=PANEL_TITLE_STYLE_MAP)
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 

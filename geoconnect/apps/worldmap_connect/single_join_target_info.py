@@ -11,6 +11,8 @@ class SingleJoinTargetInfo(object):
         self.target_info = target_info
 
         self.target_id = target_info['id']
+        self.name = target_info['name']
+        
         self.target_layer_name = target_info['layer']
         self.target_column_name = target_info['attribute']['attribute']
         self.target_attribute_type = target_info['attribute']['type']

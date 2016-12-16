@@ -219,10 +219,12 @@ LOCAL_APPS = (
     'apps.content_pages',
     'apps.registered_dataverse',    # relies on gis_basic_file
     'apps.style_layer_information',
+
+    'apps.worldmap_layers', # abstract model
     'apps.gis_basic_file',
     'apps.gis_shapefiles',
-    'apps.worldmap_connect',
     'apps.gis_tabular',
+    'apps.worldmap_connect',
     #'apps.column_stats',
     #'folium_maker',     # quick experiment
 )
@@ -323,6 +325,9 @@ WORLDMAP_ACCOUNT_PASSWORD = None
 
 WORLDMAP_DEFAULT_TIMEOUT = 8*60 # seconds
 WORLDMAP_SHORT_TIMEOUT = 2*60 # seconds, for non-layer making requests
+
+# Go and get info from WorldMap instead of using saved info
+WORLDMAP_LAYER_EXPIRATION = 15 * 60 # 15 minutes
 
 # Old WorldMap connection info - leaving as placeholder 2/3 until
 # updated geoconnect fully ready

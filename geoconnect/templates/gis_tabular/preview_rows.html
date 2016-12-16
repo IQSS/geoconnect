@@ -2,10 +2,6 @@
 <br />
 <div class="row">
     <div class="col-sm-12">
-
-{#<h4>Dataverse File Preview</h4>#}
-
-<p>Citation: {{ tabular_info.dataset_citation|safe }}</p>
 <hr />
 {% if NUM_PREVIEW_ROWS == tabular_info.num_rows %}
     Displaying {% if tabular_info.num_rows > 1 %} all {% endif %}

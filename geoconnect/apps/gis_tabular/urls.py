@@ -38,5 +38,5 @@ urlpatterns += patterns('apps.gis_tabular.views_create_layer',
 
 urlpatterns += patterns('apps.gis_tabular.views_delete',
 
-    url(r'^delete-tabular-map/$', 'view_delete_tabular_map', name="view_delete_tabular_map"),
+    url(r'^delete-map/$', 'view_delete_tabular_map', name="view_delete_tabular_map"),
 )

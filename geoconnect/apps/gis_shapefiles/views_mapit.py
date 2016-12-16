@@ -1,6 +1,6 @@
-import json
-import requests
-
+"""
+Views to handle Dataverse initial requests
+"""
 from django.shortcuts import render_to_response
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,14 +8,17 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from geo_utils.msg_util import *
+from geo_utils.msg_util import msg, msgt
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
-
-from apps.layer_types.static_vals import DV_MAP_TYPE_SHAPEFILE,\
-                DV_MAP_TYPE_TABULAR
-
+from apps.layer_types.static_vals import is_valid_dv_type,\
+                is_dv_type_shapefile,\
+                is_dv_type_tabular,\
+                is_dv_type_geotiff
 from apps.gis_shapefiles.shp_services import get_shapefile_from_dv_api_info
+from apps.gis_shapefiles.initial_request_helper import InitialRequestHelper
+
+
 from apps.gis_tabular.tab_services import get_tabular_file_from_dv_api_info
 
 from apps.registered_dataverse.utils import is_setting_active
@@ -26,12 +29,11 @@ from geo_utils.view_util import get_common_lookup
 import logging
 LOGGER = logging.getLogger(__name__)
 
-FAILED_TO_RETRIEVE_DATAVERSE_FILE = 'FAILED_TO_RETRIEVE_DATAVERSE_FILE'
-FAILED_TO_CONVERT_RESPONSE_TO_JSON = 'FAILED_TO_CONVERT_RESPONSE_TO_JSON'
-FAILED_BAD_STATUS_CODE_FROM_WORLDMAP = 'FAILED_BAD_STATUS_CODE_FROM_WORLDMAP'
-FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE = 'FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE'
+from geo_utils.template_constants import FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
+
 
 def view_formatted_error_page(request, error_type, err_msg=None):
+    """Show an error page"""
 
     d = get_common_lookup(request)
     d['page_title'] = 'Examine Shapefile'
@@ -43,7 +45,7 @@ def view_formatted_error_page(request, error_type, err_msg=None):
         d[error_type] = True
     d['Dataverse_Connect_Err_Msg'] = err_msg
 
-    return render_to_response('gis_shapefiles/view_02_single_shapefile.html'\
+    return render_to_response('shapefiles/main_outline_shp.html'\
                                 , d\
                                 , context_instance=RequestContext(request)\
                             )
@@ -51,113 +53,61 @@ def view_formatted_error_page(request, error_type, err_msg=None):
 
 def view_mapit_incoming_token64(request, dataverse_token):
     """
-    This needs to be re-factored
-
     (1) Check incoming url for a callback key 'cb'
-    (2) Use the callback url to retrieve the DataverseInfo via a POST
+        and use the callback url to retrieve the DataverseInfo via a POST
+    (2) Route the request depending on the type of data returned
     """
-    assert request.GET is not None, "request.GET cannot be None"
-    assert request.GET.has_key('cb') is True, "request.GET must have key 'cb' for the callback url"
 
-    callback_url = request.GET['cb']# + "?%s" % urlencode(dict(key='pete'))
-
-    # hack for testing until dvn-build is updated
+    # (1) Check incoming url for a callback url
+    # and use the url to retrieve the DataverseInfo via a POST
     #
-    if callback_url.find('dvn-build') > -1 and callback_url.find('https') == -1:
-        callback_url = callback_url.replace('http', 'https')
+    request_helper = InitialRequestHelper(request, dataverse_token)
+    if request_helper.has_err:
+        return view_formatted_error_page(request,\
+                            request_helper.err_type,\
+                            request_helper.err_msg)
 
-    # Make a post request using the temporary token issued by WorldMap
+
+    # (2) Route the request depending on the type of data returned
     #
-    TOKEN_PARAM = {settings.DATAVERSE_TOKEN_KEYNAME : dataverse_token}
+    mapping_type = request_helper.mapping_type
 
-    """
-    #http://127.0.0.1:8070/shapefile/map-it/fe1b5f64adcbf2c2c4742fe5eaa0dd6887f410d02317361d9c999c2d4cdaa63e/?cb=http%3A%2F%2Flocalhost%3A8010%2Fapi%2Fworldmap%2Fdatafile%2F
-    """
-    try:
-        r = requests.post(callback_url, data=json.dumps(TOKEN_PARAM))
-    except requests.exceptions.ConnectionError as e:
-
-        err_msg = '<p><b>Details for administrator:</b> Could not contact the Dataverse server: %s</p><p>%s</p>'\
-                                % (callback_url, e.message)
-        LOGGER.error(err_msg)
-        return view_formatted_error_page(request\
-                                        , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
-                                        , err_msg)
-
-    msgt(r.text)
-    msg(r.status_code)
-
-    # ------------------------------
-    # Check if valid status code
-    # ------------------------------
-    if not r.status_code == 200:
-        err_msg1 = 'Status code from dataverse: %s' % (r.status_code)
-        err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-        LOGGER.error(err_msg2)
-        return view_formatted_error_page(request\
-                                        , FAILED_TO_RETRIEVE_DATAVERSE_FILE\
-                                        , err_msg1)
-
-        #return HttpResponse("Sorry! Failed to retrieve Dataverse file")
-
-    # ------------------------------
-    # Attempt to convert response to JSON
-    # ------------------------------
-    jresp = r.json()
-    if not type(jresp) is dict:
-        err_msg1 = 'Failed to convert response to JSON\nStatus code from dataverse: %s' % (r.status_code)
-        err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-        LOGGER.error(err_msg2)
-        return view_formatted_error_page(request\
-                                         , FAILED_TO_CONVERT_RESPONSE_TO_JSON\
-                                         , err_msg1)
-
-
-    # ------------------------------
-    # Examine response
+    #  Is the mapping type valid?
+    #  Knowingly redundant, also checked in requestHelper
     #
-    # (1) Identify the mapping type
-    # (2) Send the file through the appropriate path
-    #   - e.g. shapefile, tabular file, etc.
-    # ------------------------------
-    if jresp.has_key('status') and jresp['status'] in ['OK', 'success']:
+    if not is_valid_dv_type(mapping_type):
 
-        data_dict = jresp.get('data')
-        mapping_type = data_dict.pop('mapping_type', None)
+        err_msg = 'The mapping_type for this metadata was not valid.  Found: %s' % mapping_type
 
-        if mapping_type == DV_MAP_TYPE_SHAPEFILE:
+        return view_formatted_error_page(request,\
+                            FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE,\
+                            err_msg)
 
-            if not is_setting_active(DV_MAP_TYPE_SHAPEFILE):
-                return view_filetype_note_by_name(request, DV_MAP_TYPE_SHAPEFILE)
-            return process_shapefile_info(request, dataverse_token, data_dict)
+    #  Is the mapping type active?
+    #
+    if not is_setting_active(mapping_type):
+        return view_filetype_note_by_name(request, mapping_type)
 
-        elif mapping_type == DV_MAP_TYPE_TABULAR:
-            if not is_setting_active(DV_MAP_TYPE_TABULAR):
-                return view_filetype_note_by_name(request, DV_MAP_TYPE_TABULAR)
+    # Let's route it!
+    #
+    if is_dv_type_shapefile(mapping_type):
+        return process_shapefile_info(request,\
+                            request_helper.dataverse_token,\
+                            request_helper.dv_data_dict)
 
-            return process_tabular_file_info(request, dataverse_token, data_dict)
+    elif is_dv_type_tabular(mapping_type):
 
-        elif mapping_type is None:  # older installations may not have this setting
-            # Shapefiles -- pre DV 4.3
-            return process_shapefile_info(request, dataverse_token, data_dict)
+        return process_tabular_file_info(request,\
+                            request_helper.dataverse_token,\
+                            request_helper.dv_data_dict)
 
-        else:
-            err_msg = 'The mapping_type for this metadata was not found.  Found: %s' % mapping_type
-            err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-            LOGGER.error(err_msg2)
-            return view_formatted_error_page(request\
-                                     , FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE\
-                                     , err_msg1)
+    elif is_dv_type_geotiff(mapping_type):
 
-    # ------------------------------
-    # Failed!
-    # ------------------------------
-    err_msg1 = 'Unsuccessful request to Dataverse\nStatus code from dataverse: %s\nStatus: %s' % (r.status_code, jresp.get('status', 'not found'))
-    err_msg2 = err_msg1 + '\nResponse: %s' % (r.text)
-    LOGGER.error(err_msg2)
-    return view_formatted_error_page(request\
-                                     , FAILED_BAD_STATUS_CODE_FROM_WORLDMAP\
-                                     , err_msg1)
+        err_msg = 'Sorry! GeoTiff mapping is currently not available'
+        return view_formatted_error_page(None, err_msg)
+
+    return HttpResponse('Error!!  Should never reach this line!')
+
 
 
 def process_tabular_file_info(request, dataverse_token, data_dict):
@@ -174,8 +124,8 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
                                          , tab_md5_or_err_msg.err_type\
                                          , tab_md5_or_err_msg.err_msg)
 
-    view_tab_file_first_time_url =  reverse('view_tabular_file'\
-                                    , kwargs={ 'tab_md5' : tab_md5_or_err_msg })
+    view_tab_file_first_time_url = reverse('view_tabular_file'\
+                                    , kwargs=dict(tab_md5=tab_md5_or_err_msg))
 
     return HttpResponseRedirect(view_tab_file_first_time_url)
 
@@ -195,7 +145,7 @@ def process_shapefile_info(request, dataverse_token, data_dict):
                                          , shp_md5_or_err_msg.err_type\
                                          , shp_md5_or_err_msg.err_msg)
 
-    view_shapefile_first_time_url =  reverse('view_shapefile_first_time'\
-                                    , kwargs={ 'shp_md5' : shp_md5_or_err_msg })
+    view_shapefile_first_time_url = reverse('view_shapefile_first_time'\
+                                    , kwargs=dict(shp_md5=shp_md5_or_err_msg))
 
     return HttpResponseRedirect(view_shapefile_first_time_url)
