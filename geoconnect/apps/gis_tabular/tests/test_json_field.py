@@ -86,7 +86,7 @@ class JSONFieldTester(TestCase):
         # attributes
         #
         tname = 'Obj 1'
-        col_names_val = range(1,10)
+        col_names_val = range(10)
         d = dict(name=tname,
              column_names=col_names_val)
 

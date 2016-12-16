@@ -51,7 +51,7 @@ class JoinTargetInformationTestCase(TestCase):
                 self.assertEqual(target_info.requires_zero_padding(), True)
                 self.assertEqual(target_info.get_zero_pad_length(), 5)
                 self.assertEqual(target_info.does_join_column_potentially_need_formatting(), True)
-            elif target_info.target_id == 19:
+            elif target_info.name == 'Roads, Boston':
                 msg('c) checking target: %s' % (target_info.target_layer_name))
                 self.assertEqual(target_info.is_target_column_string(), False)
                 self.assertEqual(target_info.requires_zero_padding(), False)

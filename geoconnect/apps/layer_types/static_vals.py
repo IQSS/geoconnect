@@ -23,7 +23,7 @@ def is_dv_type_shapefile(map_type):
     return map_type == DV_MAP_TYPE_SHAPEFILE
 
 def is_dv_type_tabular(map_type):
-    return map_type == DV_MAP_TYPE_SHAPEFILE
+    return map_type == DV_MAP_TYPE_TABULAR
 
 def is_dv_type_geotiff(map_type):
     return map_type == DV_MAP_TYPE_GEOTIFF

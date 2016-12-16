@@ -88,7 +88,6 @@ def view_mapit_incoming_token64(request, dataverse_token):
     if not is_setting_active(mapping_type):
         return view_filetype_note_by_name(request, mapping_type)
 
-
     # Let's route it!
     #
     if is_dv_type_shapefile(mapping_type):
