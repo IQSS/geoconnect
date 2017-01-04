@@ -1,4 +1,23 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css">
+<style>
+/* Keep datatable header/body aligned */
+#preview-tbl{ margin: 0;}
+
+#table-wrapper {
+  position:relative;
+    border:1px solid #333;
+}
+#table-scroll {
+  height:300px;
+  overflow:auto;
+  margin-top:20px;
+}
+
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border: none;
+}
+
+</style>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
 <script>
 
@@ -232,7 +251,8 @@
         bind_select_column_by_preview_table_click();
 
         var previewTable = $('#preview-tbl').DataTable( {
-                "scrollY": 400,
+                "xscrollY": 200,
+                "info":false, // remove 'Showing 1 to n of n entries'
                 "scrollX": true,
                 "paging" : false,
                 "searching" : false

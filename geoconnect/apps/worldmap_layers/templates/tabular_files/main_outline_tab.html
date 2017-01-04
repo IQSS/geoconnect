@@ -13,6 +13,13 @@
   overflow:auto;
   margin-top:20px;
 }
+
+#preview-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border-bottom: none;
+}
+#preview-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border-bottom: 1px solid #006699;
+}
 </style>
 <script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
     {% if not worldmap_layerinfo %}
@@ -28,21 +35,21 @@
 
 <div id="id_alert_container" style="display:none;"></div>
 
-<!-- start panel -->
+{% if worldmap_layerinfo %}
+<!-- start: display map panel -->
 <div class="pull-left" style="width:100%;">
     <div class="panel panel-default">
             {% include "gis_data_info/panel_page_title.html" %}
 
         <div class="panel-body" id="id_main_panel_content">
-            {% if worldmap_layerinfo %}<!-- Map exists: Show map + styling -->
                 {{ tabular_map_div }}
-            {% else %}<!-- Forms to setup map -->
-                {% include "tabular_files/content_setup_tab.html" %}
-            {% endif %}
         </div>
     </div>
 </div>
-<!-- end: panel -->
+<!-- end: display map panel -->
+{% else %}
+    {% include "tabular_files/content_setup_tab.html" %}
+{% endif %}
 
 <!-- debug panel -->
 {% if is_staff %}
