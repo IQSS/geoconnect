@@ -38,12 +38,7 @@
                 <p>Please {% include "gis_data_info/return_to_dataverse_link.html" %}
 					<br /><br />or
 
-					<!-- Re-map link -->
-				  	{% if is_tabular_layer %}
-                  		<a href="{% url 'view_tabular_file' gis_data_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
-				  	{% else %}{% if is_shapefile_layer %}
-						<a href="{% url 'view_shapefile' gis_data_info.md5 %}"  class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
-				  	{% endif %}{% endif %}
+					{% include "worldmap_layers/view_delete_remap_links.html" %}
                 </p>
     	    {% endif %}
     	    </div>
@@ -55,12 +50,13 @@
         Success!  The Map has been deleted for file <b>{{ gis_data_info.datafile_label }}</b>.
     </div>
 
-	    {% if tabular_info %}
+	    {% if gis_data_info %}
 	    <div class="panel panel-default">
             {% include "gis_data_info/panel_page_title.html" %}
 	        <div class="panel-body">
-            	<p><a href="{% url 'view_tabular_file' tabular_info.md5 %}" class="btn btn-success btn-xs">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
 
+				{% include "worldmap_layers/view_delete_remap_links.html" %}
+					
 	            <br /><br />
 				{% include "gis_data_info/return_to_dataverse_link.html" %}
 
