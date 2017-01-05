@@ -35,7 +35,7 @@ class ShapefileInfo(GISDataFile):
 
     column_names = jsonfield.JSONField(blank=True, help_text='Saved as a json list')
     column_info = jsonfield.JSONField(blank=True, help_text='Includes column type, field length, and decimal length. Saved as a json list.')
-    extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapfile set')
+    extracted_shapefile_load_path = models.CharField(blank=True, max_length=255, help_text='Used to load extracted shapefile set')
     #file_names = jsonfield.JSONField(blank=True, help_text='Files within the .zip')
 
     #def get_file_info(self):

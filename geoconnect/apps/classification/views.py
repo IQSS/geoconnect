@@ -87,6 +87,7 @@ def view_classify_layer_form(request, import_success_md5):
 
     # Retrieve an object containing the WorldMap data
     #
+    import ipdb; ipdb.set_trace()
     worldmap_layerinfo = get_worldmap_info_object(request.POST['data_source_type'],\
                                 import_success_md5)
 

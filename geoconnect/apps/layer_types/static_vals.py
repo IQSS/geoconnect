@@ -5,7 +5,7 @@ Static variables used within geoconnect
 # --------------------------------------
 # Used for incoming Dataverse Files
 #   Note: The value types: 'shapefile', 'tabular', etc are in the
-#       info returned by the Dataverse API
+#         info returned by the Dataverse API
 # --------------------------------------
 DV_MAP_TYPE_SHAPEFILE = 'shapefile'
 DV_MAP_TYPE_TABULAR = 'tabular'

@@ -66,7 +66,7 @@ class WorldMapImporter:
                         , 'shapefile_name' : 'zipfile_name.zip'\
                         }
         :type layer_params
-        :param fullpath_to_file: file name, including path, to shapfile in .zip format
+        :param fullpath_to_file: file name, including path, to shapefile in .zip format
         :type fullpath_to_file: str or unicode
 
         :returns: python dict with keys for "success" as well as messages, meteadata, etc.

@@ -251,12 +251,12 @@
         bind_select_column_by_preview_table_click();
 
         var previewTable = $('#preview-tbl').DataTable( {
-                "xscrollY": 200,
                 "info":false, // remove 'Showing 1 to n of n entries'
-                "scrollX": true,
+                "scrollX": true,    //  "scrollY": 200,
                 "paging" : false,
                 "searching" : false
         } );
+
 
     // Example, iterate through header names
     /*

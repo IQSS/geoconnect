@@ -1,0 +1,134 @@
+<!-- Start: Help text above form -->
+<div class="row">
+    <div class="col-sm-12">
+
+        <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> Help text here but not too much, maybe a link to some music.  Just saying.</p>
+    </div>
+</div>
+<!-- End: Help text above form -->
+
+<!-- unused? <div id="msg_init_mapping_form" style="display:none;">nope/hide</div> -->
+
+<!-- START: tabular form -->
+<form class="form-horizontal" id="form_map_tabular_file" method="post">
+    {% csrf_token %}
+
+<!-- 3 rows: labels | form col 1 | form col 2 -->
+<div class="row">
+    <!-- col 1: label -->
+    <div class="col-xs-2"><b>Geospatial Data</b></div>
+
+    <!-- col 2: dropdown for type -->
+    <div class="col-xs-4"><!-- dropdown for "Type" -->
+        <div class="form-group">
+          <!--<label for="id_geocode_type" class="control-label text-left">Type</label>-->
+          <b>Type</b>
+          <select id="id_geocode_type" name="geocode_type" class="form-control">
+              <option value="">Select ...</option>
+          {% for gt in geocode_types %}
+              <option value="{{ gt.0 }}">{{ gt.1 }}</option>
+          {% endfor %}
+          </select>
+        </div>
+    </div>
+
+
+    <div class="col-xs-1">&nbsp;</div>
+
+    <div class="col-xs-4"><!-- col 3: blank, choose single column form or lat/lng column form -->
+
+        <!-- Start: Initial, inactive Form before Geospatial type is chosen -->
+        <div class="form-group form_inactive_default">
+            <label class="control-label" for="id_chosen_column">Column Name</label>
+            <div class="">
+                <select id="id_chosen_column" class="form-control" disabled="disabled" name="chosen_column">
+                    <option value="">Select Disabled</option>
+                </select>
+            </div>
+        </div>
+        <!-- End: Inactive Form before Geospatial type is chosen -->
+
+        <!-- Start: Single Column form -->
+        {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
+
+        {% for field in form_single_column.visible_fields %}{% spaceless %}
+
+            <div class="form-group form_single_column_fields" style="display:none;">
+
+                {% if field.name == "chosen_column" %}
+                <div>
+                    Please select the Dataverse file column to join to.</p>
+                </div>
+                {% endif %}
+                <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
+                <div class="">
+                    {{ field }}
+                    {% if field.errors %}{{ field.errors}}{% endif %}
+                </div>
+            </div>
+        {% endspaceless %}{% endfor %}
+        <div class="form-group form_single_column_fields" style="display:none;">
+            <div class="">&nbsp;</div>
+            <div class="">
+                <a class="btn btn-sm btn-primary" id="id_frm_single_column_submit">Submit</a>
+            </div>
+        </div>
+        <!-- End: Single Column form -->
+
+        <!-- Start: Latitude/Longitude form -->
+        {% csrf_token %}
+        {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
+        {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+            <div class="form-group form_lat_lng_fields" style="display:none;">
+                {% if field.name == "latitude" %}
+                <div class="col-md-12">
+                    <h4>Dataverse File</h4>
+                    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span>
+                    Please select the Dataverse file columns to join to.</p>
+                </div>
+                {% endif %}
+                <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
+                <div class="col-sm-4">
+                    {{ field }}
+                    {% if field.errors %}{{ field.errors}}{% endif %}
+                </div>
+            </div>
+        {% endspaceless %}{% endfor %}
+            <div class="form-group form_lat_lng_fields" style="display:none;">
+                <div class="col-sm-3">&nbsp;</div>
+                <div class="col-sm-4">
+                    <a class="btn btn-sm btn-primary" id="id_frm_lat_lng_submit">Submit Latitude & Longitude columns</a>
+                </div>
+            </div>
+        <!-- End: Latitude/Longitude form -->
+
+    </div><!-- END: col 3: blank, choose single column form or lat/lng column form -->
+</div><!-- end row -->
+
+<div class="row">
+    <!-- col 1: label -->
+    <div class="col-xs-2"><b>WorldMap Layer</b></div>
+
+    <!-- col 2: dropdown for type -->
+    <div class="col-xs-4">
+
+    </div>
+
+    <div class="col-xs-1">&nbsp;</div>
+
+    <!-- col 2: dropdown for type -->
+    <div class="col-xs-4"><b>Description</b>
+        <p class="text-muted">This is a brief description about the layer.</p>
+    </div>
+</div>
+
+
+
+
+
+</form>
+<!-- END: tabular form -->
+
+
+{% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
+</div>
