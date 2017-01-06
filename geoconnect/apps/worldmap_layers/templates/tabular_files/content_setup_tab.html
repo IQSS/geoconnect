@@ -1,21 +1,24 @@
 <!--  Start: Preview Rows Panel -->
-<div class="pull-left" style="width:100%;">
+<div class="pull-left" style="width:100%;" id="id_preview_table_panel">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Preview Data File</h3>
         </div>
-        <div class="panel-body" id="id_main_panel_content">
+        <div class="panel-body">
             {% include "tabular_files/preview_rows.html" %}
         </div>
     </div>
 </div>
-<!--  End: Preview Rows Panel -->
+
+&nbsp;<div id="id_alert_container" style="display:none;"></div>
 
 <!--  Start: Setup Forms Panel -->
 <div class="pull-left" style="width:100%;">
     <div class="panel panel-default">
             {% include "gis_data_info/panel_page_title.html" %}
         <div class="panel-body" id="id_main_panel_content">
+            <!--  End: Preview Rows Panel -->
+
             {% include "tabular_files/setup_forms2.html" %}
         </div>
     </div>

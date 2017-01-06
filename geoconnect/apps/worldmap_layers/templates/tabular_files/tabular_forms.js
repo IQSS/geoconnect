@@ -44,7 +44,7 @@
             if (json_resp.success){
                 // Show map, update titles
                 show_map_update_titles(json_resp);
-
+                $('#id_preview_table_panel').hide();    // hide the preview table
             }else{
                 logit(json_resp.message);
                 // form error, display message

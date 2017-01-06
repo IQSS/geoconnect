@@ -15,6 +15,7 @@ from apps.gis_tabular.models import TabularFileInfo
 
 
 GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
+INITIAL_SELECT_CHOICE = ('', 'Select...')
 
 class TabularFileInfoForm(forms.ModelForm):
     class Meta:
@@ -63,14 +64,15 @@ class LatLngColumnsForm(forms.Form):
     err_msg_for_web = None
 
     tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
-    latitude = forms.ChoiceField(label='Latitude Column', choices=())
-    longitude = forms.ChoiceField(label='Longitude Column', choices=())
+    latitude = forms.ChoiceField(label='Column Name (Latitude)', choices=())
+    longitude = forms.ChoiceField(label='Column Name (Longitude)', choices=())
 
     def __init__(self, tabular_file_info_id, column_names, *args, **kwargs):
         super(LatLngColumnsForm, self).__init__(*args, **kwargs)
         assert column_names is not None, "You must initiate this form with column names"
 
-        colname_choices = [(c, c) for c in column_names if c]
+        colname_choices = [INITIAL_SELECT_CHOICE] + [(c, c) for c in column_names if c]
+
         #print 'colname_choices', colname_choices
         self.fields['tabular_file_info_id'].initial = tabular_file_info_id
         self.fields['latitude'].choices = colname_choices
@@ -89,12 +91,29 @@ class LatLngColumnsForm(forms.Form):
 
         return self.cleaned_data.get('longitude')
 
+    def clean_latitude(self):
+        data = self.cleaned_data.get('latitude')
+        if not data:
+            raise forms.ValidationError("Please select a Latitude column")
+
+        return data
+
+    def clean_longitude(self):
+        data = self.cleaned_data.get('longitude')
+
+        if not data:
+            raise forms.ValidationError("Please select a Longitude column")
+
+        return data
+
     def clean(self):
         """
         Check to make sure the lat and lng columns aren't the same
         """
-        latitude = self.cleaned_data.get('latitude')
-        longitude = self.cleaned_data.get('longitude')
+        cleaned_data = super(LatLngColumnsForm, self).clean()
+
+        latitude = self.clean_latitude()  #cleaned_data.get('latitude')
+        longitude = self.clean_longitude()  # cleaned_data.get('longitude')
 
         if latitude == longitude:
             err_msg = 'The Longitude column cannot be the same as the Latitude column.'

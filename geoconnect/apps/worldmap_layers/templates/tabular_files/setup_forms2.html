@@ -33,20 +33,23 @@
     </div>
 
 
-    <div class="col-xs-1">&nbsp;</div>
 
-    <div class="col-xs-4"><!-- col 3: blank, choose single column form or lat/lng column form -->
+    <div style="margin-left:30px;" class="col-xs-4"><!-- col 3: blank, choose single column form or lat/lng column form -->
 
+        {% comment %}
         <!-- Start: Initial, inactive Form before Geospatial type is chosen -->
         <div class="form-group form_inactive_default">
-            <label class="control-label" for="id_chosen_column">Column Name</label>
+            <!--<label for="id_chosen_column" class="control-label">Column Name</label>-->
+            <b>Column Name</b>
+
             <div class="">
                 <select id="id_chosen_column" class="form-control" disabled="disabled" name="chosen_column">
-                    <option value="">Select Disabled</option>
+                    <option value="">Select...</option>
                 </select>
             </div>
         </div>
         <!-- End: Inactive Form before Geospatial type is chosen -->
+        {% endcomment %}
 
         <!-- Start: Single Column form -->
         {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
@@ -80,18 +83,11 @@
         {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
         {% for field in form_lat_lng.visible_fields %}{% spaceless %}
             <div class="form-group form_lat_lng_fields" style="display:none;">
-                {% if field.name == "latitude" %}
-                <div class="col-md-12">
-                    <h4>Dataverse File</h4>
-                    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span>
-                    Please select the Dataverse file columns to join to.</p>
-                </div>
-                {% endif %}
-                <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
-                <div class="col-sm-4">
-                    {{ field }}
-                    {% if field.errors %}{{ field.errors}}{% endif %}
-                </div>
+                {#<label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>#}
+                <b>{{ field.label }}</b>
+                {{ field }}
+                {% if field.errors %}{{ field.errors}}{% endif %}
+                <!--<div class="col-sm-4"></div>-->
             </div>
         {% endspaceless %}{% endfor %}
             <div class="form-group form_lat_lng_fields" style="display:none;">
