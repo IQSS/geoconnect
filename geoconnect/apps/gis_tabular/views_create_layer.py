@@ -36,7 +36,7 @@ LOGGER = logging.getLogger(__name__)
 @require_POST
 def view_map_tabular_file_form(request):
     """
-    Join your tabular file to a WorldMap layer
+    AJAX call: Join your tabular file to an existing WorldMap layer
     using the column selected in this form
     """
     #for k, v in request.POST.items():

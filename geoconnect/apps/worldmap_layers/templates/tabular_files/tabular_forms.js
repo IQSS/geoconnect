@@ -21,6 +21,7 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
 <script>
 
+    var SUBMIT_BUTTON_TEXT = 'Submit Data to WorldMap'
 
     /* ------------------------------------------
         Submit the latitude/longitude form
@@ -118,7 +119,7 @@
             // Enable dropdown
             $('#id_chosen_layer').removeClass('disabled');
             // Enable submit button
-            $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
+            $('#id_frm_single_column_submit').removeClass('disabled').html(SUBMIT_BUTTON_TEXT);
 
         });
         //alert(target_layers_by_type_url);
@@ -156,7 +157,7 @@
         .always(function() {
              // Enable submit button
              if ($('#id_frm_single_column_submit').length){
-                 $('#id_frm_single_column_submit').removeClass('disabled').html('Submit');
+                 $('#id_frm_single_column_submit').removeClass('disabled').html(SUBMIT_BUTTON_TEXT);
              }
         });
     }

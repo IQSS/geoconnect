@@ -22,6 +22,7 @@ class TabularFileInfoForm(forms.ModelForm):
         model = TabularFileInfo
         exclude = ('created', 'modified')
 
+
 class ChooseSingleColumnForm(forms.Form):
     """
     Basic form for capturing chosen column name

@@ -36,67 +36,34 @@
 
     <div style="margin-left:30px;" class="col-xs-4"><!-- col 3: blank, choose single column form or lat/lng column form -->
 
-        {% comment %}
-        <!-- Start: Initial, inactive Form before Geospatial type is chosen -->
-        <div class="form-group form_inactive_default">
-            <!--<label for="id_chosen_column" class="control-label">Column Name</label>-->
-            <b>Column Name</b>
 
-            <div class="">
-                <select id="id_chosen_column" class="form-control" disabled="disabled" name="chosen_column">
-                    <option value="">Select...</option>
-                </select>
-            </div>
-        </div>
-        <!-- End: Inactive Form before Geospatial type is chosen -->
-        {% endcomment %}
-
-        <!-- Start: Single Column form -->
-        {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
-
-        {% for field in form_single_column.visible_fields %}{% spaceless %}
-
+        <!-- Start: Join By Column-->
+            {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
             <div class="form-group form_single_column_fields" style="display:none;">
-
-                {% if field.name == "chosen_column" %}
-                <div>
-                    Please select the Dataverse file column to join to.</p>
-                </div>
-                {% endif %}
-                <label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>
-                <div class="">
-                    {{ field }}
-                    {% if field.errors %}{{ field.errors}}{% endif %}
-                </div>
+            {% for field in form_single_column.visible_fields %}{% spaceless %}
+                    {% if field.name != "chosen_layer" %}
+                        <b>{{ field.label }}</b>
+                        {{ field }}
+                        {% if field.errors %}{{ field.errors}}{% endif %}
+                    {% endif %}
+            {% endspaceless %}{% endfor %}
             </div>
-        {% endspaceless %}{% endfor %}
-        <div class="form-group form_single_column_fields" style="display:none;">
-            <div class="">&nbsp;</div>
-            <div class="">
-                <a class="btn btn-sm btn-primary" id="id_frm_single_column_submit">Submit</a>
-            </div>
-        </div>
-        <!-- End: Single Column form -->
+        <!-- End: Join By Column -->
 
         <!-- Start: Latitude/Longitude form -->
-        {% csrf_token %}
-        {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
-        {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+            {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
             <div class="form-group form_lat_lng_fields" style="display:none;">
-                {#<label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label>#}
-                <b>{{ field.label }}</b>
-                {{ field }}
-                {% if field.errors %}{{ field.errors}}{% endif %}
-                <!--<div class="col-sm-4"></div>-->
+            {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+                    {% if field.name == "longitude" %}<br />{% endif %}
+
+                    <b>{{ field.label }}</b>
+                    {{ field }}
+                    {% if field.errors %}{{ field.errors}}{% endif %}
+            {% endspaceless %}{% endfor %}
             </div>
-        {% endspaceless %}{% endfor %}
-            <div class="form-group form_lat_lng_fields" style="display:none;">
-                <div class="col-sm-3">&nbsp;</div>
-                <div class="col-sm-4">
-                    <a class="btn btn-sm btn-primary" id="id_frm_lat_lng_submit">Submit Latitude & Longitude columns</a>
-                </div>
-            </div>
+
         <!-- End: Latitude/Longitude form -->
+        {% csrf_token %}
 
     </div><!-- END: col 3: blank, choose single column form or lat/lng column form -->
 </div><!-- end row -->
@@ -107,7 +74,18 @@
 
     <!-- col 2: dropdown for type -->
     <div class="col-xs-4">
+        {% for field in form_single_column.visible_fields %}{% spaceless %}
 
+            <div class="form-group form_single_column_fields" style="display:none;">
+
+                {% if field.name == "chosen_layer" %}
+                    <!--label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label-->
+                    <b>Name</b>
+                    {{ field }}
+                    {% if field.errors %}{{ field.errors}}{% endif %}
+                {% endif %}
+            </div>
+        {% endspaceless %}{% endfor %}
     </div>
 
     <div class="col-xs-1">&nbsp;</div>
@@ -117,14 +95,6 @@
         <p class="text-muted">This is a brief description about the layer.</p>
     </div>
 </div>
-
-
-
-
-
 </form>
 <!-- END: tabular form -->
-
-
-{% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
 </div>
