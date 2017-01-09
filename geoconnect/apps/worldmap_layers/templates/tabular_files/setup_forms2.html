@@ -13,7 +13,7 @@
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
     {% csrf_token %}
 
-<!-- 3 rows: labels | form col 1 | form col 2 -->
+<!-- Start: Row 1. Columns: labels | form col 1 | form col 2 -->
 <div class="row">
     <!-- col 1: label -->
     <div class="col-xs-2"><b>Geospatial Data</b></div>
@@ -67,8 +67,10 @@
 
     </div><!-- END: col 3: blank, choose single column form or lat/lng column form -->
 </div><!-- end row -->
+<!-- END: Row 1. Columns: labels | form col 1 | form col 2 -->
 
-<div class="row">
+<!-- END: Row 2. Columns: labels | form col 1 | form col 2 -->
+<div class="row form_worldmap_layer" style="display:none;">
     <!-- col 1: label -->
     <div class="col-xs-2"><b>WorldMap Layer</b></div>
 
@@ -76,7 +78,7 @@
     <div class="col-xs-4">
         {% for field in form_single_column.visible_fields %}{% spaceless %}
 
-            <div class="form-group form_single_column_fields" style="display:none;">
+            <div class="form-group">
 
                 {% if field.name == "chosen_layer" %}
                     <!--label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label-->

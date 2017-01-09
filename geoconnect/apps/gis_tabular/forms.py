@@ -35,7 +35,7 @@ class ChooseSingleColumnForm(forms.Form):
         super(ChooseSingleColumnForm, self).__init__(*args, **kwargs)
         assert column_names is not None, "You must initiate this form with column names"
 
-        colname_choices = [(c, c) for c in column_names if c]
+        colname_choices = [INITIAL_SELECT_CHOICE] + [(c, c) for c in column_names if c]
         #print 'colname_choices', colname_choices
         self.fields['tabular_file_info_id'].initial = tabular_file_info_id
 

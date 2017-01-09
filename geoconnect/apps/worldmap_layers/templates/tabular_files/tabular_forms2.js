@@ -171,15 +171,15 @@
     /**
      *  Hide row with select WorldMap layer dropdown
      */
-    function hide_select_map_layer_row(){
-        $('#id_row2_div_select_layer').hide();
+    function hide_form_worldmap_layer_row(){
+        $('.form_worldmap_layer').hide();
     }
 
     /**
      *  Show row with select WorldMap layer dropdown
      */
-    function show_select_map_layer_row(){
-        $('#id_row2_div_select_layer').show();
+    function show_form_worldmap_layer_row(){
+        $('.form_worldmap_layer').show();
     }
 
     /**
@@ -188,27 +188,45 @@
      */
     function really_bind_hide_show_column_forms(){
 
-        hide_select_map_layer_row();
+        hide_form_worldmap_layer_row();
 
-        geocode_type_val = $( "#id_geocode_type" ).val()
+        var geocode_type_val = $( "#id_geocode_type" ).val()
         logit('type: '+ geocode_type_val);
         if (geocode_type_val == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
             // show latitude-longitude form
             $('.form_lat_lng_fields').show();
             $('.form_single_column_fields').hide();
+            hide_form_worldmap_layer_row();
 
-        }else if (geocode_type_val == ''){
+        }else if (geocode_type_val == ''){      // RESET
             // hide both forms
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').hide();
+            hide_form_worldmap_layer_row();
 
-        }else{
+        }else{                                  // JOIN TO WORLDMAP LAYER
             // show single column form
-            update_target_layers_based_on_geotype(geocode_type_val);
+            //update_target_layers_based_on_geotype(geocode_type_val);
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').show();
-            show_select_map_layer_row();
-            $("label[for='id_chosen_column']").html('Column for "' + $( "#id_geocode_type option:selected" ).html() + '"');
+            check_join_column_change();
+        }
+    }
+
+    /**
+     *  If select your file column has changed, decide whether to:
+     *  - show the worldmap layer dropdown
+     *  - hide the worldmap layer dropdown
+     */
+    function check_join_column_change(){
+
+        var chosen_col_val = $( "#id_chosen_column" ).val();
+        if (chosen_col_val == ''){
+            hide_form_worldmap_layer_row();
+        }else{
+            show_form_worldmap_layer_row();
+            var geocode_type_val = $( "#id_geocode_type" ).val()
+            update_target_layers_based_on_geotype(geocode_type_val);
 
         }
     }
@@ -222,6 +240,11 @@
         $( "#id_geocode_type" ).change(function() {
             really_bind_hide_show_column_forms();
         });
+
+        $( "#id_chosen_column" ).change(function() {
+            check_join_column_change();
+        });
+
     }
 
 
