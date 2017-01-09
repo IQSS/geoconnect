@@ -46,6 +46,7 @@
                 // Show map, update titles
                 show_map_update_titles(json_resp);
                 $('#id_preview_table_panel').hide();    // hide the preview table
+                window.scrollTo(0, 0);
             }else{
                 logit(json_resp.message);
                 // form error, display message
@@ -91,6 +92,7 @@
         })
         .done(function(json_resp) {
             if (json_resp.success && json_resp.data){
+
                 logit('success!!' + json_resp.data);
                 // {"message": "success", "data": [[9, "US Census Tract (2000) Boston Census Blocks"]], "success": true}
                 // Update the dropdown box
@@ -142,7 +144,9 @@
         })
         .done(function(json_resp) {
             if (json_resp.success){
+                $('#id_preview_table_panel').hide();    // hide the preview table
                 show_map_update_titles(json_resp);
+                window.scrollTo(0, 0);
                 //$('#id_progress_bar').hide();
             }else{
 
@@ -258,6 +262,7 @@
         }
         logit("optToSelect: " + optToSelect.html());
         optToSelect.prop('selected', true);
+        check_join_column_change();
     }
 
     /**
