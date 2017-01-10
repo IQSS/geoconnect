@@ -22,6 +22,9 @@
 <script>
 
     var SUBMIT_BUTTON_TEXT = 'Submit Data to WorldMap'
+    var INITIAL_SELECT_CHOICE = 'Select ...';
+    var DEFAULT_LAYER_DESCRIPTION = 'This is a brief description about the layer.';
+    var LAYER_DESCRIPTIONS;
 
     /* ------------------------------------------
         Submit the latitude/longitude form
@@ -67,6 +70,7 @@
     }
 
 
+
     /**
         The user has selected a new "Geosptial Data Type"
         Via Ajax, retrieve a list of layers that match this type.
@@ -75,10 +79,11 @@
 
         logit('update_target_layers_based_on_geotype');
         if (selected_geocode_type.length == 0){
+            clear_layer_description();
             return;
         }
         // form url to make request
-        target_layers_by_type_url = '{% url 'ajax_get_all_join_targets' %}' + selected_geocode_type;
+        target_layers_by_type_url = '{% url 'ajax_get_all_join_targets_with_descriptions' %}' + selected_geocode_type;
 
         // Temporarily disable layer dropdown box
         $('#id_chosen_layer').addClass('disabled');
@@ -101,11 +106,21 @@
                 $('#id_chosen_layer')
                     .find('option').remove().end();
 
+                // Add top Select
+                $('#id_chosen_layer')
+                    .append('<option value="">' + INITIAL_SELECT_CHOICE + '</option>');
+
                 // Add new options
                 $.each(json_resp.data, function (index, item) {
                     $('#id_chosen_layer')
-                        .append('<option value="' + item[0] + '">' + item[1] + '</option>');
+                        .append('<option value="' + item.join_target_id + '">' + item.name + '</option>');
+                        //.append('<option value="' + item[0] + '">' + item[1] + '</option>');
                 });
+
+                // Save the data to a local variable
+                LAYER_DESCRIPTIONS = json_resp.data;
+
+                clear_layer_description();
 
             }else{
                 logit(json_resp.message);
@@ -123,8 +138,16 @@
             // Enable submit button
             $('#id_frm_single_column_submit').removeClass('disabled').html(SUBMIT_BUTTON_TEXT);
 
+
         });
         //alert(target_layers_by_type_url);
+    }
+
+    //----------------------------------------
+    // clear layer description
+    //----------------------------------------
+    function clear_layer_description(){
+        $('#id_layer_description').html(DEFAULT_LAYER_DESCRIPTION);
     }
 
     function submit_single_column_form(){
@@ -201,16 +224,18 @@
             $('.form_lat_lng_fields').show();
             $('.form_single_column_fields').hide();
             hide_form_worldmap_layer_row();
-
+            clear_layer_description();
         }else if (geocode_type_val == ''){      // RESET
             // hide both forms
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').hide();
             hide_form_worldmap_layer_row();
+            clear_layer_description();
 
         }else{                                  // JOIN TO WORLDMAP LAYER
             // show single column form
             //update_target_layers_based_on_geotype(geocode_type_val);
+            clear_layer_description();
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').show();
             check_join_column_change();
@@ -218,37 +243,98 @@
     }
 
     /**
-     *  If select your file column has changed, decide whether to:
+     *  If selected column has changed*, decide whether to:
      *  - show the worldmap layer dropdown
      *  - hide the worldmap layer dropdown
+     *          * doesn't apply to the lat/lng form
      */
     function check_join_column_change(){
 
         var chosen_col_val = $( "#id_chosen_column" ).val();
         if (chosen_col_val == ''){
             hide_form_worldmap_layer_row();
+            clear_layer_description();
         }else{
             show_form_worldmap_layer_row();
             var geocode_type_val = $( "#id_geocode_type" ).val()
             update_target_layers_based_on_geotype(geocode_type_val);
-
         }
+        check_chosen_layer_change();
+
     }
+
+
+    /**
+     *  If selected worldmap layer has changed, change description, if appropriate
+     */
+     function check_chosen_layer_change(){
+        logit('check_chosen_layer_change..');
+
+        // ---------------------------------------
+        // clear current description
+        // ---------------------------------------
+        clear_layer_description();
+
+        // ---------------------------------------
+        // Get the id of the chosen joinTarget
+        // ---------------------------------------
+        var chosen_layer_id = $( "#id_chosen_layer" ).val();
+        logit('chosen_layer_id: ' + chosen_layer_id);
+
+        // ---------------------------------------
+        // If the id, is blank, set back to default
+        // ---------------------------------------
+        if (chosen_layer_id == ''){
+            clear_layer_description();
+            return;
+        }
+
+        // ---------------------------------------
+        // Look for the layer description
+        // ---------------------------------------
+        var description_found = false;
+        if (typeof LAYER_DESCRIPTIONS != 'undefined'){
+            $.each(LAYER_DESCRIPTIONS, function (index, item) {
+                if (chosen_layer_id==item.join_target_id){
+                    logit('found a description: ' + item.description);
+                    // found a description
+                    $("#id_layer_description").html(item.description);
+                    description_found = true;
+                }
+            });
+        }
+
+        // ---------------------------------------
+        // Didn't find a description, go back to default
+        // ---------------------------------------
+        if (!description_found){
+            clear_layer_description();
+        }
+
+
+    }
+
 
     function bind_hide_show_column_forms_on_ready(){
         really_bind_hide_show_column_forms();
     }
 
+
     function bind_hide_show_column_forms_on_change(){
         logit('bind geotype dropdown');
         $( "#id_geocode_type" ).change(function() {
             really_bind_hide_show_column_forms();
+            check_chosen_layer_change();
         });
 
         $( "#id_chosen_column" ).change(function() {
             check_join_column_change();
+            check_chosen_layer_change();
         });
 
+        $( "#id_chosen_layer").change(function() {
+            check_chosen_layer_change();
+        });
     }
 
 
@@ -302,21 +388,5 @@
                 "paging" : false,
                 "searching" : false
         } );
-
-
-    // Example, iterate through header names
-    /*
-    logit('-- header names --');
-    $('#preview-tbl thead tr th').each(function(){
-        logit($(this).find('div span').html());
-    })
-    */
-
-    // Example, iterate through option values names
-    /*logit('-- option value names --');
-    $('#id_chosen_column option').each(function(){
-        logit($(this).html());
-    })
-    */
     });
 </script>

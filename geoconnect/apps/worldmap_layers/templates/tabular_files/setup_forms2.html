@@ -69,7 +69,7 @@
 </div><!-- end row -->
 <!-- END: Row 1. Columns: labels | form col 1 | form col 2 -->
 
-<!-- END: Row 2. Columns: labels | form col 1 | form col 2 -->
+<!-- START: Row 2. Columns: labels | form col 1 | form col 2 -->
 <div class="row form_worldmap_layer" style="display:none;">
     <!-- col 1: label -->
     <div class="col-xs-2"><b>WorldMap Layer</b></div>
@@ -90,13 +90,23 @@
         {% endspaceless %}{% endfor %}
     </div>
 
-    <div class="col-xs-1">&nbsp;</div>
 
     <!-- col 2: dropdown for type -->
-    <div class="col-xs-4"><b>Description</b>
-        <p class="text-muted">This is a brief description about the layer.</p>
+    <div style="margin-left:20px;" class="col-xs-4"><b>Description</b>
+        <p class="text-muted" id="id_layer_description">This is a brief description about the layer.</p>
     </div>
 </div>
+<!-- END: Row 2. Columns: labels | form col 1 | form col 2 -->
+
+<!-- START: Row 3. Columns: labels | form col 1 | form col 2 -->
+<div class="row">
+    <div class="col-xs-12">
+
+    </div>
+</div>
+<!-- END: Row 3. Columns: labels | form col 1 | form col 2 -->
+
+
 </form>
 <!-- END: tabular form -->
 </div>

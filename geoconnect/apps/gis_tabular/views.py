@@ -314,6 +314,35 @@ def view_tabular_file(request, tab_md5):
                             context_instance=RequestContext(request))
 
 
+def ajax_get_all_join_targets_with_descriptions(request):
+
+    return ajax_join_targets_with_descriptions(request, None)
+
+
+def ajax_join_targets_with_descriptions(request, selected_geo_type=None):
+    """For use when choosing a join target through the UI
+    Return JSON list with:
+       join target id
+       name
+       description
+    """
+    jt = get_latest_jointarget_information()
+
+    join_target_info = jt.get_available_layers_list_by_type(selected_geo_type, for_json=True)
+
+    if join_target_info is None:
+        err_msg = "Sorry! No Join Targets found for Geospatial type: {0}".format(selected_geo_type)
+        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+                                msg=err_msg)
+        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+
+    else:
+        json_msg = MessageHelperJSON.get_json_msg(success=True,\
+                                msg="success",\
+                                data_dict=join_target_info)
+
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
 def ajax_get_all_join_targets(request):
     """
     Calling "ajax_get_join_targets" without a selected_geo_type

@@ -159,7 +159,7 @@ class JoinTargetFormatter(object):
                 type_dict.update({ info['geocode_type_slug']: 1 })
         return gtypes
 
-    def get_available_layers_list_by_type(self, chosen_geocode_type=None):
+    def get_available_layers_list_by_type(self, chosen_geocode_type=None, for_json=False):
         """
         Used for populating form dropdown with list of layers
 
@@ -188,43 +188,23 @@ class JoinTargetFormatter(object):
                 if 'name' not in info:
                     continue
 
+                join_target_id = info['id']
                 info_line = "{0} - {1}".format(info['year'], info['name'])
-                join_targets.append((info['id'], info_line))
+                description = info.get('expected_format', {}).get('description', '')
 
-                """
-                target_info = OrderedDict()
+                if for_json:
+                    info_dict = OrderedDict()
+                    info_dict['join_target_id'] = info['id']
+                    info_dict['name'] = info_line
+                    info_dict['description'] = description
+                                
+                    join_targets.append(info_dict)
 
-                # Add Formatted name
-                #    e.g. "2014 - Election Precincts, Boston"
-                #
-                target_info['join_target_id'] = info['id']
-
-                # Add Formatted name
-                #    e.g. "2014 - Election Precincts, Boston"
-                #
-                target_info['name'] = "{0} - {1}".format(info['year'], info['name'])
-
-                # Add Expected format
-                #   e.g. "Boston Election Precinct ID (integer)"
-                #   (BTW, blow up on a bad key -- the API needs to have this key)
-                #
-                target_info['expected_format'] = info['expected_format']['name']
-
-                join_targets.append(target_info)
-                """
-                """
-                    # If this is zero-padded, add that info
-                    zero_pad_note = self.get_zero_pad_note(info)
-                    if zero_pad_note:
-                        info_line = "{0} ({1})".format(info_line, zero_pad_note)
-
-                    formatting_note = self.get_format_name(info)
-                    if formatting_note:
-                        info_line = "{0} - {1}".format(info_line, formatting_note)
-                join_targets.append((info['id'], info_line))
-                """
+                else:
+                    join_targets.append((join_target_id, info_line))
 
         return join_targets
+
 
     def get_format_info_for_target_layer(self, target_layer_id):
         if target_layer_id is None:

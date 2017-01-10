@@ -389,10 +389,10 @@ class JoinTargetInformation(TimeStampedModel):
 
         return jt_formatter.get_formatting_zero_pad_length(layer_id)
 
-    def get_available_layers_list_by_type(self, chosen_geocode_type):
+    def get_available_layers_list_by_type(self, chosen_geocode_type, for_json=False):
         jt_formatter = JoinTargetFormatter(self.target_info)
         # Get all the join targets
-        return jt_formatter.get_available_layers_list_by_type(chosen_geocode_type)
+        return jt_formatter.get_available_layers_list_by_type(chosen_geocode_type, for_json)
 
     def get_single_join_target_info(self, target_layer_id):
         """
