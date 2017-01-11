@@ -1,109 +1,100 @@
 <!-- Start: Help text above form -->
 <div class="row">
-    <div class="col-sm-12">
-
-        <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> Help text here but not too much, maybe a link to some music.  Just saying.</p>
-    </div>
+  <div class="col-sm-12">
+    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> Help text here but not too much, maybe a link to some music.  Just saying.</p>
+  </div>
 </div>
 <!-- End: Help text above form -->
 
 <!-- START: tabular form -->
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
-    {% csrf_token %}
+  {% csrf_token %}
 
-<!-- Start: Row 1. Label | Choose Geospatial Type | Choose Lat/Lng or Choose Column -->
-<div class="row">
+  <!-- Start: Row 1. Label | Choose Geospatial Type | Choose Lat/Lng or Choose Column -->
+  <div class="row">
     <!-- col 1: Label -->
-    <div class="col-sm-2"><b>Geospatial Data</b></div>
-
-    <!-- col 2: Choose Geospatial Type -->
-    <div class="col-sm-4"><!-- dropdown for "Type" -->
+    <label class="col-sm-2">Geospatial Data</label>
+    <div class="col-sm-10">
+      <!-- col 2: Choose Geospatial Type -->
+      <div class="col-sm-5"><!-- dropdown for "Type" -->
         <div class="form-group">
           <!--<label for="id_geocode_type" class="control-label text-left">Type</label>-->
-          <b>Type</b>
+          <label>Type</label>
           <select id="id_geocode_type" name="geocode_type" class="form-control">
-              <option value="">Select ...</option>
-          {% for gt in geocode_types %}
-              <option value="{{ gt.0 }}">{{ gt.1 }}</option>
-          {% endfor %}
+            <option value="">Select...</option>
+            {% for gt in geocode_types %}
+            <option value="{{ gt.0 }}">{{ gt.1 }}</option>
+            {% endfor %}
           </select>
         </div>
-    </div>
+      </div>
+      <!-- END col 2: Choose Geospatial Type -->
 
-    <!-- col 3: Choose Lat/Lng or Choose Column  -->
-    <div style="margin-left:30px;" class="col-sm-4">
-
+      <!-- col 3: Choose Lat/Lng or Choose Column  -->
+      <div class="col-sm-5 col-sm-offset-1">
         <!-- Start: Join By Column-->
-            {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
-            <div class="form-group form_single_column_fields" style="display:none;">
-            {% for field in form_single_column.visible_fields %}{% spaceless %}
-                    {% if field.name != "chosen_layer" %}
-                        <b>{{ field.label }}</b>
-                        {{ field }}
-                        {% if field.errors %}{{ field.errors}}{% endif %}
-                    {% endif %}
-            {% endspaceless %}{% endfor %}
-            </div>
+        {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
+        <div class="form-group form_single_column_fields" style="display:none;">
+          {% for field in form_single_column.visible_fields %}{% spaceless %}
+          {% if field.name != "chosen_layer" %}
+          <label>{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}{{ field.errors}}{% endif %}
+          {% endif %}
+          {% endspaceless %}{% endfor %}
+        </div>
         <!-- End: Join By Column -->
 
         <!-- Start: Latitude/Longitude form -->
-            {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
-            <div class="form-group form_lat_lng_fields" style="display:none;">
-            {% for field in form_lat_lng.visible_fields %}{% spaceless %}
-                    {% if field.name == "longitude" %}<br />{% endif %}
-
-                    <b>{{ field.label }}</b>
-                    {{ field }}
-                    {% if field.errors %}{{ field.errors}}{% endif %}
-            {% endspaceless %}{% endfor %}
-            </div>
+        {% for hidden in form_lat_lng.hidden_fields %}{{ hidden }}{% endfor %}
+        <div class="form-group form_lat_lng_fields" style="display:none;">
+          {% for field in form_lat_lng.visible_fields %}{% spaceless %}
+          {% if field.name == "longitude" %}<br />{% endif %}
+          <label>{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}{{ field.errors}}{% endif %}
+          {% endspaceless %}{% endfor %}
+        </div>
 
         <!-- End: Latitude/Longitude form -->
         {% csrf_token %}
 
+      </div>
+      <!-- END col 3: Choose Lat/Lng or Choose Column  -->
     </div>
-    <!-- END col 3: Choose Lat/Lng or Choose Column  -->
-</div>
-<!-- END: Row 1. Columns: labels | Choose | form col 2 -->
 
+  </div>
+  <!-- END: Row 1. Columns: labels | Choose | form col 2 -->
 
-<!-- START: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
-<div class="row form_worldmap_layer" style="display:none;">
+  <!-- START: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
+  <div class="row form_worldmap_layer" style="display:none;">
     <!-- col 1: Label -->
-    <div class="col-sm-2"><b>WorldMap Layer</b></div>
-
-    <!-- col 2: Choose WorldMap Layer -->
-    <div class="col-sm-4">
+    <label class="col-sm-2">WorldMap Layer</label>
+    <div class="col-sm-10">
+      <!-- col 2: Choose WorldMap Layer -->
+      <div class="col-sm-5">
         {% for field in form_single_column.visible_fields %}{% spaceless %}
-
-            <div class="form-group">
-
-                {% if field.name == "chosen_layer" %}
-                    <!--label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label-->
-                    <b>Name</b>
-                    {{ field }}
-                    {% if field.errors %}{{ field.errors}}{% endif %}
-                {% endif %}
-            </div>
+          {% if field.name == "chosen_layer" %}
+          <div class="form-group">
+          <!--label for="{{ field.auto_id }}" class="col-sm-3 control-label">{{ field.label }}</label-->
+          <label>Name</label>
+          {{ field }}
+          {% if field.errors %}{{ field.errors}}{% endif %}
+          </div>
+          {% endif %}
         {% endspaceless %}{% endfor %}
+      </div>
+
+      <!-- col 3: WorldMap Layer  Description -->
+      <div class="col-sm-5 col-sm-offset-1">
+        <div class="form-group">
+          <label>Description</label>
+          <p id="id_layer_description">This is a brief description about the layer.</p>
+        </div>
+      </div>
     </div>
-
-    <!-- col 3: WorldMap Layer  Description -->
-    <div style="margin-left:20px;" class="col-sm-4"><b>Description</b>
-        <p id="id_layer_description">This is a brief description about the layer.</p>
-    </div>
-</div>
-<!-- END: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
-
-<!-- START: Row 3. Columns: labels | form col 1 | form col 2 -->
-<div class="row">
-    <div class="col-xs-12">
-
-    </div>
-</div>
-<!-- END: Row 3. Columns: labels | form col 1 | form col 2 -->
-
+  </div>
+  <!-- END: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
 
 </form>
 <!-- END: tabular form -->
-</div>

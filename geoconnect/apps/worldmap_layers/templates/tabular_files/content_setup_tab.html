@@ -1,5 +1,6 @@
 <!--  Start: Preview Rows Panel -->
-<div class="pull-left" style="width:100%;" id="id_preview_table_panel">
+<div id="id_preview_table_panel" class="row">
+  <div class="col-xs-12" style="border:1px solid purple;">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Preview Data File</h3>
@@ -8,43 +9,41 @@
             {% include "tabular_files/preview_rows.html" %}
         </div>
     </div>
+  </div>
 </div>
+<!--  End: Preview Rows Panel -->
 
-&nbsp;<div id="id_alert_container" style="display:none;"></div>
+<div id="id_alert_container" style="display:none;"></div>
 
 <!--  Start: Setup Forms Panel -->
-<div class="pull-left" style="width:100%;">
+<div id="id_map_data_setup_form" class="row">
+  <div class="col-xs-12" style="border:1px solid green;">
     <div class="panel panel-default">
-            {% include "gis_data_info/panel_page_title.html" %}
-        <div class="panel-body" id="id_main_panel_content">
-            <!--  End: Preview Rows Panel -->
-
+        {% include "gis_data_info/panel_page_title.html" %}
+        <div id="id_main_panel_content" class="panel-body">
             {% include "tabular_files/setup_forms2.html" %}
         </div>
     </div>
+  </div>
 </div>
 <!--  End: Setup Forms Panel -->
 
 <!--  Start: Form Submit Buttons -->
-
-<div class="pull-left" style="margin:0px 42px;">
-
+<div id="id_setup_form_buttons" class="row">
+  <div class="col-xs-12"  style="border:1px solid gold;">
     <!-- Start: Submit button for Join By Column Form -->
-    <div class="row form_worldmap_layer" style="display:none;">
-        <div class="col-xs-12">
-            <a class="btn btn-sm btn-default" id="id_frm_single_column_submit">working...</a>
-            {% include "gis_data_info/return_to_dataverse_link.html" %}
-        </div>
+    <div class="form_worldmap_layer" style="display:none;">
+      <a class="btn btn-sm btn-default" id="id_frm_single_column_submit">working...</a>
+      {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
     <!-- End: Submit button for Join By Column Form -->
 
     <!-- Start: Submit button for Latitude/Longitude Form -->
-    <div class="row form_lat_lng_fields" style="display:none;">
-        <div class="col-xs-12">
-            <a class="btn btn-sm btn-default" id="id_frm_lat_lng_submit">Submit Data To WorldMap</a>
-            {% include "gis_data_info/return_to_dataverse_link.html" %}
-        </div>
+    <div class="form_lat_lng_fields" style="display:none;">
+      <a class="btn btn-sm btn-default" id="id_frm_lat_lng_submit">Submit Data To WorldMap</a>
+      {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
     <!-- End: Submit button for Latitude/Longitude Form -->
+  </div>
 </div>
 <!--  End: Form Submit Buttons -->

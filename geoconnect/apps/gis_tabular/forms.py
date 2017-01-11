@@ -15,7 +15,7 @@ from apps.gis_tabular.models import TabularFileInfo
 
 
 GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
-INITIAL_SELECT_CHOICE = ('', 'Select ...')
+INITIAL_SELECT_CHOICE = ('', 'Select...')
 
 class TabularFileInfoForm(forms.ModelForm):
     class Meta:
@@ -29,7 +29,7 @@ class ChooseSingleColumnForm(forms.Form):
     """
     tabular_file_info_id = forms.IntegerField(widget=forms.HiddenInput())
     chosen_layer = forms.ChoiceField(label="WorldMap Layer", choices=())
-    chosen_column = forms.ChoiceField(label="Choose column", choices=())
+    chosen_column = forms.ChoiceField(label="Column Name", choices=())
 
     def __init__(self, tabular_file_info_id, layer_choices, column_names, *args, **kwargs):
         super(ChooseSingleColumnForm, self).__init__(*args, **kwargs)

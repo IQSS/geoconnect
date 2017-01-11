@@ -22,7 +22,7 @@
 <script>
 
     var SUBMIT_BUTTON_TEXT = 'Submit Data to WorldMap'
-    var INITIAL_SELECT_CHOICE = 'Select ...';
+    var INITIAL_SELECT_CHOICE = 'Select...';
     var DEFAULT_LAYER_DESCRIPTION = 'This is a brief description about the layer.';
     var LAYER_DESCRIPTIONS;
 

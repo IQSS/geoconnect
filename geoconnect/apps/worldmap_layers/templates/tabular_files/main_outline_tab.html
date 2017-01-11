@@ -28,24 +28,24 @@
     {% endif %}
 {% endblock %}
 
-
 {% block main_container %}
 
 {% include "gis_data_info/citation.html" %}
-
 
 {% if worldmap_layerinfo %}
 <div id="id_alert_container" style="display:none;"></div>
 
 <!-- start: display map panel (we have a map!)-->
-<div class="pull-left" style="width:100%;">
+<div class="row">
+  <div class="col-xs-12" style="border:1px solid orange;">
     <div class="panel panel-default">
-            {% include "gis_data_info/panel_page_title.html" %}
+        {% include "gis_data_info/panel_page_title.html" %}
 
         <div class="panel-body" id="id_main_panel_content">
-                {{ tabular_map_div }}
+          {{ tabular_map_div }}
         </div>
     </div>
+  </div>
 </div>
 <!-- end: display map panel -->
 {% else %}
@@ -54,7 +54,8 @@
 
 <!-- debug panel -->
 {% if is_staff %}
-<div class="pull-left" style="width:100%; padding:20px 30px;">
+<div class="row">
+  <div class="col-xs-12" style="border:1px solid teal;">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title" id="id_main_panel_title">
@@ -62,14 +63,15 @@
             </h3>
         </div>
         <div class="panel-body">
-            <div class="row">
+            <div class="col-xs-12">
                 {% include "tabular_files/debug_file_list.html" %}
             </div>
-            <div class="row">
+            <div class="col-xs-12">
                 {% include "tabular_files/debug_join_targets.html" %}
             </div>
         </div>
     </div>
+  </div>
 </div>
 {% endif %}
 <!-- end: debug panel -->
