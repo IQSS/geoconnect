@@ -130,6 +130,7 @@ python manage.py runserver 8070
 ```
 cd ~/geoconnect/geoconnect  # example: cd /Users/mheppler/iqss-github/geoconnect/geoconnect
 workon geoconnect
+atom .  # to open in ATOM
 python manage.py runserver 8070
 ```
 
