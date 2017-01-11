@@ -7,19 +7,17 @@
 </div>
 <!-- End: Help text above form -->
 
-<!-- unused? <div id="msg_init_mapping_form" style="display:none;">nope/hide</div> -->
-
 <!-- START: tabular form -->
 <form class="form-horizontal" id="form_map_tabular_file" method="post">
     {% csrf_token %}
 
-<!-- Start: Row 1. Columns: labels | form col 1 | form col 2 -->
+<!-- Start: Row 1. Label | Choose Geospatial Type | Choose Lat/Lng or Choose Column -->
 <div class="row">
-    <!-- col 1: label -->
-    <div class="col-xs-2"><b>Geospatial Data</b></div>
+    <!-- col 1: Label -->
+    <div class="col-sm-2"><b>Geospatial Data</b></div>
 
-    <!-- col 2: dropdown for type -->
-    <div class="col-xs-4"><!-- dropdown for "Type" -->
+    <!-- col 2: Choose Geospatial Type -->
+    <div class="col-sm-4"><!-- dropdown for "Type" -->
         <div class="form-group">
           <!--<label for="id_geocode_type" class="control-label text-left">Type</label>-->
           <b>Type</b>
@@ -32,10 +30,8 @@
         </div>
     </div>
 
-
-
-    <div style="margin-left:30px;" class="col-xs-4"><!-- col 3: blank, choose single column form or lat/lng column form -->
-
+    <!-- col 3: Choose Lat/Lng or Choose Column  -->
+    <div style="margin-left:30px;" class="col-sm-4">
 
         <!-- Start: Join By Column-->
             {% for hidden in form_single_column.hidden_fields %}{{ hidden }}{% endfor %}
@@ -65,17 +61,19 @@
         <!-- End: Latitude/Longitude form -->
         {% csrf_token %}
 
-    </div><!-- END: col 3: blank, choose single column form or lat/lng column form -->
-</div><!-- end row -->
-<!-- END: Row 1. Columns: labels | form col 1 | form col 2 -->
+    </div>
+    <!-- END col 3: Choose Lat/Lng or Choose Column  -->
+</div>
+<!-- END: Row 1. Columns: labels | Choose | form col 2 -->
 
-<!-- START: Row 2. Columns: labels | form col 1 | form col 2 -->
+
+<!-- START: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
 <div class="row form_worldmap_layer" style="display:none;">
-    <!-- col 1: label -->
-    <div class="col-xs-2"><b>WorldMap Layer</b></div>
+    <!-- col 1: Label -->
+    <div class="col-sm-2"><b>WorldMap Layer</b></div>
 
-    <!-- col 2: dropdown for type -->
-    <div class="col-xs-4">
+    <!-- col 2: Choose WorldMap Layer -->
+    <div class="col-sm-4">
         {% for field in form_single_column.visible_fields %}{% spaceless %}
 
             <div class="form-group">
@@ -90,13 +88,12 @@
         {% endspaceless %}{% endfor %}
     </div>
 
-
-    <!-- col 2: dropdown for type -->
-    <div style="margin-left:20px;" class="col-xs-4"><b>Description</b>
-        <p class="text-muted" id="id_layer_description">This is a brief description about the layer.</p>
+    <!-- col 3: WorldMap Layer  Description -->
+    <div style="margin-left:20px;" class="col-sm-4"><b>Description</b>
+        <p id="id_layer_description">This is a brief description about the layer.</p>
     </div>
 </div>
-<!-- END: Row 2. Columns: labels | form col 1 | form col 2 -->
+<!-- END: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
 
 <!-- START: Row 3. Columns: labels | form col 1 | form col 2 -->
 <div class="row">

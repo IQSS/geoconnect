@@ -148,6 +148,7 @@
     //----------------------------------------
     function clear_layer_description(){
         $('#id_layer_description').html(DEFAULT_LAYER_DESCRIPTION);
+        $('#id_layer_description').addClass('text-muted');
     }
 
     function submit_single_column_form(){
@@ -299,6 +300,7 @@
                     logit('found a description: ' + item.description);
                     // found a description
                     $("#id_layer_description").html(item.description);
+                    $('#id_layer_description').removeClass('text-muted');
                     description_found = true;
                 }
             });

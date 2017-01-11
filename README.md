@@ -4,18 +4,18 @@
 
 GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
-### 
+###
 
 [Boston Area Research Initiative](http://www.bostonarearesearchinitiative.net/) project to connect the [Dataverse](http://datascience.iq.harvard.edu/dataverse) to the [Worldmap](http://worldmap.harvard.edu/).  
 
 ### Use Cases
 
-* Add a GIS dataset to the Dataverse and visualize it on the WorldMap 
+* Add a GIS dataset to the Dataverse and visualize it on the WorldMap
 * From the WorldMap, search for Dataverse datasets in a given geographic area for a specific time period
 
 
 
-	
+
 ![geoconnect screenshot](geoconnect/static/images/screenshot_inspect_shapefile.png?raw=true "Inspect Shapefile")
 
 ### Local Installation Instructions
@@ -34,7 +34,7 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Devel
 source /usr/local/bin/virtualenvwrapper.sh
-``` 
+```
 or, on windows, [this](http://stackoverflow.com/questions/2615968/installing-virtualenvwrapper-on-windows) might be helpful.
 
 #### Pull down the [geoconnect repository](https://github.com/IQSS/geoconnect)
@@ -52,7 +52,7 @@ cd ~\geoconnect
 #### Install the virtualenv and the requirements
 
 This may take a minute or two.  Xcode needs to be installed.
-    
+
 ```
 mkvirtualenv geoconnect
 pip install -r requirements/local.txt

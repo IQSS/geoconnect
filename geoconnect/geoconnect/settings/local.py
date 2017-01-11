@@ -17,12 +17,12 @@ TEST_SETUP_DIR = normpath(join(dirname(dirname(DJANGO_ROOT)), 'test_setup'))
 # Used for dataverse/worldmap communication.  Validate data passed via api, etc
 #
 #
-
+"""
 DATAVERSE_INFO_REPOSITORY_PATH = '/Users/rmp553/Documents/iqss-git/shared-dataverse-information/'
 if not isdir(DATAVERSE_INFO_REPOSITORY_PATH):
     raise Exception('Directory not found for repository "shared-dataverse-information" (https://github.com/IQSS/shared-dataverse-information)\ndirectory in settings: %s' % DATAVERSE_INFO_REPOSITORY_PATH)
 sys.path.append(DATAVERSE_INFO_REPOSITORY_PATH)
-
+"""
 ####################### END: DATAVERSE_INFO_REPOSITORY_PATH
 
 
