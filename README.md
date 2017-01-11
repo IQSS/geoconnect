@@ -107,6 +107,12 @@ cd geoconnect
 python manage.py syncdb
 ```
 
+- Add initial database
+
+```
+python manage.py loaddata apps/registered_dataverse/fixtures/incoming_filetypes_initial_data.json
+```
+
 * Follow the prompts to create a superuser, create tables, etc.
 
 #### Run the test server (still in ~\geoconnect\geoconnect)
@@ -119,6 +125,13 @@ python manage.py runserver 8070
 1. Check if the admin page is available: http://127.0.0.1:8070/geo-connect-admin/
 - if (1) and (2), feel grateful to be alive
 
+### Re-run the test server
+
+```
+cd ~/geoconnect/geoconnect  # example: cd /Users/mheppler/iqss-github/geoconnect/geoconnect
+workon geoconnect
+python manage.py runserver 8070
+```
 
 ## Dataverse settings
 
