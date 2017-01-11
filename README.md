@@ -118,3 +118,30 @@ python manage.py runserver 8070
 1. Check if the server is up: http://127.0.0.1:8070
 1. Check if the admin page is available: http://127.0.0.1:8070/geo-connect-admin/
 - if (1) and (2), feel grateful to be alive
+
+
+## Dataverse settings
+
+Dataverse needs these settings to work on mapping.
+
+### Dataverse config settings
+
+```sql
+INSERT into setting VALUES (':GeoconnectCreateEditMaps', 'true');
+INSERT into setting VALUES (':GeoconnectViewMaps', 'true');
+```
+
+### Dataverse setting for the 'mapitlink'
+
+- If ```GEOCONNECT``` entry doesn't exist, use:
+
+```sql
+INSERT INTO worldmapauth_tokentype (contactemail, hostname, ipaddress, mapitlink, name, timelimitminutes, timelimitseconds, md5, created, modified)
+VALUES ('support@dataverse.org', '127.0.0.1:8070', '127.0.0.1:8070', 'http://127.0.0.1:8070/shapefile/map-it', 'GEOCONNECT', 30, 1800, '38c0a931b2d582a5c43fc79405b30c22', NOW(), NOW())
+```
+
+- If ```GEOCONNECT``` entry already exists, use:
+
+```sql
+UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
+```
