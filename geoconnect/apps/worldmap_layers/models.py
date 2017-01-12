@@ -16,6 +16,8 @@ from shared_dataverse_information.map_layer_metadata.forms import\
     GeoconnectToDataverseMapLayerMetadataValidationForm,\
     GeoconnectToDataverseDeleteMapLayerMetadataForm
 
+from .download_link_formatter import DownloadLinkFormatter
+
 from apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
         DV_MAP_TYPE_SHAPEFILE,\
         TYPE_LAT_LNG_LAYER
@@ -324,6 +326,16 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         return f.format_data_for_dataverse_api(gis_data_info.dv_session_token,\
                         join_description=self.get_description_for_core_data())
+
+
+    def get_formatted_download_links(self):
+        """Format the download links from WorldMap"""
+        if not self.download_links:
+            return None
+
+        dl = DownloadLinkFormatter(self.download_links)
+
+        return dl.get_formatted_links()
 
 
     def verify_layer_link_format(self):

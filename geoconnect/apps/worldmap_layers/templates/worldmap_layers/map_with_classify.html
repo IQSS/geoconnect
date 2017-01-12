@@ -8,12 +8,8 @@
     <div class="col-md-3">
         <h5>Legend</h5>
         <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
-        {% if download_links %}
-        <h5>Download</h5>
-            {% for dname, dlink in download_links.items %}
-                <a href="{{ dlink }}">{{ dname }}</a>&nbsp;
-            {% endfor %}
-        {% endif %}
+
+        {% include "worldmap_layers/button_download_links.html" %}
     </div>
 </div>
 {% if classify_form %}

@@ -49,6 +49,7 @@
                 // Show map, update titles
                 show_map_update_titles(json_resp);
                 $('#id_preview_table_panel').hide();    // hide the preview table
+                hide_setup_form_submit_buttons();
                 window.scrollTo(0, 0);
             }else{
                 logit(json_resp.message);
@@ -151,6 +152,14 @@
         $('#id_layer_description').addClass('text-muted');
     }
 
+    /**
+     * Called after successful mapping of a tabular file
+     */
+    function hide_setup_form_submit_buttons(){
+        logit('hide_setup_form_submit_buttons');
+        $('#id_setup_form_buttons').hide();
+    }
+
     function submit_single_column_form(){
         logit('submit_single_column_form');
 
@@ -170,6 +179,7 @@
             if (json_resp.success){
                 $('#id_preview_table_panel').hide();    // hide the preview table
                 show_map_update_titles(json_resp);
+                hide_setup_form_submit_buttons();
                 window.scrollTo(0, 0);
                 //$('#id_progress_bar').hide();
             }else{

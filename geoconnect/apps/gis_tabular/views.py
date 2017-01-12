@@ -106,7 +106,7 @@ def build_map_html(request, worldmap_info):
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
             core_data=worldmap_info.core_data,
             gis_data_info=worldmap_info.get_gis_data_info(),
-            download_links=worldmap_info.download_links,
+            download_links=worldmap_info.get_formatted_download_links(),
             attribute_data=worldmap_info.attribute_data,
             delete_form=delete_form,
             page_title=PANEL_TITLE_STYLE_MAP))
