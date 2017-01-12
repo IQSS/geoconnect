@@ -2,6 +2,8 @@
   (file: geoconnect_common.js)
 */
 
+var INITIAL_SELECT_CHOICE = 'Select...';
+
 /* ----------------------------------------
     Same as console.log(...)
 ---------------------------------------- */

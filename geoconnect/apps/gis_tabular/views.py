@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 #from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
-from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
+from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm, INITIAL_SELECT_CHOICE
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
 from apps.gis_tabular.forms_delete import DeleteMapForm
 
@@ -104,6 +104,7 @@ def build_map_html(request, worldmap_info):
     template_dict = get_common_lookup(request)
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
+            INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,
             core_data=worldmap_info.core_data,
             gis_data_info=worldmap_info.get_gis_data_info(),
             download_links=worldmap_info.get_formatted_download_links(),
