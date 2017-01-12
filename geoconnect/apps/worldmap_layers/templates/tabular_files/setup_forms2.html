@@ -1,7 +1,7 @@
 <!-- Start: Help text above form -->
 <div class="row">
   <div class="col-sm-12">
-    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> Help text here but not too much, maybe a link to some music.  Just saying.</p>
+    <p class="help-block"><span class="glyphicon glyphicon-info-sign"></span> Select the type of geospatial data contained in your data file, and the column(s) in which it can be found.</p>
   </div>
 </div>
 <!-- End: Help text above form -->
@@ -68,6 +68,12 @@
 
   <!-- START: Row 2:  Label | Choose WorldMap Layer | WorldMap Layer  Description -->
   <div class="row form_worldmap_layer" style="display:none;">
+    <div class="col-sm-12">
+      <p class="help-block"><span class="glyphicon glyphicon-info-sign"></span> Select the WorldMap layer to map your geospatial data onto.</p>
+    </div>
+  </div>
+
+  <div class="row form_worldmap_layer" style="display:none;">
     <!-- col 1: Label -->
     <label class="col-sm-2">WorldMap Layer</label>
     <div class="col-sm-10">
@@ -86,10 +92,10 @@
       </div>
 
       <!-- col 3: WorldMap Layer  Description -->
-      <div class="col-sm-5 col-sm-offset-1">
+      <div class="col-sm-6 col-sm-offset-1">
         <div class="form-group">
           <label>Description</label>
-          <p id="id_layer_description">This is a brief description about the layer.</p>
+          <p id="id_layer_description" class="small">This is a brief description about the layer.</p>
         </div>
       </div>
     </div>

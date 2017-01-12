@@ -2,7 +2,7 @@
 <!-- start: preview_rows.html -->
 <div class="row">
     <div class="col-sm-12">
-        <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> Help text here but not too much, maybe a link to some music.  Just saying.</p>
+        <p class="help-block"><span class="glyphicon glyphicon-info-sign"></span> Here is a preview of the first few rows of your data file for reference when selecting the columns which contain geospatial data.</p>
 
         {% if tab_file_stats.num_rows > NUM_PREVIEW_ROWS %}
             <!-- show # rows set in NUM_PREVIEW_ROWS -->
@@ -17,7 +17,7 @@
         {% endif %}
 
     <!-- START: Preview table -->
-    <table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
+    <table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed small">
         <thead>
             <tr>
                 <th>Row #</th>

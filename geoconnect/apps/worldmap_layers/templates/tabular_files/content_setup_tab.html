@@ -1,6 +1,6 @@
 <!--  Start: Preview Rows Panel -->
 <div id="id_preview_table_panel" class="row">
-  <div class="col-xs-12" style="border:1px solid purple;">
+  <div class="col-xs-12">
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Preview Data File</h3>
@@ -17,7 +17,7 @@
 
 <!--  Start: Setup Forms Panel -->
 <div id="id_map_data_setup_form" class="row">
-  <div class="col-xs-12" style="border:1px solid green;">
+  <div class="col-xs-12">
     <div class="panel panel-default">
         {% include "gis_data_info/panel_page_title.html" %}
         <div id="id_main_panel_content" class="panel-body">
@@ -30,17 +30,17 @@
 
 <!--  Start: Form Submit Buttons -->
 <div id="id_setup_form_buttons" class="row">
-  <div class="col-xs-12"  style="border:1px solid gold;">
+  <div class="col-xs-12">
     <!-- Start: Submit button for Join By Column Form -->
-    <div class="form_worldmap_layer" style="display:none;">
-      <a class="btn btn-sm btn-default" id="id_frm_single_column_submit">working...</a>
+    <div class="form_worldmap_layer" style="display:none;margin-bottom:1.5em;">
+      <a class="btn btn-default" id="id_frm_single_column_submit" style="margin-right:1em;">Working...</a>
       {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
     <!-- End: Submit button for Join By Column Form -->
 
     <!-- Start: Submit button for Latitude/Longitude Form -->
-    <div class="form_lat_lng_fields" style="display:none;">
-      <a class="btn btn-sm btn-default" id="id_frm_lat_lng_submit">Submit Data To WorldMap</a>
+    <div class="form_lat_lng_fields" style="display:none;margin-bottom:1em;">
+      <a class="btn btn-default" id="id_frm_lat_lng_submit" style="margin-right:1em;">Submit Data To WorldMap</a>
       {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
     <!-- End: Submit button for Latitude/Longitude Form -->
