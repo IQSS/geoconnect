@@ -1,11 +1,3 @@
-{% comment %}
-    {% if download_links %}
-    <h5>Download</h5>
-        {% for dname, dlink in download_links.items %}
-            <a href="{{ dlink }}">{{ dname }}</a>&nbsp;
-        {% endfor %}
-    {% endif %}
-{% endcomment %}
 {% for dname, dlink in download_links.items %}{{ dname }},{% endfor %}
 
 <!-- WorldMap Download in Data in Various Formats -->
