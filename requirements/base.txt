@@ -1,4 +1,4 @@
-shared-dataverse-information==0.4.9
+shared-dataverse-information==0.4.91
 Django==1.6
 pyshp==1.2.0
 requests==2.3.0
