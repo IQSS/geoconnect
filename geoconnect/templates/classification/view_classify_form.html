@@ -14,34 +14,36 @@
                 <div class="form-group">
                     <b>{{ field.label }}</b>
                     <div>
-                            {% if field.errors %}{{ field.errors}}{% endif %}
-                            {{ field }}
+                      {% if field.errors %}{{ field.errors}}{% endif %}
+                      {{ field }}
                     </div>
                  </div>
                 {% endspaceless %}{% endfor %}
-                <div class="text-center">
-                     <a class="btn btn-sm btn-primary" id="id_frm_style_submit">Style Map</a>
+                <div class="form-group">
+                     <a class="btn btn-sm btn-primary" id="id_frm_style_submit">Apply Changes</a>
                 </div>
+
+                <!-- start: form messages row (old) -->
+                <div id="simple_msg_div" style="display:none;"></div>
+                {% if success_msg %}
+                <div class="form-group">
+                  <div id="id_success_msg" class="alert alert-success small" style="width:100%;">Success!</div>
+                  <p>{{ success_msg|safe }}</p>
+                </div>
+                {% endif %}
+                {% comment %}
+                {% if error_msg %}
+                <div class="form-group">
+                  <div id="id_alert_msg" class="alert alert-danger small" style="width:100%;">Error!</div>
+                  <p>{{ error_msg|safe }}</p>
+                </div>
+                {% endif %}
+                {% endcomment %}
+                <!-- end: form messages -->
             </form><!-- end actual form -->
         </div>
     </div>
     <!-- end: classify form row -->
-
-    <!-- start: form messages row (old) -->
-    <div class="row">
-        <div class="col-sm-12 text-left">
-            <div id="simple_msg_div" style="display:none"></div>
-            {% if success_msg %}<div id="id_success_msg" class="alert alert-success">Success!</div>
-                <p>{{ success_msg|safe }}</p>
-            {% endif %}
-            {% comment %}
-            {% if error_msg %}<div id="id_alert_msg" class="alert alert-danger">Error!</div>
-                <p>{{ error_msg|safe }}</p>
-            {% endif %}
-            {% endcomment %}
-        </div>
-    </div>
-    <!-- end: form messages -->
 
 </div><!-- end: classify div -->
 

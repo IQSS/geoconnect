@@ -16,14 +16,14 @@ function logit(m){
     - alert_type: success, info, warning or danger
 ---------------------------------------- */
 function get_alert(alert_type, err_msg){
-    return '<div class="alert alert-' + alert_type + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
+    return '<div class="alert alert-' + alert_type + ' alert-dismissible small" role="alert" style="width:100%;"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
 }
 
 /* ----------------------------------------
     Text for button after it is clicked
 ---------------------------------------- */
 function getWorkingBtnMessage(){
-    return 'Working ... (This may take up to 45 seconds)';
+    return 'Working... (This may take up to 45 seconds)';
 }
 
 /* ----------------------------------------

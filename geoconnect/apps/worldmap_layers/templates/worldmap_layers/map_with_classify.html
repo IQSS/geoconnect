@@ -1,37 +1,58 @@
 <!-- start: IFRAME MAP -->
-<div class="row"><!-- MAP | Style/Classify form -->
-    <div class="col-md-8">
-        &nbsp; <small><a href="{{ core_data.layer_link }}" target="_blank">(View on WorldMap)</a></small>
-        <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
-    </div>
-    <div class="col-md-4" style="border:1px solid olive;">
-        {% if classify_form %}
-        <!-- start:  Classify form -->
-        <div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
-        <!-- end:  Classify form -->
-        {% endif %}
-        <h5>Legend</h5>
-        <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+<div class="row"><!-- WorldMap Actions -->
+  <div class="col-sm-12">
 
-        {% include "worldmap_layers/button_download_links.html" %}
-    </div>
+    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank">View on WorldMap</a>
+
+    {% include "worldmap_layers/button_download_links.html" %}
+
+    {% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
+
+    <p class="help-block" style="padding-top:1em;"><span class="glyphicon glyphicon-info-sign"></span> Edit the colors, intervals, classification method and attribute. Click the "Apply Changes" button to apply your edits to WorldMap.</p>
+
+  </div>
+</div>
+
+<!-- MAP | Style/Classify form -->
+<div class="row">
+  <div class="col-md-8">
+    <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
+  </div>
+  <div class="col-md-4" style="border:1px solid olive;">
+    {% if classify_form %}
+      <!-- start:  Classify form -->
+      <div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
+      <!-- end:  Classify form -->
+    {% endif %}
+    <h5>Legend</h5>
+    <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+  </div>
 </div>
 
 
 {% if DEBUG_MODE or is_staff %}
+
+<h3 class="panel-title" style="margin-bottom:5px;">
+  DEBUG INFO
+</h3>
+
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom:0;">
+
     {% include "gis_tabular/map_attributes_list.html" %}
+
     {% include "gis_tabular/core_data_list.html" %}
+
+  </div>
+
 {% endif %}
 
 {% if classify_form %}
-    {% if delete_form %}
-        {% include "worldmap_layers/modal_delete_confirm.html" %}
-    {% endif %}
-    {% if gis_data_info %}
-        {% include "worldmap_layers/modal_save_confirm.html" %}
-    {% endif %}
-    {% include "classification/classify_form_dynamic_js.html" %}
+  {% if delete_form %}
+    {% include "worldmap_layers/modal_delete_confirm.html" %}
+  {% endif %}
+  {% if gis_data_info %}
+    {% include "worldmap_layers/modal_save_confirm.html" %}
+  {% endif %}
+  {% include "classification/classify_form_dynamic_js.html" %}
 {% endif %}
-{% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
-
 <!-- end: IFRAME MAP -->

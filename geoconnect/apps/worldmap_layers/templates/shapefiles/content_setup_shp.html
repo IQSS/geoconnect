@@ -3,43 +3,38 @@
 
 <!-- Action: send info to WorldMap API -->
 <p><a class="btn btn-primary btn-md" id="id_link_visualize_worldmap">Visualize on WorldMap</a>
-(This may take up to 45 seconds.)</p>
+  (This may take up to 45 seconds.)</p>
 
-<!-- Note for User -->
-<p><b>Please note:</b></p>
+  <!-- Note for User -->
+  <p><b>Please note:</b></p>
 
-<p>In order to map your data file, a copy will be sent to Harvard's WorldMap platform, <a href="{{ WORLDMAP_SERVER_URL }}" target="_blank">worldmap.harvard.edu</a>.</p>
+  <p>In order to map your data file, a copy will be sent to Harvard's WorldMap platform, <a href="{{ WORLDMAP_SERVER_URL }}" target="_blank">worldmap.harvard.edu</a>.</p>
 
-<p>You have the ability to delete any maps, and associated data, from the Harvard WorldMap platform, at any time.</p>
+  <p>You have the ability to delete any maps, and associated data, from the Harvard WorldMap platform, at any time.</p>
 
-<p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
+  <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
 
-<div class="row spacer"></div>
-
-<div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
+  <div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
     <div class="col-xs-6">
-        {% include "gis_data_info/return_to_dataverse_link.html" %}
+      {% include "gis_data_info/return_to_dataverse_link.html" %}
     </div>
-</div>
+  </div>
 
+  <script>
+  $('#column_name_list').on('show.bs.collapse', function () {
+    $('#btn_show_cols').html('hide fields');
+  })
+  $('#column_name_list').on('hide.bs.collapse', function () {
+    $('#btn_show_cols').html('show fields');
+  })
+  </script>
 
-	<script>
-	$('#column_name_list').on('show.bs.collapse', function () {
-	  	$('#btn_show_cols').html('hide fields');
-	})
-	$('#column_name_list').on('hide.bs.collapse', function () {
-	  	$('#btn_show_cols').html('show fields');
-	})
-	</script>
-
-    <!-- Initially hidden, display after pressing Map/Visualize button -->
-	<div style="display:none;" id="id_div_attempt_visualization_msg">
-            Attempting map visualization, this may take up to 45 seconds.
-
-        <br />
-                <img src="{{ STATIC_URL }}images/spinner.gif" alt="spinner" />
-        <br />
-                <a href="{{ WORLDMAP_SEVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a>
-
-        <br /><br />({% now "F jS, Y f:s a" %})
-	</div>
+  <!-- Initially hidden, display after pressing Map/Visualize button -->
+  <div style="display:none;" id="id_div_attempt_visualization_msg">
+    Attempting map visualization, this may take up to 45 seconds.
+    <br />
+    <img src="{{ STATIC_URL }}images/spinner.gif" alt="spinner" />
+    <br />
+    <a href="{{ WORLDMAP_SEVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a>
+    <br /><br />({% now "F jS, Y f:s a" %})
+  </div>

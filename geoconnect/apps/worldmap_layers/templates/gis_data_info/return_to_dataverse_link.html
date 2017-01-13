@@ -1,9 +1,11 @@
 <!-- start: back to dataverse button -->
-{% with RETURN_TO_DV_TEXT="Return to the Dataverse" CANCEL_TEXT="Cancel" %}
+{% with RETURN_TO_DV_TEXT="Return to the Dataverse" CANCEL_TEXT="Cancel" DONE_TEXT="Done" %}
 {% if worldmap_layerinfo %}<!-- Map already exists! Use Modal -->
 
+    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-default">{{ DONE_TEXT }}</a>
+
     <form id="frm_update_dv">{% csrf_token %}</form>
-    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-default">{{ RETURN_TO_DV_TEXT }}</a>
+
 
 {% else %}<!-- No Map: Return directly! -->
 
