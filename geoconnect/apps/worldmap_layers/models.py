@@ -90,7 +90,8 @@ class WorldMapLayerInfo(TimeStampedModel):
         """
         return dict(worldmap_layerinfo=self,
                 core_data=self.core_data,
-                attribute_data=self.attribute_data,                download_links=self.download_links)
+                attribute_data=self.attribute_data,
+                download_links=self.get_formatted_download_links())
 
     def get_dict_for_classify_form(self):
         """
