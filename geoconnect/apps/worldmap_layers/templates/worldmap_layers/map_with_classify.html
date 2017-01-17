@@ -16,13 +16,14 @@
 <!-- MAP | Style/Classify form -->
 <div class="row">
   <div class="col-md-8">
-    <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
+      <!--div style="width:100%">iframe usually here</div-->
+      <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
   </div>
 
   <div class="col-md-4" style="border:1px solid olive; padding:0; margin:0;">
 
-    <div style="border:1px solid coral;">
-      {% include "worldmap_layers/button_view_map_metadata.html" %}
+    <div style="background-color: coral;">
+      {% include "metadata/button_view_map_metadata.html" %}
     </div>
 
     {% if classify_form %}
@@ -44,9 +45,9 @@
 
   <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom:0;">
 
-    {% include "gis_tabular/map_attributes_list.html" %}
+    {% include "metadata/map_attributes_list.html" %}
 
-    {% include "gis_tabular/core_data_list.html" %}
+    {% include "metadata/core_data_list.html" %}
 
   </div>
 

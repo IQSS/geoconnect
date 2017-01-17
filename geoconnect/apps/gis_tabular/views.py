@@ -157,7 +157,7 @@ def view_unmatched_join_rows(request, tab_md5):
             ummatched_rows=worldmap_info.core_data.get('unmatched_records_list', None),
             column_names=worldmap_info.attribute_data)
 
-        unmatched_rows_html = render_to_string('gis_tabular/unmatched_records.html',
+        unmatched_rows_html = render_to_string('metadata/unmatched_records.html',
             unmatched_row_dict,
             context_instance=RequestContext(request))
 
@@ -188,7 +188,7 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
         'unmapped_records_list' in worldmap_info.core_data:
         # Unmatched records exist
 
-        unmatched_rows_html = render_to_string('gis_tabular/unmatched_rows.html',\
+        unmatched_rows_html = render_to_string('metadata/unmatched_rows.html',\
             dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],\
                 column_names=worldmap_info.attribute_data,
             ),\
