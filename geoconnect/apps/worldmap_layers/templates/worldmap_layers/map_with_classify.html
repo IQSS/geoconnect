@@ -6,7 +6,7 @@
 
     {% include "worldmap_layers/button_download_links.html" %}
 
-    {% include "worldmap_layers/delete_and_back_to_dv_links.html" %}
+    {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
 
     <p class="help-block" style="padding-top:1em;"><span class="glyphicon glyphicon-info-sign"></span> Edit the colors, intervals, classification method and attribute. Click the "Apply Changes" button to apply your edits to WorldMap.</p>
 
@@ -18,7 +18,13 @@
   <div class="col-md-8">
     <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
   </div>
-  <div class="col-md-4" style="border:1px solid olive;">
+
+  <div class="col-md-4" style="border:1px solid olive; padding:0; margin:0;">
+
+    <div style="border:1px solid coral;">
+      {% include "worldmap_layers/button_view_map_metadata.html" %}
+    </div>
+
     {% if classify_form %}
       <!-- start:  Classify form -->
       <div id="div_classify_form">{% include "classification/view_classify_form.html" %}</div>
