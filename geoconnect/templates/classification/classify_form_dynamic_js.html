@@ -144,11 +144,11 @@
            });
    }
 
-   var non_string_classification_methods = {  {% for m in classify_form.get_classify_non_string_choices %}{% if forloop.first %}'{{ INITIAL_SELECT_CHOICE|safe }}' : "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
+   var non_string_classification_methods = {  {% for m in classify_form.get_classify_non_string_choices %}{% if forloop.first %}"{{ SELECT_LABEL|safe }}" : "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
 
-   var all_classification_methods = { {% for m in classify_form.get_classify_choices %}{% if forloop.first %}'{{ INITIAL_SELECT_CHOICE|safe }}' : "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
+   var all_classification_methods = { {% for m in classify_form.get_classify_choices %}{% if forloop.first %}"{{ SELECT_LABEL|safe }}" : "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1"{% endfor %} }
 
-   var string_classification_methods =  { {% for m in classify_form.get_classify_string_choices %}{% if forloop.first %}'{{ INITIAL_SELECT_CHOICE|safe }}' : "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1" {% endfor %} }
+   var string_classification_methods =  { {% for m in classify_form.get_classify_string_choices %}{% if forloop.first %}"{{ SELECT_LABEL|safe }}": "",{% endif %}"{{ m.display_name }}" : "{{ m.id }}"{% if not forloop.last %},{% endif %} {% empty %}"No choices available!" : "-1" {% endfor %} }
 
 
 

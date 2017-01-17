@@ -15,7 +15,8 @@ from apps.gis_tabular.models import TabularFileInfo
 
 
 GEO_TYPE_LATITUDE_LONGITUDE = 'latitude-longitude'
-INITIAL_SELECT_CHOICE = ('', 'Select...')
+SELECT_LABEL = 'Select...'
+INITIAL_SELECT_CHOICE = ('', SELECT_LABEL)
 
 class TabularFileInfoForm(forms.ModelForm):
     class Meta:
