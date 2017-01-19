@@ -20,6 +20,24 @@
 </style>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
 <script>
+/**
+ *  1.19.2017
+ *  This became a bit messy--two forms in the backend and the front end changed
+ *  resulting in the form elements being separated, etc.
+ *
+ *  submit lat/lng form
+ *    - 2 dropdowns to specifiying lat/lng columns
+ *    - submit button
+ *  submit join column form
+ *    - 3 dropdowns: geo type, worldmap layer, column to join on
+ *      - id_geocode_type
+ *      - id_chosen_column
+ *      - id_chosen_layer
+ *    - submit button
+ *
+ *  Action:
+ *      init: only geo type dropdown shows
+ */
 
     var SUBMIT_BUTTON_TEXT = 'Submit Data to WorldMap'
     var INITIAL_SELECT_CHOICE = 'Select...';
@@ -206,6 +224,19 @@
     }
 
     /**
+     *  show cancel button without form submit buttons
+     */
+    function show_cancel_only_button(){
+        logit('show cancel button');
+        $('#div_btn_cancel').show();
+    }
+
+    function hide_cancel_only_button(){
+        logit('HIDE cancel button');
+        $('#div_btn_cancel').hide();
+    }
+
+    /**
      *  Hide row with select WorldMap layer dropdown
      */
     function hide_form_worldmap_layer_row(){
@@ -235,10 +266,14 @@
             $('.form_single_column_fields').hide();
             hide_form_worldmap_layer_row();
             clear_layer_description();
+            hide_cancel_only_button();  //  hide cancel only button
+
         }else if (geocode_type_val == ''){      // RESET
-            // hide both forms
+
+            // hide both forms + show cancel button
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').hide();
+            show_cancel_only_button();
             hide_form_worldmap_layer_row();
             clear_layer_description();
 
@@ -249,6 +284,7 @@
             $('.form_lat_lng_fields').hide();
             $('.form_single_column_fields').show();
             check_join_column_change();
+            //hide_cancel_only_button();  //  hide cancel only button
         }
     }
 
@@ -259,17 +295,29 @@
      *          * doesn't apply to the lat/lng form
      */
     function check_join_column_change(){
+        logit('jcol 1: check_join_column_change');
 
         var chosen_col_val = $( "#id_chosen_column" ).val();
+        logit('jcol 2: chosen_col_val: ' + chosen_col_val);
         if (chosen_col_val == ''){
+            logit('jcol 3a: blank');
             hide_form_worldmap_layer_row();
+            logit('jcol 4');
+
             clear_layer_description();
+            logit('jcol 5');
+
+            show_cancel_only_button();
+            logit('jcol 6');
+
         }else{
+            logit('jcol 3b: got something...');
             show_form_worldmap_layer_row();
             var geocode_type_val = $( "#id_geocode_type" ).val()
             update_target_layers_based_on_geotype(geocode_type_val);
+            hide_cancel_only_button();
+            check_chosen_layer_change();
         }
-        check_chosen_layer_change();
 
     }
 
@@ -278,7 +326,7 @@
      *  If selected worldmap layer has changed, change description, if appropriate
      */
      function check_chosen_layer_change(){
-        logit('check_chosen_layer_change..');
+        logit('jlayer: check_chosen_layer_change..');
 
         // ---------------------------------------
         // clear current description
@@ -330,17 +378,25 @@
         really_bind_hide_show_column_forms();
     }
 
-
+    /**
+     *  What happens as users clicks through form elements
+     */
     function bind_hide_show_column_forms_on_change(){
         logit('bind geotype dropdown');
+
+        // the geo type has changed
+        //
         $( "#id_geocode_type" ).change(function() {
             really_bind_hide_show_column_forms();
             check_chosen_layer_change();
         });
 
+        // the chosen column for a join has changed
+        // and impacts the layer visibility
+        //
         $( "#id_chosen_column" ).change(function() {
+            // note: this then calls check_chosen_layer_change();
             check_join_column_change();
-            check_chosen_layer_change();
         });
 
         $( "#id_chosen_layer").change(function() {

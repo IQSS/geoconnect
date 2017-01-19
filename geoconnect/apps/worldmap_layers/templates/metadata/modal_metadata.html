@@ -32,20 +32,8 @@
                 <!-- Unmatched counts -->
                 {% if core_data.unmatched_record_count > 0 or core_data.unmapped_record_count > 0 %}
                 <tr>
-<<<<<<< Updated upstream
                     <th>Unmapped record count</th>
                     <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}</td>
-=======
-                    <th>Unmapped Records</th>
-                    <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}
-
-                        {% if core_data.unmapped_records_list %}
-                            <!-- latitude/longitude - records that didn't map -->
-                            <br /><a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">See unmapped records</a>
-                        {% endif %}
-
-                    </td>
->>>>>>> Stashed changes
                 </tr>
                 {% endif %}
 
