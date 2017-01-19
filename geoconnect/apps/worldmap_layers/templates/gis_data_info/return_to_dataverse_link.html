@@ -1,24 +1,27 @@
 <!-- start: back to dataverse button -->
 {% with RETURN_TO_DV_TEXT="Return to the Dataverse" CANCEL_TEXT="Cancel" DONE_TEXT="Done" %}
-{% if worldmap_layerinfo %}<!-- Map already exists! Use Modal -->
 
-    <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-default">{{ DONE_TEXT }}</a>
+    {% if worldmap_layerinfo %}<!-- Map already exists! Use Modal -->
 
-    <form id="frm_update_dv">{% csrf_token %}</form>
+        <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-default">{{ DONE_TEXT }}</a>
+
+        <form id="frm_update_dv">{% csrf_token %}</form>
 
 
-{% else %}<!-- No Map: Return directly! -->
+    {% else %}<!-- No Map: Return directly! -->
 
-    {% if gis_data_info and gis_data_info.return_to_dataverse_url %}
-        <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-default">{{ CANCEL_TEXT }}</a>
+        {% if gis_data_info and gis_data_info.return_to_dataverse_url %}
+            <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-default">
+                {% if IS_DELETE_PAGE %}{{ RETURN_TO_DV_TEXT }}{% else %}{{ CANCEL_TEXT }}{% endif %}
+            </a>
 
-    {% elif return_to_dataverse_url %}d1 - FIX
-        <a href="{{ return_to_dataverse_url }}" class="btn btn-default">{{ RETURN_TO_DV_TEXT }}</a>
+        {% elif return_to_dataverse_url %}
+            <a href="{{ return_to_dataverse_url }}" class="btn btn-default">{{ RETURN_TO_DV_TEXT }}</a>
+            (should no longer reach here: FIX)
+        {% else %}<!-- only ON BAD ERR when source dataset info not acessible or saved -->
+            <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default">{{ RETURN_TO_DV_TEXT }}</a>
+        {% endif %}
 
-    {% else %}e1 - only ON BAD ERR
-        <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default">{{ RETURN_TO_DV_TEXT }}</a>
     {% endif %}
-
-{% endif %}
 {% endwith %}
 <!-- end: back to dataverse button -->

@@ -99,7 +99,9 @@
             </table>
 
             <!-- show failed rows -->
-            {% include "metadata/unmatched_lat_lng_rows.html" %}
+            {% if core_data.unmapped_records_list %}
+                {% include "metadata/unmatched_lat_lng_rows.html" %}
+            {% endif %}
       </div><!-- end: modal content -->
 
       <div class="modal-footer text-left">

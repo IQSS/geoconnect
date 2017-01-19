@@ -33,7 +33,7 @@ def view_delete_tabular_map(request):
     d['DATAVERSE_SERVER_URL'] = settings.DATAVERSE_SERVER_URL
 
     d['page_title'] = PANEL_TITLE_DELETE_MAP
-
+    d['IS_DELETE_PAGE'] = True
     # Check the delete request
     f = DeleteMapForm(request.POST)
 
