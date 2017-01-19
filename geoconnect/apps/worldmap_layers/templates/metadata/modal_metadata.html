@@ -10,75 +10,83 @@
       <!-- add: modal content -->
       <div class="modal-body pagination-centered">
             {% if core_data.matched_record_count %}<!-- tabular -->
-                <p>A map was created by joining your data to an existing WorldMap layer.</p>
+                <p class="help-block">A map was created by joining your data to an existing WorldMap layer.</p>
             {% elif core_data.mapped_record_count %}<!-- lat/lng -->
-                <p>A map was created using the latitude and longitude columns in your data file.</p>
+                <p class="help-block">A map was created using the latitude and longitude columns in your data file.</p>
             {% endif %}
 
 
             <table class="table table-bordered">
                 <tr>
-                    <th>Worldmap link</th>
-                    <td><a href="{{ core_data.layer_link }}" target="_blank">View in WorldMap</a></td>
+                    <th>WorldMap Link</th>
+                    <td><a href="{{ core_data.layer_link }}" target="_blank">View on WorldMap</a></td>
                 </tr>
 
                 <!-- Matched counts -->
                 {% if core_data.matched_record_count or core_data.mapped_record_count %}
                 <tr>
-                    <th>Mapped record count</th>
+                    <th>Mapped Records</th>
                     <td>{{ core_data.matched_record_count }} {{ core_data.mapped_record_count }}</td>
                 </tr>
                 {% endif %}
                 <!-- Unmatched counts -->
                 {% if core_data.unmatched_record_count > 0 or core_data.unmapped_record_count > 0 %}
                 <tr>
+<<<<<<< Updated upstream
                     <th>Unmapped record count</th>
                     <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}</td>
-                </tr>
-                {% endif %}
+=======
+                    <th>Unmapped Records</th>
+                    <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}
 
-                <!-- lat/lng column -->
-                {% if core_data.lat_attribute or lng_attribute%}
-                <tr>
-                    <th>Columns used for Mapping</th>
-                    <td>
-                        <table>
-                            {% if core_data.lat_attribute %}
-                            <tr>
-                                <th>Latitude: </th>
-                                <td>&nbsp;  {{ core_data.lat_attribute.attribute }} (type: {{ core_data.lat_attribute.type }})</td>
-                            </tr>
-                            {% endif %}
-                            {% if core_data.lng_attribute %}
-                            <tr>
-                                <th>Longitude: </th>
-                                <td>&nbsp; {{ core_data.lng_attribute.attribute }} (type: {{ core_data.lng_attribute.type }})</td>
-                            </tr>
-                            {% endif %}
-                        </table>
+                        {% if core_data.unmapped_records_list %}
+                            <!-- latitude/longitude - records that didn't map -->
+                            <br /><a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">See unmapped records</a>
+                        {% endif %}
 
                     </td>
+>>>>>>> Stashed changes
                 </tr>
                 {% endif %}
 
-                <!-- join column -->
-                {% if core_data.layer_join_attribute %}
                 <tr>
-                    <th>Column used for Mapping</th>
-                    <td>{{ core_data.layer_join_attribute }}</td>
+                  <th>Data File Columns</th>
+                  <td>
+                    {% if core_data.lat_attribute or lng_attribute%}
+                    <!-- lat/lng column -->
+                            <table>
+                                {% if core_data.lat_attribute %}
+                                <tr>
+                                    <th>Latitude: </th>
+                                    <td>&nbsp;  {{ core_data.lat_attribute.attribute }} (type: {{ core_data.lat_attribute.type }})</td>
+                                </tr>
+                                {% endif %}
+                                {% if core_data.lng_attribute %}
+                                <tr>
+                                    <th>Longitude: </th>
+                                    <td>&nbsp; {{ core_data.lng_attribute.attribute }} (type: {{ core_data.lng_attribute.type }})</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                    {% endif %}
+
+                    {% if core_data.layer_join_attribute %}
+                    <!-- join column -->
+                        {{ core_data.layer_join_attribute }}
+                    {% endif %}
+                  </td>
                 </tr>
-                {% endif %}
 
                 <!-- join column -->
                 {% if core_data.join_layer_id %}
                 <tr>
-                    <th>WorldMap Join Layer Id</th>
+                    <th>WorldMap Join Layer ID</th>
                     <td>{{ core_data.join_layer_id }}</td>
                 </tr>
                 {% endif %}
 
                 <tr>
-                    <th>Bounding box</th>
+                    <th>Bounding Box</th>
                     <td>{{ core_data.llbbox }}</td>
                 </tr>
 
