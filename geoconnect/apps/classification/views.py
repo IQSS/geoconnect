@@ -15,6 +15,7 @@ from geo_utils.message_helper_json import MessageHelperJSON
 #from geo_utils.msg_util import msg
 from apps.dv_notify.metadata_updater import MetadataUpdater
 from apps.classification.utils import get_worldmap_info_object
+from apps.gis_tabular.forms import SELECT_LABEL
 from geo_utils.json_field_reader import JSONHelper
 
 from shared_dataverse_information.layer_classification.forms import\
@@ -116,14 +117,16 @@ def view_classify_layer_form(request, import_success_md5):
     # Form validation will replace the classification div on the page
     # --------------------------------------------------------------
     if not classify_form.is_valid():    # Oops, not valid (shouldn't happen)
-        d.update( dict(classify_form=classify_form\
-                , worldmap_layerinfo=worldmap_layerinfo\
-                , error_msg='The form submission contains errors'\
+        user_message = ('There was an error with the styling form.'
+                        ' Please check the errors below.')
+        d.update( dict(classify_form=classify_form,
+                  worldmap_layerinfo=worldmap_layerinfo,
+                  error_msg=user_message,
                 ))
         form_content = render_to_string('classification/view_classify_form.html', d\
                                 , context_instance=RequestContext(request))
         json_msg = MessageHelperJSON.get_json_msg(success=False
-                                            , msg='The form submission contains errors'
+                                            , msg=user_message
                                             , data_dict={'div_content':form_content}\
                                             )
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -259,17 +262,17 @@ def view_classify_layer_form(request, import_success_md5):
     msg_params = classify_form.get_params_for_display()
 
     success_msg =  render_to_string('classification/classify_success_msg.html', msg_params)
-    d.update(dict(classify_form=classify_form\
-            #, worldmap_layerinfo=worldmap_layerinfo\
-            , success_msg=success_msg#'A new style has been created using attribute <b>%s</b>!' % classify_params.get('attribute', '???')\
+    d.update(dict(classify_form=classify_form,
+             success_msg=success_msg,
+             SELECT_LABEL=SELECT_LABEL,
             ))
 
     form_content = render_to_string('classification/view_classify_form.html', d\
                             , context_instance=RequestContext(request))
 
 
-    json_msg = MessageHelperJSON.get_json_msg(success=True
-                                        , msg='Success!'
-                                        , data_dict={'div_content':form_content}\
+    json_msg = MessageHelperJSON.get_json_msg(success=True,
+                                            msg=success_msg, #'Success!'
+                                            data_dict={'div_content':form_content}\
                                         )
     return HttpResponse(status=200, content=json_msg, content_type="application/json")

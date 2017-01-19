@@ -25,6 +25,8 @@ from shared_dataverse_information.layer_classification.forms import \
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 from apps.gis_tabular.forms_delete import DeleteMapForm
 from apps.gis_tabular.models import TabularFileInfo
+from apps.gis_tabular.forms import SELECT_LABEL
+
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     STEP1_EXAMINE, STEP2_STYLE,\
@@ -99,6 +101,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
 
     d['ATTRIBUTE_VALUE_DELIMITER'] = ATTRIBUTE_VALUE_DELIMITER
     d['first_time_notify'] = first_time_notify
+    d['SELECT_LABEL'] = SELECT_LABEL
 
     return render_to_response('shapefiles/main_outline_shp.html', d\
                         , context_instance=RequestContext(request))

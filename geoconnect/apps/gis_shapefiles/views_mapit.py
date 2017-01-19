@@ -30,6 +30,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 from geo_utils.template_constants import FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
+from apps.gis_tabular.forms import SELECT_LABEL
 
 
 def view_formatted_error_page(request, error_type, err_msg=None):
@@ -44,6 +45,7 @@ def view_formatted_error_page(request, error_type, err_msg=None):
     if error_type is not None:
         d[error_type] = True
     d['Dataverse_Connect_Err_Msg'] = err_msg
+    d['SELECT_LABEL'] = SELECT_LABEL
 
     return render_to_response('shapefiles/main_outline_shp.html'\
                                 , d\

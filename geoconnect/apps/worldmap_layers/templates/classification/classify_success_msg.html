@@ -1,5 +1,16 @@
-<p>A new layer style has been created using:</p>
-{% spaceless %}
+<p>Success! A style has been applied to the
+
+attribute <b>{{ attribute }}</b> using the
+
+method <b>{{ method }}</b>{% if method == 'Unique Values' %}.{% else %}
+
+with <b>{{ intervals }} interval{{ intervals|pluralize }}</b>.{% endif %}
+
+{% if ramp %}<br />Color choice: <b>{{ ramp }}</b>.{% endif %}
+</p>
+<p>({% now "F jS, Y f:s a" %})</p>
+
+{% comment %}
 <table id="id_classify_msg_tbl" class="table table-condensed table-bordered">
     <tr>
         <th>Attribute</th>  <td>{{ attribute }}</td>
@@ -15,28 +26,10 @@
     <tr>
         <th>Colors</th> <td>{{ ramp }}</td>
     </tr>
-    {% comment %}
-    {# --- NO NEED TO SHOW THE START/END COLOR --- #}
-    {% if not ramp == 'Random' %}
-    <tr>
-        <th>Start Color</th> 
-        <td>{{ startColor }} 
-            <div style="background-color:{{ startColor|safe }};width:50px;height:20px;border:1px solid#333;">&nbsp;</div>
-        </td>
-    </tr>
-    <tr>
-        <th>End Color</th> 
-        <td>{{ endColor }}
-            <div style="background-color:{{ endColor|safe }};width:50px;height:20px;border:1px solid#333;">&nbsp;</div>            
-        </td>
-    </tr>
-    {% endif %}
-    {% endcomment %}
+
 </table>
-{% endspaceless %}
 
 ({% now "F jS, Y f:s a" %})
-{% comment %}
 
 <ul class="list-unstyled">
     <li><b>Attribute</b>: {{ attribute }}</li>
@@ -45,4 +38,3 @@
     <li><b>Colors</b>: {{ ramp }}</li>
 </ul>
 {% endcomment %}
-

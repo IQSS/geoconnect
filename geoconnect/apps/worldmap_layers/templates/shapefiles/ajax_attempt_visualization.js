@@ -16,7 +16,6 @@ function attempt_visualization(){
          .done(function(json_resp) {
              if (json_resp.success){
                  show_map_update_titles(json_resp);
-                 //$('#id_progress_bar').hide();
              }else{
                  logit(json_resp.message);
                  $('#id_main_panel_content').show().empty().append(get_alert('danger', json_resp.message));

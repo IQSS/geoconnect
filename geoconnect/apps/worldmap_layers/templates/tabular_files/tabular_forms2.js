@@ -181,7 +181,6 @@
                 show_map_update_titles(json_resp);
                 hide_setup_form_submit_buttons();
                 window.scrollTo(0, 0);
-                //$('#id_progress_bar').hide();
             }else{
 
                 logit(json_resp.message);

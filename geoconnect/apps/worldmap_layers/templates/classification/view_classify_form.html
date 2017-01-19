@@ -22,24 +22,6 @@
                 <div class="form-group">
                      <a class="btn btn-default" id="id_frm_style_submit">Apply Changes</a>
                 </div>
-
-                <!-- start: form messages row (old) -->
-                <div id="simple_msg_div" style="display:none;"></div>
-                {% if success_msg %}
-                <div class="form-group">
-                  <div id="id_success_msg" class="alert alert-success small" style="width:100%;">Success!</div>
-                  <p>{{ success_msg|safe }}</p>
-                </div>
-                {% endif %}
-                {% comment %}
-                {% if error_msg %}
-                <div class="form-group">
-                  <div id="id_alert_msg" class="alert alert-danger small" style="width:100%;">Error!</div>
-                  <p>{{ error_msg|safe }}</p>
-                </div>
-                {% endif %}
-                {% endcomment %}
-                <!-- end: form messages -->
             </form><!-- end actual form -->
         </div>
     </div>

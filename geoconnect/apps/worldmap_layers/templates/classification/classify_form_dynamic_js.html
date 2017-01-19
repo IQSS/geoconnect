@@ -110,27 +110,29 @@
            })
            .done(function(json_resp) {
                if (json_resp.success){
-                    // Reload the map!
-                   $( '#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
-                   $('#id_progress_bar').hide();
+
+                   // Show success messsage
+                   $('#id_alert_container').show();
+                   $('#id_alert_container').empty().append(get_alert('success', json_resp.message));
+
+                   // Reload the map
+                   $('#id_iframe_map' ).attr( 'src', function ( i, val ) { return val; });
 
                    // reload the legend
-                   dt_obj = new Date();
                    {% if worldmap_layerinfo %}
+                   dt_obj = new Date();
                    var legend_url = "{{ worldmap_layerinfo.get_legend_img_url|safe }}" + "&trefresh=" + dt_obj.getTime();
-                   //alert(legend_url);
                    $("#legend_img").attr("src", legend_url);
                    {% endif %}
 
                }else{
-                   $('#simple_msg_div').show();
-                   $('#simple_msg_div').empty().append(get_alert('danger', json_resp.message));
-
+                   $('#id_alert_container').show();
+                   $('#id_alert_container').empty().append(get_alert('danger', json_resp.message));
                }
              })
            .fail(function(json_resp) {
-                $('#simple_msg_div').show();
-                $('#simple_msg_div').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
+                $('#id_alert_container').show();
+                $('#id_alert_container').empty().append(get_alert('danger', 'The classification failed.  Please try again.'));
                 $('#id_success_msg').hide();
                 $('#id_alert_msg').hide();
 
@@ -139,8 +141,6 @@
                 // Restore classify button
                 $('#id_frm_style_submit').removeClass('disabled').html('Apply Changes');
                 $( "#id_attribute" ).on( "change", check_attribute );
-
-               //bind_form_submit_button();
            });
    }
 
