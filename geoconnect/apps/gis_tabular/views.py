@@ -33,6 +33,7 @@ from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
 from geo_utils.view_util import get_common_lookup
 
 from geo_utils.message_helper_json import MessageHelperJSON
+from geo_utils.time_util import get_datetime_string_for_file
 
 from apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 
@@ -178,14 +179,7 @@ def view_unmatched_join_rows(request, tab_md5):
 def download_unmatched_lat_lng_rows(request, tab_md5=None):
     """Download the unmatched data in csv format"""
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
-    writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-
-    return response
+    #tab_md5 = 'b15e45551174e560d2bb2fe55c026cff'
 
     # Retrieve the Tabular file information
     #
@@ -202,37 +196,30 @@ def download_unmatched_lat_lng_rows(request, tab_md5=None):
 
     # get column names
     #
-    column_names = [x.name for x in worldmap_info.attribute_data]
-    num_column_names = len(column_names)
+    column_names = [x.get('name', 'NaN') for x in worldmap_info.attribute_data]
 
     # get unmatched list (length may not be same as columns--e.g. this is erroneous data)
     #
-    ummatched_rows=worldmap_info.core_data['unmapped_records_list']
+    unmatched_rows = worldmap_info.core_data.get('unmapped_records_list', [])
+    #import ipdb; ipdb.set_trace()
 
-    # sort through the columns
-    #
-    too_many_cols = []
-    not_enough_cols = []
-    other_err = []
+    response = HttpResponse(content_type='text/csv')
 
-    for info_row in unmatched_rows:
-        if len(info_row) > num_column_names:
-            too_many_cols.append(info_row)
-        elif num_column_names > len(info_row):
-            not_enough_cols.append(info_row)
-        else:
-            other_err.append(info_row)
+    file_name = 'unmapped_rows__%s.csv' % (get_datetime_string_for_file())
 
-    import csv
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
 
-    with open('filename', 'wb') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        wr.writerow(mylist)
+    writer = csv.writer(response)
+    writer.writerow(column_names)
+    for row_info in unmatched_rows:
+        writer.writerow(row_info)
+
+    return response
 
 
 def view_unmatched_lat_lng_rows(request, tab_md5):
     """
-    View the unmatched rows resulting from a Table Join
+    View the unmatched rows resulting from trying to map lat/lng columns
     """
 
     # Retrieve the Tabular file information

@@ -33,7 +33,7 @@ urlpatterns = patterns('apps.gis_tabular.views',
     url(r'^view-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})$', 'view_unmatched_lat_lng_rows',\
         name='view_unmatched_lat_lng_rows'),
 
-    url(r'^download-unmatched-lat-lng-rows$', 'download_unmatched_lat_lng_rows',\
+    url(r'^download-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})$', 'download_unmatched_lat_lng_rows',\
         name='download_unmatched_lat_lng_rows'),
 
     #url(r'^download-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})/$', 'download_unmatched_lat_lng_rows',\

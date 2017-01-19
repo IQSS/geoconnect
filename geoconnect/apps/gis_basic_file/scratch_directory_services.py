@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 import re
 import logging
+from geo_utils.time_util import TIME_FORMAT_STRING
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class ScratchDirectoryHelper:
     """Manage the scratch directories.
     These directories are built under the settings.GISFILE_SCRATCH_WORK_DIRECTORY
     """
-    TIME_FORMAT_STRING = '%Y-%m%d-%H%M'
+    #TIME_FORMAT_STRING = '%Y-%m%d-%H%M'
 
     @staticmethod
     def clear_scratch_directories(max_hours=6):
@@ -30,7 +31,7 @@ class ScratchDirectoryHelper:
         for dirname in l:
             dir_to_remove = os.path.join(settings.GISFILE_SCRATCH_WORK_DIRECTORY, dirname )
             try:
-                dt = datetime.strptime(dirname[:14], ScratchDirectoryHelper.TIME_FORMAT_STRING)
+                dt = datetime.strptime(dirname[:14], TIME_FORMAT_STRING)
                 time_diff = current_time - dt
                 if time_diff.days > 0 or (time_diff.seconds/3600) > max_hours:
                     shutil.rmtree(dir_to_remove)
@@ -110,7 +111,7 @@ class ScratchDirectoryHelper:
             gis_data_file.save()  # save to create id
 
         dirname = os.path.join(settings.GISFILE_SCRATCH_WORK_DIRECTORY\
-                                , '%s__%s' % (datetime.today().strftime(ScratchDirectoryHelper.TIME_FORMAT_STRING)\
+                                , '%s__%s' % (datetime.today().strftime(TIME_FORMAT_STRING)\
                                                 , gis_data_file.id)\
                                 )
         if os.path.isdir(dirname):

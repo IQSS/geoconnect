@@ -33,14 +33,7 @@
                 {% if core_data.unmatched_record_count > 0 or core_data.unmapped_record_count > 0 %}
                 <tr>
                     <th>Unmapped record count</th>
-                    <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}
-
-                        {% if core_data.unmapped_records_list %}
-                            <!-- latitude/longitude - records that didn't map -->
-                            <br /><a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">See unmapped records</a>
-                        {% endif %}
-
-                    </td>
+                    <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}</td>
                 </tr>
                 {% endif %}
 
@@ -105,10 +98,10 @@
       </div><!-- end: modal content -->
 
       <div class="modal-footer text-left">
-        {% if core_data.unmatched_record_count > 0 %}
-        <button type="button" class="btn btn-default">Download Unmatched Records (.csv)</button>
+        {% if core_data.unmapped_records_list %}
+            <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>
         {% endif %}
-        <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
       </div>
     </div>
   </div>
