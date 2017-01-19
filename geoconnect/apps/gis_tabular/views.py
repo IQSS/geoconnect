@@ -5,6 +5,8 @@ Tabular views for:
         - Available geospatial types
         - Available geospatial layers
 """
+import csv
+
 from django.shortcuts import render_to_response
 
 from django.http import HttpResponse, Http404
@@ -172,11 +174,67 @@ def view_unmatched_join_rows(request, tab_md5):
 
     return HttpResponse(json_msg, content_type="application/json")
 
+
+def download_unmatched_lat_lng_rows(request, tab_md5=None):
+    """Download the unmatched data in csv format"""
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+    writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+
+    return response
+
+    # Retrieve the Tabular file information
+    #
+    try:
+        worldmap_info = WorldMapLatLngInfo.objects.get(md5=tab_md5)
+    except WorldMapLatLngInfo.DoesNotExist:
+        raise Http404('No WorldMapLatLngInfo for md5: %s' % tab_md5)
+
+    if worldmap_info.core_data and\
+        'unmapped_records_list' in worldmap_info.core_data:
+        pass    # we have some data...
+    else:
+        return HttpResponse("No unmatched records found.")
+
+    # get column names
+    #
+    column_names = [x.name for x in worldmap_info.attribute_data]
+    num_column_names = len(column_names)
+
+    # get unmatched list (length may not be same as columns--e.g. this is erroneous data)
+    #
+    ummatched_rows=worldmap_info.core_data['unmapped_records_list']
+
+    # sort through the columns
+    #
+    too_many_cols = []
+    not_enough_cols = []
+    other_err = []
+
+    for info_row in unmatched_rows:
+        if len(info_row) > num_column_names:
+            too_many_cols.append(info_row)
+        elif num_column_names > len(info_row):
+            not_enough_cols.append(info_row)
+        else:
+            other_err.append(info_row)
+
+    import csv
+
+    with open('filename', 'wb') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(mylist)
+
+
 def view_unmatched_lat_lng_rows(request, tab_md5):
     """
     View the unmatched rows resulting from a Table Join
     """
-    # ----------------------------------
+
     # Retrieve the Tabular file information
     # ----------------------------------
     try:
@@ -188,7 +246,7 @@ def view_unmatched_lat_lng_rows(request, tab_md5):
         'unmapped_records_list' in worldmap_info.core_data:
         # Unmatched records exist
 
-        unmatched_rows_html = render_to_string('metadata/unmatched_rows.html',\
+        unmatched_rows_html = render_to_string('metadata/unmatched_lat_lng_rows.html',\
             dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],\
                 column_names=worldmap_info.attribute_data,
             ),\
@@ -376,3 +434,18 @@ def ajax_get_join_targets(request, selected_geo_type):
                                 data_dict=join_target_info)
 
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
+
+
+"""
+import csv
+
+#response = HttpResponse(content_type='text/csv')
+#response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+writer = csv.writer(response)
+writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+
+return response
+
+"""

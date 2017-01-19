@@ -7,6 +7,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="modalMetadataLabel">View Map Metadata</h4>
       </div>
+      <!-- add: modal content -->
       <div class="modal-body pagination-centered">
             {% if core_data.matched_record_count %}<!-- tabular -->
                 <p>A map was created by joining your data to an existing WorldMap layer.</p>
@@ -89,13 +90,18 @@
                 </tr>
 
                 <!-- attribute information -->
+                {% comment %}
                 <tr>
                     <th>Column Attributes</th>
                     <td>{% include "metadata/map_attributes_list_sm.html" %}</td>
                 </tr>
-
+                {% endcomment %}
             </table>
-      </div>
+
+            <!-- show failed rows -->
+            {% include "metadata/unmatched_lat_lng_rows.html" %}
+      </div><!-- end: modal content -->
+
       <div class="modal-footer text-left">
         {% if core_data.unmatched_record_count > 0 %}
         <button type="button" class="btn btn-default">Download Unmatched Records (.csv)</button>

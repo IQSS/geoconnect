@@ -46,9 +46,7 @@
         {% if worldmap_layerinfo %}
           <!-- We have a map here -->
           {% include "worldmap_layers/map_with_classify.html" %}
-          {#% include "gis_shapefiles/view_04_ajax_style_layer.html" %#}
-
-          {% else %}
+        {% else %}
             {% include "shapefiles/content_setup_shp.html" %}
         {% endif %}
       {% endif %}

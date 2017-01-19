@@ -8,20 +8,20 @@
 
 <!-- START: Unmatched rows -->
 <p>The tabular data below was <b>NOT</b> mapped.</p>
-    <br />Count: <b>{{ ummatched_rows|length }} row{{ ummatched_rows|pluralize }}</b>
+    <br />Count: <b>{{ core_data.unmapped_records_list|length }} row{{ core_data.unmapped_records_list|pluralize }}</b>
 </p>
 
-<table id="unmatched-tbl" class="table table-bordered table-hover table-striped table-condensed">
+<table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
     <thead>
         <tr>
             <th>Row #</th>
-            {% for col in column_names %}
-            <th>{{ col.display_name }}</th>
+            {% for col in attribute_data %}
+            <th>{{ col.name }}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
-        {% for single_row in ummatched_rows %}
+        {% for single_row in core_data.unmapped_records_list %}
             <tr>
                 <td>{{ forloop.counter }}</td>
             {% for tbl_val in single_row %}
@@ -29,7 +29,7 @@
             {% endfor %}
             </tr>
         {% empty %}
-            <tr><td colspan="{{ column_names|length }}">(No rows to display)</td></tr>
+            <tr><td colspan="{{ core_data.unmapped_records_list|length }}">(No rows to display)</td></tr>
         {% endfor %}
     </tbody>
 </table>
@@ -40,10 +40,10 @@ $( document ).ready(function() {
     if ($("#unmatched-tbl").length>0){
 
         $('#unmatched-tbl').DataTable( {
-                "scrollY": 400,
-                "scrollX": true,
-                "paging" : false,
-                "searching" : false
+            "info":false, // remove 'Showing 1 to n of n entries'
+            "scrollX": true,    //  "scrollY": 200,
+            "paging" : false,
+            "searching" : false
         } );
     }
     //$('#preview-tbl').DataTable();
