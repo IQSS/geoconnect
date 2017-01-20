@@ -295,23 +295,15 @@
      *          * doesn't apply to the lat/lng form
      */
     function check_join_column_change(){
-        logit('jcol 1: check_join_column_change');
 
         var chosen_col_val = $( "#id_chosen_column" ).val();
-        logit('jcol 2: chosen_col_val: ' + chosen_col_val);
+
         if (chosen_col_val == ''){
-            logit('jcol 3a: blank');
             hide_form_worldmap_layer_row();
-            logit('jcol 4');
-
             clear_layer_description();
-            logit('jcol 5');
-
             show_cancel_only_button();
-            logit('jcol 6');
 
         }else{
-            logit('jcol 3b: got something...');
             show_form_worldmap_layer_row();
             var geocode_type_val = $( "#id_geocode_type" ).val()
             update_target_layers_based_on_geotype(geocode_type_val);
@@ -326,8 +318,6 @@
      *  If selected worldmap layer has changed, change description, if appropriate
      */
      function check_chosen_layer_change(){
-        logit('jlayer: check_chosen_layer_change..');
-
         // ---------------------------------------
         // clear current description
         // ---------------------------------------
@@ -337,7 +327,6 @@
         // Get the id of the chosen joinTarget
         // ---------------------------------------
         var chosen_layer_id = $( "#id_chosen_layer" ).val();
-        logit('chosen_layer_id: ' + chosen_layer_id);
 
         // ---------------------------------------
         // If the id, is blank, set back to default
@@ -382,7 +371,6 @@
      *  What happens as users clicks through form elements
      */
     function bind_hide_show_column_forms_on_change(){
-        logit('bind geotype dropdown');
 
         // the geo type has changed
         //
@@ -413,7 +401,6 @@
         if (typeof optToSelect === "undefined") {
             return;
         }
-        logit("optToSelect: " + optToSelect.html());
         optToSelect.prop('selected', true);
         check_join_column_change();
     }

@@ -10,6 +10,7 @@ from django.db.models import FileField
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from csv import QUOTE_NONNUMERIC
 from geo_utils.msg_util import msg, msgt
+from geo_utils.tabular_util import get_formatted_column_name
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
     UPLOAD_JOIN_DATATABLE_API_PATH
@@ -248,8 +249,7 @@ class TableJoinMapMaker(object):
         # (2) Add formatted column
         # ----------------------------------
         # new column name = existing name + "_formatted"
-        new_column_name = '{0}_formatted'.format(\
-                            self.table_attribute_for_join)
+        new_column_name = get_formatted_column_name(self.table_attribute_for_join)
 
         # What type of column formatting?
         #
