@@ -5,7 +5,7 @@
     <div class="modal-content  text-left">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="modalMetadataLabel">View Map Metadata</h4>
+        <h4 class="modal-title" id="modalMetadataLabel">Map Metadata</h4>
       </div>
       <!-- add: modal content -->
       <div class="modal-body pagination-centered">
@@ -15,13 +15,7 @@
                 <p class="help-block">A map was created using the latitude and longitude columns in your data file.</p>
             {% endif %}
 
-
             <table class="table table-bordered">
-                <tr>
-                    <th>WorldMap Link</th>
-                    <td><a href="{{ core_data.layer_link }}" target="_blank">View on WorldMap</a></td>
-                </tr>
-
                 <!-- Matched counts -->
                 {% if core_data.matched_record_count or core_data.mapped_record_count %}
                 <tr>
@@ -32,11 +26,10 @@
                 <!-- Unmatched counts -->
                 {% if core_data.unmatched_record_count > 0 or core_data.unmapped_record_count > 0 %}
                 <tr>
-                    <th>Unmapped record count</th>
+                    <th>Unmapped Records</th>
                     <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}</td>
                 </tr>
                 {% endif %}
-
                 <tr>
                   <th>Data File Columns</th>
                   <td>
@@ -57,14 +50,12 @@
                                 {% endif %}
                             </table>
                     {% endif %}
-
                     {% if core_data.layer_join_attribute %}
                     <!-- join column -->
                         {{ core_data.layer_join_attribute }}
                     {% endif %}
                   </td>
                 </tr>
-
                 <!-- join column -->
                 {% if core_data.join_layer_id %}
                 <tr>
@@ -72,12 +63,10 @@
                     <td>{{ core_data.join_layer_id }}</td>
                 </tr>
                 {% endif %}
-
                 <tr>
                     <th>Bounding Box</th>
                     <td>{{ core_data.llbbox }}</td>
                 </tr>
-
                 <!-- attribute information -->
                 {% comment %}
                 <tr>
@@ -94,6 +83,7 @@
       </div><!-- end: modal content -->
 
       <div class="modal-footer text-left">
+            <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
         {% if core_data.unmapped_records_list %}
             <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>
         {% endif %}

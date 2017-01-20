@@ -6,7 +6,7 @@ import json
 LABEL_UNKOWN = 'UNKNOWN LABEL'
 
 DOWNLOAD_TYPE_LABEL_LOOKUP = dict(KML='KML (Keyhole Markup Language)',
-                            csv='CSV (comma-separated values)',
+                            csv='CSV (Comma-Separated Values)',
                             gml='GML (Geography Markup Language)',
                             jpg='JPG (Joint Photographic Experts Group)',
                             json='JSON (JavaScript Object Notation)',
@@ -14,7 +14,7 @@ DOWNLOAD_TYPE_LABEL_LOOKUP = dict(KML='KML (Keyhole Markup Language)',
                             png='PNG (Portable Network Graphics)',
                             tiff='TIFF (Tagged Image File Format)',
                             xls='XLS (Microsoft Excel)',
-                            zip='ZIP (Zipped Shapefile)')
+                            zip='ZIP (ZIP Compressed Shapefile)')
 
 
 

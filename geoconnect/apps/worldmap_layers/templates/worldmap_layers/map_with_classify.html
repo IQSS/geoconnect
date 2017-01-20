@@ -2,7 +2,9 @@
 <div class="row"><!-- WorldMap Actions -->
   <div class="col-sm-12">
 
-    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank">View on WorldMap</a>
+    {% include "metadata/button_view_map_metadata.html" %}
+
+    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
 
     {% include "worldmap_layers/button_download_links.html" %}
 
@@ -20,10 +22,6 @@
       <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
   </div>
   <div class="col-md-4">
-    <div class="col-sm-12">
-      {% include "metadata/button_view_map_metadata.html" %}
-    </div>
-
     {% if classify_form %}
       <!-- start:  Classify form -->
       <div id="div_classify_form" class="col-sm-12">{% include "classification/view_classify_form.html" %}</div>

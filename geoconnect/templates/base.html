@@ -10,13 +10,13 @@
         margin: 0px;
         padding: 0px
       }
-      body .modal-dialog {
+      body .modal-dialog:not(.modal-lg) {
           /* new custom width */
           width: 45%;
           /* must be half of the width, minus scrollbar on the left (30px) */
           margin-left:auto;
-           margin-right:auto;
-        }
+          margin-right:auto;
+      }
     </style>
 
     <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css"><!-- 3.1.1 -->
