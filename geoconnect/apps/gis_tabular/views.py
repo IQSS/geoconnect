@@ -267,7 +267,7 @@ def view_unmatched_lat_lng_rows_json(request, tab_md5):
         'unmapped_records_list' in worldmap_info.core_data:
         # Unmatched records exist
 
-        unmatched_rows_html = render_to_string('metadata/unmatched_lat_lng_rows.html',\
+        unmatched_rows_html = render_to_string('metadata/unmatched_tabular_rows.html',\
             dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],\
                 column_names=worldmap_info.attribute_data,
             ),\

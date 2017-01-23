@@ -1,3 +1,5 @@
+
+{% comment %}
 <style>
 /* Keep datatable header/body aligned */
 #preview-tbl{ margin: 0;}
@@ -17,6 +19,7 @@
 }
 
 </style>
+{% endcomment %}
 
 <script>
 /**
