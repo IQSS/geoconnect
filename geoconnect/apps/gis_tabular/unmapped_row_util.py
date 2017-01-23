@@ -140,7 +140,7 @@ class UnmatchedRowHelper(object):
         # ------------------------------------------------------
         # No formatted column created! Filter values and return
         # ------------------------------------------------------
-        if self.was_formatted_column_created is False:
+        if self.was_formatted_column_created is False and self.table_join_attribute in df.columns:
             row_series = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
             if as_csv:
                 return row_series.to_csv(index=False, header=True)
