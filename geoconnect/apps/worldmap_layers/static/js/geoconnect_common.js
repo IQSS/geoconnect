@@ -16,7 +16,7 @@ function logit(m){
     - alert_type: success, info, warning or danger
 ---------------------------------------- */
 function get_alert(alert_type, err_msg){
-    return '<div class="alert alert-' + alert_type + ' alert-dismissible small" role="alert" style="width:100%;"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
+    return '<div class="alert alert-' + alert_type + ' alert-dismissible small" role="alert" style="margin-left:auto;margin-right:auto;"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + err_msg + '</div>';
 }
 
 /* ----------------------------------------

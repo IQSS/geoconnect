@@ -15,7 +15,8 @@
 {% block main_container %}
 {% include "gis_data_info/citation.html" %}
 
-<div class="pull-left" style="width:100%;">
+<div class="row">
+  <div class="col-xs-12">
 
   {% if Err_Found or Dataverse_Connect_Err_Msg %}
   <!-- The shapefile didn't open at all,
@@ -24,7 +25,7 @@
   {% include "gis_shapefiles/view_02a_err_examine.html" %}
   {% elif first_time_notify and not worldmap_layerinfo %}
   <!-- First time file is loaded, show a notification -->
-  <div id="id-first-time-alert" class="alert alert-success alert-dismissible" role="alert">
+  <div id="id-first-time-alert" class="alert alert-success alert-dismissible" style="margin-left:auto;margin-right:auto;" role="alert">
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
     File <b>{{ shapefile_info.datafile_label }}</b> verified!
     &nbsp; (<b>{{ shapefile_info.number_of_features|intcomma }}</b> geospatial
@@ -59,5 +60,6 @@
     {% include "gis_shapefiles/shapefile_info_panel.html" %}
   {% endif %}
 
+  </div>
 </div>
 {% endblock %}
