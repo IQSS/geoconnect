@@ -27,14 +27,17 @@ urlpatterns = patterns('apps.gis_tabular.views',
     url(r'^ajax-join-targets-with-descriptions/(?P<selected_geo_type>[\w|-]{1,255})$', 'ajax_join_targets_with_descriptions',\
         name='ajax_join_targets_with_descriptions'),
 
-    url(r'^view-unmatched-join-rows/(?P<tab_md5>\w{32})$', 'view_unmatched_join_rows',\
+    url(r'^view-unmatched-join-rows-json/(?P<tab_md5>\w{32})$', 'view_unmatched_join_rows_json',\
         name='view_unmatched_join_rows'),
 
-    url(r'^view-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})$', 'view_unmatched_lat_lng_rows',\
+    url(r'^view-unmatched-lat-lng-rows-json/(?P<tab_md5>\w{32})$', 'view_unmatched_lat_lng_rows_json',\
         name='view_unmatched_lat_lng_rows'),
 
     url(r'^download-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})$', 'download_unmatched_lat_lng_rows',\
         name='download_unmatched_lat_lng_rows'),
+
+    url(r'^download-unmatched-join-rows/(?P<tab_md5>\w{32})$', 'download_unmatched_join_rows',\
+        name='download_unmatched_join_rows'),
 
     #url(r'^download-unmatched-lat-lng-rows/(?P<tab_md5>\w{32})/$', 'download_unmatched_lat_lng_rows',\
     #    name='download_unmatched_lat_lng_rows'),

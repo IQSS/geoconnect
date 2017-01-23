@@ -66,6 +66,10 @@ class WorldMapLayerInfo(TimeStampedModel):
         """Return a description of the map layer source.
         e.g. 'Layer created from tabular file'"""
 
+    @abstractmethod
+    def get_failed_rows(self):
+        """Return a list of rows which failed to map.
+        e.g. 'Layer created from tabular file'"""
 
     def is_shapefile_layer(self):
         """Is this the result of mapping a zipped shapefile?"""

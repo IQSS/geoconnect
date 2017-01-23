@@ -4,7 +4,7 @@ The map below was created from your tabular file.
     <li>Rows matched: <b>{{ core_data.mapped_record_count|intcomma }}</b></li>
     {% if core_data.unmapped_record_count > 0 %}
     <li>Rows NOT matched: <b>{{ core_data.unmapped_record_count|intcomma }}</b>
-            <a href="{% url 'view_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" target="_blank">view unmatched rows</a>
+        <a data-toggle="modal" data-target="#view_map_metadata" class="btn btn-default btn-xs">View unmatched rows</a>
     </li>
     {% endif %}
     <li>Latitude Join column: <b> {{ core_data.lat_attribute.attribute }}</b></li>

@@ -405,8 +405,10 @@
     }
 
     /**
-         click preview table to select tabular column
-    */
+      click preview table to select tabular column
+
+      Disabled for now with reshifting of forms
+    *//*
     function bind_select_column_by_preview_table_click(){
 
         // Click on the header column
@@ -424,7 +426,7 @@
               var selectedHeaderText = colObj.find('div span').html();
               setNewSelectedCol(selectedHeaderText);
         });
-    }
+    }*/
 
     $( document ).ready(function() {
         // bind events for form display
@@ -433,7 +435,7 @@
         bind_form_submit_buttons();
 
         // click preview table to select tabular column
-        bind_select_column_by_preview_table_click();
+        //bind_select_column_by_preview_table_click();
 
         var previewTable = $('#preview-tbl').DataTable( {
                 "info":false, // remove 'Showing 1 to n of n entries'

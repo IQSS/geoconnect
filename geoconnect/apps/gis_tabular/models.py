@@ -3,6 +3,7 @@ Models to save the Tabular information from Dataverse
 as well as the mapping results from WorldMap
 """
 from hashlib import md5
+from abc import abstractmethod
 
 import jsonfield  # using jsonfield.JSONField
 
@@ -124,17 +125,17 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
     def get_gis_data_info(self):
         return self.tabular_info
 
-    def get_unmapped_record_count(self):
-        """
-        Differs according to record type
-        """
-        assert False, "This must be implemented in concrete classes"
+    @abstractmethod
+    def get_mapped_record_count(self):
+        """Return count of mapped records.  Differs according to record type"""
 
+    @abstractmethod
+    def get_unmapped_record_count(self):
+        """Return count of mapped records.  Differs according to record type"""
+
+    @abstractmethod
     def did_any_rows_map(self):
-        """
-        Check the mapping result for the number of mapped records
-        """
-        assert False, "This must be implemented in concrete classes"
+        """Return count of mapped records.  Differs according to record type"""
 
 
     @staticmethod
@@ -218,6 +219,30 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         """Define this depending on the subclass"""
         return 'Layer created from joining to an existing layer'
 
+    def get_failed_rows(self):
+        """Return list of rows which failed to map using the UnmatchedRowHelper
+
+        This data comes from a list of column values that
+        didn't match the chosen WorldMap layer"""
+        if self.get_unmapped_record_count() < 1:
+            return None
+
+        if not self.core_data.get('unmatched_records_list', None):
+            return None
+
+        # OK, go format the rows
+        from apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
+
+        params = dict(include_header_row=False)
+        unmatched_row_helper = UnmatchedRowHelper(self, **params)
+        if unmatched_row_helper.has_error:
+            msg('ERROR: %s' % unmatched_row_helper.error_message)
+            return None
+
+        return unmatched_row_helper.get_failed_rows_as_list()
+
+
+
     def is_join_layer(self):
         return True
 
@@ -236,6 +261,14 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
         return False
 
+    def get_mapped_record_count(self):
+        """Return the mapped record count."""
+        if not self.core_data:
+            return -1
+
+        return self.core_data.get('matched_record_count', 0)
+
+
     def get_unmapped_record_count(self):
         """Return the unmapped record count.
 
@@ -244,7 +277,7 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('unmatched_record_count', -1)
+        return self.core_data.get('unmatched_record_count', 0)
 
 
 
@@ -276,11 +309,20 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
 
     def is_lat_lng_layer(self):
         return True
-        
+
     def get_description_for_core_data(self):
         """Define this depending on the subclass"""
         return ('Layer created by mapping Latitude and Longitude'
                 ' columns contained in the tabular file')
+
+    def get_failed_rows(self):
+        """Return list of rows which failed to map.  This data comes directly
+        from the WorldMap"""
+        if self.core_data:
+            return self.core_data.get('unmapped_records_list', None)
+        return None
+
+
 
     def did_any_rows_map(self):
         """
@@ -303,8 +345,15 @@ class WorldMapLatLngInfo(WorldMapTabularLayerInfo):
         if not self.core_data:
             return -1
 
-        return self.core_data.get('unmapped_record_count', -1)
+        return self.core_data.get('unmapped_record_count', 0)
 
+
+    def get_mapped_record_count(self):
+        """Return the mapped record count."""
+        if not self.core_data:
+            return -1
+
+        return self.core_data.get('mapped_record_count', 0)
 
 
 class TestIt(TimeStampedModel):

@@ -1,6 +1,6 @@
 <!-- START: Unmatched rows -->
 <p>The tabular data below was <b>NOT</b> mapped.</p>
-    <br />Count: <b>{{ core_data.unmapped_records_list|length }} row{{ core_data.unmapped_records_list|pluralize }}</b>
+    <br />Count: <b>{{ failed_records_list|length }} row{{ failed_records_list|pluralize }}</b>
 </p>
 
 <table id="preview-tbl" class="table table-bordered table-hover table-striped table-condensed">
@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for single_row in core_data.unmapped_records_list %}
+        {% for single_row in failed_records_list %}
             <tr>
                 <td>{{ forloop.counter }}</td>
             {% for tbl_val in single_row %}
@@ -21,7 +21,7 @@
             {% endfor %}
             </tr>
         {% empty %}
-            <tr><td colspan="{{ core_data.unmapped_records_list|length }}">(No rows to display)</td></tr>
+            <tr><td colspan="2">(No rows to display)</td></tr>
         {% endfor %}
     </tbody>
 </table>

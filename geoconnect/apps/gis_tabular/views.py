@@ -17,6 +17,8 @@ from django.template.loader import render_to_string
 #from apps.gis_tabular.models import TabularFileInfo # for testing
 from apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
+from apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
+
 from apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm,\
     SELECT_LABEL, INITIAL_SELECT_CHOICE
 from apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
@@ -26,6 +28,7 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
+
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE,\
@@ -107,6 +110,8 @@ def build_map_html(request, worldmap_info):
 
     template_dict = get_common_lookup(request)
 
+    failed_records_list = worldmap_info.get_failed_rows()
+
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
             INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,
             SELECT_LABEL=SELECT_LABEL,
@@ -114,6 +119,7 @@ def build_map_html(request, worldmap_info):
             gis_data_info=worldmap_info.get_gis_data_info(),
             download_links=worldmap_info.get_formatted_download_links(),
             attribute_data=worldmap_info.attribute_data,
+            failed_records_list=failed_records_list,
             delete_form=delete_form,
             page_title=PANEL_TITLE_STYLE_MAP))
 
@@ -141,7 +147,7 @@ def build_map_html(request, worldmap_info):
     return (map_html, user_message_html)
 
 
-def view_unmatched_join_rows(request, tab_md5):
+def view_unmatched_join_rows_json(request, tab_md5):
     """
     View the unmatched rows resulting from a Table Join
     """
@@ -176,10 +182,38 @@ def view_unmatched_join_rows(request, tab_md5):
     return HttpResponse(json_msg, content_type="application/json")
 
 
-def download_unmatched_lat_lng_rows(request, tab_md5=None):
-    """Download the unmatched data in csv format"""
+def download_unmatched_join_rows(request, tab_md5):
+    """Download the unmatched tabular *join* data in csv format"""
+    # Retrieve the Tabular file information
+    #
+    try:
+        worldmap_info = WorldMapJoinLayerInfo.objects.get(md5=tab_md5)
+    except WorldMapJoinLayerInfo.DoesNotExist:
+        raise Http404('No WorldMapJoinLayerInfo for md5: %s' % tab_md5)
 
-    #tab_md5 = 'b15e45551174e560d2bb2fe55c026cff'
+    if worldmap_info.core_data and\
+        'unmatched_records_list' in worldmap_info.core_data:
+        pass    # we have some data...
+    else:
+        return HttpResponse("No unmatched records found.")
+
+
+    kwargs = dict(show_all_failed_rows=True)
+    unmatched_row_helper = UnmatchedRowHelper(worldmap_info, **kwargs)
+    csv_string = unmatched_row_helper.get_failed_rows_as_csv()
+
+    response = HttpResponse(csv_string, content_type='text/csv')
+
+    file_name = 'unmapped_rows__%s.csv' % (get_datetime_string_for_file())
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
+
+    return response
+
+    #return HttpResponse(csv_string, content_type='text/csv')
+
+
+def download_unmatched_lat_lng_rows(request, tab_md5):
+    """Download the unmatched data in csv format"""
 
     # Retrieve the Tabular file information
     #
@@ -217,7 +251,7 @@ def download_unmatched_lat_lng_rows(request, tab_md5=None):
     return response
 
 
-def view_unmatched_lat_lng_rows(request, tab_md5):
+def view_unmatched_lat_lng_rows_json(request, tab_md5):
     """
     View the unmatched rows resulting from trying to map lat/lng columns
     """

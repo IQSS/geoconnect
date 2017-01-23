@@ -20,14 +20,14 @@
                 {% if core_data.matched_record_count or core_data.mapped_record_count %}
                 <tr>
                     <th>Mapped Records</th>
-                    <td>{{ core_data.matched_record_count }} {{ core_data.mapped_record_count }}</td>
+                    <td>{{ worldmap_layerinfo.get_mapped_record_count }}</td>
                 </tr>
                 {% endif %}
                 <!-- Unmatched counts -->
-                {% if core_data.unmatched_record_count > 0 or core_data.unmapped_record_count > 0 %}
+                {% if worldmap_layerinfo.get_unmapped_record_count > 0 %}
                 <tr>
                     <th>Unmapped Records</th>
-                    <td>{{ core_data.unmatched_record_count }} {{ core_data.unmapped_record_count }}</td>
+                    <td>{{ worldmap_layerinfo.get_unmapped_record_count }}</td>
                 </tr>
                 {% endif %}
                 <tr>
@@ -77,15 +77,20 @@
             </table>
 
             <!-- show failed rows -->
-            {% if core_data.unmapped_records_list %}
+            {% if failed_records_list %}
                 {% include "metadata/unmatched_lat_lng_rows.html" %}
             {% endif %}
+
       </div><!-- end: modal content -->
 
       <div class="modal-footer text-left">
             <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
-        {% if core_data.unmapped_records_list %}
-            <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>
+        {% if failed_records_list %}
+            {% if worldmap_layerinfo.is_lat_lng_layer %}
+                <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>
+            {% elif worldmap_layerinfo.is_join_layer %}
+                <a href="{% url 'download_unmatched_join_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>
+            {% endif %}
         {% endif %}
             <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>
       </div>

@@ -28,6 +28,7 @@ class UnmatchedRowHelper(object):
 
         self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )
         self.max_failed_rows_to_show = kwargs.get('max_failed_rows_to_build', MAX_FAILED_ROWS_TO_BUILD )
+        self.include_header_row = kwargs.get('include_header_row', True)
 
         self.worldmap_info = worldmap_info
 
@@ -163,11 +164,17 @@ class UnmatchedRowHelper(object):
 
         df2 = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
 
+        # Return the data as a CSV file
+        #
         if as_csv:
-            return df2.to_csv(index=False, header=True)
+            return df2.to_csv(index=False, header=self.include_header_row)
 
-        return [df2.columns.tolist()] + df2.values.tolist()
-
+        # Return the data as a list of lists
+        #
+        if self.include_header_row:
+            return [df2.columns.tolist()] + df2.values.tolist()
+        else:
+            return df2.values.tolist()
 
         '''
             self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )
