@@ -6,9 +6,14 @@ of the keys that failed to map.
 - Was there a transform?
 -
 """
-from apps.gis_tabular.models import WorldMapJoinLayerInfo
 import pandas as pd
-from geo_utils.tabular_util import get_orig_column_name
+
+
+from apps.gis_tabular.models import WorldMapJoinLayerInfo
+
+from geo_utils.tabular_util import get_orig_column_name, get_worldmap_colname_format
+from geo_utils.msg_util import msgt, msg
+
 
 MAX_FAILED_ROWS_TO_BUILD = 100
 
@@ -49,7 +54,7 @@ class UnmatchedRowHelper(object):
     def run_check(self):
         self.check_for_unmatched_rows()
 
-    def get_failed_rows_as_list():
+    def get_failed_rows_as_list(self):
         assert self.has_unmatched_rows,\
             'Before calling this, check that "has_unmatched_rows" is True'
 
@@ -58,7 +63,7 @@ class UnmatchedRowHelper(object):
 
         return self.build_failed_rows()
 
-    def get_failed_rows_as_csv():
+    def get_failed_rows_as_csv(self):
         assert self.has_unmatched_rows,\
             'Before calling this, check that "has_unmatched_rows" is True'
 
@@ -115,7 +120,7 @@ class UnmatchedRowHelper(object):
         if self.has_error:
             return
 
-        tabular_info = worldmap_info.tabular_info
+        tabular_info = self.worldmap_info.tabular_info
 
         try:
             df = pd.read_csv(tabular_info.dv_file.path,\
@@ -127,6 +132,9 @@ class UnmatchedRowHelper(object):
                         '(error: %s)' % e.message)
             self.add_error(err_msg)
             return False
+
+        new_columns = [get_worldmap_colname_format(x) for x in df.columns]
+        df.columns = new_columns
 
         # ------------------------------------------------------
         # No formatted column created! Filter values and return
@@ -153,10 +161,13 @@ class UnmatchedRowHelper(object):
         df[self.table_join_attribute] = df[orig_column_name].apply(\
                             lambda x: func_col_fmt(x))
 
-        row_series = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
+        df2 = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
+
         if as_csv:
-            return row_series.to_csv(index=False, header=True)
-        return row_series.tolist()
+            return df2.to_csv(index=False, header=True)
+
+        return [df2.columns.tolist()] + df2.values.tolist()
+
 
         '''
             self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )

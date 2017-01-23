@@ -1,3 +1,4 @@
+from django.template.defaultfilters import slugify
 
 
 FORMATTED_COLUMN_EXTENSION = '_formatted'
@@ -18,3 +19,9 @@ def get_orig_column_name(colname):
     split_str = colname.rsplit(FORMATTED_COLUMN_EXTENSION, 1)
 
     return ''.join(split_str)
+
+def get_worldmap_colname_format(colname):
+    """Format the column in the same method as Worldmap"""
+    assert colname is not None, "colname cannot be None"
+
+    return slugify(unicode(colname)).replace('-', '_')
