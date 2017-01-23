@@ -1,4 +1,3 @@
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css">
 <style>
 /* Keep datatable header/body aligned */
 #preview-tbl{ margin: 0;}
@@ -18,7 +17,7 @@
 }
 
 </style>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
+
 <script>
 /**
  *  1.19.2017
