@@ -84,7 +84,7 @@
       </div><!-- end: modal content -->
 
       <div class="modal-footer text-left">
-            <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
+            {#<a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>#}
         {% if failed_records_list %}
             {% if worldmap_layerinfo.is_lat_lng_layer %}
                 <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download Unmapped Records (.csv)</a>

@@ -144,7 +144,7 @@ class UnmatchedRowHelper(object):
             row_series = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
             if as_csv:
                 return row_series.to_csv(index=False, header=True)
-            return row_series.tolist()
+            return row_series.values.tolist()
 
         # Hasty attempt, only working with zero padded items
         #

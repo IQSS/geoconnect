@@ -2,7 +2,7 @@ import json
 from django import forms
 
 
-class MessageHelperJSON:
+class MessageHelperJSON(object):
 
     @staticmethod
     def get_dict_msg(success=False, msg='', data_dict=None):

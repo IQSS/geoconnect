@@ -1,20 +1,10 @@
 <!-- start: IFRAME MAP -->
 <div class="row"><!-- WorldMap Actions -->
   <div class="col-sm-12">
-
-    {% include "metadata/button_view_map_metadata.html" %}
-
-    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
-
-    {% include "worldmap_layers/button_download_links.html" %}
-
-    {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
-
     <p class="help-block" style="padding-top:1em;"><span class="glyphicon glyphicon-info-sign"></span> Edit the colors, intervals, classification method and attribute. Click the "Apply Changes" button to apply your edits to WorldMap.</p>
 
   </div>
 </div>
-
 <!-- MAP | Style/Classify form -->
 <div class="row">
   <div class="col-md-8">
@@ -34,9 +24,21 @@
     </div>
   </div>
 </div>
+<div class="row"><!-- WorldMap Actions -->
+  <div class="col-sm-12" style="padding-top:10px;">
 
+    {% include "metadata/button_view_map_metadata.html" %}
+
+    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
+
+    {% include "worldmap_layers/button_download_links.html" %}
+
+    {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
+
+  </div>
+</div>
 {% if DEBUG_MODE or is_staff %}
-<div class="row">
+<div class="row" style="padding-top:120px;">
   <div class="col-md-12">
     <h3 class="panel-title" style="margin-bottom:5px;">
       DEBUG INFO
