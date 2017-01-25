@@ -1,27 +1,39 @@
 {% extends "base.html" %}
 {% block extra_js %}
+
 <style>
 /* Keep datatable header/body aligned */
-#preview-tbl, #unmatched-tbl{ margin: 0;}
 
-#table-wrapper {
+/* #preview-tbl, #unmatched-tbl{ margin: 0;} */
+
+/* #table-wrapper {
   position:relative;
     border:1px solid #333;
-}
-#table-scroll {
+} */
+
+/* #table-scroll {
   height:300px;
   overflow:auto;
   margin-top:20px;
+} */
+
+table.dataTable th,
+table.dataTable td {
+   white-space: nowrap;
 }
 
-#preview-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody,
-#unmatched-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody {
+table.dataTable {
+  max-width: none;
+  min-height: 0%;
+}
+
+#preview-tbl_wrapper.dataTables_wrapper.no-footer .dataTables_scrollBody,
+ {
     border-bottom: none;
 }
-#preview-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody,
-#unmatched-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody {
-    border-bottom: none;
-}
+
+/* #unmatched-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody * /
+
 </style>
 <script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
     {% if not worldmap_layerinfo %}

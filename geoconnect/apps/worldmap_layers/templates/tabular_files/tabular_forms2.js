@@ -1,26 +1,3 @@
-
-{% comment %}
-<style>
-/* Keep datatable header/body aligned */
-#preview-tbl{ margin: 0;}
-
-#table-wrapper {
-  position:relative;
-    border:1px solid #333;
-}
-#table-scroll {
-  height:300px;
-  overflow:auto;
-  margin-top:20px;
-}
-
-.dataTables_wrapper.no-footer .dataTables_scrollBody {
-    border: none;
-}
-
-</style>
-{% endcomment %}
-
 <script>
 /**
  *  1.19.2017
@@ -441,10 +418,10 @@
         //bind_select_column_by_preview_table_click();
 
         var previewTable = $('#preview-tbl').DataTable( {
-                "info":false, // remove 'Showing 1 to n of n entries'
-                "scrollX": true,    //  "scrollY": 200,
+                "searching" : false,
                 "paging" : false,
-                "searching" : false
+                "info":false,
+                "scrollX": true
         } );
     });
 </script>
