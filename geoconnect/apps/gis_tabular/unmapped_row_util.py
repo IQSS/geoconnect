@@ -15,7 +15,8 @@ from geo_utils.tabular_util import get_orig_column_name, get_worldmap_colname_fo
 from geo_utils.msg_util import msgt, msg
 
 
-MAX_FAILED_ROWS_TO_BUILD = 100
+MAX_FAILED_ROWS_TO_BUILD = 5000
+MAX_FAILED_ROWS_TO_DISPLAY = 25
 
 class UnmatchedRowHelper(object):
     """
@@ -27,12 +28,14 @@ class UnmatchedRowHelper(object):
             "worldmap_info must be a WorldMapJoinLayerInfo object"
 
         self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )
-        self.max_failed_rows_to_show = kwargs.get('max_failed_rows_to_build', MAX_FAILED_ROWS_TO_BUILD )
+        self.max_failed_rows_to_show = kwargs.get('max_failed_rows_to_build', MAX_FAILED_ROWS_TO_BUILD)
+        self.max_failed_rows_to_display = kwargs.get('max_failed_rows_to_display', MAX_FAILED_ROWS_TO_DISPLAY)
         self.include_header_row = kwargs.get('include_header_row', True)
 
         self.worldmap_info = worldmap_info
 
         self.has_unmatched_rows = False
+        self.total_row_count = 0
 
         # potentially updated attrs
         self.unmatched_rows = []
@@ -119,7 +122,7 @@ class UnmatchedRowHelper(object):
                     and then filter rows using that new column and the values list
         """
         if self.has_error:
-            return
+            return False, self.error_message, self.total_row_count
 
         tabular_info = self.worldmap_info.tabular_info
 
@@ -132,7 +135,7 @@ class UnmatchedRowHelper(object):
                         'At least one row had too many values. '
                         '(error: %s)' % e.message)
             self.add_error(err_msg)
-            return False
+            return False, self.error_message, self.total_row_count
 
         new_columns = [get_worldmap_colname_format(x) for x in df.columns]
         df.columns = new_columns
@@ -141,10 +144,16 @@ class UnmatchedRowHelper(object):
         # No formatted column created! Filter values and return
         # ------------------------------------------------------
         if self.was_formatted_column_created is False and self.table_join_attribute in df.columns:
-            row_series = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
+            df_filtered = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
+            self.total_row_count = len(df_filtered.index)
             if as_csv:
-                return row_series.to_csv(index=False, header=True)
-            return row_series.values.tolist()
+                return True, df_filtered.to_csv(index=False, header=True), self.total_row_count
+            # Return the data as a list of lists
+            #
+            if self.max_failed_rows_to_display and self.max_failed_rows_to_display > 0:
+                df_filtered = df_filtered[:self.max_failed_rows_to_display]
+
+            return True, df_filtered.values.tolist(), self.total_row_count
 
         # Hasty attempt, only working with zero padded items
         #
@@ -163,18 +172,22 @@ class UnmatchedRowHelper(object):
                             lambda x: func_col_fmt(x))
 
         df2 = df.loc[df[self.table_join_attribute].isin(self.unmatched_record_values)]
+        self.total_row_count = len(df2.index)
 
         # Return the data as a CSV file
         #
         if as_csv:
-            return df2.to_csv(index=False, header=self.include_header_row)
+            return True, df2.to_csv(index=False, header=self.include_header_row), self.total_row_count
 
         # Return the data as a list of lists
         #
+        if self.max_failed_rows_to_display and self.max_failed_rows_to_display > 0:
+            df2 = df2[:self.max_failed_rows_to_display]
+
         if self.include_header_row:
-            return [df2.columns.tolist()] + df2.values.tolist()
+            return True, [df2.columns.tolist()] + df2.values.tolist(), self.total_row_count
         else:
-            return df2.values.tolist()
+            return True, df2.values.tolist(), self.total_row_count
 
         '''
             self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )

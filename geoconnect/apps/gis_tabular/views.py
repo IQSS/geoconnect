@@ -110,7 +110,11 @@ def build_map_html(request, worldmap_info):
 
     template_dict = get_common_lookup(request)
 
-    failed_records_list = worldmap_info.get_failed_rows()
+    success, failed_records_list_or_err, total_failed_row_count = worldmap_info.get_failed_rows()
+    if not success:
+        failed_records_list = None
+    else:
+        failed_records_list = failed_records_list_or_err
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
             INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,
@@ -200,9 +204,12 @@ def download_unmatched_join_rows(request, tab_md5):
 
     kwargs = dict(show_all_failed_rows=True)
     unmatched_row_helper = UnmatchedRowHelper(worldmap_info, **kwargs)
-    csv_string = unmatched_row_helper.get_failed_rows_as_csv()
+    success, csv_string_or_err, row_count = unmatched_row_helper.get_failed_rows_as_csv()
+    if not success:
+        return HttpResponse("Error in creating csv file: %s" % csv_string_or_err)
 
-    response = HttpResponse(csv_string, content_type='text/csv')
+
+    response = HttpResponse(csv_string_or_err, content_type='text/csv')
 
     file_name = 'unmapped_rows__%s.csv' % (get_datetime_string_for_file())
     response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
