@@ -4,7 +4,7 @@
 </p>
 <div class="row">
     <div class="col-sm-12">
-        <table id="unmatched-tbl" class="table table-bordered table-hover table-striped table-condensed">
+        <table id="unmatched-tbl" class="table table-bordered table-hover table-striped table-condensed small" width="100%">
             <thead>
                 <tr>
                     <th>Row #</th>
@@ -33,12 +33,11 @@
 <script>
 $( document ).ready(function() {
     if ($("#unmatched-tbl").length>0){
-
-        $('#unmatched-tbl').DataTable( {
-            "info":false, // remove 'Showing 1 to n of n entries'
-            "scrollX": true,    //  "scrollY": 200,
+        $("#unmatched-tbl").DataTable( {
+            "searching" : false,
             "paging" : false,
-            "searching" : false
+            "info":false,
+            "scrollX": true
         } );
     }
 });
