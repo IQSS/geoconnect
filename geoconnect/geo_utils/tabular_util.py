@@ -25,3 +25,14 @@ def get_worldmap_colname_format(colname):
     assert colname is not None, "colname cannot be None"
 
     return slugify(unicode(colname)).replace('-', '_')
+
+def get_pandas_numeric_dtypes():
+    """helpful list when working with pandas"""
+
+    return ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+
+def is_pandas_dtype_numeric(dtype):
+    """Check if a given dtype is numeric"""
+
+    if dtype in get_pandas_numeric_dtypes():
+        return True

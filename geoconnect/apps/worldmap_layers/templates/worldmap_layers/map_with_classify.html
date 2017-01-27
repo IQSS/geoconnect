@@ -37,10 +37,9 @@
     {% include "worldmap_layers/button_download_links.html" %}
 
     {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
-
   </div>
 </div>
-{% if DEBUG_MODE or is_staff %}
+{% if is_staff %}
 <div class="row" style="padding-top:120px;">
   <div class="col-md-12">
     <h3 class="panel-title" style="margin-bottom:5px;">

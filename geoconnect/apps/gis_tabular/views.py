@@ -28,7 +28,7 @@ from apps.worldmap_layers.models import WorldMapLayerInfo
 
 from apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
-
+from apps.gis_tabular.unmapped_row_util import MAX_FAILED_ROWS_TO_BUILD
 
 from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE,\
@@ -110,11 +110,9 @@ def build_map_html(request, worldmap_info):
 
     template_dict = get_common_lookup(request)
 
-    success, failed_records_list_or_err, total_failed_row_count = worldmap_info.get_failed_rows()
-    if not success:
-        failed_records_list = None
-    else:
-        failed_records_list = failed_records_list_or_err
+    failed_records_list = worldmap_info.get_failed_rows()
+    num_failed_download_records = min(MAX_FAILED_ROWS_TO_BUILD,\
+                            worldmap_info.get_unmapped_record_count())
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
             INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,
@@ -124,6 +122,7 @@ def build_map_html(request, worldmap_info):
             download_links=worldmap_info.get_formatted_download_links(),
             attribute_data=worldmap_info.attribute_data,
             failed_records_list=failed_records_list,
+            num_failed_download_records=num_failed_download_records,
             delete_form=delete_form,
             page_title=PANEL_TITLE_STYLE_MAP))
 
@@ -204,12 +203,12 @@ def download_unmatched_join_rows(request, tab_md5):
 
     kwargs = dict(show_all_failed_rows=True)
     unmatched_row_helper = UnmatchedRowHelper(worldmap_info, **kwargs)
-    success, csv_string_or_err, row_count = unmatched_row_helper.get_failed_rows_as_csv()
-    if not success:
-        return HttpResponse("Error in creating csv file: %s" % csv_string_or_err)
+    csv_string = unmatched_row_helper.get_failed_rows_as_csv()
 
+    if unmatched_row_helper.has_error:
+        return HttpResponse(unmatched_row_helper.error_message)
 
-    response = HttpResponse(csv_string_or_err, content_type='text/csv')
+    response = HttpResponse(csv_string, content_type='text/csv')
 
     file_name = 'unmapped_rows__%s.csv' % (get_datetime_string_for_file())
     response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
@@ -242,7 +241,6 @@ def download_unmatched_lat_lng_rows(request, tab_md5):
     # get unmatched list (length may not be same as columns--e.g. this is erroneous data)
     #
     unmatched_rows = worldmap_info.core_data.get('unmapped_records_list', [])
-    #import ipdb; ipdb.set_trace()
 
     response = HttpResponse(content_type='text/csv')
 

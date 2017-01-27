@@ -33,13 +33,18 @@ def check_unmatched(layer_info_md5):
         return
 
     msgt('bad rows as list')
-    success, row_list_or_err, row_count = unmatched_row_helper.get_failed_rows_as_list()
-    msg(row_list_or_err)
+    row_list = unmatched_row_helper.get_failed_rows_as_list()
+    if unmatched_row_helper.has_error:
+        msg('ERROR: %s' % unmatched_row_helper.error_message)
+        return
+    msg(row_list)
 
-    msgt('bad rows as csv')
-    success2, row_list_or_err2, row_count2 = unmatched_row_helper.get_failed_rows_as_csv()
-    msg(row_list_or_err2)
 
+    row_list_csv = unmatched_row_helper.get_failed_rows_as_csv()
+    if unmatched_row_helper.has_error:
+        msg('ERROR: %s' % unmatched_row_helper.error_message)
+        return
+    msg(row_list_csv)
 
 if __name__ == '__main__':
 
