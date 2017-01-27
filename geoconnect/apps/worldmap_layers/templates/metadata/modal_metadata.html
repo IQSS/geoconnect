@@ -30,10 +30,10 @@
                     <td>{{ worldmap_layerinfo.get_unmapped_record_count }}</td>
                 </tr>
                 {% endif %}
+                {% if core_data.lat_attribute or lng_attribute%}
                 <tr>
                   <th>Data File Columns</th>
                   <td>
-                    {% if core_data.lat_attribute or lng_attribute%}
                     <!-- lat/lng column -->
                             <table>
                                 {% if core_data.lat_attribute %}
@@ -49,13 +49,13 @@
                                 </tr>
                                 {% endif %}
                             </table>
-                    {% endif %}
                     {% if core_data.layer_join_attribute %}
                     <!-- join column -->
                         {{ core_data.layer_join_attribute }}
                     {% endif %}
                   </td>
                 </tr>
+                {% endif %}
                 <!-- join column -->
                 {% if core_data.join_layer_id %}
                 <tr>
