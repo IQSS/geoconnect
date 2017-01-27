@@ -1,3 +1,4 @@
+{% load humanize %}
 <!-- Modal View -->
 <!-- Start: Modal Metadata -->
 <div class="modal fade" id="view_map_metadata" tabindex="-1" role="dialog" aria-labelledby="modalMetadataLabel" aria-hidden="true">
@@ -20,14 +21,14 @@
                 {% if core_data.matched_record_count or core_data.mapped_record_count %}
                 <tr>
                     <th>Mapped Records</th>
-                    <td>{{ worldmap_layerinfo.get_mapped_record_count }}</td>
+                    <td>{{ worldmap_layerinfo.get_mapped_record_count|intcomma }}</td>
                 </tr>
                 {% endif %}
                 <!-- Unmatched counts -->
                 {% if worldmap_layerinfo.get_unmapped_record_count > 0 %}
                 <tr>
                     <th>Unmapped Records</th>
-                    <td>{{ worldmap_layerinfo.get_unmapped_record_count }}</td>
+                    <td>{{ worldmap_layerinfo.get_unmapped_record_count|intcomma }}</td>
                 </tr>
                 {% endif %}
                 {% if core_data.lat_attribute or lng_attribute%}
