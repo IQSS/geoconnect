@@ -83,6 +83,8 @@ class TabFileStats(object):
             self.add_error(err_msg)
             return
 
+        self.special_case_col_formatting(df)
+
         self.column_names = df.columns.values.tolist()
         self.num_cols = len(self.column_names)
         self.num_rows = len(df.index)
@@ -95,6 +97,19 @@ class TabFileStats(object):
 
         self.stats_collected = True
 
+
+    def special_case_col_formatting(self, df):
+        """Will eventually need to be factored out"""
+        if df is None:
+            return
+
+        # Treat census block groups as string instead of numbers
+        #   - 12-digit numeric code that may receive zero-padding
+        #
+        if 'BG_ID_10' in  df.columns:
+            df['BG_ID_10'] = df['BG_ID_10'].astype(str)
+
+        return
 
     def update_tabular_info_object(self):
         """
