@@ -135,9 +135,12 @@ class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
         return 'Layer created my mapping a zipped Shapefile.'
 
     def get_failed_rows(self):
-        """Only applies to tabular files"""
+        """Not applicable to shapefiles"""
         return None
 
+    def get_unmapped_record_count(self):
+        """Not applicable to shapefiles"""
+        return -1
 
     @staticmethod
     def build_from_worldmap_json(shapefile_info, json_dict):
