@@ -11,26 +11,26 @@ URL_PREFIX = '' #'geo/'
 urlpatterns = patterns('',
     # Examples:
 
-    url(r'^$', 'apps.content_pages.views.view_home', name="view_home"),
+    url(r'^$', 'gc_apps.content_pages.views.view_home', name="view_home"),
 
-    url(r'^%sdv/' % URL_PREFIX, include('apps.registered_dataverse.urls')),
+    url(r'^%sdv/' % URL_PREFIX, include('gc_apps.registered_dataverse.urls')),
 
     # url(r'^$', 'geoconnect.views.home', name='home'),
 
     # url(r'^blog/', include('blog.urls')),
-    url(r'^%sshapefile/' % URL_PREFIX, include('apps.gis_shapefiles.urls')),
+    url(r'^%sshapefile/' % URL_PREFIX, include('gc_apps.gis_shapefiles.urls')),
 
-    url(r'^%stabular/' % URL_PREFIX, include('apps.gis_tabular.urls')),
+    url(r'^%stabular/' % URL_PREFIX, include('gc_apps.gis_tabular.urls')),
 
-    #url(r'^%sgeoconnect/'% URL_PREFIX, include('apps.gis_shapefiles.urls')),
+    #url(r'^%sgeoconnect/'% URL_PREFIX, include('gc_apps.gis_shapefiles.urls')),
 
-    url(r'^%sworldmap/' % URL_PREFIX, include('apps.worldmap_connect.urls')),
+    url(r'^%sworldmap/' % URL_PREFIX, include('gc_apps.worldmap_connect.urls')),
 
-    url(r'^%sclassify/' % URL_PREFIX, include('apps.classification.urls')),
+    url(r'^%sclassify/' % URL_PREFIX, include('gc_apps.classification.urls')),
 
-    url(r'^%sdv-notify/' % URL_PREFIX, include('apps.dv_notify.urls')),
+    url(r'^%sdv-notify/' % URL_PREFIX, include('gc_apps.dv_notify.urls')),
 
-    #url(r'^%scol-stats/' % URL_PREFIX, include('apps.column_stats.urls')),
+    #url(r'^%scol-stats/' % URL_PREFIX, include('gc_apps.column_stats.urls')),
 
     #url(r'^shp-view/', include('gis_shapefiles.urls')),
 

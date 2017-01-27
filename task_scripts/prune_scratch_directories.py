@@ -19,7 +19,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from geo_utils.msg_util import *
-from apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
+from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
 """
 # sudo crontab -e

@@ -221,7 +221,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'apps': {
+        'gc_apps': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,

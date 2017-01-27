@@ -1,10 +1,10 @@
 from __future__ import print_function
 from datetime import datetime
 
-from apps.gis_shapefiles.models import ShapefileInfo
-from apps.gis_tabular.models import TabularFileInfo
-from apps.gis_tabular.models import WorldMapLatLngInfo, WorldMapJoinLayerInfo
-from apps.worldmap_connect.models import WorldMapLayerInfo
+from gc_apps.gis_shapefiles.models import ShapefileInfo
+from gc_apps.gis_tabular.models import TabularFileInfo
+from gc_apps.gis_tabular.models import WorldMapLatLngInfo, WorldMapJoinLayerInfo
+from gc_apps.worldmap_connect.models import WorldMapLayerInfo
 from django.core.mail import send_mail
 #from django.template.loader import render_to_string
 from django.conf import settings

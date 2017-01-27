@@ -110,7 +110,7 @@ python manage.py syncdb
 - Add initial database
 
 ```
-python manage.py loaddata apps/registered_dataverse/fixtures/incoming_filetypes_initial_data.json
+python manage.py loaddata gc_apps/registered_dataverse/fixtures/incoming_filetypes_initial_data.json
 ```
 
 * Follow the prompts to create a superuser, create tables, etc.

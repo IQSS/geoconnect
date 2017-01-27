@@ -215,17 +215,17 @@ LOCAL_APPS = (
     'shared_dataverse_information.layer_classification',
     'shared_dataverse_information.shapefile_import',
     #'dataverse_info',
-    #'apps.classification',       # used for styling WorldMap layers
-    'apps.content_pages',
-    'apps.registered_dataverse',    # relies on gis_basic_file
-    'apps.style_layer_information',
+    #'gc_apps.classification',       # used for styling WorldMap layers
+    'gc_apps.content_pages',
+    'gc_apps.registered_dataverse',    # relies on gis_basic_file
+    'gc_apps.style_layer_information',
 
-    'apps.worldmap_layers', # abstract model
-    'apps.gis_basic_file',
-    'apps.gis_shapefiles',
-    'apps.gis_tabular',
-    'apps.worldmap_connect',
-    #'apps.column_stats',
+    'gc_apps.worldmap_layers', # abstract model
+    'gc_apps.gis_basic_file',
+    'gc_apps.gis_shapefiles',
+    'gc_apps.gis_tabular',
+    'gc_apps.worldmap_connect',
+    #'gc_apps.column_stats',
     #'folium_maker',     # quick experiment
 )
 

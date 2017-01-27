@@ -17,8 +17,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
 from geo_utils.msg_util import *
 
-from apps.gis_tabular.models import WorldMapJoinLayerInfo
-from apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
+from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo
+from gc_apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
 
 
 def check_unmatched(layer_info_md5):
