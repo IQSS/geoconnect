@@ -7,14 +7,11 @@ Tabular views for:
 """
 import csv
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 from django.http import HttpResponse, Http404
-from django.template import RequestContext
 from django.template.loader import render_to_string
 
-
-#from gc_apps.gis_tabular.models import TabularFileInfo # for testing
 from gc_apps.gis_tabular.models import TabularFileInfo,\
                     WorldMapJoinLayerInfo, WorldMapLatLngInfo
 from gc_apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
@@ -81,9 +78,7 @@ def view_existing_map(request, worldmap_info=None):
     template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('tabular_files/main_outline_tab.html',\
-                            template_dict,\
-                            context_instance=RequestContext(request))
+    return render(request, 'tabular_files/main_outline_tab.html', template_dict)
 
 
 
@@ -139,13 +134,13 @@ def build_map_html(request, worldmap_info):
 
     template_dict.update(classify_params)
 
-    map_html = render_to_string('worldmap_layers/map_with_classify.html',\
-                            template_dict,\
-                            context_instance=RequestContext(request))
+    map_html = render_to_string('worldmap_layers/map_with_classify.html',
+                            template_dict,
+                            request)
 
-    user_message_html = render_to_string('worldmap_layers/new_map_message.html',\
-                            template_dict,\
-                            context_instance=RequestContext(request))
+    user_message_html = render_to_string('worldmap_layers/new_map_message.html',
+                            template_dict,
+                            request)
 
     return (map_html, user_message_html)
 
@@ -171,7 +166,7 @@ def view_unmatched_join_rows_json(request, tab_md5):
 
         unmatched_rows_html = render_to_string('metadata/unmatched_records.html',
             unmatched_row_dict,
-            context_instance=RequestContext(request))
+            request)
 
         return HttpResponse(unmatched_rows_html)
         json_msg = MessageHelperJSON.get_json_msg(success=True,\
@@ -272,11 +267,12 @@ def view_unmatched_lat_lng_rows_json(request, tab_md5):
         'unmapped_records_list' in worldmap_info.core_data:
         # Unmatched records exist
 
-        unmatched_rows_html = render_to_string('metadata/unmatched_tabular_rows.html',\
-            dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],\
-                column_names=worldmap_info.attribute_data,
-            ),\
-            context_instance=RequestContext(request))
+        template_dict = dict(ummatched_rows=worldmap_info.core_data['unmapped_records_list'],
+                        column_names=worldmap_info.attribute_data)
+
+        unmatched_rows_html = render_to_string('metadata/unmatched_tabular_rows.html',
+                                template_dict,
+                                request)
 
         return HttpResponse(unmatched_rows_html)
         json_msg = MessageHelperJSON.get_json_msg(success=True,\
@@ -396,9 +392,7 @@ def view_tabular_file(request, tab_md5):
     template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
 
-    return render_to_response('tabular_files/main_outline_tab.html',\
-                            template_dict,\
-                            context_instance=RequestContext(request))
+    return render(request, 'tabular_files/main_outline_tab.html', template_dict,)
 
 
 def ajax_get_all_join_targets_with_descriptions(request):

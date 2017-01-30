@@ -1,10 +1,9 @@
 """
 Views to handle Dataverse initial requests
 """
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 from django.http import HttpResponseRedirect, HttpResponse
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
@@ -47,10 +46,7 @@ def view_formatted_error_page(request, error_type, err_msg=None):
     d['Dataverse_Connect_Err_Msg'] = err_msg
     d['SELECT_LABEL'] = SELECT_LABEL
 
-    return render_to_response('shapefiles/main_outline_shp.html'\
-                                , d\
-                                , context_instance=RequestContext(request)\
-                            )
+    return render(request, 'shapefiles/main_outline_shp.html', d)
 
 
 def view_mapit_incoming_token64(request, dataverse_token):

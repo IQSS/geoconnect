@@ -6,7 +6,6 @@ import requests
 import logging
 
 from django.http import HttpResponse
-from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from django.conf import settings
@@ -123,8 +122,9 @@ def view_classify_layer_form(request, import_success_md5):
                   worldmap_layerinfo=worldmap_layerinfo,
                   error_msg=user_message,
                 ))
-        form_content = render_to_string('classification/view_classify_form.html', d\
-                                , context_instance=RequestContext(request))
+        form_content = render_to_string('classification/view_classify_form.html',
+                                d,
+                                request)
         json_msg = MessageHelperJSON.get_json_msg(success=False
                                             , msg=user_message
                                             , data_dict={'div_content':form_content}\
@@ -267,8 +267,9 @@ def view_classify_layer_form(request, import_success_md5):
              SELECT_LABEL=SELECT_LABEL,
             ))
 
-    form_content = render_to_string('classification/view_classify_form.html', d\
-                            , context_instance=RequestContext(request))
+    form_content = render_to_string('classification/view_classify_form.html',
+                                    d,
+                                    request)
 
 
     json_msg = MessageHelperJSON.get_json_msg(success=True,

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,13 +19,13 @@
     margin-right:auto;
   }
   </style>
-  <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css"><!-- 3.1.1 -->
-  <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-theme.min.css">
-  <link rel="stylesheet" href="{{ STATIC_URL }}css/structure.css">
+  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}"><!-- 3.1.1 -->
+  <link rel="stylesheet" href="{% static "css/bootstrap-theme.min.css" %}">
+  <link rel="stylesheet" href="{% static "css/structure.css" %}">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.css">
   <!-- Latest compiled and minified JavaScript -->
-  <script src="{{ STATIC_URL }}js/jquery-1.10.1.min.js"></script>
-  <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+  <script src="{% static "js/jquery-1.10.1.min.js" %}"></script>
+  <script src="{% static "js/bootstrap.min.js" %}"></script>
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
   {% block extra_js %}
   {% endblock %}

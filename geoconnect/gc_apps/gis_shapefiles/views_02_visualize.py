@@ -3,7 +3,6 @@ import logging
 from django.http import HttpResponse
 from django.views.generic import View
 from django.template.loader import render_to_string
-from django.template import RequestContext
 
 from django.conf import settings
 
@@ -80,7 +79,7 @@ class ViewAjaxVisualizeShapefile(View):
 
             json_msg = MessageHelperJSON.get_json_fail_msg(err_note_html, dict(id_main_panel_content=err_note_html))
 
-            return HttpResponse(json_msg, mimetype="application/json", status=200)
+            return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
         # -----------------------------------
@@ -102,7 +101,7 @@ class ViewAjaxVisualizeShapefile(View):
 
             user_msg = 'Sorry! Failed to create map. Please try again. (code: s3)'
             json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
-            return HttpResponse(json_msg, mimetype="application/json", status=200)
+            return HttpResponse(json_msg, content_type="application/json", status=200)
 
         # -----------------------------------------
         # Looks good.  In the JSON response, send
@@ -115,4 +114,4 @@ class ViewAjaxVisualizeShapefile(View):
 
         json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)

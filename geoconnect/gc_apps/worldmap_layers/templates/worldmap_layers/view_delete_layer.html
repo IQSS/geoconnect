@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block main_container %}
 <div class="pull-left" style="padding:20px;">
@@ -56,11 +57,11 @@
 	        <div class="panel-body">
 
 				{% include "worldmap_layers/view_delete_remap_links.html" %}
-					
+
 	            <br /><br />
 				{% include "gis_data_info/return_to_dataverse_link.html" %}
 
-	            <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
+	            <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{% static "images/WorldMap-Logo_26px.png" %}" alt="WorldMap logo" /></a></p>
 
 	        </div>
 	    </div>

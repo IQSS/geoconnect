@@ -4,7 +4,7 @@ from gc_apps.gis_shapefiles.models import ShapefileInfo
 from folium_maker.folium_converter import FoliumConverter
 from django.contrib.auth.decorators import login_required
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 

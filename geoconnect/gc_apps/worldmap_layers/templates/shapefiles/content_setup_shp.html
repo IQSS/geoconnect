@@ -1,3 +1,4 @@
+{% load static %}
 {% load humanize %}
 <!-- content for id_main_panel_content -->
 
@@ -12,7 +13,7 @@
 
   <p>You have the ability to delete any maps, and associated data, from the Harvard WorldMap platform, at any time.</p>
 
-  <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a></p>
+  <p><br /><a href="{{ WORLDMAP_SERVER_URL }}" target="_blank"><img src="{% static "images/WorldMap-Logo_26px.png" %}" alt="WorldMap logo" /></a></p>
 
   <div class="row" style="margin-top:20px;padding-top:15px; border-top:1px solid #ccc;">
     <div class="col-xs-6">
@@ -33,8 +34,8 @@
   <div style="display:none;" id="id_div_attempt_visualization_msg">
     Attempting map visualization, this may take up to 45 seconds.
     <br />
-    <img src="{{ STATIC_URL }}images/spinner.gif" alt="spinner" />
+    <img src="{% static "images/spinner.gif" %}" alt="spinner" />
     <br />
-    <a href="{{ WORLDMAP_SEVER_URL }}" target="_blank"><img src="{{ STATIC_URL }}images/WorldMap-Logo_26px.png" alt="WorldMap logo" /></a>
+    <a href="{{ WORLDMAP_SEVER_URL }}" target="_blank"><img src="{% static "images/WorldMap-Logo_26px.png" %}" alt="WorldMap logo" /></a>
     <br /><br />({% now "F jS, Y f:s a" %})
   </div>

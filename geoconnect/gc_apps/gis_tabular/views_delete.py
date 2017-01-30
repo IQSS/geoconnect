@@ -5,8 +5,7 @@ View to delete Map created from a tabular file.
 """
 import logging
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.http import HttpResponse, Http404
 
 from django.conf import settings
@@ -40,8 +39,7 @@ def view_delete_tabular_map(request):
     if not f.is_valid():
         d['ERROR_FOUND'] = True
         d['FAILED_TO_VALIDATE'] = True
-        return render_to_response('worldmap_layers/view_delete_layer.html', d\
-                                 , context_instance=RequestContext(request))
+        return render(request, 'worldmap_layers/view_delete_layer.html', d)
 
     # Form params look good
     worldmap_layer_info = f.get_worldmap_layer_info()
@@ -74,8 +72,7 @@ def view_delete_tabular_map(request):
             d['ERROR_FOUND'] = True
             d['WORLDMAP_DATA_DELETE_FAILURE'] = True
             d['ERR_MSG'] = err_msg_or_None
-            return render_to_response('worldmap_layers/view_delete_layer.html', d\
-                                     , context_instance=RequestContext(request))
+            return render(request, 'worldmap_layers/view_delete_layer.html', d)
     else:
         # At this point, the layer no longer exists on WorldMap,
         # set a flag to delete it from geoconnect, even if the Dataverse
@@ -100,14 +97,12 @@ def view_delete_tabular_map(request):
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
         d['ERR_MSG'] = err_msg_or_None2
 
-        return render_to_response('worldmap_layers/view_delete_layer.html', d\
-                                     , context_instance=RequestContext(request))
+        return render(request, 'worldmap_layers/view_delete_layer.html', d)
 
     d['DELETE_SUCCESS'] = True
     d['page_title'] = PANEL_TITLE_REMAP
 
-    return render_to_response('worldmap_layers/view_delete_layer.html', d\
-                            , context_instance=RequestContext(request))
+    return render(request, 'worldmap_layers/view_delete_layer.html', d)
 
 '''
 python manage.py shell

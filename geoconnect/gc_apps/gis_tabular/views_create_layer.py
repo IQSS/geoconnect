@@ -52,7 +52,7 @@ def view_map_tabular_file_form(request):
     except TabularFileInfo.DoesNotExist:
         err_msg = 'Sorry! The Tabular File was not found. (tabular_file_info_id)'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
         #raise Http404('No TabularFileInfo for id: %s' % tabular_file_info_id)
 
     # -----------------------------------------
@@ -75,7 +75,7 @@ def view_map_tabular_file_form(request):
     if not form_single_column.is_valid():
         json_msg = MessageHelperJSON.get_json_fail_msg(\
                         format_errors_as_text(form_single_column, for_web=True))
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
     print 'cleaned_data', form_single_column.cleaned_data
 
@@ -99,7 +99,7 @@ def view_map_tabular_file_form(request):
         json_msg = MessageHelperJSON.get_json_fail_msg(\
                     'Sorry! ' + tj_map_maker.get_error_msg())
         msg('error msg: %s' % json_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
     # -----------------------------------------
     # Succeeded!  Create a WorldMapTabularLayerInfo object
@@ -113,7 +113,7 @@ def view_map_tabular_file_form(request):
             tj_map_maker.get_map_info())
         user_msg = 'Sorry! Failed to create map. Please try again. (code: s1)'
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
     # -----------------------------------------
     # Notify Dataverse of the new map
@@ -129,7 +129,7 @@ def view_map_tabular_file_form(request):
             worldmap_tabular_info, worldmap_tabular_info.id)
         user_msg = 'Sorry! Failed to create map. Please try again. (code: s2)'
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
     # -----------------------------------------
     # Looks good.  In the JSON response, send
@@ -141,10 +141,10 @@ def view_map_tabular_file_form(request):
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
-    return HttpResponse(json_msg, mimetype="application/json", status=200)
+    return HttpResponse(json_msg, content_type="application/json", status=200)
 
     #json_msg = MessageHelperJSON.get_json_success_msg('You got here! (view_map_tabular_file_form)')
-    #return HttpResponse(json_msg, mimetype="application/json", status=200)
+    #return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
 @require_POST
@@ -161,7 +161,7 @@ def view_process_lat_lng_form(request):
     except TabularFileInfo.DoesNotExist:
         err_msg = 'Sorry! The Tabular File was not found. (tabular_file_info_id)'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
         #raise Http404('No TabularFileInfo for id: %s' % tabular_file_info_id)
 
     form_lat_lng = LatLngColumnsForm(tabular_info.id,\
@@ -173,7 +173,7 @@ def view_process_lat_lng_form(request):
                                         for_web=True)\
                                     )
         #json_msg = MessageHelperJSON.get_json_fail_msg(f.err_msg_for_web)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
     (success, worldmap_data_or_err_msg) = create_map_from_datatable_lat_lng(\
@@ -188,7 +188,7 @@ def view_process_lat_lng_form(request):
     if not success:
         json_msg = MessageHelperJSON.get_json_fail_msg(\
                 'Sorry! ' + worldmap_data_or_err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
     # -----------------------------------------
@@ -196,7 +196,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     user_msg, response_data = worldmap_data_or_err_msg
     #json_msg = MessageHelperJSON.get_json_success_msg(user_msg, data_dict=response_data)
-    #return HttpResponse(json_msg, mimetype="application/json", status=200)
+    #return HttpResponse(json_msg, content_type="application/json", status=200)
 
     worldmap_latlng_info = WorldMapTabularLayerInfo.build_from_worldmap_json(tabular_info,\
                             response_data)
@@ -206,7 +206,7 @@ def view_process_lat_lng_form(request):
                     response_data)
         user_msg = 'Sorry! Failed to create map. Please try again. (code: s4)'
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
     # -----------------------------------------
@@ -227,7 +227,7 @@ def view_process_lat_lng_form(request):
         # Send back a user error message
         user_msg = "Sorry!  We couldn't map any of those latitude and longitude values."
         return HttpResponse(MessageHelperJSON.get_json_fail_msg(user_msg),\
-                mimetype="application/json",\
+                content_type="application/json",\
                 status=200)
     """
     # -----------------------------------------
@@ -239,7 +239,7 @@ def view_process_lat_lng_form(request):
             worldmap_latlng_info, worldmap_latlng_info.id)
         user_msg = 'Sorry! Failed to create map. Please try again. (code: s5)'
         json_msg = MessageHelperJSON.get_json_fail_msg(user_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
 
 
     # -----------------------------------------
@@ -252,4 +252,4 @@ def view_process_lat_lng_form(request):
 
     json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 
-    return HttpResponse(json_msg, mimetype="application/json", status=200)
+    return HttpResponse(json_msg, content_type="application/json", status=200)

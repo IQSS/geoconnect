@@ -1,10 +1,9 @@
 import logging
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -60,7 +59,6 @@ def view_examine_dataset(request):
             return HttpResponseRedirect(reverse('view_shapefile'\
                                         , kwargs={ 'shp_md5' : shapefile_info.md5 })\
                                     )
-            return HttpResponse('saved')
         else:
             d['Form_Err_Found'] = True
             #print shp_form.errors
@@ -70,8 +68,7 @@ def view_examine_dataset(request):
 
     d['shp_form'] = shp_form
 
-    return render_to_response('gis_shapefiles/view_01_examine_zip.html', d\
-                            , context_instance=RequestContext(request))
+    return render(request, 'gis_shapefiles/view_01_examine_zip.html', d)
 
 
 def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False):
@@ -103,8 +100,7 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
     d['first_time_notify'] = first_time_notify
     d['SELECT_LABEL'] = SELECT_LABEL
 
-    return render_to_response('shapefiles/main_outline_shp.html', d\
-                        , context_instance=RequestContext(request))
+    return render(request, 'shapefiles/main_outline_shp.html', d)
 
 
 
@@ -213,8 +209,7 @@ def view_shapefile(request, shp_md5, **kwargs):
             shapefile_info.save()
             logger.error('Shapefile not loaded. (%s)' % shp_md5)
             zip_checker.close_zip()
-            return render_to_response('shapefiles/main_outline_shp.html', d\
-                                        , context_instance=RequestContext(request))
+            return render(request, 'shapefiles/main_outline_shp.html', d)
 
     # -------------------------------------------
     # The examination failed
@@ -226,12 +221,10 @@ def view_shapefile(request, shp_md5, **kwargs):
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
-        return render_to_response('shapefiles/main_outline_shp.html', d\
-                                , context_instance=RequestContext(request))
+        return render(request, 'shapefiles/main_outline_shp.html', d)
 
 
-    return render_to_response('shapefiles/main_outline_shp.html', d\
-                            , context_instance=RequestContext(request))
+    return render(request, 'shapefiles/main_outline_shp.html', d)
 
 
 
@@ -295,5 +288,4 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         zip_checker.close_zip()
 
     # Send error to user
-    return render_to_response('shapefiles/main_outline_shp.html', d\
-                            , context_instance=RequestContext(request))
+    return render(request, 'shapefiles/main_outline_shp.html', d)

@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+from gc_apps.dv_notify import views
 
-urlpatterns = patterns('gc_apps.dv_notify.views',
+urlpatterns = [
 
-   url(r'^shapefile-map/(?P<worldmapinfo_md5>\w{1,32})/$', 'ajax_dv_notify_shapefile_map', name="ajax_dv_notify_shapefile_map"),
+   url(r'^shapefile-map/(?P<worldmapinfo_md5>\w{1,32})/$', views.ajax_dv_notify_shapefile_map, name="ajax_dv_notify_shapefile_map"),
 
-   url(r'^tabular-join-map/(?P<worldmapinfo_md5>\w{1,32})/$', 'ajax_dv_notify_tabular_join_map', name="ajax_dv_notify_tabular_join_map"),
+   url(r'^tabular-join-map/(?P<worldmapinfo_md5>\w{1,32})/$', views.ajax_dv_notify_tabular_join_map, name="ajax_dv_notify_tabular_join_map"),
 
-   url(r'^latlng-map/(?P<worldmapinfo_md5>\w{1,32})/$', 'ajax_dv_notify_latlng_map', name="ajax_dv_notify_latlng_map"),
-)
+   url(r'^latlng-map/(?P<worldmapinfo_md5>\w{1,32})/$', views.ajax_dv_notify_latlng_map, name="ajax_dv_notify_latlng_map"),
+]

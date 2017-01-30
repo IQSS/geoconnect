@@ -1,7 +1,10 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+from gc_apps.registered_dataverse import views
 
-urlpatterns = patterns('gc_apps.registered_dataverse.views',
-    url(r'^filetype-list/?$', 'view_filetype_list', name="view_filetype_list"),
-    url(r'^filetype-note/(?P<file_type_slug>\w{4,50})/?$', 'view_filetype_note', name="view_filetype_note"),
+urlpatterns = [
 
-)
+    url(r'^filetype-list/?$', views.view_filetype_list, name="view_filetype_list"),
+
+    url(r'^filetype-note/(?P<file_type_slug>\w{4,50})/?$', views.view_filetype_note, name="view_filetype_note"),
+
+]

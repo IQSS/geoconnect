@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 {% load humanize %}
 
 {% block extra_js %}
 {{ block.super }}
 {% if not worldmap_layerinfo and not Dataverse_Connect_Err_Msg %}
 <!-- Map exists and it was created from a shapefile -->
-<script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
+<script src="{% static "js/geoconnect_common.js" %}"></script>
 <script>
 {% include "shapefiles/ajax_attempt_visualization.js" %}
 </script>

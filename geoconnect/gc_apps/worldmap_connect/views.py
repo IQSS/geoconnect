@@ -1,11 +1,5 @@
-import os
-import json
-
-from django.shortcuts import render_to_response
-
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import Http404
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -17,7 +11,6 @@ from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 import logging
 logger = logging.getLogger(__name__)
 
-from django.conf import settings
 
 @login_required
 def show_import_success_params(request, import_success_id):

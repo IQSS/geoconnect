@@ -1,10 +1,9 @@
 """
 Convenience views for sending Layer metadata back to Dataverse via API
 """
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from gc_apps.worldmap_connect.models import WorldMapLayerInfo
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
@@ -23,7 +22,7 @@ def ajax_dv_notify_shapefile_map(request, worldmapinfo_md5):
     if worldmap_layer_info is None:
         err_msg = 'WorldMapLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=404)
+        return HttpResponse(json_msg, content_type="application/json", status=404)
 
     return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
 
@@ -37,7 +36,7 @@ def ajax_dv_notify_latlng_map(request, worldmapinfo_md5):
     if worldmap_layer_info is None:
         err_msg = 'WorldMapLatLngInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=404)
+        return HttpResponse(json_msg, content_type="application/json", status=404)
 
     return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
 
@@ -50,7 +49,7 @@ def ajax_dv_notify_tabular_join_map(request, worldmapinfo_md5):
     if worldmap_layer_info is None:
         err_msg = 'WorldMapJoinLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=404)
+        return HttpResponse(json_msg, content_type="application/json", status=404)
 
     return view_ajax_dv_notify_of_map(request, worldmap_layer_info)
 
@@ -66,7 +65,7 @@ def view_ajax_dv_notify_of_map(request, worldmap_layer_info):
     if worldmap_layer_info is None:
         err_msg = 'WorldMapLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
-        return HttpResponse(json_msg, mimetype="application/json", status=404)
+        return HttpResponse(json_msg, content_type="application/json", status=404)
 
 
     # ------------------------------
@@ -75,10 +74,10 @@ def view_ajax_dv_notify_of_map(request, worldmap_layer_info):
     success = MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
     if success:
         json_msg = MessageHelperJSON.get_json_success_msg('Data sent')
-        return HttpResponse(json_msg, mimetype="application/json", status=200)
+        return HttpResponse(json_msg, content_type="application/json", status=200)
     else:
         json_msg = MessageHelperJSON.get_json_fail_msg('Failed to send data to dataverse')
-        return HttpResponse(json_msg, mimetype="application/json", status=500)
+        return HttpResponse(json_msg, content_type="application/json", status=500)
 
 """
 import requests, json

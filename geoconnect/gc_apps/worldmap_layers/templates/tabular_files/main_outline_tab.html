@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block extra_js %}
 
 <style>
@@ -32,10 +33,10 @@ table.dataTable {
     border-bottom: none;
 }
 
-/* #unmatched-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody * /
+/* #unmatched-tbl .dataTables_wrapper.no-footer .dataTables_scrollBody */
 
 </style>
-<script src="{{ STATIC_URL }}js/geoconnect_common.js"></script>
+<script src="{% static "js/geoconnect_common.js" %}"></script>
     {% if not worldmap_layerinfo %}
         <!-- For map Set-Up forms -->
         {% include "tabular_files/tabular_forms2.js" %}

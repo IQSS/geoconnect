@@ -1,7 +1,7 @@
 -r base.txt
 coverage==3.6
 django-discover-runner==0.4
-django-debug-toolbar==1.0.1
+django-debug-toolbar>1.0.1
 Sphinx==1.2.1
 ipdb==0.10.0
 #sqlite3==2.6.0
