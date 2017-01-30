@@ -3,7 +3,6 @@
 - Given a ShapefileInfo object, check for and
     return a WorldMapLayerInfo object, if available
 """
-import json
 import urllib2
 
 from django.core.files import File
@@ -17,34 +16,9 @@ from geo_utils.error_result_msg import ErrResultMsg,\
     FAILED_NOT_A_REGISTERED_DATAVERSE
 
 from gc_apps.gis_shapefiles.models import ShapefileInfo
-from gc_apps.worldmap_connect.models import WorldMapImportAttempt, WorldMapLayerInfo
-from gc_apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
 import logging
 LOGGER = logging.getLogger(__name__)
-
-
-def add_worldmap_layerinfo_if_exists(shapefile_info):
-    """
-    Does the WorldMap already have a layer for this Dataverse DataFile?
-
-    Check the WorldMap API.  If a layer exists, for this "shapefile_info",
-    create the following:
-        - WorldMapImportAttempt
-        - WorldMapLayerInfo
-
-    Expects shapefile_info to have these fields:
-        - dataverse_installation_name
-        - datafile_id
-    """
-    if shapefile_info is None:
-        return False
-
-    send_shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
-
-    success = send_shp_service.workflow2_check_for_existing_worldmap_layer()
-
-    return success
 
 
 def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):

@@ -1,11 +1,8 @@
 """
 Convenience views for sending Layer metadata back to Dataverse via API
 """
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponse
 
-from django.core.urlresolvers import reverse
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 from gc_apps.classification.utils import get_worldmap_info_object
 from gc_apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
@@ -16,11 +13,11 @@ from geo_utils.message_helper_json import MessageHelperJSON
 
 def ajax_dv_notify_shapefile_map(request, worldmapinfo_md5):
     """
-    Retrieve a WorldMapLayerInfo object (from a shapefile) and send it to Dataverse
+    Retrieve a WorldMapShapefileLayerInfo object (from a shapefile) and send it to Dataverse
     """
     worldmap_layer_info = get_worldmap_info_object(TYPE_SHAPEFILE_LAYER, worldmapinfo_md5)
     if worldmap_layer_info is None:
-        err_msg = 'WorldMapLayerInfo not found'
+        err_msg = 'WorldMapShapefileLayerInfo not found'
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, content_type="application/json", status=404)
 
@@ -60,7 +57,7 @@ def view_ajax_dv_notify_of_map(request, worldmap_layer_info):
     worldmap_info may be:
         - WorldMapJoinLayerInfo
         - WorldMapLatLngInfo
-        - WorldMapLayerInfo
+        - WorldMapShapefileLayerInfo
     """
     if worldmap_layer_info is None:
         err_msg = 'WorldMapLayerInfo not found'

@@ -26,4 +26,3 @@ def view_png_test(request):
     response=django.http.HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
-    

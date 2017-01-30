@@ -2,6 +2,7 @@ import shutil
 import os
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.utils import timezone
 import re
 import logging
 from geo_utils.time_util import TIME_FORMAT_STRING
@@ -27,7 +28,7 @@ class ScratchDirectoryHelper:
         names_of_deleted_dirs = []
         names_failed_delete_dirs = []
 
-        current_time = datetime.now()
+        current_time = timezone.now()
         for dirname in l:
             dir_to_remove = os.path.join(settings.GISFILE_SCRATCH_WORK_DIRECTORY, dirname )
             try:

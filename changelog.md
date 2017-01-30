@@ -11,6 +11,9 @@
 - Changed ```render_to_response``` to ```render```, remove imports of ```RequestContext```
 - Use ```TEMPLATES``` setting from django conf files
 - Templates, use ```static``` tag
+- Remove old models from worldmap_connect: WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
+- Switch ```datetime.now()``` to ```timezone.now()```
+    - using ```from django.utils import timezone```
 
 - [ ] Updated fixtures
 

@@ -103,16 +103,3 @@ def view_delete_tabular_map(request):
     d['page_title'] = PANEL_TITLE_REMAP
 
     return render(request, 'worldmap_layers/view_delete_layer.html', d)
-
-'''
-python manage.py shell
-
-from gc_apps.worldmap_connect.dataverse_layer_services import delete_map_layer
-from gc_apps.gis_basic_file.models import GISDataFile
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo
-
-gis_data_file = GISDataFile.objects.get(pk=2)
-worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=6)
-
-delete_map_layer(gis_data_file, worldmap_layer_info)
-'''

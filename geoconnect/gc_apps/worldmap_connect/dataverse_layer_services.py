@@ -331,19 +331,6 @@ python manage.py shell
 from gc_apps.worldmap_connect.dataverse_layer_services import *
 get_join_targets()
 
-# ---------------------
-
-python manage.py shell
-
-from gc_apps.worldmap_connect.dataverse_layer_services import delete_map_layer
-from gc_apps.gis_basic_file.models import GISDataFile
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo
-
-gis_data_file = GISDataFile.objects.get(pk=3)
-worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=1)
-
-delete_map_layer(gis_data_file, worldmap_layer_info)
-
 """
 """
 python manage.py shell

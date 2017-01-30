@@ -3,46 +3,12 @@ from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
-
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo, JoinTargetInformation
+from gc_apps.worldmap_connect.models import JoinTargetInformation
 from gc_apps.worldmap_connect.send_shapefile_service import SendShapefileService
-from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 
 import logging
 logger = logging.getLogger(__name__)
 
-
-@login_required
-def show_import_success_params(request, import_success_id):
-    """
-    Convenience method for reviewing the parameters
-    """
-    try:
-        worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=import_success_id)
-    except WorldMapLayerInfo.DoesNotExist:
-        raise Http404('WorldMapLayerInfo object not found: %s' % import_success_id)
-
-    return HttpResponse('%s' % worldmap_layer_info.get_data_dict(json_format=True))
-
-
-@login_required
-def send_metadata_to_dataverse(request, import_success_id):
-    """
-    Retrieve WorldMapLayerInfo and send it to the Dataverse
-    """
-    try:
-        worldmap_layer_info = WorldMapLayerInfo.objects.get(pk=import_success_id)
-    except WorldMapLayerInfo.DoesNotExist:
-        return HttpResponse('WorldMapLayerInfo object not found: %s' % import_success_id)
-
-
-    MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
-    if worldmap_layer_info.import_attempt.gis_data_file:
-        lnk = reverse('view_shapefile'\
-                    , kwargs={ 'shp_md5' : worldmap_layer_info.import_attempt.gis_data_file.md5 }\
-                    )
-        return HttpResponseRedirect(lnk)
-    return HttpResponse('metadata sent')
 
 #@login_required
 def view_send_shapefile_to_worldmap(request, shp_md5):

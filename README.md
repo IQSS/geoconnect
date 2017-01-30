@@ -104,7 +104,7 @@ You should see ```geoconnect.settings.local```
 
 ```
 cd geoconnect
-python manage.py syncdb
+python manage.py migrate
 ```
 
 - Add initial database

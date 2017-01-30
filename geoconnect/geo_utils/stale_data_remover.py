@@ -1,10 +1,9 @@
 from __future__ import print_function
 from datetime import datetime
-
-from gc_apps.gis_shapefiles.models import ShapefileInfo
+from django.utils import timezone
+from gc_apps.gis_shapefiles.models import ShapefileInfo, WorldMapShapefileLayerInfo
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.gis_tabular.models import WorldMapLatLngInfo, WorldMapJoinLayerInfo
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo
 from django.core.mail import send_mail
 #from django.template.loader import render_to_string
 from django.conf import settings
@@ -37,7 +36,7 @@ class StaleDataRemover(object):
         """
         Retrieve a class of objects (e.g. WorldMapLatLngInfo) and count what's happening
         """
-        current_time = datetime.now()
+        current_time = timezone.now()
         self.num_objects_checked = 0
         self.num_objects_removed = 0
 
@@ -53,7 +52,7 @@ class StaleDataRemover(object):
         """
         msgt("Remove stale WorldMap data")
 
-        for CLASS_TYPE in (WorldMapLatLngInfo, WorldMapJoinLayerInfo, WorldMapLayerInfo):
+        for CLASS_TYPE in (WorldMapLatLngInfo, WorldMapJoinLayerInfo, WorldMapShapefileLayerInfo):
             self.add_message_line('checking: %s' % CLASS_TYPE.__name__)
             self.check_for_stale_objects(CLASS_TYPE, stale_age_in_seconds)
 
@@ -86,7 +85,7 @@ class StaleDataRemover(object):
         # Get the current time, if not already given
         #
         if not current_time:
-            current_time = datetime.now()
+            current_time = timezone.now()
 
         # Pull the modification time, setting timezone info to None
         #
@@ -108,7 +107,7 @@ class StaleDataRemover(object):
     def send_email_notice(self):
         msgt('Send email notice!')
 
-        subject = 'GeoConnect: Clear stale data (%s)' % datetime.now()
+        subject = 'GeoConnect: Clear stale data (%s)' % timezone.now()
 
         self.add_message_line('This is an email notice from Geoconnect',\
                 prepend=True)

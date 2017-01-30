@@ -4,7 +4,7 @@ map metadata for a specified DataFile
 
 Objects passed in for worldmap_layer_info include:
 
-    - from gc_apps.worldmap_connect.models import WorldMapLayerInfo
+    - from gc_apps.gis_shapefiles.models import WorldMapShapefileLayerInfo
     - from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo, WorldMapLatLngInfo
 """
 from __future__ import print_function
@@ -273,22 +273,6 @@ if __name__ == '__main__':
 
 
 # ---------------------------
-# shapefile related
-# ---------------------------
-"""
-python manage.py shell
-from django.conf import settings
-from gc_apps.dv_notify.metadata_updater import MetadataUpdater
-from gc_apps.worldmap_connect.models import WorldMapLayerInfo
-wm_info = WorldMapLayerInfo.objects.first()
-if wm_info is not None:
-    mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-    print (mu.send_info_to_dataverse(wm_info))
-else:
-    print('No WorldMapLayerInfo objects')
-"""
-
-# ---------------------------
 # tabular related
 # ---------------------------
 """
@@ -301,5 +285,5 @@ if wm_info is not None:
     mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
     print (mu.send_info_to_dataverse(wm_info))
 else:
-    print('No WorldMapLayerInfo objects')
+    print('No WorldMapJoinLayerInfo objects')
 """

@@ -97,12 +97,6 @@
 			<th>Bounding Box</th>
 			<td>{{ shapefile_info.bounding_box }}</td>
 		</tr>
-		{% if import_fail_list %}
-        <tr>
-            <th>Previous import attempts</th>
-		    <td>{% include "gis_shapefiles/view_02c_import_fails.html" %}</td>
-		</tr>
-		{% endif %}
-
+	
 	</table>
 	</div><!-- end: panel -->
