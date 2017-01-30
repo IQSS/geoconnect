@@ -100,10 +100,12 @@ echo %DJANGO_SETTINGS_MODULE%
 
 You should see ```geoconnect.settings.local```
 
-#### Sync the database (still in ~\geoconnect)
+#### Create/sync the database (still in ~\geoconnect)
+
 
 ```
-python manage.py migrate
+python manage.py migrate    # for a new database
+#python manage.py  migrate --fake-initial # if the tables already exist
 ```
 
 - Add initial database
