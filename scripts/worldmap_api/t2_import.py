@@ -27,7 +27,7 @@ class MultiPartForm(object):
         self.form_fields.append((name, value))
         return
 
-    def add_file(self, fieldname, filename, fileHandle, mimetype=None):
+    def add_file(self, fieldname, filename, fileHandle, content_type=None):
         """Add a file to be uploaded."""
         body = fileHandle.read()
         if mimetype is None:

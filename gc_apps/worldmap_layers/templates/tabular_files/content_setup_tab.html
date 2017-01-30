@@ -1,0 +1,54 @@
+<!--  Start: Preview Rows Panel -->
+<div id="id_preview_table_panel" class="row">
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Preview Data File</h3>
+        </div>
+        <div class="panel-body">
+            {% include "tabular_files/preview_rows.html" %}
+        </div>
+    </div>
+  </div>
+</div>
+<!--  End: Preview Rows Panel -->
+
+<!--  Start: Setup Forms Panel -->
+<div id="id_map_data_setup_form" class="row">
+  <div class="col-xs-12">
+    <div id="id_alert_container" style="display:none;"></div>
+
+    <div class="panel panel-default">
+        {% include "gis_data_info/panel_page_title.html" %}
+        <div id="id_main_panel_content" class="panel-body">
+            {% include "tabular_files/setup_forms2.html" %}
+        </div>
+    </div>
+  </div>
+</div>
+<!--  End: Setup Forms Panel -->
+
+<!--  Start: Form Submit Buttons -->
+<div id="id_setup_form_buttons" class="row">
+  <div class="col-xs-12">
+        <!-- Start: Submit button for Join By Column Form -->
+        <div id="div_btn_submit_join" class="form_worldmap_layer" style="display:none;margin-bottom:1em;">
+          <a class="btn btn-default" id="id_frm_single_column_submit" style="margin-right:1em;">Working...</a>
+          {% include "gis_data_info/return_to_dataverse_link.html" %}
+        </div>
+        <!-- End: Submit button for Join By Column Form -->
+
+        <!-- Start: Submit button for Latitude/Longitude Form -->
+        <div id="div_btn_submit_lat_lng" class="form_lat_lng_fields" style="display:none;margin-bottom:1em;">
+          <a class="btn btn-default" id="id_frm_lat_lng_submit" style="margin-right:1em;">Submit Data To WorldMap</a>
+          {% include "gis_data_info/return_to_dataverse_link.html" %}
+        </div>
+        <!-- End: Submit button for Latitude/Longitude Form -->
+
+        <div id="div_btn_cancel" style="margin-bottom:1em;">
+            {% include "gis_data_info/return_to_dataverse_link.html" %}
+        </div>
+  </div>
+
+</div>
+<!--  End: Form Submit Buttons -->

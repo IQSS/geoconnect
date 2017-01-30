@@ -1,0 +1,68 @@
+<!-- start: IFRAME MAP -->
+<div class="row"><!-- WorldMap Actions -->
+  <div class="col-sm-12">
+    <p class="help-block"><span class="glyphicon glyphicon-info-sign"></span> Edit the colors, intervals, classification method and attribute. Click the "Apply Changes" button to apply your edits to WorldMap.</p>
+
+  </div>
+</div>
+<!-- MAP | Style/Classify form -->
+<div class="row">
+  <div class="col-md-8">
+      <!--div style="width:100%">iframe usually here</div-->
+      <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
+  </div>
+  <div class="col-md-4">
+
+    <div class="col-sm-12">
+      <p>{% include "metadata/button_view_map_metadata.html" %}</p>
+    </div>
+
+    {% if classify_form %}
+      <!-- start:  Classify form -->
+      <div id="div_classify_form" class="col-sm-12">{% include "classification/view_classify_form.html" %}</div>
+      <!-- end:  Classify form -->
+    {% endif %}
+
+    <div class="col-sm-12">
+      <h5>Legend</h5>
+      <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+    </div>
+  </div>
+</div>
+<div class="row"><!-- WorldMap Actions -->
+  <div class="col-sm-12" style="padding-top:10px;">
+
+    <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
+
+    {% include "worldmap_layers/button_download_links.html" %}
+
+    {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
+  </div>
+</div>
+{% if is_staff %}
+<div class="row" style="padding-top:120px;">
+  <div class="col-md-12">
+    <h3 class="panel-title" style="margin-bottom:5px;">
+      DEBUG INFO
+    </h3>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom:0;">
+
+      {% include "metadata/map_attributes_list.html" %}
+
+      {% include "metadata/core_data_list.html" %}
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if classify_form %}
+  {% if delete_form %}
+    {% include "worldmap_layers/modal_delete_confirm.html" %}
+  {% endif %}
+  {% if gis_data_info %}
+    {% include "worldmap_layers/modal_save_confirm.html" %}
+  {% endif %}
+  {% include "classification/classify_form_dynamic_js.html" %}
+{% endif %}
+<!-- end: IFRAME MAP -->

@@ -1,0 +1,8 @@
+<!-- Re-map link -->
+{% if gis_data_info %}
+	{% if is_tabular_layer %}
+		<a href="{% url 'view_tabular_file' gis_data_info.md5 %}"  class="btn btn-default">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
+	{% elif is_shapefile_layer %}
+		<a href="{% url 'view_shapefile' gis_data_info.md5 %}"  class="btn btn-default">Re-Map File: <b>{{ gis_data_info.datafile_label }}</b></a>
+	{% endif %}
+{% endif %}
