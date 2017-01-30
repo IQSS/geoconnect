@@ -20,7 +20,7 @@ SITENAME = "geoconnect"
 SITEURL = "http://geoconnect.datascience.iq.harvard.edu"
 
 # RETRIEVE WORLDMAP JSON INFO
-GEOCONNECT_SECRETS_FNAME = join( dirname(abspath(__file__)), "geoconnect_secrets_prod.json")
+GEOCONNECT_SECRETS_FNAME = join( dirname(abspath(__file__)), "geoconnect_secrets_prod2.json")
 if not isfile(GEOCONNECT_SECRETS_FNAME):
     raise Exception('Geoconnect settings JSON file not found: %s' % GEOCONNECT_SECRETS_FNAME)
 
@@ -172,7 +172,7 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(GEOCONNECT_NOT_ACCESSIBLE_FILES_DIR, 'gis_
 #
 
 # RETRIEVE WORLDMAP JSON INFO
-WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod2.json")
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod3.json")
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev.json")
 if not isfile(WORLDMAP_SECRETS_FNAME):
     raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)

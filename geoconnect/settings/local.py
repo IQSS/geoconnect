@@ -117,7 +117,7 @@ GISFILE_SCRATCH_WORK_DIRECTORY = join(TEST_SETUP_DIR, 'gis_scratch_work')
 # RETRIEVE WORLDMAP JSON INFO
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_local.json")
 #WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_dev2.json")
-WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod2.json")
+WORLDMAP_SECRETS_FNAME = join( dirname(abspath(__file__)), "worldmap_secrets_prod3.json")
 if not isfile(WORLDMAP_SECRETS_FNAME):
     raise Exception('worldmap_secrets_fname JSON file not found: %s' % WORLDMAP_SECRETS_FNAME)
 
