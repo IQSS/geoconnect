@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block main_container %}
+		<div class="pull-left" style="padding:20px;">
+			{% if Form_Err_Found %}
+			<div class="bg-danger" style="padding:10px;">
+				Sorry!  Errors were found
+				{{ shp_form.errors }}
+			</div>
+			<br />
+			{% endif %}
+			{% if existing_shapefiles %}
+			<p>Choose an existing <b>shapefile group</b>:</p>
+				<ol>
+				{% for shp in existing_shapefiles %}
+						<li><a href="{% url 'view_shapefile' shp.md5 %}">{% if shp.dataset_name %}{{ shp.dataset_name }}:{% endif %} {{ shp }} </a>
+								&nbsp;|&nbsp; <a href="{% url 'admin:gis_shapefiles_shapefileinfo_change' shp.id %}">edit</a></li>
+				{% endfor %}
+				</ol>
+			{% endif %}
+			{% if existing_tabular_files %}
+			<p>Choose an existing <b>tabular file</b>:</p>
+				<ol>
+				{% for tab in existing_tabular_files %}
+						<li><a href="{% url 'view_tabular_file' tab.md5 %}">{{ tab.name }}{% if tab.dv_join_file %}{{ tab.dv_join_file }}:{% endif %}</a>
+								&nbsp;|&nbsp; <a href="{% url 'admin:gis_tabular_tabularfileinfo_change' tab.id %}">edit</a></li>
+				{% endfor %}
+				</ol>
+			{% endif %}
+
+			<hr />
+			<p>Upload new shapefile:</p>
+
+			<form enctype="multipart/form-data" method="post" action="{% url 'view_examine_dataset' %}">
+				{% csrf_token %}
+				<table class="table table-bordered">
+				{{ shp_form }}
+				<tr>
+
+					<td colspan="2" class="text-right"><input type="reset" value="reset" />
+						&nbsp;
+						<input type="submit" value="upload" />
+						</td>
+
+				</tr>
+				</table>
+			</form>
+
+			<hr />
+
+
+		</div>
+
+
+    	{% comment%}
+		<div class="pull-left" style="border:1px solid #006699;width:400px; height:400px; margin:20px 20px 20px 40px;">
+			<div id="map-canvas"></div>
+		</div>
+		{% endcomment%}
+
+{% endblock %}

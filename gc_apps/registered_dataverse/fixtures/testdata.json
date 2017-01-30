@@ -1,0 +1,26 @@
+[
+{
+    "pk": 1, 
+    "model": "registered_dataverse.registereddataverse", 
+    "fields": {
+        "dataverse_url": "https://dvn-build.hmdc.harvard.edu:443", 
+        "name": "dvn-build server", 
+        "created": "2015-02-24T20:45:12.246Z", 
+        "notes": "", 
+        "modified": "2015-02-24T20:45:16.051Z", 
+        "active": true
+    }
+},
+{
+    "pk": 2, 
+    "model": "registered_dataverse.registereddataverse", 
+    "fields": {
+        "dataverse_url": "https://dataverse-demo.iq.harvard.edu:443", 
+        "name": "dataverse-demo server", 
+        "created": "2015-02-24T20:45:24.348Z", 
+        "notes": "", 
+        "modified": "2015-02-24T20:45:24.348Z", 
+        "active": true
+    }
+}
+]

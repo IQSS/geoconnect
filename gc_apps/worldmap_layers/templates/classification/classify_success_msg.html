@@ -1,0 +1,40 @@
+<p><span class="glyphicon glyphicon-ok"></span> <b>Success!</b> &#151; Map style change has been applied on WorldMap to the
+
+attribute <b>{{ attribute }}</b> using the
+
+method <b>{{ method }}</b>{% if method == 'Unique Values' %}{% else %},
+
+with <b>{{ intervals }} interval{{ intervals|pluralize }}</b>{% endif %}{% if ramp %},
+
+colors theme <b>{{ ramp }}</b>{% endif %}.
+
+<em>{% now "F jS, Y f:s a" %}</em></p>
+
+{% comment %}
+<table id="id_classify_msg_tbl" class="table table-condensed table-bordered">
+    <tr>
+        <th>Attribute</th>  <td>{{ attribute }}</td>
+    </tr>
+    <tr>
+        <th>Method</th> <td>{{ method }}</td>
+    </tr>
+    {% if not method == 'Unique Values' %}
+    <tr>
+        <th>No. of Intervals</th>   <td>{{ intervals }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <th>Colors</th> <td>{{ ramp }}</td>
+    </tr>
+
+</table>
+
+<em>{% now "F jS, Y f:s a" %}</em>
+
+<ul class="list-unstyled">
+    <li><b>Attribute</b>: {{ attribute }}</li>
+    <li><b>Method</b>: {{ method }}</li>
+    <li><b>No. of Intervals</b>: {{ intervals }}</li>
+    <li><b>Colors</b>: {{ ramp }}</li>
+</ul>
+{% endcomment %}

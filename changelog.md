@@ -14,6 +14,8 @@
 - Remove old models from worldmap_connect: WorldMapImportAttempt, WorldMapImportFail, WorldMapLayerInfo
 - Switch ```datetime.now()``` to ```timezone.now()```
     - using ```from django.utils import timezone```
+- Move geo_utils directory under gc_apps
+- Move gc_apps directory to the top level
 
 - [ ] Updated fixtures
 
