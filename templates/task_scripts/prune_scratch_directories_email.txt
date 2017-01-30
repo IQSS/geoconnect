@@ -1,0 +1,17 @@
+
+# directories deleted: {{ names_of_deleted_dirs|length }}
+# directories FAILED to delete: {{ names_failed_delete_dirs|length }}
+
+{% if names_of_deleted_dirs %}-------------------
+Deleted List
+-------------------{% endif %}
+{% for dirname in names_of_deleted_dirs %}
+({{ forloop.counter }}) {{ dirname }}{% endfor %}
+
+{% if names_failed_delete_dirs %}-------------------
+FAILED to Delete List
+-------------------{% endif %}
+{% for dirname in names_failed_delete_dirs %}({{ forloop.counter }}) {{ dirname }}{% endfor %}
+        
+(end)
+{% now "F jS, Y f:s a" %}

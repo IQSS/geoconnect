@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block main_container %}
+<div class="row">
+    <div class="col-md-12">
+        {% if error_message %}
+            <div class="alert alert-danger">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default xs">
+          <div class="panel-heading">WorldMap Layer Info</div>
+            <div class="panel-body">
+                <p><b>Layer:</b> {{ link_helper.layer_name }}</p>
+                {% if link_helper.sld_name %}
+                    <p><b>SLD:</b> {{ link_helper.sld_name }}</p>
+                {% endif %}
+                <table class="table table-bordered">
+                  {% for link_info in link_helper.links_list %}
+                    <tr>
+                        <td>{{ link_info.description }}</td>
+                        <td><a href="{{ link_info.link }}" xtarget="link_help">{{ link_info.link }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block main_container %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default xs">
+          <div class="panel-heading">Geoconnect</div>
+          <div class="panel-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Active?</th>
+                        <th>Inactive Display Note</th>
+                        <th>Slug</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ftype in ftype_list %}
+                    <tr>
+                        <td>{{ ftype.name }}</td>
+                        <td>
+                            {% if ftype.active %}
+                                 <span class="label label-success">Active</span>
+                            {% else %}
+                                <span class="label label-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ftype.inactive_display_note %}
+                                {{ ftype.inactive_display_note|linebreaks|safe }}
+                            {% else %}
+                                (no note)
+                            {% endif %}
+                        </td>
+                        <td><a href="{% url 'view_filetype_note' ftype.slug %}">{{ ftype.slug }}</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Uh oh!  No file types are in the db!  That means
+                    Geoconnect won't map anything.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

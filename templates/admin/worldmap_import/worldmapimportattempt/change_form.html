@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+
+
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% if original and original.gis_data_file %}
+<div style="padding:10px; margin:10px; border:1px solid #006699; width:300px;">
+    <a href="{% url 'view_shapefile' original.gis_data_file.md5 %}">View file</a>
+</div>
+{% endif %}
+{% endblock %}
