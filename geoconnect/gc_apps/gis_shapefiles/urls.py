@@ -4,7 +4,7 @@ from gc_apps.gis_shapefiles import views, views_mapit
 
 urlpatterns = [
 
-    url(r'^examine/$', views.view_examine_dataset, name="view_examine_dataset"),
+    url(r'^list-files$', views.view_examine_dataset, name="view_examine_dataset"),
 
     url(r'^view-shp-examine/(?P<shp_md5>\w{32})/$', views.view_shapefile_first_time, name="view_shapefile_first_time"),
 

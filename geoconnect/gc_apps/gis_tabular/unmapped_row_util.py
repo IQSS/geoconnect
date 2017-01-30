@@ -11,10 +11,10 @@ import pandas as pd
 
 from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo
 
-from geo_utils.tabular_util import get_orig_column_name,\
+from gc_apps.geo_utils.tabular_util import get_orig_column_name,\
         get_worldmap_colname_format,\
         is_pandas_dtype_numeric
-from geo_utils.msg_util import msgt, msg
+from gc_apps.geo_utils.msg_util import msgt, msg
 
 
 MAX_FAILED_ROWS_TO_BUILD = 1000

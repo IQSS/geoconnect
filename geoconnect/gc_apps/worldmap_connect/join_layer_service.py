@@ -5,7 +5,7 @@ import sys
 from django.conf import settings
 from requests.exceptions import ConnectionError as RequestsConnectionError
 
-from geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.msg_util import msg, msgt
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
     MAP_LAT_LNG_TABLE_API_PATH,\

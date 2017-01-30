@@ -9,8 +9,8 @@ from django.core.files.base import ContentFile
 from django.db.models import FileField
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from csv import QUOTE_NONNUMERIC
-from geo_utils.msg_util import msg, msgt
-from geo_utils.tabular_util import get_formatted_column_name
+from gc_apps.geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.tabular_util import get_formatted_column_name
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
     UPLOAD_JOIN_DATATABLE_API_PATH

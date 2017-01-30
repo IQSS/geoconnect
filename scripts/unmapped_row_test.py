@@ -15,7 +15,7 @@ sys.path += proj_paths
 # ------------------------------
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 
 from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo
 from gc_apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper

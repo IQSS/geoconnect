@@ -19,9 +19,9 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(CURRENT_DIR, '../../'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
-#from geo_utils.key_checker import KeyChecker
-from geo_utils.message_helper_json import MessageHelperJSON
-from geo_utils.msg_util import msgt
+#from gc_apps.geo_utils.key_checker import KeyChecker
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.msg_util import msgt
 
 from shared_dataverse_information.dataverse_info.url_helper import get_api_url_update_map_metadata,\
     get_api_url_delete_metadata

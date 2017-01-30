@@ -27,13 +27,13 @@ from gc_apps.worldmap_connect.utils import get_latest_jointarget_information,\
         get_geocode_types_and_join_layers
 from gc_apps.gis_tabular.unmapped_row_util import MAX_FAILED_ROWS_TO_BUILD
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
+from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     GEOCONNECT_STEPS, STEP1_EXAMINE, STEP2_STYLE,\
     PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
-from geo_utils.view_util import get_common_lookup
+from gc_apps.geo_utils.view_util import get_common_lookup
 
-from geo_utils.message_helper_json import MessageHelperJSON
-from geo_utils.time_util import get_datetime_string_for_file
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.time_util import get_datetime_string_for_file
 
 from gc_apps.gis_tabular.forms import GEO_TYPE_LATITUDE_LONGITUDE
 

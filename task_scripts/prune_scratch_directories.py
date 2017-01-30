@@ -18,7 +18,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
 """

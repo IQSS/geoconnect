@@ -15,7 +15,7 @@ from django.conf import settings
 
 #------------------
 
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 
 WORLMAP_TOKEN_NAME = settings.WORLDMAP_TOKEN_NAME_FOR_DV    #'geoconnect_token'
 WORLDMAP_TOKEN_VALUE = settings.WORLDMAP_TOKEN_FOR_DATAVERSE    #load_settings_dict()['WORLDMAP_TOKEN_VALUE']

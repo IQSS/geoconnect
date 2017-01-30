@@ -3,7 +3,7 @@ Set attributes used for nearly all views
 """
 from django.conf import settings
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEPS,\
+from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEPS,\
     STEP1_EXAMINE, STEP2_STYLE
 
 def get_common_lookup(request, **kwargs):

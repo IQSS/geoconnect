@@ -27,7 +27,7 @@ from shared_dataverse_information.worldmap_api_helper.url_helper import\
         GET_JOIN_TARGETS,\
         DELETE_TABLEJOIN
 
-from geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 
 """
 Functions that interact with the WorldMap API to:

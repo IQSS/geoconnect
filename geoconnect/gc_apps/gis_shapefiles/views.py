@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 
-from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+from gc_apps.geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
         ZIPCHECK_MULTIPLE_SHAPEFILES,\
         ZIPCHECK_NO_FILE_TO_CHECK,\
         ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE
@@ -27,11 +27,11 @@ from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.gis_tabular.forms import SELECT_LABEL
 
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
+from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     STEP1_EXAMINE, STEP2_STYLE,\
     PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 
-from geo_utils.view_util import get_common_lookup
+from gc_apps.geo_utils.view_util import get_common_lookup
 
 logger = logging.getLogger(__name__)
 

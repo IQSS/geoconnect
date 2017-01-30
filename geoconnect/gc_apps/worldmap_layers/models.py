@@ -23,7 +23,7 @@ from gc_apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
         TYPE_LAT_LNG_LAYER
 
 from gc_apps.core.models import TimeStampedModel
-from geo_utils.json_field_reader import JSONHelper
+from gc_apps.geo_utils.json_field_reader import JSONHelper
 
 LOGGER = logging.getLogger(__name__)
 

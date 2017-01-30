@@ -6,7 +6,7 @@ from os.path import join, isfile, dirname, realpath
 import sys
 import json
 import requests
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 
 
 """

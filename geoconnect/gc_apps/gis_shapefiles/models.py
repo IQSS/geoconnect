@@ -8,8 +8,8 @@ import jsonfield # jsonfield.JSONField
 
 from gc_apps.core.models import TimeStampedModel
 from gc_apps.gis_basic_file.models import GISDataFile
-from geo_utils.fsize_human_readable import sizeof_fmt
-from geo_utils.json_field_reader import JSONHelper
+from gc_apps.geo_utils.fsize_human_readable import sizeof_fmt
+from gc_apps.geo_utils.json_field_reader import JSONHelper
 from gc_apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER
 from gc_apps.worldmap_layers.models import WorldMapLayerInfo
 

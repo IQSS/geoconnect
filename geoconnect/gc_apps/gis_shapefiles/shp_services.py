@@ -11,8 +11,8 @@ from django.core.files.temp import NamedTemporaryFile
 from shared_dataverse_information.dataverse_info.forms import DataverseInfoValidationForm
 from gc_apps.registered_dataverse.registered_dataverse_helper import find_registered_dataverse
 
-from geo_utils.msg_util import msg, msgt
-from geo_utils.error_result_msg import ErrResultMsg,\
+from gc_apps.geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.error_result_msg import ErrResultMsg,\
     FAILED_NOT_A_REGISTERED_DATAVERSE
 
 from gc_apps.gis_shapefiles.models import ShapefileInfo

@@ -7,7 +7,7 @@ from django.core import management
 
 from gc_apps.worldmap_connect.models import JoinTargetInformation
 from gc_apps.worldmap_connect.single_join_target_info import SingleJoinTargetInfo
-from geo_utils.msg_util import msgt, msg
+from gc_apps.geo_utils.msg_util import msgt, msg
 
 JOIN_TARGETS_FILENAME = join(dirname(__file__), 'input', 'jointargets_2016-1202.json')
 

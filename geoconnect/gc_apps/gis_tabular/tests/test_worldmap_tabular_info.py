@@ -7,7 +7,7 @@ from django.core import management
 
 from gc_apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
 from gc_apps.gis_tabular.tabular_helper import TabFileStats
-from geo_utils.msg_util import msgt, msg
+from gc_apps.geo_utils.msg_util import msgt, msg
 
 
 JSON_JOIN_TEST_FILENAME = join(dirname(__file__), 'input', 'core_data_join.json')

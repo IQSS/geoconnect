@@ -5,7 +5,7 @@ import os
 from msg_util import *
 
 from jsonfield.encoder import JSONEncoder as JSONExtraEncoder
-#from geo_utils.json_encoder import JSONExtraEncoder
+#from gc_apps.geo_utils.json_encoder import JSONExtraEncoder
 
 
 class JSONHelper:

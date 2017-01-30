@@ -7,8 +7,8 @@ from django.http import HttpResponse
 
 from django.views.decorators.http import require_POST
 
-from geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
-from geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON, format_errors_as_text
+from gc_apps.geo_utils.msg_util import msg, msgt
 
 from gc_apps.gis_basic_file.dataverse_info_service import get_dataverse_info_dict
 
@@ -18,7 +18,7 @@ from gc_apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm
 
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 
-from geo_utils.geoconnect_step_names import PANEL_TITLE_MAP_DATA_FILE,\
+from gc_apps.geo_utils.geoconnect_step_names import PANEL_TITLE_MAP_DATA_FILE,\
     PANEL_TITLE_STYLE_MAP
 
 from gc_apps.worldmap_connect.utils import get_geocode_types_and_join_layers

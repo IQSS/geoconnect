@@ -5,7 +5,7 @@ except:
     from urllib.parse import urlparse   # 3.x
 
 from gc_apps.registered_dataverse.models import RegisteredDataverse
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 
 import logging
 logger = logging.getLogger('registered_dataverse_helper')

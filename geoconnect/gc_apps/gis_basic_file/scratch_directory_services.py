@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 import re
 import logging
-from geo_utils.time_util import TIME_FORMAT_STRING
+from gc_apps.geo_utils.time_util import TIME_FORMAT_STRING
 
 logger = logging.getLogger(__name__)
 

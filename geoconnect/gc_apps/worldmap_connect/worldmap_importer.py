@@ -9,7 +9,7 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(CURRENT_DIR, '../'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings")
 
-from geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 from django.conf import settings
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import ADD_SHAPEFILE_API_PATH

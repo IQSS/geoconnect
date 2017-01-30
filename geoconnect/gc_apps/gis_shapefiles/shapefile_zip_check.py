@@ -6,7 +6,7 @@ import zipfile
 import cStringIO
 
 from gc_apps.gis_shapefiles.models import WORLDMAP_MANDATORY_IMPORT_EXTENSIONS, SHAPEFILE_EXTENSION_SHP
-from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+from gc_apps.geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
         ZIPCHECK_MULTIPLE_SHAPEFILES,\
         ZIPCHECK_NO_FILE_TO_CHECK,\
         ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE

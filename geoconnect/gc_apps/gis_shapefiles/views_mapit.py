@@ -7,9 +7,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.msg_util import msg, msgt
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
+from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
 from gc_apps.layer_types.static_vals import is_valid_dv_type,\
                 is_dv_type_shapefile,\
                 is_dv_type_tabular,\
@@ -23,12 +23,12 @@ from gc_apps.gis_tabular.tab_services import get_tabular_file_from_dv_api_info
 from gc_apps.registered_dataverse.utils import is_setting_active
 from gc_apps.registered_dataverse.views import view_filetype_note_by_name
 
-from geo_utils.view_util import get_common_lookup
+from gc_apps.geo_utils.view_util import get_common_lookup
 
 import logging
 LOGGER = logging.getLogger(__name__)
 
-from geo_utils.template_constants import FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
+from gc_apps.geo_utils.template_constants import FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
 from gc_apps.gis_tabular.forms import SELECT_LABEL
 
 

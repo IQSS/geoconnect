@@ -4,7 +4,7 @@ from gc_apps.gis_basic_file.admin import GISDataFileAdmin
 from gc_apps.gis_shapefiles.models import ShapefileInfo, WorldMapShapefileLayerInfo
 from gc_apps.gis_shapefiles.admin_forms import ShapefileInfoAdminForm
 
-from geo_utils.admin_util import make_changelist_updates
+from gc_apps.geo_utils.admin_util import make_changelist_updates
 
 
 class WorldMapShapefileLayerInfoInline(admin.TabularInline):

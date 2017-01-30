@@ -7,7 +7,7 @@ from gc_apps.gis_tabular.models import TabularFileInfo,\
 
 from gc_apps.gis_tabular.admin_forms import TabularInfoAdminForm
 
-from geo_utils.admin_util import make_changelist_updates
+from gc_apps.geo_utils.admin_util import make_changelist_updates
 
 
 class WorldMapLatLngInfoInline(admin.TabularInline):

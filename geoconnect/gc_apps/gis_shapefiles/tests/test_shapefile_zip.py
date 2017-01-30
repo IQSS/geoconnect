@@ -6,11 +6,11 @@ import json
 from django.test import TestCase
 from django.conf import settings
 
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 from gc_apps.gis_shapefiles.shapefile_zip_check import ShapefileZipCheck
 from gc_apps.gis_shapefiles.models import ShapefileInfo
 
-from geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
+from gc_apps.geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
         ZIPCHECK_MULTIPLE_SHAPEFILES,\
         ZIPCHECK_NO_FILE_TO_CHECK,\
         ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE

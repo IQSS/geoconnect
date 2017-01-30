@@ -1,4 +1,4 @@
-from geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import *
 
 from django.test import TestCase
 

@@ -8,7 +8,7 @@ from django.http import HttpRequest
 from django.conf import settings
 
 
-from geo_utils.template_constants import FAILED_TO_RETRIEVE_DATAVERSE_FILE,\
+from gc_apps.geo_utils.template_constants import FAILED_TO_RETRIEVE_DATAVERSE_FILE,\
     FAILED_TO_CONVERT_RESPONSE_TO_JSON,\
     FAILED_BAD_STATUS_CODE_FROM_WORLDMAP,\
     FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE

@@ -10,12 +10,12 @@ from django.template.loader import render_to_string
 
 from django.conf import settings
 
-from geo_utils.message_helper_json import MessageHelperJSON
-#from geo_utils.msg_util import msg
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
+#from gc_apps.geo_utils.msg_util import msg
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 from gc_apps.classification.utils import get_worldmap_info_object
 from gc_apps.gis_tabular.forms import SELECT_LABEL
-from geo_utils.json_field_reader import JSONHelper
+from gc_apps.geo_utils.json_field_reader import JSONHelper
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER

@@ -8,7 +8,7 @@ from gc_apps.classification.utils import get_worldmap_info_object
 from gc_apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
                 TYPE_JOIN_LAYER,\
                 TYPE_LAT_LNG_LAYER
-from geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 
 
 def ajax_dv_notify_shapefile_map(request, worldmapinfo_md5):

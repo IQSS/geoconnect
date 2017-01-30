@@ -11,19 +11,19 @@ from gc_apps.worldmap_layers.models import WorldMapLayerInfo
 
 from gc_apps.worldmap_connect.send_shapefile_service import SendShapefileService
 
-from geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE,\
+from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP2_STYLE,\
     PANEL_TITLE_MAP_DATA_FILE, PANEL_TITLE_STYLE_MAP
 
 from shared_dataverse_information.layer_classification.forms import\
     ClassifyLayerForm, ATTRIBUTE_VALUE_DELIMITER
 
-from geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 from gc_apps.gis_tabular.views import build_map_html
 
 LOGGER = logging.getLogger(__name__)
 
 
-from geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.msg_util import msg, msgt
 
 
 """
