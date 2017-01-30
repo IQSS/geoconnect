@@ -16,6 +16,8 @@
     - using ```from django.utils import timezone```
 - Move geo_utils directory under gc_apps
 - Move gc_apps directory to the top level
+- Create initial migration files
+  - If tables exist, run ```python manage.py  migrate --fake-initial```
 
 - [ ] Updated fixtures
 
