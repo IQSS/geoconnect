@@ -1,0 +1,206 @@
+[
+{
+    "pk": 1, 
+    "model": "gis_tabular.worldmapjoinlayerinfo", 
+    "fields": {
+        "core_data": {
+            "tablejoin_id": 206, 
+            "matched_record_count": 156, 
+            "join_layer_typename": "geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "worldmap_username": "rp", 
+            "unmatched_record_count": 0, 
+            "download_links": {
+                "zip": "http://localhost:8000/download/wfs/643/zip?outputFormat=SHAPE-ZIP&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+                "gml": "http://localhost:8000/download/wfs/643/gml?outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+                "tiff": "http://localhost:8000/download/wms/643/tiff?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fgeotiff&srs=EPSG%3A4326&request=GetMap&height=550", 
+                "KML": "http://localhost:8000/download/wms_kml/643/kml?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&mode=refresh", 
+                "jpg": "http://localhost:8000/download/wms/643/jpg?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fjpeg&srs=EPSG%3A4326&request=GetMap&height=550", 
+                "json": "http://localhost:8000/download/wfs/643/json?outputFormat=json&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+                "pdf": "http://localhost:8000/download/wms/643/pdf?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=application%2Fpdf&srs=EPSG%3A4326&request=GetMap&height=550", 
+                "csv": "http://localhost:8000/download/wfs/643/csv?outputFormat=csv&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+                "xls": "http://localhost:8000/download/wfs/643/xls?outputFormat=excel&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+                "png": "http://localhost:8000/download/wms/643/png?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550"
+            }, 
+            "unmatched_records_list": "", 
+            "tablejoin_view_name": "join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "layer_typename": "geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "join_layer_url": "/data/geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "layer_join_attribute": "TRACT", 
+            "table_name": "boston_income_01tab_2_1", 
+            "embed_map_link": "http://localhost:8000/maps/embed/?layer=geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "join_layer_id": "643", 
+            "layer_link": "http://localhost:8000/data/geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "table_id": 332, 
+            "table_join_attribute": "tract", 
+            "map_image_link": "http://localhost:8000/download/wms/643/png?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550", 
+            "layer_name": "geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+            "llbbox": "[-71.1908629979881, 42.2278900020655, -70.9862559993925, 42.3987970008647]"
+        }, 
+        "tabular_info": 10, 
+        "created": "2016-02-22T20:59:10.588Z", 
+        "download_links": {
+            "zip": "http://localhost:8000/download/wfs/643/zip?outputFormat=SHAPE-ZIP&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+            "gml": "http://localhost:8000/download/wfs/643/gml?outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+            "tiff": "http://localhost:8000/download/wms/643/tiff?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fgeotiff&srs=EPSG%3A4326&request=GetMap&height=550", 
+            "KML": "http://localhost:8000/download/wms_kml/643/kml?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&mode=refresh", 
+            "jpg": "http://localhost:8000/download/wms/643/jpg?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fjpeg&srs=EPSG%3A4326&request=GetMap&height=550", 
+            "json": "http://localhost:8000/download/wfs/643/json?outputFormat=json&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+            "pdf": "http://localhost:8000/download/wms/643/pdf?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=application%2Fpdf&srs=EPSG%3A4326&request=GetMap&height=550", 
+            "csv": "http://localhost:8000/download/wfs/643/csv?outputFormat=csv&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+            "xls": "http://localhost:8000/download/wfs/643/xls?outputFormat=excel&service=WFS&request=GetFeature&format_options=charset%3AUTF-8&typename=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&version=1.0.0", 
+            "png": "http://localhost:8000/download/wms/643/png?layers=geonode%3Ajoin_boston_census_blocks_0zm_boston_income_01tab_2_1&width=658&bbox=-71.190862998%2C42.2278900021%2C-70.9862559994%2C42.3987970009&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=550"
+        }, 
+        "modified": "2016-02-22T20:59:37.759Z", 
+        "attribute_data": [
+            {
+                "display_name": "fid", 
+                "type": "unicode", 
+                "name": "fid"
+            }, 
+            {
+                "display_name": "the_geom_col", 
+                "type": "unicode", 
+                "name": "the_geom_col"
+            }, 
+            {
+                "display_name": "objectid", 
+                "type": "int", 
+                "name": "objectid"
+            }, 
+            {
+                "display_name": "area", 
+                "type": "float", 
+                "name": "area"
+            }, 
+            {
+                "display_name": "perimeter", 
+                "type": "float", 
+                "name": "perimeter"
+            }, 
+            {
+                "display_name": "state", 
+                "type": "int", 
+                "name": "state"
+            }, 
+            {
+                "display_name": "county", 
+                "type": "unicode", 
+                "name": "county"
+            }, 
+            {
+                "display_name": "tract", 
+                "type": "unicode", 
+                "name": "tract"
+            }, 
+            {
+                "display_name": "ct_id", 
+                "type": "int", 
+                "name": "ct_id"
+            }, 
+            {
+                "display_name": "logrecno", 
+                "type": "unicode", 
+                "name": "logrecno"
+            }, 
+            {
+                "display_name": "blk_count", 
+                "type": "int", 
+                "name": "blk_count"
+            }, 
+            {
+                "display_name": "dry_pct", 
+                "type": "float", 
+                "name": "dry_pct"
+            }, 
+            {
+                "display_name": "dry_acres", 
+                "type": "float", 
+                "name": "dry_acres"
+            }, 
+            {
+                "display_name": "dry_sqmi", 
+                "type": "float", 
+                "name": "dry_sqmi"
+            }, 
+            {
+                "display_name": "dry_sqkm", 
+                "type": "float", 
+                "name": "dry_sqkm"
+            }, 
+            {
+                "display_name": "shape_area", 
+                "type": "float", 
+                "name": "shape_area"
+            }, 
+            {
+                "display_name": "shape_len", 
+                "type": "float", 
+                "name": "shape_len"
+            }, 
+            {
+                "display_name": "hoods_pd_i", 
+                "type": "int", 
+                "name": "hoods_pd_i"
+            }, 
+            {
+                "display_name": "nbhd", 
+                "type": "unicode", 
+                "name": "nbhd"
+            }, 
+            {
+                "display_name": "nbhdcrm", 
+                "type": "unicode", 
+                "name": "nbhdcrm"
+            }, 
+            {
+                "display_name": "nsa_id_1", 
+                "type": "unicode", 
+                "name": "nsa_id_1"
+            }, 
+            {
+                "display_name": "nsa_name", 
+                "type": "unicode", 
+                "name": "nsa_name"
+            }, 
+            {
+                "display_name": "uniqueid", 
+                "type": "int", 
+                "name": "uniqueid"
+            }, 
+            {
+                "display_name": "uniqueid_1", 
+                "type": "int", 
+                "name": "uniqueid_1"
+            }, 
+            {
+                "display_name": "ct_id_1", 
+                "type": "int", 
+                "name": "ct_id_1"
+            }, 
+            {
+                "display_name": "nbhd_1", 
+                "type": "unicode", 
+                "name": "nbhd_1"
+            }, 
+            {
+                "display_name": "b19013_med", 
+                "type": "int", 
+                "name": "b19013_med"
+            }, 
+            {
+                "display_name": "walkabilit", 
+                "type": "float", 
+                "name": "walkabilit"
+            }, 
+            {
+                "display_name": "quality_of", 
+                "type": "float", 
+                "name": "quality_of"
+            }
+        ], 
+        "layer_name": "geonode:join_boston_census_blocks_0zm_boston_income_01tab_2_1", 
+        "join_description": "Table joined to layer XYZ by census tract", 
+        "md5": "ffe9008fcead167dbd3cd9677cca2a36"
+    }
+}
+]

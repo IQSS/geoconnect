@@ -103,7 +103,6 @@ You should see ```geoconnect.settings.local```
 #### Sync the database (still in ~\geoconnect)
 
 ```
-cd geoconnect
 python manage.py migrate
 ```
 
@@ -128,7 +127,7 @@ python manage.py runserver 8070
 ### Re-run the test server
 
 ```
-cd ~/geoconnect/geoconnect  # example: cd /Users/mheppler/iqss-github/geoconnect/geoconnect
+cd ~/geoconnect/ # example: cd /Users/mheppler/iqss-github/geoconnect
 workon geoconnect
 atom .  # to open in ATOM
 python manage.py runserver 8070

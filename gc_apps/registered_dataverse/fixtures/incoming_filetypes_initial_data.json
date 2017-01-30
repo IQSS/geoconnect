@@ -1,0 +1,38 @@
+[
+{
+    "pk": 1,
+    "model": "registered_dataverse.incomingfiletypesetting",
+    "fields": {
+        "inactive_display_note": "",
+        "name": "shapefile",
+        "created": "2016-03-16T15:55:35.986Z",
+        "modified": "2016-03-16T15:55:35.986Z",
+        "active": true,
+        "slug": "shapefile"
+    }
+},
+{
+    "pk": 2,
+    "model": "registered_dataverse.incomingfiletypesetting",
+    "fields": {
+        "inactive_display_note": "Sorry! Tabular mapping is currently not available.\r\n\r\nIt is scheduled for release on March 24, 2016.",
+        "name": "tabular",
+        "created": "2016-03-16T15:55:39.541Z",
+        "modified": "2016-03-16T15:56:49.424Z",
+        "active": true, 
+        "slug": "tabular"
+    }
+},
+{
+    "pk": 3,
+    "model": "registered_dataverse.incomingfiletypesetting",
+    "fields": {
+        "inactive_display_note": "Sorry, GeoTiff mapping is not available.",
+        "name": "geotiff",
+        "created": "2016-03-16T15:56:06.868Z",
+        "modified": "2016-03-16T16:37:09.756Z",
+        "active": false,
+        "slug": "geotiff"
+    }
+}
+]
