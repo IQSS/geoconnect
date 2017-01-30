@@ -36,10 +36,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ('localhost', '127.0.0.1')
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
-
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -100,7 +96,12 @@ SESSION_COOKIE_NAME = 'geoconnect_dev'
 LOGIN_URL = "admin:index"
 ########## END LOGIN_URL
 
-
+# Set Template debug to True
+try:
+    TEMPLATES[0]['OPTIONS']['debug'] = True
+except:
+    assert False, """Make sure TEMPLATES list is set with 1 entry that has an OPTIONS dict.
+e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : True }}]"""
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
 # Do NOT make this directory accessible to a browser

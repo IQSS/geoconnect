@@ -55,10 +55,6 @@ ADMINS = JSON_SECRETS['ADMINS']
 DEBUG = False
 #DEBUG = True
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
-
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -119,6 +115,13 @@ INSTALLED_APPS += (
     #'djcelery',
     #'kombu.transport.django',
 )
+
+# Set Template debug to False
+try:
+    TEMPLATES[0]['OPTIONS']['debug'] = False
+except:
+    assert False, """Make sure TEMPLATES list is set with 1 entry that has an OPTIONS dict.
+e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : False }}]"""
 
 #MIDDLEWARE_CLASSES += (
 #   'debug_toolbar.middleware.DebugToolbarMiddleware',
