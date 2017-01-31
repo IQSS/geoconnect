@@ -1,0 +1,33 @@
+<!-- Start: Modal Save Map/Delete Map/Return to Geoconnect -->
+<div class="modal fade" id="save_map_confirm" tabindex="-1" role="dialog" aria-labelledby="saveMapLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="saveMapLabel">Map Saved</h4>
+      </div>
+      <div class="modal-body">
+        <p class="alert alert-success">
+           Your map has been saved back to Dataverse.
+        </p>
+        <!-- (1)Keep Map button -->
+        {% if tabular_info and tabular_info.return_to_dataverse_url %}keep1 - FIX
+          <a href="{{ tabular_info.return_to_dataverse_url }}" class="btn btn-default">Continue to Dataverse</a>
+        {% else %}{% if shapefile_info and shapefile_info.return_to_dataverse_url %}keep2 - FIX
+          <a href="{{ shapefile_info.return_to_dataverse_url }}" class="btn btn-default">Continue to Dataverse</a>
+        {% else %}{% if gis_data_info and gis_data_info.return_to_dataverse_url %}
+          <a href="{{ gis_data_info.return_to_dataverse_url }}" class="btn btn-default">Continue to Dataverse</a>
+        {% else %}keep4 - don't want this...
+          <a href="{{ DATAVERSE_SERVER_URL }}" class="btn btn-default">Continue to Dataverse</a>
+        {% endif %}{% endif %}{% endif %}
+
+        <!-- (3) Delete Map -->
+        &nbsp;&nbsp;<a href="#delete_map_confirm" data-toggle="modal" data-dismiss="modal" class="btn btn-default">Remove from WorldMap</a>
+
+        <!-- (2) Return to GeoConnect -->
+        &nbsp;&nbsp;<a type="button" class="btn btn-default" data-dismiss="modal">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Modal Delete Map -->

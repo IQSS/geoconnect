@@ -1,8 +1,11 @@
+geoconnect/gc_apps/gis_tabular/tests/server_credentials.json
 geoconnect/apps/gis_tabular/tests/server_credentials.json
 .vagrant/*
 deploy/old/
 geoconnect/geoconnect/settings/worldmap_secrets*.json
 geoconnect/geoconnect/settings/geoconnect_secrets*.json
+geoconnect/settings/worldmap_secrets*.json
+geoconnect/settings/geoconnect_secrets*.json
 geoconnect/geoconnect/config/laptop.py
 #geoconnect/geoconnect/config/prod.py
 #geoconnect/geoconnect/settings/prod*.py
@@ -85,3 +88,14 @@ scripts/tab_read/test_dv_files/CENSUS2010_BLK_BG_TRCT_SHP.zip
 scripts/tab_read/test_dv_files/Boston_MHHI1999_kP4.csv
 
 scripts/tab_read/test_dv_files/*
+geoconnect/settings/geoconnect_secrets_prod.json
+geoconnect/settings/worldmap_secrets_prod2.json
+geoconnect/settings/worldmap_secrets_local.json
+geoconnect/settings/geoconnect_secrets_dev.json
+geoconnect/settings/worldmap_secrets_dev.json
+geoconnect/settings/worldmap_secrets_dev2.json
+geoconnect/settings/worldmap_secrets_prod.json
+
+geoconnect/scripts/tabular_test_data/files/nhcrime_2014_08_63.tab
+
+scripts/tabular_test_data/files/nhcrime_2014_08.tab

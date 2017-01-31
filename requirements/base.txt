@@ -1,5 +1,5 @@
-shared-dataverse-information==0.4.8
-Django==1.6
+shared-dataverse-information==0.5.1
+Django==1.10.5
 pyshp==1.2.0
 requests==2.3.0
 django-braces==1.2.2

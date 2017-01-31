@@ -1,0 +1,37 @@
+<!-- Start: Modal Delete Map -->
+<div class="modal fade" id="delete_map_confirm" tabindex="-1" role="dialog" aria-labelledby="deleteMapLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteMapLabel">Delete Map</h4>
+      </div>
+      <div class="modal-body">
+        <p class="alert alert-danger" role="alert">
+          Are you sure you want to permanetly delete all version of this map from WorldMap? (Once you do delete it, you can submit your data again.)
+        </p>
+        <form action="{% url 'view_delete_tabular_map' %}" method="POST">
+          {% if delete_form %}
+            <div class="checkbox">
+              <label>
+              {% csrf_token %}
+              {% for f in delete_form %}
+                {{ f }}
+                {% if not f.is_hidden %}
+                  Yes, delete all versions of this map from WorldMap.
+                  {% if f.errors %}
+                    <p class="help-block text-danger">{{ f.errors }}</p>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              </label>
+            </div>
+          {% endif %}
+          <button type="submit" class="btn btn-default" data-disable-invalid  disabled="disabled" id="id_delete_map_button">Delete Map</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End: Modal Delete Map -->

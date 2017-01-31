@@ -1,9 +1,0 @@
-<!-- File Name + Citation -->
-<div id="id_file_name_citation" style="padding:10px 0;">
-{% if gis_data_info %}
-    <h4>{{ gis_data_info.datafile_label }}</h4>
-    {{ gis_data_info.dataset_citation|safe }}
-{% else %}
-    <div class="alert alert-danger" role="alert">error "gis_data_info" not available</div>
-{% endif %}
-</div>

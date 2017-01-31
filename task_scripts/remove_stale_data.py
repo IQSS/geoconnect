@@ -16,7 +16,7 @@ if __name__=='__main__':
     os.environ["DJANGO_SETTINGS_MODULE"] = "geoconnect.settings.production"
 
 
-from geo_utils.stale_data_remover import StaleDataRemover
+from gc_apps.geo_utils.stale_data_remover import StaleDataRemover
 
 """
 # sudo crontab -e
