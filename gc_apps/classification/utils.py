@@ -15,6 +15,8 @@ def get_worldmap_info_object(data_source_type, info_md5):
     shapefile -> WorldMapLayerInfo
     tabular join -> WorldMapJoinLayerInfo
     tabular lat/lng -> WorldMapLatLngInfo
+
+    returns None if nothing found
     """
     if data_source_type in [TYPE_SHAPEFILE_LAYER, DV_MAP_TYPE_SHAPEFILE]:
         WORLDMAP_INFO_CLASS = WorldMapShapefileLayerInfo
