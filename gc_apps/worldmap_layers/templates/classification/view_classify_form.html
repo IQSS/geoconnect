@@ -1,6 +1,11 @@
 {% if classify_form %}
 <!-- start: classify form -->
-<form id="frm_classify" class="" role="form" method="post"><!-- shapefile_info.md5 -->
+<form id="frm_classify" class="col-sm-12" role="form" method="post"><!-- shapefile_info.md5 -->
+
+  <fieldset class="form-group">
+    <legend class="h4">Style Map</legend>
+
+    <p class="help-block"><span class="glyphicon glyphicon-info-sign"></span> Click the "Apply Changes" button to apply your edits to WorldMap.</p>
 
     {% csrf_token %}{% for hidden in classify_form.hidden_fields %}{{ hidden }}{% endfor %}
 
@@ -13,7 +18,11 @@
         </div>
      </div>
     {% endspaceless %}{% endfor %}
+
     <a class="btn btn-default" id="id_frm_style_submit">Apply Changes</a>
+
+    </fieldset>
+
 </form>
 <!-- end: classify form col -->
 
