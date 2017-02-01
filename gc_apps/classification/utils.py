@@ -1,3 +1,6 @@
+"""
+Convience method for returning a WorldMapInfo object
+"""
 import logging
 from gc_apps.layer_types.static_vals import TYPE_SHAPEFILE_LAYER,\
                 TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER,\
@@ -10,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 def get_worldmap_info_object(data_source_type, info_md5):
     """
     Based on the type of data, return the appropriate
-    object containing WorldMap data
+    object containing WorldMapInfo data
 
     shapefile -> WorldMapLayerInfo
     tabular join -> WorldMapJoinLayerInfo
@@ -19,13 +22,13 @@ def get_worldmap_info_object(data_source_type, info_md5):
     returns None if nothing found
     """
     if data_source_type in [TYPE_SHAPEFILE_LAYER, DV_MAP_TYPE_SHAPEFILE]:
-        WORLDMAP_INFO_CLASS = WorldMapShapefileLayerInfo
+        worldmap_info_class = WorldMapShapefileLayerInfo
 
     elif data_source_type == TYPE_JOIN_LAYER:
-        WORLDMAP_INFO_CLASS = WorldMapJoinLayerInfo
+        worldmap_info_class = WorldMapJoinLayerInfo
 
     elif data_source_type == TYPE_LAT_LNG_LAYER:
-        WORLDMAP_INFO_CLASS = WorldMapLatLngInfo
+        worldmap_info_class = WorldMapLatLngInfo
 
     else:
         err_note = 'data_source_type not recognized: %s' % data_source_type
@@ -34,8 +37,8 @@ def get_worldmap_info_object(data_source_type, info_md5):
         return None
 
     try:
-        return WORLDMAP_INFO_CLASS.objects.get(md5=info_md5)
-    except WORLDMAP_INFO_CLASS.DoesNotExist:
+        return worldmap_info_class.objects.get(md5=info_md5)
+    except worldmap_info_class.DoesNotExist:
         err_note = ('Sorry! The layer data could not be found '
                     'for md5 "%s". '
                     '(%s object not found)' % (info_md5, data_source_type))

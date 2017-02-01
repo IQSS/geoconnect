@@ -1,3 +1,7 @@
+"""
+Used for development to create WorldMap-related links from a layer name
+"""
+from __future__ import print_function
 import re
 import requests
 from django.conf import settings
@@ -5,11 +9,20 @@ from django.conf import settings
 GEONODE_PREFIX = 'geonode:'
 
 class LayerLink(object):
+    """Holds name, link, description"""
 
     def __init__(self, name, link, description=None):
         self.name = name
         self.link = link
         self.description = description
+
+    def show(self):
+        """print info"""
+        info = ('name: {0}'
+                'link: {1}'
+                'description: {2}'\
+                ).format(self.name, self.link, self.description)
+        print (info)
 
 class LayerLinkHelper(object):
     """
@@ -67,11 +80,12 @@ class LayerLinkHelper(object):
         print('links count: %s' % len(self.links_list))
 
     def get_geoserver(self):
-
+        """Retrieve the geoserver url"""
         return self.server_name.replace(':8000', ':8080')
 
 
     def format_layer_links(self):
+        """Format/Create the layer links"""
 
         # View layer
         view_url = '%s/data/%s' % (self.server_name, self.layer_name)
@@ -90,12 +104,15 @@ class LayerLinkHelper(object):
         if not self.get_sld_name():
             return
 
-        sld_url = '%s/geoserver/rest/styles/%s.sld' %\
+        sld_url = '%s/geoserver/rest/styles/%s.sld' % \
             (self.get_geoserver(), self.sld_name)
         self.add_link('sld_xml', sld_url, 'current SLD XML')
 
-        sld_url2 = '%s/geoserver/web/?wicket:bookmarkablePage=:org.geoserver.wms.web.data.StyleEditPage&name=%s' %\
-            (self.get_geoserver(), self.sld_name)
+        sld_url2 = '%s%s%s%s' % (\
+                self.get_geoserver(),
+                '/geoserver/web/?wicket:bookmarkablePage=',
+                ':org.geoserver.wms.web.data.StyleEditPage&name=',
+                self.sld_name)
         self.add_link('sld_xml2', sld_url2, 'Editable/Formatted SLD XML')
 
 
@@ -108,22 +125,21 @@ class LayerLinkHelper(object):
 
         sld_url = self.links_dict['sld_name'].link
 
-        print ('Attempt to retrieve SLD'
-                'sld_url: %s' % sld_url)
+        print ('Attempt to retrieve SLD sld_url: %s' % sld_url)
 
-        r = requests.get(sld_url, auth=settings.WORLDMAP_ACCOUNT_AUTH)
+        resp = requests.get(sld_url, auth=settings.WORLDMAP_ACCOUNT_AUTH)
 
-        print r.status_code
-        if not r.status_code == 200:
-            print 'Failed to retrieve SLD'
+        print (resp.status_code)
+        if not resp.status_code == 200:
+            print ('Failed to retrieve SLD')
             return False
 
         # Parse out the SLD Name
         sld_search = re.search(r'<li>Default style: StyleInfoImpl\[(.*)\]',\
-                        r.text, re.IGNORECASE)
+                        resp.text, re.IGNORECASE)
 
         if sld_search is None:
-            print 'Failed to retrieve SLD'
+            print ('Failed to retrieve SLD')
             return False
 
         sld_name = sld_search.group(1)

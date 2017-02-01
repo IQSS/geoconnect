@@ -31,7 +31,7 @@
 		{% endif %}
 		<tr>
 			<th>Shapefile Name</th>
-			<td>{{ shapefile_info.get_basename }}  {#(<a href="{% url 'view_try_folium' shapefile_info.md5 %}" target="_blank">folium</a>)#}</td>
+			<td>{{ shapefile_info.get_basename }}</td>
 		</tr>
 		<tr>
 			<th>Dataverse User</th>
@@ -97,6 +97,6 @@
 			<th>Bounding Box</th>
 			<td>{{ shapefile_info.bounding_box }}</td>
 		</tr>
-	
+
 	</table>
 	</div><!-- end: panel -->
