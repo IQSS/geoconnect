@@ -1,11 +1,21 @@
 {% if gis_file.dataset_description %}
  {{ gis_file.dataset_description|safe }}<br /><br />
 {% endif %}
+
 {% if gis_file.datafile_description %}
   {{ gis_file.datafile_description|safe }}<br /><br />
+{% else %}
+    This map was created from the file <b>{{ gis_file.datafile_label }}</b>
 {% endif %}
-{% if gis_file.dataset_name and gis_file.dataverse_name %}
-    Source: Data set <b>{{ gis_file.dataset_name }}</b> stored in Dataverse <b>{{ gis_file.dataverse_name }}</b><br />
 
-    {% if gis_file.return_to_dataverse_url%}<a href="{{ gis_file.return_to_dataverse_url }}">View Data set in Dataverse</a>{% endif %}<br />
+{% if gis_file.dataset_citation %}
+    <p><b>Citation:</b> {{ gis_file.dataset_citation|safe }}
+{% endif %}
+
+{% if gis_file.dataset_name and gis_file.dataverse_name %}
+    <p><b>Source:</b> Dataset <b>{{ gis_file.dataset_name }}</b> stored in Dataverse <b>{{ gis_file.dataverse_name }}</b></p>
+
+    {% if gis_file.return_to_dataverse_url%}
+        <p><a href="{{ gis_file.return_to_dataverse_url }}">View Data set in Dataverse</a>{% endif %}</p>
+
 {% endif %}
