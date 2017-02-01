@@ -6,7 +6,6 @@
 {% endif %}
 {% if gis_file.dataset_name and gis_file.dataverse_name %}
     Source: Data set <b>{{ gis_file.dataset_name }}</b> stored in Dataverse <b>{{ gis_file.dataverse_name }}</b><br />
-    
+
     {% if gis_file.return_to_dataverse_url%}<a href="{{ gis_file.return_to_dataverse_url }}">View Data set in Dataverse</a>{% endif %}<br />
 {% endif %}
-
