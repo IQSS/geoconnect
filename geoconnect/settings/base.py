@@ -218,7 +218,6 @@ LOCAL_APPS = (
     'gc_apps.gis_shapefiles',
     'gc_apps.gis_tabular',
     'gc_apps.worldmap_connect',
-    #'gc_apps.column_stats',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
