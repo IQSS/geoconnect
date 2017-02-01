@@ -29,6 +29,7 @@ from shared_dataverse_information.dataverse_info.url_helper import get_api_url_u
 import logging
 LOGGER = logging.getLogger('gc_apps.dv_notify.metadata_updater')
 
+EMBED_MAP_LINK_KEY = 'embedMapLink'
 
 class MetadataUpdater(object):
     """
@@ -53,15 +54,19 @@ class MetadataUpdater(object):
         Return a message in JSON format
         """
         if type(data_dict) is dict:
-            print ('YES')
-            d = MessageHelperJSON.get_dict_msg(success=success, msg=user_msg, data_dict=data_dict)
+            msg_dict = MessageHelperJSON.get_dict_msg(\
+                        success=success,
+                        msg=user_msg,
+                        data_dict=data_dict)
         else:
-            d = MessageHelperJSON.get_dict_msg(success=success, msg=user_msg)
+            msg_dict = MessageHelperJSON.get_dict_msg(\
+                        success=success,
+                        msg=user_msg)
 
         if not self.return_type_json:
-            return d
+            return msg_dict
 
-        return MessageHelperJSON.get_json_msg_from_dict(d)
+        return MessageHelperJSON.get_json_msg_from_dict(msg_dict)
 
 
     def delete_metadata_from_dataverse(self, worldmap_layer_info):
@@ -93,11 +98,11 @@ class MetadataUpdater(object):
             return (False, 'This request timed out.  (Time limit: %s seconds(s))'\
                 % self.timeout_seconds)
 
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError as exception_obj:
 
             err_msg = '<p><b>Details for administrator:</b> Could not contact\
              the Dataverse server: %s</p><p>%s</p>'\
-                                % (api_delete_metadata_url, e.message)
+                                % (api_delete_metadata_url, exception_obj.message)
             LOGGER.error(err_msg)
             return (False, err_msg)
 
@@ -134,12 +139,11 @@ class MetadataUpdater(object):
              "worldmap_layer_info must have a method get_dataverse_server_url()."\
              + " type: (%s)" % worldmap_layer_info
 
+
     def update_embed_link_for_https(self, params):
         """
         Force the embed map link to https
         """
-        EMBED_MAP_LINK_KEY = 'embedMapLink'
-
         if params is None or EMBED_MAP_LINK_KEY not in params:
             return False
 
@@ -197,11 +201,13 @@ class MetadataUpdater(object):
                 'This request timed out.  (Time limit: %s seconds(s))'\
                 % self.timeout_seconds)
 
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError as exception_obj:
 
-            err_msg = '<p><b>Details for administrator:</b> Could not contact\
-             the Dataverse server: %s</p><p>%s</p>'\
-                                % (api_update_url, e.message)
+            err_msg = ('<p><b>Details for administrator:</b>'
+                       ' Could not contact the Dataverse server:'
+                       ' %s</p><p>%s</p>')\
+                        % (api_update_url, exception_obj.message)
+
             LOGGER.error(err_msg)
             return self.get_result_msg(False, err_msg)
 
@@ -241,9 +247,9 @@ class MetadataUpdater(object):
         LOGGER.info("delete_dataverse_map_metadata")
 
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+        metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
 
-        return mu.delete_metadata_from_dataverse(worldmap_layer_info)
+        return metadata_updater.delete_metadata_from_dataverse(worldmap_layer_info)
 
 
 
@@ -259,9 +265,9 @@ class MetadataUpdater(object):
         LOGGER.info("update_dataverse_with_metadata")
         #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
         #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        mu = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+        metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
 
-        resp_dict = mu.send_info_to_dataverse(worldmap_layer_info)
+        resp_dict = metadata_updater.send_info_to_dataverse(worldmap_layer_info)
         if resp_dict.get('success', False) is True:
             return True
         return False
