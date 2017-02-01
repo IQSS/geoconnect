@@ -48,8 +48,8 @@ function show_map_update_titles(json_resp){
     }
     // Title update
     if (json_resp.data.hasOwnProperty('id_main_panel_title')){
-         //$("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
-         $("#id_main_panel_title").replaceWith(json_resp.data.id_main_panel_title);
+         $("#id_main_panel_title").html(json_resp.data.id_main_panel_title);
+         //alert('title: ' + json_resp.data.id_main_panel_title);
     }
 
 }

@@ -5,7 +5,8 @@
 
         <a data-toggle="modal" data-target="#save_map_confirm" id="id_btn_return_to_dv" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> {{ RETURN_TO_DV_TEXT }}</a>
 
-        {% comment %}<form id="frm_update_dv">{% csrf_token %}</form>{% endcomment %}
+        <!-- used to update the send a metadata update to the Dataverse -->
+        <form id="frm_update_dv" style="display:inline;">{% csrf_token %}</form>
 
 
     {% else %}<!-- No Map: Return directly! -->
