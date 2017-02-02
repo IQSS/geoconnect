@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.core import management
 
 from gc_apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
-from gc_apps.gis_tabular.tabular_helper import TabFileStats
+from gc_apps.gis_tabular.tab_file_stats import TabFileStats
 from gc_apps.geo_utils.msg_util import msgt, msg
 
 

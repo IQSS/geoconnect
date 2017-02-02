@@ -129,9 +129,8 @@ class UnmatchedRowHelper(object):
         tabular_info = self.worldmap_info.tabular_info
 
         try:
-            df = pd.read_csv(tabular_info.dv_file.path,\
-                        sep=tabular_info.delimiter,\
-                        )
+            df = pd.read_csv(tabular_info.dv_file,
+                             sep=tabular_info.delimiter)
         except pd.parser.CParserError as e:
             err_msg = ('Could not process the file. '
                         'At least one row had too many values. '

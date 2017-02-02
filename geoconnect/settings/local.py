@@ -70,11 +70,18 @@ CACHES = {
 ########## TOOLBAR CONFIGURATION
 # See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
 INSTALLED_APPS += (
-    #'gc_apps.gis_tabular',
-    #'debug_toolbar',
-    #'djcelery',
-    #'kombu.transport.django',
+    'storages',
 )
+
+########## Amazon S3 file storages
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+from . import local_aws_creds
+
+AWS_STORAGE_BUCKET_NAME = local_aws_creds.AWS_STORAGE_BUCKET_NAME
+AWS_ACCESS_KEY_ID = local_aws_creds.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = local_aws_creds.AWS_SECRET_ACCESS_KEY
+
+########## END Amazon S3 file storages
 
 MIDDLEWARE_CLASSES += (
     #'debug_toolbar.middleware.DebugToolbarMiddleware',

@@ -19,10 +19,11 @@ NUM_PREVIEW_ROWS = 5
 
 class TabFileStats(object):
 
-    def __init__(self, fname, delim=',', tabular_info=None):
-        assert isfile(fname), "TabFileStats.  File does not exist: %s" % fname
+    def __init__(self, file_object, delim=',', tabular_info=None):
+        assert hasattr(file_object, 'read'),\
+            "TabFileStats.  file_object does not have .read() function: %s" % file_object
 
-        self.fname = fname
+        self.file_object = file_object
 
         self.delimiter = str(delim)
         #print 'init delim:', self.delimiter, len(self.delimiter)
@@ -61,7 +62,8 @@ class TabFileStats(object):
 
         assert tabular_info.dv_file is not None, "tabular_info.file cannot be None"
 
-        return TabFileStats(fname=tabular_info.dv_file.file.name\
+        #   tabular_info.dv_file.file.name\
+        return TabFileStats(file_object=tabular_info.dv_file\
                             , delim=tabular_info.delimiter\
                             , tabular_info=tabular_info
                             )
@@ -71,11 +73,17 @@ class TabFileStats(object):
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
-
+        #import ipdb; ipdb.set_trace()
         try:
-            df = pd.read_csv(self.fname,\
-                        sep=self.delimiter,\
-                        )
+            if self.file_object.file.__class__.__name__ == 'S3Boto3StorageFile':
+                file_path = self.file_object.url
+            else:
+                file_path = self.file_object.file.name
+
+            #type(self.file_object.file)
+            #<class 'storages.backends.s3boto3.S3Boto3StorageFile'>
+            df = pd.read_csv(file_path,
+                             sep=self.delimiter)
         except pd.parser.CParserError as e:
             err_msg = ('Could not process the file. '
                         'At least one row had too many values. '

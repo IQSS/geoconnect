@@ -18,7 +18,7 @@ from gc_apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
 
 from gc_apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm,\
     SELECT_LABEL, INITIAL_SELECT_CHOICE
-from gc_apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
+from gc_apps.gis_tabular.tab_file_stats import TabFileStats, NUM_PREVIEW_ROWS
 from gc_apps.gis_tabular.forms_delete import DeleteMapForm
 
 from gc_apps.worldmap_layers.models import WorldMapLayerInfo

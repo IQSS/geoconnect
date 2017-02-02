@@ -1,3 +1,5 @@
+"""Use the WorldMap API to upload a datatable and join it to an existing layer"""
+
 import sys
 import json
 import pprint
@@ -6,10 +8,10 @@ import requests
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db.models import FileField
+from django.core.files.storage import default_storage
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from csv import QUOTE_NONNUMERIC
-from gc_apps.geo_utils.msg_util import msg, msgt
+from gc_apps.geo_utils.msg_util import msg
 from gc_apps.geo_utils.tabular_util import get_formatted_column_name
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
@@ -57,6 +59,7 @@ class TableJoinMapMaker(object):
         #self.run_map_create()
 
     def get_map_info(self):
+        """Get "data" value from JSON"""
 
         if self.rjson_output is None:
             return None
@@ -73,7 +76,6 @@ class TableJoinMapMaker(object):
             if self.zero_pad_length is not None:
                 self.rjson_output['data']['zero_pad_length'] = self.zero_pad_length
 
-
         return self.rjson_output
 
     def add_error(self, err_msg):
@@ -86,9 +88,11 @@ class TableJoinMapMaker(object):
         self.err_messages.append(err_msg)
 
     def get_error_msg(self):
+        """Return error message"""
         return '\n'.join(self.err_messages)
 
     def sanity_check(self):
+        """Make sure objects are not None, have expected values"""
 
         if self.datatable_obj is None:
             self.add_error('The Tabular File object was not specified.')
@@ -198,7 +202,8 @@ class TableJoinMapMaker(object):
         # ----------------------------------------
         # Make sure the file is still around
         # ----------------------------------------
-        if not self.datatable_obj.dv_file or not self.datatable_obj.dv_file.path:
+        if not self.datatable_obj.dv_file or\
+            not default_storage.exists(self.datatable_obj.dv_file.name):
             self.add_error("The file could not be found.")
             return False
 
@@ -217,13 +222,13 @@ class TableJoinMapMaker(object):
         # (1a) Open the dataverse tabular file with pandas
         # --------------------------------------------
         try:
-            df = pd.read_csv(self.datatable_obj.dv_file.path,\
+            df = pd.read_csv(self.datatable_obj.dv_file,\
                         sep=self.datatable_obj.delimiter,\
                         )
-        except pd.parser.CParserError as e:
+        except pd.parser.CParserError as ex_obj:
             err_msg = ('Could not process the file. '
-                        'At least one row had too many values. '
-                        '(error: %s)' % e.message)
+                       'At least one row had too many values. '
+                       '(error: {0})').format(ex_obj.message)
             self.add_error(err_msg)
             return False
 
@@ -321,16 +326,13 @@ class TableJoinMapMaker(object):
 
     def really_get_file_params(self, file_field):
 
-        if not hasattr(file_field, 'path'):
+        if not hasattr(file_field, 'read'):
             self.add_error('Failed to open file. FileField required.')
             return None
 
-        if not file_field or not file_field.path:
-            self.add_error("The file could not be found.")
-            return None
+        file_handler = file_field   #open(file_field.path, 'rb')
 
-        file_handler = open(file_field.path,'rb')
-        return {'uploaded_file': file_handler }
+        return {'uploaded_file': file_handler}
 
 
     def run_map_create(self):
@@ -346,7 +348,8 @@ class TableJoinMapMaker(object):
         # -------------------------------------------
         all_join_target_info = get_latest_jointarget_information()
 
-        single_join_target_info = all_join_target_info.get_single_join_target_info(self.target_layer_id)
+        single_join_target_info =\
+            all_join_target_info.get_single_join_target_info(self.target_layer_id)
 
         if single_join_target_info is None:
             self.add_error('Failed to retrieve target layer information.')
@@ -369,13 +372,13 @@ class TableJoinMapMaker(object):
         # --------------------------------
         # Prepare parameters
         # --------------------------------
-        map_params = dict(title=self.datatable_obj.name,
-                        abstract=self.datatable_obj.get_abstract_for_worldmap(),
-                        delimiter=self.datatable_obj.delimiter,
-                        table_attribute=self.table_attribute_for_join,
-                        layer_name=single_join_target_info.target_layer_name,
-                        layer_attribute=single_join_target_info.target_column_name\
-                        )
+        map_params = dict(\
+                    title=self.datatable_obj.name,
+                    abstract=self.datatable_obj.get_abstract_for_worldmap(),
+                    delimiter=self.datatable_obj.delimiter,
+                    table_attribute=self.table_attribute_for_join,
+                    layer_name=single_join_target_info.target_layer_name,
+                    layer_attribute=single_join_target_info.target_column_name)
 
         # Add dataverse dict info
         #
@@ -395,17 +398,17 @@ class TableJoinMapMaker(object):
         print '-' * 40
 
         try:
-            r = requests.post(UPLOAD_JOIN_DATATABLE_API_PATH,
+            r = requests.post(\
+                            UPLOAD_JOIN_DATATABLE_API_PATH,
                             data=map_params,
                             files=file_params,
                             auth=settings.WORLDMAP_ACCOUNT_AUTH,
-                            timeout=settings.WORLDMAP_DEFAULT_TIMEOUT
-                            )
+                            timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
         except RequestsConnectionError as e:
             print 'err', e
             err_msg = 'Error connecting to WorldMap server: %s' % e.message
             LOGGER.error('Error trying to join to datatable with id: %s',\
-                self.datatable_obj.id )
+                         self.datatable_obj.id)
             LOGGER.error(err_msg)
             self.add_error(err_msg)
             return False

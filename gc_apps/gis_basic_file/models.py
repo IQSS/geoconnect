@@ -13,7 +13,10 @@ from gc_apps.registered_dataverse.models import RegisteredDataverse
 from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
-DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
+from django.core.files.storage import default_storage
+
+#DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
+DV_FILE_SYSTEM_STORAGE = default_storage
 
 class GISDataFile(DataverseInfo):
     """
