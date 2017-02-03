@@ -1,0 +1,14 @@
+[
+{
+    "model": "registered_dataverse.registereddataverse",
+    "pk": 1,
+    "fields": {
+        "created": "2017-02-03T18:00:28.245Z",
+        "modified": "2017-02-03T18:00:28.245Z",
+        "name": "localhost",
+        "dataverse_url": "http://localhost:8080",
+        "active": true,
+        "notes": ""
+    }
+}
+]
