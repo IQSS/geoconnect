@@ -2,7 +2,7 @@
 
 ## [0.5.0](https://github.com/iqss/geoconnect) (2017-01-30)
 
-** Django upgrade from 1.6 to 1.10 **
+### Django upgrade from 1.6 to 1.10
 
 - Updates to shared-dataverse-information dependency
 - For HttpRepsonse, changed ```mimetype=``` to ```content_type=```
@@ -19,8 +19,6 @@
 - Create initial migration files
   - If tables exist, run ```python manage.py  migrate --fake-initial```
 
-- [ ] Updated fixtures
-
-** UI update **
+### UI update
 
 - Updated format of tabular mapping UI including workflow and layout.
