@@ -112,6 +112,7 @@ python manage.py migrate    # for a new database
 
 ```
 python manage.py loaddata gc_apps/registered_dataverse/fixtures/incoming_filetypes_initial_data.json
+
 ```
 
 * Follow the prompts to create a superuser, create tables, etc.
