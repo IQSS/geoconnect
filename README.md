@@ -114,6 +114,7 @@ python manage.py migrate    # for a new database
 python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
 python manage.py loaddata --app layer_classification initial_data.json
 ```
+  - To run on a localhost, add this data: ```python manage.py loaddata --app registered_dataverse registered_dv_localhost.json```
 
 - Create a superuser
 
