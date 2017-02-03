@@ -111,10 +111,15 @@ python manage.py migrate    # for a new database
 - Add initial database
 
 ```
-python manage.py loaddata gc_apps/registered_dataverse/fixtures/incoming_filetypes_initial_data.json
+python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
+python manage.py loaddata --app layer_classification initial_data.json
 ```
 
-* Follow the prompts to create a superuser, create tables, etc.
+- Create a superuser
+
+```
+python manage.py createsuperuser
+```
 
 #### Run the test server (still in ~\geoconnect\geoconnect)
 
