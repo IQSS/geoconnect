@@ -225,7 +225,10 @@ class SendShapefileService:
         # Instantiate the WorldMapImporter object and attempt the import
         #
         wmi = WorldMapImporter()
-        worldmap_response = wmi.send_shapefile_to_worldmap(layer_params, self.shapefile_info.get_dv_file_fullpath())
+        worldmap_response = wmi.send_shapefile_to_worldmap(\
+                                layer_params,
+                                self.shapefile_info.dv_file)
+        #                        self.shapefile_info.get_dv_file_fullpath())
 
         if not worldmap_response:
             self.add_err_msg('send_file_to_worldmap: worldmap_response was None!')

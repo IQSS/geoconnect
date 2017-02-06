@@ -12,7 +12,7 @@ from django.conf import settings
 from gc_apps.registered_dataverse.models import RegisteredDataverse
 from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
-
+from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 from django.core.files.storage import default_storage
 
 #DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
@@ -77,6 +77,12 @@ class GISDataFile(DataverseInfo):
         if fullpath is None:
             return False
 
+        # Assuming (perhaps incorrectly) that this an AWS S3 path
+        # which will available b/c get_dv_file_fullpath() didn't fail
+        #
+        if fullpath.startswith('https'):
+            return True
+
         try:
             if isfile(fullpath):
                 return True
@@ -84,6 +90,7 @@ class GISDataFile(DataverseInfo):
             return False
 
         return False
+
 
     def get_dv_file_basename(self):
         """Return the basename of the file"""
@@ -97,10 +104,7 @@ class GISDataFile(DataverseInfo):
         if not self.dv_file:
             return None
 
-        try:
-            return self.dv_file.file.name
-        except IOError:
-            return None
+        return get_file_path_or_url(self.dv_file)
 
 
     def get_scratch_work_directory(self):

@@ -57,7 +57,7 @@ class WorldMapImporter:
 
         return MessageHelperJSON.get_json_msg_from_dict(d)
 
-    def send_shapefile_to_worldmap(self, layer_params, fullpath_to_file):
+    def send_shapefile_to_worldmap(self, layer_params, file_object):
         """
         :param layer_params: Data to send in the POST. Example:
                  layer_params = {'title' : 'Boston Income'\
@@ -88,12 +88,12 @@ class WorldMapImporter:
 
         # Is the file available?
         #
-        if fullpath_to_file is None or not os.path.isfile(fullpath_to_file):
-            err_msg = 'This file does not exist: %s' % fullpath_to_file
+        if file_object is None:
+            err_msg = 'The file_object does not exist'
             LOGGER.error(err_msg)
             return self.get_result_msg(False, err_msg)
 
-        shp_file_param = {'content': open(fullpath_to_file, 'rb')}
+        shp_file_param = {'content': file_object}
 
         # Send the request to WorldMap
         #

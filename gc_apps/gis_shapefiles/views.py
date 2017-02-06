@@ -173,10 +173,9 @@ def view_shapefile(request, shp_md5, **kwargs):
         logger.debug('zipfile_checked NOT checked')
 
         logger.debug('fname: %s' % shapefile_info.get_dv_file_fullpath())
-        #zip_checker = ShapefileZipCheck(shapefile_info.dv_file, **{'is_django_file_field': True})
-        #zip_checker = ShapefileZipCheck(os.path.join(settings.MEDIA_ROOT, shapefile_info.dv_file.name))
 
-        zip_checker = ShapefileZipCheck(shapefile_info.get_dv_file_fullpath())
+        zip_checker = ShapefileZipCheck(shapefile_info.dv_file, **{'is_django_file_field': True})
+        #zip_checker = ShapefileZipCheck(shapefile_info.get_dv_file_fullpath())
         zip_checker.validate()
 
         # -----------------------------
@@ -235,7 +234,7 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
     """
     assert isinstance(zip_checker, ShapefileZipCheck),\
         "zip_checker is not a ShapefileZipCheck object"
-    assert zip_checker.err_detected, "Only use this when 'err_detected is True'"
+    assert zip_checker.has_err, "Only use this when 'has_err is True'"
 
     d = template_params
 
@@ -286,6 +285,9 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
         d['list_of_shapefile_set_names'] = zip_checker.get_shapefile_setnames()
         d['zip_name_list'] = zip_checker.get_zipfile_names()
         zip_checker.close_zip()
+
+    else:
+        d['Err_Msg'] = zip_checker.error_msg
 
     # Send error to user
     return render(request, 'shapefiles/main_outline_shp.html', d)
