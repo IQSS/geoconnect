@@ -205,6 +205,8 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'django_cleanup',   # delete files linked by FileField objects
+    
     'shared_dataverse_information.layer_classification',
     'shared_dataverse_information.shapefile_import',
     #'dataverse_info',

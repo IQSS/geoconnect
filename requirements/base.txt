@@ -12,6 +12,10 @@ reportlab==3.0
 # Django JSON-field
 jsonfield==1.0.3
 
+# Delete files if related object is deleted
+django-cleanup>=0.4.2
+
+
 # for tabular files
 pandas>=0.17.0
 

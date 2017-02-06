@@ -1,6 +1,6 @@
 import logging
 import requests
-
+import json
 from django.conf import settings
 from requests.exceptions import ConnectionError as RequestsConnectionError
 
@@ -43,7 +43,7 @@ def create_map_from_datatable_lat_lng(tabular_info, lat_col, lng_col):
                     delimiter=tabular_info.delimiter,
                     lat_attribute=lat_col,
                     lng_attribute=lng_col)
-
+    #print json.dumps(map_params, indent=4)
     # Add dataverse dict info
     #
     dataverse_metadata_dict = get_dataverse_info_dict(tabular_info)
@@ -54,11 +54,13 @@ def create_map_from_datatable_lat_lng(tabular_info, lat_col, lng_col):
     # --------------------------------
     # Prepare file
     # --------------------------------
-    if not tabular_info.dv_file or not tabular_info.dv_file.path:
+    if not tabular_info.dv_file:
         return (False, "The file could not be found.")
+
     print 'create_map_from_datatable_lat_lng 3'
 
-    files = {'uploaded_file': open(tabular_info.dv_file.path,'rb')}
+    #files = {'uploaded_file': open(tabular_info.dv_file.path,'rb')}
+    files = dict(uploaded_file=tabular_info.dv_file)
 
     print 'make request to', MAP_LAT_LNG_TABLE_API_PATH
     print '-' * 40

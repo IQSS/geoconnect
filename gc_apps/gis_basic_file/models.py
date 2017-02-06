@@ -129,8 +129,10 @@ class GISDataFile(DataverseInfo):
 
     def get_abstract_for_worldmap(self):
         """Return the Abstract for WorldMap use"""
-        return render_to_string('gis_data_info/worldmap_abstract.html',
+        abstract = render_to_string('gis_data_info/worldmap_abstract.html',
                                 {'gis_file' : self})
+
+        return abstract.strip()
 
 
     def __unicode__(self):
