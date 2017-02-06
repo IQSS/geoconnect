@@ -1,23 +1,19 @@
-from os.path import isfile
-import sys
-import csv
-import json
+"""
+Gather tabular file information: number of rows, column names, etc
+"""
 import pandas as pd
 
 from gc_apps.gis_tabular.models import TabularFileInfo
-import unicodedata
+from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
-
-"""
-unicodedata.normalize('NFKD', title).encode('ascii','ignore')
-"""
 
 NUM_PREVIEW_ROWS = 5
 
 class TabFileStats(object):
+    """Gather tabular file information: number of rows, column names, etc"""
 
     def __init__(self, file_object, delim=',', tabular_info=None):
         assert hasattr(file_object, 'read'),\
@@ -45,49 +41,40 @@ class TabFileStats(object):
 
 
     def has_error(self):
+        """Was there an error?"""
         return self.error_found
 
-    def add_error(self, m):
+    def add_error(self, message):
         """
         Save error message encountered in the process of
         collecting stats or updating the tabularFileInfo object
         """
         self.error_found = True
-        self.error_message = m
+        self.error_message = message
 
     @staticmethod
-    def create_tab_stats_from_tabular_info(tabular_info):
+    def create_from_tabular_info(tabular_info):
         assert isinstance(tabular_info, TabularFileInfo)\
             , 'tabular_info must be a TabularFileInfo object'
 
         assert tabular_info.dv_file is not None, "tabular_info.file cannot be None"
 
         #   tabular_info.dv_file.file.name\
-        return TabFileStats(file_object=tabular_info.dv_file\
-                            , delim=tabular_info.delimiter\
-                            , tabular_info=tabular_info
-                            )
+        return TabFileStats(file_object=tabular_info.dv_file,
+                            delim=tabular_info.delimiter,
+                            tabular_info=tabular_info)
 
     def collect_stats(self):
-        global NUM_PREVIEW_ROWS
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
-        #import ipdb; ipdb.set_trace()
         try:
-            if self.file_object.file.__class__.__name__ == 'S3Boto3StorageFile':
-                file_path = self.file_object.url
-            else:
-                file_path = self.file_object.file.name
-
-            #type(self.file_object.file)
-            #<class 'storages.backends.s3boto3.S3Boto3StorageFile'>
-            df = pd.read_csv(file_path,
+            df = pd.read_csv(get_file_path_or_url(self.file_object),
                              sep=self.delimiter)
-        except pd.parser.CParserError as e:
+        except pd.parser.CParserError as ex_obj:
             err_msg = ('Could not process the file. '
-                        'At least one row had too many values. '
-                        '(error: %s)' % e.message)
+                       'At least one row had too many values. '
+                       '(error: %s)') % ex_obj.message
             self.add_error(err_msg)
             return
 
@@ -134,13 +121,6 @@ class TabFileStats(object):
         self.tabular_info.num_rows = self.num_rows
         self.tabular_info.num_columns = self.num_cols
         self.tabular_info.column_names = self.column_names
-        """
-        try:
-            json_header = json.dumps(self.column_names)
-            self.tabular_info.column_names = json_header
-        except:
-            sys.exit(0)
-            logger.error("Failed to convert header row (column names) to JSON.\n%s" % sys.exc_info()[0])
-        """
+
 
         self.tabular_info.save()

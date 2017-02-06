@@ -13,6 +13,7 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from csv import QUOTE_NONNUMERIC
 from gc_apps.geo_utils.msg_util import msg
 from gc_apps.geo_utils.tabular_util import get_formatted_column_name
+from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 
 from shared_dataverse_information.worldmap_api_helper.url_helper import\
     UPLOAD_JOIN_DATATABLE_API_PATH
@@ -222,9 +223,9 @@ class TableJoinMapMaker(object):
         # (1a) Open the dataverse tabular file with pandas
         # --------------------------------------------
         try:
-            df = pd.read_csv(self.datatable_obj.dv_file,\
-                        sep=self.datatable_obj.delimiter,\
-                        )
+            df = pd.read_csv(\
+                        get_file_path_or_url(self.datatable_obj.dv_file),
+                        sep=self.datatable_obj.delimiter)
         except pd.parser.CParserError as ex_obj:
             err_msg = ('Could not process the file. '
                        'At least one row had too many values. '
@@ -272,8 +273,10 @@ class TableJoinMapMaker(object):
 
         # make the column
         # ----------------------------------
+        #df[new_column_name] = df[self.table_attribute_for_join].apply(\
+        #                         lambda x: func_col_fmt(x))
         df[new_column_name] = df[self.table_attribute_for_join].apply(\
-                                lambda x: func_col_fmt(x))
+                                    func_col_fmt)
 
         # (2b) set new join column name
         # ----------------------------------
@@ -325,7 +328,7 @@ class TableJoinMapMaker(object):
 
 
     def really_get_file_params(self, file_field):
-
+        """Format parameter for WorldMap API call"""
         if not hasattr(file_field, 'read'):
             self.add_error('Failed to open file. FileField required.')
             return None
@@ -384,8 +387,8 @@ class TableJoinMapMaker(object):
         #
         map_params.update(self.dataverse_metadata_dict)
 
-        pp = pprint.PrettyPrinter(indent=4)
-        msg(pp.pprint(map_params))
+        pretty_printer = pprint.PrettyPrinter(indent=4)
+        msg(pretty_printer.pprint(map_params))
 
         # --------------------------------
         # Prepare file
@@ -398,15 +401,15 @@ class TableJoinMapMaker(object):
         print '-' * 40
 
         try:
-            r = requests.post(\
+            resp = requests.post(\
                             UPLOAD_JOIN_DATATABLE_API_PATH,
                             data=map_params,
                             files=file_params,
                             auth=settings.WORLDMAP_ACCOUNT_AUTH,
                             timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
-        except RequestsConnectionError as e:
-            print 'err', e
-            err_msg = 'Error connecting to WorldMap server: %s' % e.message
+        except RequestsConnectionError as ex_obj:
+            print 'err', ex_obj
+            err_msg = 'Error connecting to WorldMap server: %s' % ex_obj.message
             LOGGER.error('Error trying to join to datatable with id: %s',\
                          self.datatable_obj.id)
             LOGGER.error(err_msg)
@@ -419,9 +422,9 @@ class TableJoinMapMaker(object):
             return False
 
         try:
-            rjson = r.json()
+            rjson = resp.json()
         except:
-            self.add_error("Sorry!  The mapping failed.  (%s)" % r.text)
+            self.add_error("Sorry!  The mapping failed.  (%s)" % resp.text)
             return False
         msg('rjson: %s' % json.dumps(rjson, indent=4))
 

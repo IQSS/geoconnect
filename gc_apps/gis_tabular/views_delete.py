@@ -10,7 +10,7 @@ from django.http import HttpResponse, Http404
 
 from django.conf import settings
 
-from gc_apps.geo_utils.msg_util import msg
+from gc_apps.geo_utils.msg_util import msg, msgt
 from gc_apps.geo_utils.view_util import get_common_lookup
 from gc_apps.geo_utils.geoconnect_step_names import PANEL_TITLE_DELETE_MAP,\
     PANEL_TITLE_REMAP
@@ -88,6 +88,7 @@ def view_delete_tabular_map(request):
     # Delete the Geoconnect WorldMap info -- regardless of
     # whether the data was removed from Dataverse
     if flag_delete_local_worldmap_info:
+        msgt('Delete worldmap_layer_info: %s' % worldmap_layer_info)
         worldmap_layer_info.delete()
 
     if success2 is False:

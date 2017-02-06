@@ -70,7 +70,7 @@ class WorldMapTabularInfoTestCase(TestCase):
         tab_file_info.save()
 
         # re-run column info
-        tab_file_stats = TabFileStats.create_tab_stats_from_tabular_info(tab_file_info)
+        tab_file_stats = TabFileStats.create_from_tabular_info(tab_file_info)
         self.assertTrue(not tab_file_stats.has_error())
 
         # Make sure num_rows and num_columns are the same
