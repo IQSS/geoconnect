@@ -83,9 +83,7 @@ AWS_SECRET_ACCESS_KEY = local_aws_creds.AWS_SECRET_ACCESS_KEY
 
 ########## END Amazon S3 file storages
 
-MIDDLEWARE_CLASSES += (
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 

@@ -165,18 +165,6 @@ TEMPLATES = [
 ########## END TEMPLATE CONFIGURATION
 
 
-########## MIDDLEWARE CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE_CLASSES = (
-    # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
-########## END MIDDLEWARE CONFIGURATION
 
 
 ########## URL CONFIGURATION
@@ -206,7 +194,7 @@ DJANGO_APPS = (
 # Apps specific for this project go here.
 LOCAL_APPS = (
     'django_cleanup',   # delete files linked by FileField objects
-    
+
     'shared_dataverse_information.layer_classification',
     'shared_dataverse_information.shapefile_import',
     #'dataverse_info',
@@ -226,6 +214,7 @@ LOCAL_APPS = (
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging

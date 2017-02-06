@@ -15,8 +15,10 @@ from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHe
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 from django.core.files.storage import default_storage
 
-#DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
-DV_FILE_SYSTEM_STORAGE = default_storage
+if settings.DV_DATAFILE_DIRECTORY is not None:
+    DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
+else:
+    DV_FILE_SYSTEM_STORAGE = default_storage
 
 class GISDataFile(DataverseInfo):
     """

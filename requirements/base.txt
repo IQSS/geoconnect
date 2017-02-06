@@ -22,3 +22,6 @@ pandas>=0.17.0
 # for S3
 boto3==1.4.4
 django-storages==1.5.2
+
+# heroku
+whitenoise==3.3.0
