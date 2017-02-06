@@ -1,1 +1,0 @@
-plaid ALL=(root) NOPASSWD: /sbin/service httpd restart
