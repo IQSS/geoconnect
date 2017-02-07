@@ -44,11 +44,6 @@ ROOT_URLCONF = 'geoconnect.urls_prod'
 
 ADMINS = [('Raman', 'raman_prasad@harvard.edu'),]
 
-########## DEBUG CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = False
-#DEBUG = True
-
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -95,11 +90,6 @@ try:
 except:
     assert False, """Make sure TEMPLATES list is set with 1 entry that has an OPTIONS dict.
 e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : False }}]"""
-
-#MIDDLEWARE_CLASSES += (
-#   'debug_toolbar.middleware.DebugToolbarMiddleware',
-#)
-#
 
 
 # -----------------------------------
