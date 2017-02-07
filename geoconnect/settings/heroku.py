@@ -111,7 +111,7 @@ INTERNAL_IPS = ['140.247', # Harvard
 
 
 ########## SESSION_COOKIE_NAME
-SESSION_COOKIE_NAME = 'geoconnect_prod'
+SESSION_COOKIE_NAME = 'geoconnect_h1'
 ########## END SESSION_COOKIE_NAME
 
 # -----------------------------------
@@ -172,8 +172,8 @@ MIDDLEWARE = [
 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
