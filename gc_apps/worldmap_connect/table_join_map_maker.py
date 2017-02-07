@@ -203,8 +203,7 @@ class TableJoinMapMaker(object):
         # ----------------------------------------
         # Make sure the file is still around
         # ----------------------------------------
-        if not self.datatable_obj.dv_file or\
-            not default_storage.exists(self.datatable_obj.dv_file.name):
+        if not self.datatable_obj.dv_file:
             self.add_error("The file could not be found.")
             return False
 

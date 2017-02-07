@@ -16,6 +16,7 @@ class TabFileStats(object):
     """Gather tabular file information: number of rows, column names, etc"""
 
     def __init__(self, file_object, delim=',', tabular_info=None):
+
         assert hasattr(file_object, 'read'),\
             "TabFileStats.  file_object does not have .read() function: %s" % file_object
 

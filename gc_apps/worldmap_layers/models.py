@@ -343,6 +343,25 @@ class WorldMapLayerInfo(TimeStampedModel):
         return dl.get_formatted_links()
 
 
+
+    def get_embed_map_link(self, force_https=True):
+        """
+        Return the WorldMap embed link.
+        By default, make the link 'https'
+        """
+        if not self.core_data:
+            return None
+
+        embed_link = self.core_data.get('embed_map_link', None)
+        if not embed_link:
+            return None
+
+        if force_https and embed_link.startswith('http://'):
+            return embed_link.replace('http://', 'https://', 1)
+
+        return embed_link
+
+
     def verify_layer_link_format(self):
         """
         Hack to make sure the layer_link is a full url and not just the path
