@@ -164,7 +164,7 @@ WORLDMAP_ACCOUNT_AUTH = (WORLDMAP_ACCOUNT_USERNAME, WORLDMAP_ACCOUNT_PASSWORD)
 
 ########## END WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
 
-WSGI_APPLICATION = 'geoconnect.wsgi_heroku.application'
+WSGI_APPLICATION = 'geoconnect.wsgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
