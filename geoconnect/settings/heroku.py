@@ -12,7 +12,7 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
-DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
+DEBUG = True #bool(os.environ.get('DJANGO_DEBUG', False))
 
 SITENAME = "geoconnect"
 
@@ -170,6 +170,8 @@ WORLDMAP_ACCOUNT_PASSWORD = os.environ['WORLDMAP_ACCOUNT_PASSWORD']
 WORLDMAP_ACCOUNT_AUTH = (WORLDMAP_ACCOUNT_USERNAME, WORLDMAP_ACCOUNT_PASSWORD)
 
 ########## END WORLDMAP TOKEN/SERVER | DATAVERSE TOKEN AND SERVER
+
+WSGI_APPLICATION = 'geoconnect.wsgi_heroku.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

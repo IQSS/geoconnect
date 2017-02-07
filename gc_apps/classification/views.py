@@ -119,12 +119,11 @@ def view_classify_layer_form(request, import_success_md5):
     #       part of this layer? etc.
     #
     classify_form = ClassifyLayerForm(\
-                    request.POST,
-                    **worldmap_layerinfo.get_dict_for_classify_form())
+                        request.POST,
+                        **worldmap_layerinfo.get_dict_for_classify_form())
 
     # --------------------------------------------------------------
     # Invalid forms are status=200 so caught by ajax
-    # Form validation will replace the classification div on the page
     # --------------------------------------------------------------
     if not classify_form.is_valid():    # Oops, not valid (shouldn't happen)
         user_message = ('There was an error with the styling form.'

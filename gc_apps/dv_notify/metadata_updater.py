@@ -100,9 +100,9 @@ class MetadataUpdater(object):
 
         except requests.exceptions.ConnectionError as exception_obj:
 
-            err_msg = '<p><b>Details for administrator:</b> Could not contact\
-             the Dataverse server: %s</p><p>%s</p>'\
-                                % (api_delete_metadata_url, exception_obj.message)
+            err_msg = ('<p><b>Details for administrator:</b>'
+                       ' Could not contact the Dataverse server: %s</p>')\
+                        % (api_delete_metadata_url)
             LOGGER.error(err_msg)
             return (False, err_msg)
 
