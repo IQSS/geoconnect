@@ -2,9 +2,7 @@
 
 from __future__ import absolute_import
 import os
-from os.path import join, normpath, isdir, isfile
-import json
-import sys
+from os.path import join
 
 from .base import *
 
@@ -42,10 +40,6 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 ROOT_URLCONF = '%s.urls_prod' % SITE_NAME
 
 ########## END URL CONFIGURATION
-
-#ALLOWED_HOSTS = ['54.68.229.158']
-ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS']
-
 
 ADMINS = [('Raman', 'raman_prasad@harvard.edu'),]
 
@@ -118,9 +112,9 @@ e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : False }}]"""
 # INTERNAL_IPS for admin access
 # -----------------------------------
 INTERNAL_IPS = ['140.247', # Harvard
-    '65.112',            # Harvard
-    '10.252',            # Internal IP
-    ]
+                '65.112',  # Harvard
+                '10.252']  # Internal IP
+
 
 ########## SESSION_COOKIE_NAME
 SESSION_COOKIE_NAME = 'geoconnect_prod'
@@ -129,9 +123,8 @@ SESSION_COOKIE_NAME = 'geoconnect_prod'
 # -----------------------------------
 # ALLOWED_HOSTS
 # -----------------------------------
-ALLOWED_HOSTS = ['geoconnect-dev.herokuapp.com',
-    #'52.86.18.14',  # via Heroku quotaguard add-on
-    ]
+ALLOWED_HOSTS = ['geoconnect-dev.herokuapp.com']
+#'52.86.18.14',  # via Heroku quotaguard add-on
 
 ########## LOGIN_URL
 # To use with decorator @login_required
@@ -144,7 +137,7 @@ LOGIN_URL = "admin:index"
 # e.g.  http://dvn-build.hmdc.harvard.edu/
 #
 DATAVERSE_SERVER_URL = os.environ['DATAVERSE_SERVER_URL']
-DATAVERSE_METADATA_UPDATE_API_PATH =  '/api/worldmap/update-layer-metadata/'
+DATAVERSE_METADATA_UPDATE_API_PATH = '/api/worldmap/update-layer-metadata/'
 ########## DATAVERSE_SERVER_URL
 
 ########### DIRECTORY TO STORE DATA FILES COPIES FROM DV
