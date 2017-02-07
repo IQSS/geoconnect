@@ -256,9 +256,21 @@ LOGGING = {
 WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 ########## END WSGI CONFIGURATION
 
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
 
 ########## SESSION_COOKIE_NAME
-SESSION_COOKIE_NAME = 'geoconnect'
+SESSION_COOKIE_NAME = 'geoconnect_local'
 ########## END SESSION_COOKIE_NAME
 
 ########## GISFILE_SCRATCH_WORK_DIRECTORY

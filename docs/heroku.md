@@ -15,3 +15,7 @@ heroku run python manage.py collectstatic --settings=geoconnect.settings.heroku 
 heroku run "python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json --settings=geoconnect.settings.heroku"
 
 heroku run "python manage.py loaddata --app layer_classification initial_data.json --settings=geoconnect.settings.heroku"
+
+heroku run "python manage.py loaddata --app registered_dataverse registered_dv_localhost.json --settings=geoconnect.settings.heroku"
+
+heroku config:set DEBUG=0
