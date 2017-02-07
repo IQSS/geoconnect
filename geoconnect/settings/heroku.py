@@ -12,7 +12,7 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
-DEBUG = os.environ['DEBUG']
+DEBUG = True#os.environ['DEBUG']
 
 SITENAME = "geoconnect"
 
