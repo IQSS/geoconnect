@@ -38,7 +38,7 @@ STATICFILES_DIRS = (
 ########## URL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
 #ROOT_URLCONF = '%s.urls' % SITE_NAME
-ROOT_URLCONF = '%s.urls_prod' % SITE_NAME
+ROOT_URLCONF = 'geoconnect.urls_prod'
 
 ########## END URL CONFIGURATION
 
@@ -88,13 +88,6 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
-########## TOOLBAR CONFIGURATION
-# See: http://django-debug-toolbar.readthedocs.org/en/latest/installation.html#explicit-setup
-INSTALLED_APPS += (
-    #'debug_toolbar',
-    #'djcelery',
-    #'kombu.transport.django',
-)
 
 # Set Template debug to False
 try:

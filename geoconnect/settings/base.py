@@ -13,7 +13,7 @@ DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 SITE_ROOT = dirname(DJANGO_ROOT)
 
 # Site name:
-SITE_NAME = basename(DJANGO_ROOT)
+SITE_NAME = 'geoconnect'    #basename(DJANGO_ROOT)
 
 # Project test files
 # Absolute filesystem path to the Django project directory:
