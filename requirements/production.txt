@@ -1,4 +1,5 @@
 -r base.txt
 
 # heroku
+psycopg2>=2.6
 dj-database-url==0.4.2
