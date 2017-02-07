@@ -9,6 +9,12 @@ import sys
 from .base import *
 
 
+########## SECRET CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+SECRET_KEY = os.environ['SECRET_KEY']
+########## END SECRET CONFIGURATION
+
+
 SITENAME = "geoconnect"
 
 SITEURL = "http://geoconnect.datascience.iq.harvard.edu"
@@ -106,11 +112,6 @@ e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : False }}]"""
 #   'debug_toolbar.middleware.DebugToolbarMiddleware',
 #)
 #
-
-########## SECRET CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = os.environ['SECRET_KEY']
-########## END SECRET CONFIGURATION
 
 
 # -----------------------------------
