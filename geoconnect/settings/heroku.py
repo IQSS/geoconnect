@@ -12,7 +12,7 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
-DEBUG = True#os.environ['DEBUG']
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
 
 SITENAME = "geoconnect"
 
