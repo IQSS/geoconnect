@@ -41,7 +41,8 @@ ROOT_URLCONF = '%s.urls_prod' % SITE_NAME
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS']
 
 
-ADMINS = os.environ['ADMINS']
+ADMINS = [('Raman', 'raman_prasad@harvard.edu'),]
+
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
@@ -52,42 +53,28 @@ DEBUG = False
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
 EMAIL_HOST = os.environ['EMAIL_HOST']
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-user
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-port
-EMAIL_PORT = os.environ['EMAIL_PORT']
-#environ.get('EMAIL_PORT', 587)
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
+EMAIL_PORT = 587
 EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-use-tls
 EMAIL_USE_TLS = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = EMAIL_HOST_USER
 ########## END EMAIL CONFIGURATION
 
+# -----------------------------------
+# Site ID
+# -----------------------------------
+SITE_ID = 1
 
 ########## DATABASE CONFIGURATION
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ['DB_SETTING_ENGINE'],
-        'NAME': os.environ['DB_SETTING_NAME'],
-        'USER': os.environ['DB_SETTING_USER'],
-        'PASSWORD': os.environ['DB_SETTING_PASSWORD'],
-        'HOST': os.environ['DB_SETTING_HOST'],
-        'PORT': os.environ['DB_SETTING_PORT'],
-    },
+# Update database configuration with $DATABASE_URL.
+import dj_database_url
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
 
-}
 ########## END DATABASE CONFIGURATION
 
 
@@ -125,15 +112,25 @@ e.g. TEMPLATES = [ { 'OPTIONS' : { 'debug' : False }}]"""
 SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
-#DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
-# http://django-debug-toolbar.readthedocs.org/en/latest/installation.html
-#INTERNAL_IPS = ('127.0.0.1',)
-########## END TOOLBAR CONFIGURATION
+# -----------------------------------
+# INTERNAL_IPS for admin access
+# -----------------------------------
+INTERNAL_IPS = ['140.247', # Harvard
+    '65.112',            # Harvard
+    '10.252',            # Internal IP
+    ]
 
 ########## SESSION_COOKIE_NAME
 SESSION_COOKIE_NAME = 'geoconnect_prod'
 ########## END SESSION_COOKIE_NAME
+
+# -----------------------------------
+# ALLOWED_HOSTS
+# -----------------------------------
+ALLOWED_HOSTS = ['geoconnect-dev.herokuapp.com',
+    #'52.86.18.14',  # via Heroku quotaguard add-on
+    ]
 
 ########## LOGIN_URL
 # To use with decorator @login_required
