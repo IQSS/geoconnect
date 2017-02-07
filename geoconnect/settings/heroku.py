@@ -15,7 +15,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 SITENAME = "geoconnect"
 
-SITEURL = "http://geoconnect.datascience.iq.harvard.edu"
+SITEURL = "https://geoconnect-dev.herokuapp.com"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -184,6 +184,7 @@ MIDDLEWARE = [
 
 ########## LOGGING
 
+"""
 xLOGGING = {
     'version': 1,
     'formatters': {
@@ -221,3 +222,4 @@ xLOGGING = {
             'propagate': True,
             },
     }
+"""
