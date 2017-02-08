@@ -102,10 +102,11 @@ class TabFileStats(object):
         # Treat census block groups as string instead of numbers
         #   - 12-digit numeric code that may receive zero-padding
         #
-        if 'BG_ID_10' in  df.columns:
-            df['BG_ID_10'] = df['BG_ID_10'].astype(str)
+        keep_as_string_cols = ['BG_ID_10', 'CT_ID_10']
+        for col_name in keep_as_string_cols:
+            if col_name in  df.columns:
+                df[col_name] = df[col_name].astype(str)
 
-        return
 
     def update_tabular_info_object(self):
         """
