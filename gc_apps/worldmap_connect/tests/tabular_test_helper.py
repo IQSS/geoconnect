@@ -15,7 +15,7 @@ Load up the server and username
 GEONODE_CREDS_FNAME = join(dirname(realpath(__file__)), 'server_creds.json')
 assert isfile(GEONODE_CREDS_FNAME), 'Server credentials file not found: %s' % GEONODE_CREDS_FNAME
 try:
-    GEONODD_CREDS_JSON = json.loads(open(GEONODE_CREDS_FNAME, 'r').read())
+    GEONODE_CREDS_FNAME = json.loads(open(GEONODE_CREDS_FNAME, 'r').read())
 except:
     raise Exception('Could not parse tabular credentials JSON file: %s' % 'server_creds.json')
 

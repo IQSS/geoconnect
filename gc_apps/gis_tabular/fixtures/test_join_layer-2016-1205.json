@@ -327,7 +327,7 @@
         "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=62",
         "datafile_content_type": "image/tiff",
         "dataset_id": 521,
-        "dv_file": "dv_files/2016/03/02/CBG_Annual_and_Longitudinal_Measures_1.tab",
+        "dv_file": "dv_files/2016/03/02/CBG_Annual_and_Longitudinal_Measures.tab",
         "dataset_is_public": false,
         "dataverse_id": 28,
         "dv_user_email": "dvuser@harvard.edu",
