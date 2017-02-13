@@ -99,3 +99,7 @@ geoconnect/settings/worldmap_secrets_prod.json
 geoconnect/scripts/tabular_test_data/files/nhcrime_2014_08_63.tab
 
 scripts/tabular_test_data/files/nhcrime_2014_08.tab
+
+.DS_Store
+
+geoconnect/settings/local_aws_creds.py

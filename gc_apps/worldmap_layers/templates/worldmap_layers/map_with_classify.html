@@ -1,68 +1,78 @@
 <div class="row"><!-- WorldMap Actions -->
   <fieldset class="col-sm-12">
-    <legend class="h4">Manage Map</legend>
+    {#<legend class="h4">Manage Map</legend>#}
     <div class="form-group">
+
+      {% include "gis_data_info/return_to_dataverse_link.html" %}
 
       {% include "metadata/button_view_map_metadata.html" %}
 
-      <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
+      <div class="btn-group pull-right" role="group">
+        <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
 
-      {% include "worldmap_layers/button_download_links.html" %}
+        {% include "worldmap_layers/button_download_links.html" %}
 
-      {% include "worldmap_layers/buttons_delete_and_back_to_dv.html" %}
+        {% if worldmap_layerinfo %}
+        <a data-toggle="modal" data-target="#delete_map_confirm" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+        {% endif %}
+      </div>
+
     </div>
   </fieldset>
 </div>
 <!-- start: IFRAME MAP -->
 <!-- MAP | Style/Classify form -->
 <div class="row">
-  <div class="col-md-8">
-      <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
-  </div>
-  <div class="col-md-4">
-
-    {% if classify_form %}
-      <div id="div_classify_form" class="row">
-        <!-- start:  Classify form -->
-        {% include "classification/view_classify_form.html" %}
-        <!-- end:  Classify form -->
+  <div class="col-xs-12">
+    <fieldset class="form-group">
+      <legend class="h4">Style Map</legend>
+      <div class="col-md-8">
+        <iframe id="id_iframe_map" height="575" width="100%" src="{{ core_data.embed_map_link }}"></iframe>
       </div>
-    {% endif %}
+      <div class="col-md-4">
+        {% if classify_form %}
+        <div id="div_classify_form" class="row">
+          <!-- start:  Classify form -->
+          {% include "classification/view_classify_form.html" %}
+          <!-- end:  Classify form -->
+        </div>
+        {% endif %}
 
-    <div class="row">
-      <fieldset class="col-sm-12">
-        <legend class="h4">Legend</legend>
-        <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
-      </fieldset>
-    </div>
-
+        <div class="row">
+          <fieldset class="col-sm-12">
+            <legend class="h4">Legend</legend>
+            <img src="{{ worldmap_layerinfo.get_legend_img_url }}" id="legend_img" alt="(legend not available)" style="border:1px solid #ccc; padding:7px;" />
+          </fieldset>
+        </div>
+      </div>
+    </fieldset>
   </div>
 </div>
 
 {% if is_staff %}
-<div class="row" style="padding-top:120px;">
+<div class="row">
   <div class="col-md-12">
-    <h3 class="panel-title" style="margin-bottom:5px;">
-      DEBUG INFO
-    </h3>
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom:0;">
+    <fieldset>
+      <legend class="h4">DEBUG INFO</legend>
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-bottom:0;">
 
-      {% include "metadata/map_attributes_list.html" %}
+        {% include "metadata/map_attributes_list.html" %}
 
-      {% include "metadata/core_data_list.html" %}
+        {% include "metadata/core_data_list.html" %}
 
-    </div>
+      </div>
+    </fieldset>
   </div>
 </div>
 {% endif %}
 
 {% if classify_form %}
-  {% if delete_form %}
-    {% include "worldmap_layers/modal_delete_confirm.html" %}
-  {% endif %}
-  {% if gis_data_info %}
-    {% include "worldmap_layers/modal_save_confirm.html" %}
-  {% endif %}
-  {% include "classification/classify_form_dynamic_js.html" %}
+{% if delete_form %}
+{% include "worldmap_layers/modal_delete_confirm.html" %}
+{% endif %}
+{% if gis_data_info %}
+{% include "worldmap_layers/modal_save_confirm.html" %}
+{% endif %}
+{% include "classification/classify_form_dynamic_js.html" %}
 {% endif %}
 <!-- end: IFRAME MAP -->

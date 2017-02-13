@@ -11,7 +11,7 @@ from django.db import models
 
 from gc_apps.core.models import TimeStampedModel
 
-from gc_apps.gis_basic_file.models import GISDataFile, dv_file_system_storage
+from gc_apps.gis_basic_file.models import GISDataFile, DV_FILE_SYSTEM_STORAGE
 from gc_apps.layer_types.static_vals import TYPE_JOIN_LAYER, TYPE_LAT_LNG_LAYER
 from gc_apps.worldmap_layers.models import WorldMapLayerInfo
 
@@ -42,7 +42,7 @@ class TabularFileInfo(GISDataFile):
 
     dv_join_file = models.FileField(upload_to='dv_files/join/%Y/%m/%d',\
                 blank=True, null=True,\
-                storage=dv_file_system_storage,\
+                storage=DV_FILE_SYSTEM_STORAGE,\
                 max_length=255,\
                 help_text="Used when a new column needs to be added for a TableJoin")
 
@@ -88,19 +88,6 @@ class TabularFileInfo(GISDataFile):
         #
         return self.worldmapjoinlayerinfo_set.first()
 
-
-    def get_abstract_for_join(self):
-        """
-        Populate the 'abstract' field when attempting to
-        create a WorldMap layer
-
-        This should be editable by the user
-        """
-        abstract = ('{0}<p><b>File:</b> {1}</p>'
-                    '<p><b>Source:</b> Dataverse repository</p>'
-                    '').format(self.dataset_citation,\
-                        self.datafile_label)
-        return abstract
 
 
 

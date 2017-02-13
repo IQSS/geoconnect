@@ -370,7 +370,7 @@ class TableJoinMapMaker(object):
         # Prepare parameters
         # --------------------------------
         map_params = dict(title=self.datatable_obj.name,
-                        abstract=self.datatable_obj.get_abstract_for_join(),
+                        abstract=self.datatable_obj.get_abstract_for_worldmap(),
                         delimiter=self.datatable_obj.delimiter,
                         table_attribute=self.table_attribute_for_join,
                         layer_name=single_join_target_info.target_layer_name,

@@ -1,22 +1,19 @@
+"""Model for GISDataFile"""
 from hashlib import md5
-from datetime import date
 
 from django.template.loader import render_to_string
 
 from os.path import basename, isfile
 
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-from gc_apps.core.models import TimeStampedModel
 
 from gc_apps.registered_dataverse.models import RegisteredDataverse
 from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from gc_apps.gis_basic_file.scratch_directory_services import ScratchDirectoryHelper
 
-dv_file_system_storage = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
+DV_FILE_SYSTEM_STORAGE = FileSystemStorage(location=settings.DV_DATAFILE_DIRECTORY)
 
 class GISDataFile(DataverseInfo):
     """
@@ -35,13 +32,22 @@ class GISDataFile(DataverseInfo):
     dv_session_token = models.CharField(max_length=255, blank=True)
 
     # Copy of the actual file
-    dv_file = models.FileField(upload_to='dv_files/%Y/%m/%d', blank=True, null=True, storage=dv_file_system_storage)
+    dv_file = models.FileField(\
+                upload_to='dv_files/%Y/%m/%d',
+                blank=True,
+                null=True,
+                storage=DV_FILE_SYSTEM_STORAGE)
 
     # For file working.  examples: unzipping, pulling raw data from columns, etc
-    gis_scratch_work_directory = models.CharField(max_length=255, blank=True, help_text='scratch directory for files')
+    gis_scratch_work_directory = models.CharField(\
+                        max_length=255,
+                        blank=True,
+                        help_text='scratch directory for files')
 
     # for object identification
-    md5 = models.CharField(max_length=40, blank=True, db_index=True, help_text='auto-filled on save')
+    md5 = models.CharField(\
+                max_length=40, blank=True,
+                db_index=True, help_text='auto-filled on save')
 
 
     def is_datafile_private(self):
@@ -77,12 +83,14 @@ class GISDataFile(DataverseInfo):
         return False
 
     def get_dv_file_basename(self):
+        """Return the basename of the file"""
         if not self.dv_file:
             return None
 
         return basename(self.dv_file.name)
 
     def get_dv_file_fullpath(self):
+        """Return the full path of the file"""
         if not self.dv_file:
             return None
 
@@ -101,27 +109,25 @@ class GISDataFile(DataverseInfo):
         """Deletes the scratch working directory, if it exists"""
         return ScratchDirectoryHelper.delete_scratch_work_directory(self)
 
-    def has_style_layer_information(self):
-        if self.stylelayerinformation__set.count() > 0:
-            return True
-        return False
-
-    def get_style_layer_information(self):
-        l = self.stylelayerinformation_set.all()
-        if len(l) == 0:
-            return None
-        return l
-
     def save(self, *args, **kwargs):
+        """Save with md5 hash"""
         if not self.id:
             super(GISDataFile, self).save(*args, **kwargs)
 
-        self.md5 = md5('%s%s%s' % (self.id, self.datafile_id, self.dataverse_installation_name)).hexdigest()
+
+        string_to_hash = '%s%s%s' % (\
+                            self.id,
+                            self.datafile_id,
+                            self.dataverse_installation_name)
+        self.md5 = md5(string_to_hash).hexdigest()
+
         super(GISDataFile, self).save(*args, **kwargs)
 
 
     def get_abstract_for_worldmap(self):
-        return render_to_string('gis_basic_file/worldmap_abstract.html', { 'gis_file' : self })
+        """Return the Abstract for WorldMap use"""
+        return render_to_string('gis_data_info/worldmap_abstract.html',
+                                {'gis_file' : self})
 
 
     def __unicode__(self):
@@ -132,4 +138,5 @@ class GISDataFile(DataverseInfo):
 
 
     class Meta:
+        """Order by last file modified"""
         ordering = ('-modified',  )
