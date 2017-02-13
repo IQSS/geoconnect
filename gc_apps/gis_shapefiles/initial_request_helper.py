@@ -14,6 +14,7 @@ from gc_apps.geo_utils.template_constants import FAILED_TO_RETRIEVE_DATAVERSE_FI
     FAILED_TO_IDENTIFY_METADATA_MAPPING_TYPE
 
 from gc_apps.layer_types.static_vals import is_valid_dv_type
+from gc_apps.geo_utils.error_result_msg import log_connect_error_message
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -111,12 +112,11 @@ class InitialRequestHelper(object):
             err_msg = ('<p><b>Details for administrator:</b>'
                       ' Could not contact the Dataverse server:'
                       ' {0}</p>').format(self.callback_url)
+                      
             self.add_err_msg(err_msg, FAILED_TO_RETRIEVE_DATAVERSE_FILE)
 
-            LOGGER.error('Could not contact the Dataverse server.'
-                         '\ncallback url {0}:'
-                         '\nConnectionError message: {1}').format(\
-                            self.callback_url, exception_obj.message)
+            log_connect_error_message(err_msg, LOGGER, exception_obj)
+
             return False
 
 
