@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
+from gc_apps.geo_utils.error_result_msg import log_connect_error_message
 #from gc_apps.geo_utils.msg_util import msg
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 from gc_apps.classification.utils import get_worldmap_info_object
@@ -178,14 +179,18 @@ def view_classify_layer_form(request, import_success_md5):
                     data=classify_params,\
                     auth=settings.WORLDMAP_ACCOUNT_AUTH,\
                     timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
+                    
     except requests.exceptions.ConnectionError as exception_obj:
-        err_msg = ('<p><b>Details for administrator:</b>'
-                   'Could not contact the Dataverse server: %s</p><p>%s</p>')\
-                   % (classify_url, exception_obj.message)
-        LOGGER.error(err_msg)
+        err_msg = ('<b>Details for administrator:</b>'
+                   'Could not contact the Dataverse server: %s')\
+                   % (classify_url)
+
+        log_connect_error_message(err_msg, LOGGER, exception_obj)
+
         json_msg = MessageHelperJSON.get_json_msg(\
                     success=False,
-                    msg='Sorry!  The classification failed.<br />%s' % err_msg)
+                    msg='Sorry!  The classification failed.<br /><p>%s</p>' % err_msg)
+
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
     if not resp.status_code == 200:

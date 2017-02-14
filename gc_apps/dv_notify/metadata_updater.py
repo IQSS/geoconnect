@@ -19,9 +19,10 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(CURRENT_DIR, '../../'))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geoconnect.settings.local")
 
-#from gc_apps.geo_utils.key_checker import KeyChecker
 from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 from gc_apps.geo_utils.msg_util import msgt
+from gc_apps.geo_utils.error_result_msg import log_connect_error_message
+
 
 from shared_dataverse_information.dataverse_info.url_helper import get_api_url_update_map_metadata,\
     get_api_url_delete_metadata
@@ -30,6 +31,10 @@ import logging
 LOGGER = logging.getLogger('gc_apps.dv_notify.metadata_updater')
 
 EMBED_MAP_LINK_KEY = 'embedMapLink'
+
+ERROR_DV_NO_SERVER_RESPONSE = 'Could not contact the Dataverse server:'
+ERROR_DV_PAGE_NOT_FOUND = 'Dataverse page not found:'
+ERROR_DV_METADATA_UPDATE = 'Error updating the Dataverse metadata.'
 
 class MetadataUpdater(object):
     """
@@ -82,12 +87,14 @@ class MetadataUpdater(object):
         params = worldmap_layer_info.get_params_for_dv_delete_layer_metadata()
         api_delete_metadata_url = get_api_url_delete_metadata(self.dataverse_server_url)
 
+        """
         print ('params to send: %s' % params)
         print ('-' * 40)
         print ('update url: %s' % api_delete_metadata_url)
         print ('-' * 40)
         print ('payload: %s' % json.dumps(params))
         print ('-' * 40)
+        """
 
         req = None
         try:
@@ -99,25 +106,43 @@ class MetadataUpdater(object):
                 % self.timeout_seconds)
 
         except requests.exceptions.ConnectionError as exception_obj:
+            err_msg = ('%s %s') % (ERROR_DV_NO_SERVER_RESPONSE, api_delete_metadata_url)
 
-            err_msg = ('<p><b>Details for administrator:</b>'
-                       ' Could not contact the Dataverse server: %s</p>')\
-                        % (api_delete_metadata_url)
-            LOGGER.error(err_msg)
+            log_connect_error_message(err_msg, LOGGER, exception_obj)
+
             return (False, err_msg)
 
-        msgt('text: %s' % req.text.encode('utf-8'))
-        msgt('status code: %s' % req.status_code)
+
+        #msgt('status code/text: %s/%s' % (\
+        #                        req.status_code,
+        #                        req.text.encode('utf-8'))
+
         if req.status_code == 404:
-            return (False, "The Dataverse delete API was not available")# 'Delete success')
+            return (False,\
+                    '%s %s' % (ERROR_DV_PAGE_NOT_FOUND, api_delete_metadata_url))
 
         if req.status_code == 200:
             return (True, None)# 'Delete success')
 
         else:
-            LOGGER.error('Metadata delete failed.  Status code: %s\nResponse:%s',\
-             req.status_code, req.text.encode('utf-8'))
-            return (False, 'Sorry! The update failed.')
+            # See if an error message was sent back...
+            error_msg = None
+            try:
+                dv_response_dict = req.json()
+                if dv_response_dict.has_key('message'):
+                    error_msg = dv_response_dict['message']
+            except:
+                LOGGER.error('Metadata update failed.  Status code: %s\nResponse:%s',\
+                    req.status_code, req.text.encode('utf-8'))
+
+            if error_msg is None:
+                error_msg = 'Sorry! The update failed.'
+
+            LOGGER.error('Status code: %s\nError message:%s',\
+                req.status_code, error_msg)
+
+            return (False, error_msg)
+
 
     @staticmethod
     def check_for_required_methods(worldmap_layer_info):
@@ -164,18 +189,12 @@ class MetadataUpdater(object):
         :returns: JSON with "success" flag and either error or data
         :rtype: JSON string
         """
-        #msgt('TURN THIS BACK ON!!!!')
-        #return self.get_result_msg(True, '', data_dict={})
-
         MetadataUpdater.check_for_required_methods(worldmap_layer_info)
-
-        LOGGER.info('send_params_to_dataverse')
-        print('1) send_params_to_dataverse')
 
         dv_metadata_params = worldmap_layer_info.get_params_for_dv_update()
         self.update_embed_link_for_https(dv_metadata_params)
 
-        print ('dv_metadata_params', dv_metadata_params)
+        #print ('dv_metadata_params', dv_metadata_params)
 
         # FIXME: temp fix for DV error
         # Make joinDescription an empty String instead of None
@@ -184,12 +203,12 @@ class MetadataUpdater(object):
 
         api_update_url = get_api_url_update_map_metadata(self.dataverse_server_url)
 
-        print ('params to send: %s' % dv_metadata_params)
-        print ('-' * 40)
+        #print ('params to send: %s' % dv_metadata_params)
+        #print ('-' * 40)
         print ('update url: %s' % api_update_url)
-        print ('-' * 40)
-        print ('payload: %s' % json.dumps(dv_metadata_params))
-        print ('-' * 40)
+        #print ('-' * 40)
+        #print ('payload: %s' % json.dumps(dv_metadata_params))
+        #print ('-' * 40)
 
         req = None
         try:
@@ -203,28 +222,44 @@ class MetadataUpdater(object):
 
         except requests.exceptions.ConnectionError as exception_obj:
 
-            err_msg = ('<p><b>Details for administrator:</b>'
-                       ' Could not contact the Dataverse server:'
-                       ' %s</p><p>%s</p>')\
-                        % (api_update_url, exception_obj.message)
+            err_msg = ('%s %s') % (ERROR_DV_NO_SERVER_RESPONSE, api_update_url)
 
-            LOGGER.error(err_msg)
+            log_connect_error_message(err_msg, LOGGER, exception_obj)
+
             return self.get_result_msg(False, err_msg)
 
-        if not req.status_code == 200:
 
-            #print ('request text: %s' % req.text)
+        if req.status_code == 404:
 
-            LOGGER.error('Metadata update failed.  Status code: %s\nResponse:%s',\
-                req.status_code, req.text.encode('utf-8'))
+            LOGGER.error('Metadata update failed.  Page not found: %s',\
+                api_update_url)
 
-            return self.get_result_msg(False, 'Sorry! The update failed.')
+            return self.get_result_msg(\
+                    False,
+                    '%s %s' % (ERROR_DV_PAGE_NOT_FOUND, api_update_url))
 
-        #print (req.text)
+        elif not req.status_code == 200:
+
+            # See if an error message was sent back...
+            error_msg = None
+            try:
+                dv_response_dict = req.json()
+                if dv_response_dict.has_key('message'):
+                    error_msg = dv_response_dict['message']
+            except:
+                LOGGER.error('Metadata update failed.  Status code: %s\nResponse:%s',\
+                    req.status_code, req.text.encode('utf-8'))
+
+            if error_msg is None:
+                error_msg = '%s (status code: %s)<br />endpoint: %s' % (\
+                                ERROR_DV_METADATA_UPDATE,
+                                req.status_code,
+                                api_update_url)
+
+            return self.get_result_msg(False, error_msg)
+
         dv_response_dict = req.json()
-        #print('4) req to json')
 
-        #print(dv_response_dict)
         if dv_response_dict.get('status', False) in ('OK', 'success'):
             dv_response_dict.pop('status')
             #print('4) send result')
@@ -238,7 +273,7 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def delete_dataverse_map_metadata(worldmap_layer_info):
+    def delete_dataverse_map_metadata(worldmap_layer_info, custom_dataverse_url=None):
         """
         Via the Dataverse API, delete metadata for this map
         """
@@ -246,8 +281,10 @@ class MetadataUpdater(object):
 
         LOGGER.info("delete_dataverse_map_metadata")
 
-        #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+        if custom_dataverse_url:
+            metadata_updater = MetadataUpdater(custom_dataverse_url)
+        else:
+            metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
 
         return metadata_updater.delete_metadata_from_dataverse(worldmap_layer_info)
 
@@ -255,22 +292,27 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def update_dataverse_with_metadata(worldmap_layer_info):
+    def update_dataverse_with_metadata(worldmap_layer_info, custom_dataverse_url=None):
         """
         Via the Dataverse API, update metadata for this Map
+        custom_dataverse_url = Optional. Dataverse server url.
+            - Usually this info taken from the worldmap_layerinfo object
         """
         MetadataUpdater.check_for_required_methods(worldmap_layer_info)
 
 
         LOGGER.info("update_dataverse_with_metadata")
-        #params_for_dv = worldmap_layer_info.get_params_for_dv_update()
-        #mu = MetadataUpdater(settings.DATAVERSE_SERVER_URL)
-        metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
+
+        if custom_dataverse_url:
+            metadata_updater = MetadataUpdater(custom_dataverse_url)
+        else:
+            metadata_updater = MetadataUpdater(worldmap_layer_info.get_dataverse_server_url())
 
         resp_dict = metadata_updater.send_info_to_dataverse(worldmap_layer_info)
+
         if resp_dict.get('success', False) is True:
-            return True
-        return False
+            return True, resp_dict
+        return False, resp_dict
 
 
 if __name__ == '__main__':

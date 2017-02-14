@@ -87,13 +87,13 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
                         , data=data_params\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError as exception_obj:
 
-        err_msg = """Failed to retrieve data from the WorldMap.
-                    <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p><p>%s</p>"""\
-                                % (DELETE_LAYER_API_PATH, e.message)
-        LOGGER.error(err_msg)
+        err_msg =  ('Failed to retrieve data from the WorldMap.'
+                    '<p><b>Details for administrator:</b>'
+                    ' Could not contact the WorldMap'
+                    ' server: {0}</p>').format(DELETE_LAYER_API_PATH)
+        LOGGER.error(err_msg + '\nConnectionError:' + exception_obj.message)
         return (False, err_msg)
 
     print (r.text)
@@ -137,13 +137,14 @@ def delete_worldmap_tablejoin(worldmap_layer_info):
         r = requests.post(delete_api_path\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError as exception_obj:
 
         err_msg = """Failed to delete the map.
                     <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p><p>%s</p>"""\
-                                % (delete_api_path, e.message)
-        LOGGER.error(err_msg)
+                    WorldMap server: %s</p>"""\
+                                % (delete_api_pat)
+        LOGGER.error('ConnectionError during delete: %s', exception_obj.message)
+        LOGGER.error('delete_api_path: %s', delete_api_path)
         return (False, err_msg)
 
     print (r.text)
@@ -213,19 +214,20 @@ def get_layer_info_using_dv_info(params_dict):
                         , data=data_params\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError as exception_obj:
 
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.
                     <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p><p>%s</p>"""\
-                    % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH, e.message)
+                    WorldMap server: %s</p>"""\
+                    % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH)
         LOGGER.error(err_msg)
+        LOGGER.error('ConnectionError: %s', exception_obj.error)
         return False, err_msg
-
     except:
         # Error with request
         #
         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
+        LOGGER.error(err_msg)
         return False, err_msg
 
     print (resp.text)
@@ -249,6 +251,7 @@ def get_layer_info_using_dv_info(params_dict):
     #--------------------------------------
     err_msg = "Status code: %s\nError: %s" % (resp.status_code, resp.text)
     return False, err_msg
+
 
 def get_join_targets_as_json():
     """
@@ -281,13 +284,14 @@ def get_join_targets():
         r = requests.get(GET_JOIN_TARGETS\
                         , auth=settings.WORLDMAP_ACCOUNT_AUTH\
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError as exception_obj:
 
         err_msg = """Sorry! Failed to retrieve data from the WorldMap.
                     <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p><p>%s</p>"""\
-                                % (GET_JOIN_TARGETS, e.message)
+                    WorldMap server: %s</p>"""\
+                                % (GET_JOIN_TARGETS)
         LOGGER.error(err_msg)
+        LOGGER.error('ConnectionError: %s', exception_obj.message)
         return (False, err_msg)
 
     except:

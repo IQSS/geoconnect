@@ -109,11 +109,12 @@ class WorldMapImporter:
                                auth=settings.WORLDMAP_ACCOUNT_AUTH,
                                timeout=settings.WORLDMAP_DEFAULT_TIMEOUT
                             )
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError as exception_obj:
             err_msg = """<br /><p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p><p>%s</p>"""\
-                                % (self.api_import_url, e.message)
+                    WorldMap server: %s</p>"""\
+                                % (self.api_import_url)
             LOGGER.error(err_msg)
+            LOGGER.error('ConnectionError: %s', exception_obj.message)
             return self.get_result_msg(False, err_msg)
 
         except requests.exceptions.Timeout as e:

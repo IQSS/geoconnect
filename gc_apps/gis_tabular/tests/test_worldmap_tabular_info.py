@@ -8,9 +8,10 @@ from django.core import management
 from gc_apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
 from gc_apps.gis_tabular.tab_file_stats import TabFileStats
 from gc_apps.geo_utils.msg_util import msgt, msg
-
+from django.core.files import File
 
 JSON_JOIN_TEST_FILENAME = join(dirname(__file__), 'input', 'core_data_join.json')
+
 
 class WorldMapTabularInfoTestCase(TestCase):
     """
@@ -34,7 +35,19 @@ class WorldMapTabularInfoTestCase(TestCase):
         msgt(self.test_01_initial_join.__doc__)
 
         tab_file_info = TabularFileInfo.objects.get(pk=15) # Election precinct test
-        print tab_file_info.id
+
+        # --------------------------------------------
+        #  Attach actual file -- path from fixture is not correct
+        # --------------------------------------------
+        elect_filepath = join(dirname(__file__),
+                            'input',
+                            'election_precincts2.csv')
+        tab_file_info.dv_file.save(\
+                        'election_precincts2.csv',
+                        File(open(elect_filepath, 'r')),
+                        save=False)
+
+
         self.assertEqual(tab_file_info.id, 15)
 
         # ------------------------------------------
@@ -64,6 +77,17 @@ class WorldMapTabularInfoTestCase(TestCase):
 
         # grab a tabular file obj
         tab_file_info = TabularFileInfo.objects.get(pk=14) # Election precinct test
+
+        # --------------------------------------------
+        #  Attach actual file -- path from fixture is not correct
+        # --------------------------------------------
+        cbg_filepath = join(dirname(__file__),
+                            'input',
+                            'CBG_Annual_and_Longitudinal_Measures.tab')
+        tab_file_info.dv_file.save(\
+                        'CBG_Annual_and_Longitudinal_Measures',
+                        File(open(cbg_filepath, 'r')),
+                        save=False)
 
         # clear out the column info
         tab_file_info.column_names = None

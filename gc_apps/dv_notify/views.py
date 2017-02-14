@@ -68,12 +68,13 @@ def view_ajax_dv_notify_of_map(request, worldmap_layer_info):
     # ------------------------------
     # Send Dataverse Notification
     # ------------------------------
-    success = MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
+    success, resp_dict = MetadataUpdater.update_dataverse_with_metadata(worldmap_layer_info)
     if success:
         json_msg = MessageHelperJSON.get_json_success_msg('Data sent')
         return HttpResponse(json_msg, content_type="application/json", status=200)
     else:
-        json_msg = MessageHelperJSON.get_json_fail_msg('Failed to send data to dataverse')
+        json_msg = MessageHelperJSON.get_json_fail_msg(\
+                'Failed to send data to dataverse. %s' % resp_dict['message'])
         return HttpResponse(json_msg, content_type="application/json", status=500)
 
 """
