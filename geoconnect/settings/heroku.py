@@ -16,7 +16,7 @@ DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
 
 SITENAME = "geoconnect"
 
-SITEURL = "https://geoconnect-dev.herokuapp.com"
+SITEURL = os.environ['HEROKU_SITEURL'] # e.g. "https://geoconnect-dev.herokuapp.com"
 
 
 # Static files (CSS, JavaScript, Images)
@@ -112,7 +112,7 @@ SESSION_COOKIE_NAME = 'geoconnect_h1'
 # -----------------------------------
 # ALLOWED_HOSTS
 # -----------------------------------
-ALLOWED_HOSTS = ['geoconnect-dev.herokuapp.com']
+ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
 #'52.86.18.14',  # via Heroku quotaguard add-on
 
 ########## LOGIN_URL
