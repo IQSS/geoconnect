@@ -21,3 +21,5 @@ heroku run "python manage.py loaddata --app registered_dataverse registered_dv_l
 heroku config:set DEBUG=0
 
 heroku run "python manage.py remove_stale_data --email_notice --settings=geoconnect.settings.heroku"
+
+heroku run "python manage.py remove_stale_data --email_notice --really-delete --settings=geoconnect.settings.heroku"
