@@ -1,77 +1,110 @@
-from __future__ import print_function
-from datetime import datetime
-from django.utils import timezone
-from gc_apps.gis_shapefiles.models import ShapefileInfo, WorldMapShapefileLayerInfo
-from gc_apps.gis_tabular.models import TabularFileInfo
-from gc_apps.gis_tabular.models import WorldMapLatLngInfo, WorldMapJoinLayerInfo
-from django.core.mail import send_mail
-#from django.template.loader import render_to_string
+"""
+Delete old S3 files and related geoconnect objects
+"""
+import boto3
+
 from django.conf import settings
+from django.utils import timezone
+from django.core.mail import send_mail
 
-from msg_util import msg, msgt
+from gc_apps.gis_shapefiles.models import ShapefileInfo,\
+                                          WorldMapShapefileLayerInfo
+from gc_apps.gis_tabular.models import TabularFileInfo,\
+                                       WorldMapJoinLayerInfo,\
+                                       WorldMapLatLngInfo
+from gc_apps.geo_utils.msg_util import msg, msgt
 
-
-DEFAULT_STALE_THREE_HOURS = 3 * 60 * 60 # 3 hours, in seconds
-STALE_AGE_TWO_DAYS = 2 * 24 * 60 * 60 # 48 hours, in seconds
-DEFAULT_STALE_AGE = DEFAULT_STALE_THREE_HOURS
-
+DV_DATA_OBJECTS_TO_CHECK = [ShapefileInfo,
+                            TabularFileInfo]
+MAP_INFO_OBJECTS_TO_CHECK = [WorldMapShapefileLayerInfo,
+                             WorldMapJoinLayerInfo, WorldMapLatLngInfo]
 
 class StaleDataRemover(object):
-    """Convenience class for removing old objects"""
+    """
+    Delete old files and related geoconnect objects.
+    This includes removing files stored on S3.
 
-    def __init__(self):
+    Note: "really_delete" must be True for actual deletion to happen
+    """
+    def __init__(self, really_delete=False, **kwargs):
         self.num_objects_checked = 0
         self.num_objects_removed = 0
         self.message_lines = []
 
-    def add_message_line(self, mline, prepend=False):
-        if mline:
-            msg(mline)
-            if prepend:
-                self.message_lines.insert(0, mline)
-            else:
-                self.message_lines.append(mline)
+        assert really_delete in (True, False),\
+            'really_delete must be True or False'
+        self.really_delete = really_delete
 
-    def check_for_stale_objects(self, MODEL_CLASS, stale_age_in_seconds):
+
+    def is_s3_file_storage(self):
+        """Is S3 being used for file storage?"""
+        if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage':
+            return True
+
+        return False
+
+    def add_message_title_line(self, mline, prepend=False):
+        """Add message title line"""
+        if not mline:
+            return
+
+        self.add_message_line('-' * 40, prepend)
+        self.add_message_line(mline)
+        self.add_message_line('-' * 40, prepend)
+
+
+    def add_message_line(self, mline, prepend=False):
+        """Add message line"""
+        if not mline:
+            return
+
+        msg(mline)
+        if prepend:
+            self.message_lines.insert(0, mline)
+        else:
+            self.message_lines.append(mline)
+
+
+    def check_for_stale_objects(self, model_class, stale_age_in_seconds):
         """
         Retrieve a class of objects (e.g. WorldMapLatLngInfo) and count what's happening
         """
         current_time = timezone.now()
-        self.num_objects_checked = 0
-        self.num_objects_removed = 0
 
-        for obj_info in MODEL_CLASS.objects.all():
+        for obj_info in model_class.objects.all():
             self.num_objects_checked += 1
             if self.remove_if_stale(obj_info, stale_age_in_seconds, current_time):
                 self.num_objects_removed += 1
 
 
-    def remove_stale_worldmap_data(self, stale_age_in_seconds=DEFAULT_STALE_AGE):
-        """
-        Remove old map data...There are the objects storing WorldMap links
-        """
-        msgt("Remove stale WorldMap data")
+    def remove_stale_data(self, stale_age_in_seconds=None):
+        """Main method called for running stale data removal process"""
+        if stale_age_in_seconds is None:
+            stale_age_in_seconds = settings.STALE_DATA_SECONDS_TO_EXPIRATION
 
-        for CLASS_TYPE in (WorldMapLatLngInfo, WorldMapJoinLayerInfo, WorldMapShapefileLayerInfo):
-            self.add_message_line('checking: %s' % CLASS_TYPE.__name__)
-            self.check_for_stale_objects(CLASS_TYPE, stale_age_in_seconds)
+        assert isinstance(stale_age_in_seconds, int),\
+            'stale_age_in_seconds must be an int'
 
-        self.add_message_line("# of WorldMap objects Checked: %s" % self.num_objects_checked)
-        self.add_message_line("# of WorldMap objects Removed: %s" % self.num_objects_removed)
+        msgt(("Remove stale WorldMap data"
+              "\n(older than %s seconds)") % stale_age_in_seconds)
+
+        # Reset object counters
+        self.num_objects_checked = 0
+        self.num_objects_removed = 0
 
 
-    def remove_stale_dataverse_data(self, stale_age_in_seconds=STALE_AGE_TWO_DAYS):
-        """
-        Here we're removing the metadata and files from dataverse
-        """
-        msgt("Remove stale Dataverse data")
+        objects_to_check = MAP_INFO_OBJECTS_TO_CHECK + DV_DATA_OBJECTS_TO_CHECK
 
-        for CLASS_TYPE in (TabularFileInfo, ShapefileInfo):
-            self.add_message_line('checking: %s' % CLASS_TYPE.__name__)
-            self.check_for_stale_objects(CLASS_TYPE, stale_age_in_seconds)
+        cnt = 0
+        for model_type in objects_to_check:
+            cnt += 1
+            self.add_message_title_line(\
+                '(%s) checking: %s' % (cnt, model_type.__name__))
+            self.check_for_stale_objects(model_type, stale_age_in_seconds)
 
-        self.add_message_line("# of Dataverse objects Checked: %s" % self.num_objects_checked)
-        self.add_message_line("# of Dataverse objects Removed: %s" % self.num_objects_removed)
+        self.add_message_title_line('Final counts')
+        self.add_message_line("# of objects Checked: %s" % self.num_objects_checked)
+        self.add_message_line("# of objects Removed: %s" % self.num_objects_removed)
 
 
     def remove_if_stale(self, info_object, stale_age_in_seconds, current_time=None):
@@ -87,40 +120,48 @@ class StaleDataRemover(object):
         if not current_time:
             current_time = timezone.now()
 
-        # Pull the modification time, setting timezone info to None
+        self.add_message_line('  > Checking: %s, id: %s' % (info_object, info_object.id))
+
+        # Pull the modification time
         #
         mod_time = info_object.modified
-        if hasattr(mod_time, 'tzinfo'):
-            mod_time = mod_time.replace(tzinfo=None)
+
+        #if hasattr(mod_time, 'tzinfo'):    # setting timezone info to None
+        #    mod_time = mod_time.replace(tzinfo=None)
 
         # Is this object beyond its time limit?
         #
         time_diff = (current_time - mod_time).total_seconds()
         if time_diff > stale_age_in_seconds:
             # Yes! delete it
-            msg('   > Removing: %s' % info_object)
-            info_object.delete()
-            return True
+            if self.really_delete:
+                self.add_message_line('    > Try to delete')
+                info_object.delete()
+                self.add_message_line('    > Deleted!')
+                return True
+            else:
+                self.add_message_line('    > Expired (test, not really deleting)')
+                return False
         else:
+            self.add_message_line('    > OK, not expired')
             return False
 
     def send_email_notice(self):
+        """Send email notice to settings.ADMINS"""
         msgt('Send email notice!')
 
         subject = 'GeoConnect: Clear stale data (%s)' % timezone.now()
 
-        self.add_message_line('This is an email notice from Geoconnect',\
+        self.add_message_title_line('This is an email notice from Geoconnect',\
                 prepend=True)
-        self.add_message_line('-' *30, prepend=True)
-        self.add_message_line('-' *30)
-        self.add_message_line('(end of message)')
+        self.add_message_title_line('(end of message)')
 
-        if len(settings.ADMINS)==0:
+        if len(settings.ADMINS) == 0:
             msg('No one to email! (no one in settings.ADMINS)')
             return
 
-        to_addresses = map(lambda x: x[1], settings.ADMINS)
-        if len(settings.ADMINS)==0:
+        to_addresses = [x[1] for x in settings.ADMINS]
+        if len(settings.ADMINS) == 0:
             msg('No one to email! (no one in settings.ADMINS)')
             return
 
@@ -130,17 +171,32 @@ class StaleDataRemover(object):
         from_email = to_addresses[0]
         email_msg = '\n'.join(self.message_lines)
 
-        send_mail(subject, email_msg, from_email, to_addresses, fail_silently=False)
+        send_mail(subject, email_msg,
+                  from_email, to_addresses,
+                  fail_silently=False)
 
         msg('email sent to: %s' % to_addresses)
-
-
 """
-from gc_apps.geo_utils.stale_data_remover import StaleDataRemover
-sdr = StaleDataRemover()
-sdr.remove_stale_worldmap_data()
-sdr.send_email_notice()
-#sdr.remove_stale_dataverse_data()
-test_email = 'somemail@harvard.edu'
-send_mail('test geoconnect', 'did it work', test_email, [test_email])
+s3_resource = boto3.resource(
+    's3',
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+)
+
+def show_or_delete_from_bucket(bucket_name, delete_it=False)
+
+    bucket = s3_resource.Bucket(bucket_name)
+
+    for obj in bucket.objects.all():
+        print obj
+        if delete_it is True:
+            obj.delete()
 """
+
+if __name__ == '__main__':
+    stale_data_remover = StaleDataRemover()
+    stale_data_remover.remove_stale_data()
+
+    #show_or_delete_from_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    #show_or_delete_from_bucket(settings.AWS_STORAGE_BUCKET_NAME, delete_it=True)
+    #show_or_delete_from_bucket(settings.AWS_STORAGE_BUCKET_NAME)

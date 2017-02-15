@@ -47,9 +47,7 @@ DEBUG = True
 
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (
-    ('Raman Prasad', 'raman_prasad@harvard.edu'),
-)
+ADMINS = (('Raman Prasad', 'raman_prasad@harvard.edu'),)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -278,6 +276,12 @@ SESSION_COOKIE_NAME = 'geoconnect_local'
 GISFILE_SCRATCH_WORK_DIRECTORY = None
 ########## END GISFILE_SCRATCH_WORK_DIRECTORY
 
+# Time used by scripts to remove stale data objects
+#   e.g. Objects removed if they were created more
+#   than 'x' minutes ago--where 'x' is the variable below
+#
+STALE_DATA_SECONDS_TO_EXPIRATION = 60 #* 60 * 24 * 2     # 2 DAYS
+
 
 ########## LOGIN_URL
 # To use with decorator @login_required
@@ -306,8 +310,8 @@ WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'
 WORLDMAP_ACCOUNT_USERNAME = None
 WORLDMAP_ACCOUNT_PASSWORD = None
 
-WORLDMAP_DEFAULT_TIMEOUT = 8*60 # seconds
-WORLDMAP_SHORT_TIMEOUT = 2*60 # seconds, for non-layer making requests
+WORLDMAP_DEFAULT_TIMEOUT = 8 * 60 # seconds
+WORLDMAP_SHORT_TIMEOUT = 2 * 60 # seconds, for non-layer making requests
 
 # Go and get info from WorldMap instead of using saved info
 WORLDMAP_LAYER_EXPIRATION = 15 * 60 # 15 minutes

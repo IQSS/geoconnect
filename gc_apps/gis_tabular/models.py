@@ -228,8 +228,6 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
 
         return unmatched_row_helper.get_failed_rows_as_list()
 
-
-
     def is_join_layer(self):
         return True
 

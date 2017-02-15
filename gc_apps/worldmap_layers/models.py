@@ -50,6 +50,11 @@ class WorldMapLayerInfo(TimeStampedModel):
         verbose_name = 'WorldMapLayerInfo'
         verbose_name_plural = verbose_name
 
+
+    def __str__(self):
+        """string representation"""
+        return self.layer_name
+
     @abstractmethod
     def get_layer_type(self):
         """return type such as:
