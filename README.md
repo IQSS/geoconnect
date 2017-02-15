@@ -103,8 +103,12 @@ You should see ```geoconnect.settings.local```
 #### Create/sync the database (still in ~\geoconnect)
 
 
+
 ```
-python manage.py migrate    # for a new database
+#Create/sync the database (still in ~\geoconnect)
+python manage.py migrate    # step 1 for a new database
+python manage.py migrate --run-syncdb  # step 2 for a new database
+
 #python manage.py  migrate --fake-initial # if the tables already exist
 ```
 
