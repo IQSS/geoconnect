@@ -14,14 +14,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--really_delete',
+            '--really-delete',
             action='store_true',
             dest='really_delete',
             default=False,
             help='Default is to check for stale objects.  Set this to True to delete them',
         )
         parser.add_argument(
-            '--email_notice',
+            '--email-notice',
             action='store_true',
             dest='email_notice',
             default=False,
