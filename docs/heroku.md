@@ -19,3 +19,5 @@ heroku run "python manage.py loaddata --app layer_classification initial_data.js
 heroku run "python manage.py loaddata --app registered_dataverse registered_dv_localhost.json --settings=geoconnect.settings.heroku"
 
 heroku config:set DEBUG=0
+
+heroku run "python manage.py remove_stale_data --email_notice --settings=geoconnect.settings.heroku"

@@ -1,5 +1,5 @@
 """
-Delete old S3 files and related geoconnect objects
+Delete stale geoconnect objects and related files (including S3)
 """
 import boto3
 
@@ -36,7 +36,7 @@ class StaleDataRemover(object):
         self.really_delete = really_delete
 
 
-    def is_s3_file_storage(self):
+    def using_s3_file_storage(self):
         """Is S3 being used for file storage?"""
         if settings.DEFAULT_FILE_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage':
             return True
@@ -92,6 +92,83 @@ class StaleDataRemover(object):
         self.num_objects_checked = 0
         self.num_objects_removed = 0
 
+        # Remove Geoconnect objects
+        self.remove_geoconnect_objects(stale_age_in_seconds)
+        self.remove_s3_data(stale_age_in_seconds)
+
+        self.add_message_title_line('Final counts')
+        self.add_message_line("# of objects Checked: %s" % self.num_objects_checked)
+        self.add_message_line("# of objects Removed: %s" % self.num_objects_removed)
+
+
+    def get_existing_file_names_for_s3_check(self):
+        """Retrieve legit file names for S3 check
+        - Called by "remove_s3_data()"
+        """
+
+        ok_names = [obj.dv_file.name\
+                    for obj in ShapefileInfo.objects.only('dv_file')\
+                    if obj.dv_file and obj.dv_file.name]
+
+        for obj in TabularFileInfo.objects.only('dv_file', 'dv_join_file'):
+            if obj.dv_file and obj.dv_file.name:
+                ok_names.append(obj.dv_file.name)
+            if obj.dv_join_file and obj.dv_join_file.name:
+                ok_names.append(obj.dv_join_file.name)
+
+        return ok_names
+
+
+    def remove_s3_data(self, stale_age_in_seconds):
+        """Check for old S3 objects that no longer have
+        associated Geoconnect objects.
+        Assumes that "remove_geoconnect_objects()" has already been run."""
+
+        if self.using_s3_file_storage() is False:
+            self.add_message_title_line('Note: Skip S3 check (not using S3)')
+            # S3 not in use, don't check
+            return
+
+        # ------------------------
+        # Get the names of legitimate files
+        # ------------------------
+        ok_names = self.get_existing_file_names_for_s3_check()
+
+        #msgt(ok_names)
+        # ------------------------
+        # load the S3 resource
+        # ------------------------
+        s3_resource = boto3.resource(
+                's3',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+
+        # ------------------------
+        # Check the files in the bucket
+        # ------------------------
+        bucket = s3_resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+
+        self.add_message_title_line('Check S3 files')
+        for obj in bucket.objects.all():
+            self.num_objects_checked += 1
+
+            self.add_message_line('  > Checking %s' % obj.key)
+            if obj.key in ok_names:
+                self.add_message_line('    > File ok to stay')
+                continue
+            else:
+                if self.really_delete:
+                    self.add_message_line('    > Try to delete')
+                    info_object.delete()
+                    self.add_message_line('    > Deleted!')
+                    self.num_objects_removed += 1
+                else:
+                    self.add_message_line('    > Expired (test, not really deleting)')
+
+
+    def remove_geoconnect_objects(self, stale_age_in_seconds):
+        """Iterate through Model classes and delete stale objects.
+        Related FileField objects will also be removed"""
 
         objects_to_check = MAP_INFO_OBJECTS_TO_CHECK + DV_DATA_OBJECTS_TO_CHECK
 
@@ -102,9 +179,6 @@ class StaleDataRemover(object):
                 '(%s) checking: %s' % (cnt, model_type.__name__))
             self.check_for_stale_objects(model_type, stale_age_in_seconds)
 
-        self.add_message_title_line('Final counts')
-        self.add_message_line("# of objects Checked: %s" % self.num_objects_checked)
-        self.add_message_line("# of objects Removed: %s" % self.num_objects_removed)
 
 
     def remove_if_stale(self, info_object, stale_age_in_seconds, current_time=None):
