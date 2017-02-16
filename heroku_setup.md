@@ -11,6 +11,7 @@ These notes describe setting up Geoconnect on a Heroku server using the Django s
     - Open a Terminal
     - cd into the top of the geoconnect repository
     - run ```heroku git:remote -a geoconnect-test```
+      - replace ```geoconnect-test``` with the name of your Heroku app
 
 # Install "Add-Ons"
 
@@ -57,7 +58,14 @@ From the Heroku dashboard, go to the "Resources" section.
 # Configure additional settings
 
 Using the Heroku web interface or command line, set the following variables.
-
+  1. *SECRET_KEY*
+    - key: ```SECRET_KEY```
+    - value: ```large random string```
+      - See: https://docs.djangoproject.com/en/1.10/ref/settings/#secret-key
+      - Methods for creating a key include:
+        - code snippet: https://gist.github.com/mattseymour/9205591
+        - online (not recommended): http://www.miniwebtool.com/django-secret-key-generator/
+    - command line: ```heroku config:set SECRET_KEY=(secret key value)```
   1. *DJANGO_DEBUG*
     - Turn Django debug off.  Note: You may want to turn it on for troubleshooting.
     - key: ```DJANGO_DEBUG```
@@ -80,13 +88,55 @@ Using the Heroku web interface or command line, set the following variables.
     - key: ```WORLDMAP_SERVER_URL```
     - value: ```http://worldmap.harvard.edu```
       - Currently, there is a single WorldMap installation
+      - **Note**: Do not use a trailing ```/```
     - command line: ```heroku config:set WORLDMAP_SERVER_URL=http://worldmap.harvard.edu```
+  1. *DATAVERSE_SERVER_URL*
+    - key: ```DATAVERSE_SERVER_URL```
+    - value: ```(url to dataverse app)```
+      - example: ```https://dataverse.harvard.edu```
+      - **Note**: Do not use a trailing ```/```
+      - Note: Default Dataverse url in case of error. Unless there is a severe error, any registered dataverse may call a Geoconnect installation.
+    - command line: ```heroku config:set DATAVERSE_SERVER_URL=(url to dataverse app)```
+      - example: ```heroku config:set DATAVERSE_SERVER_URL=https://beta.harvard.edu```
+  1. *HEROKU_SITEURL*
+    - key: ```HEROKU_SITEURL```
+    - value: ```(url to heroku app)```
+      - example: ```https://geoconnect-dev.herokuapp.com```
+    - command line: ```heroku config:set HEROKU_SITEURL=(url to heroku app)```
+      - example: ```heroku config:set HEROKU_SITEURL=https://geoconnect-dev.herokuapp.com```
+  1. *HEROKU_SERVER_NAME*
+    - key: ```HEROKU_SERVER_NAME```
+    - value: ```(heroku app server name)```
+      - example: ```geoconnect-dev.herokuapp.com```
+    - command line: ```heroku config:set HEROKU_SITEURL=(heroku app server name)```
+      - example: ```heroku config:set HEROKU_SERVER_NAME=geoconnect-dev.herokuapp.com```
 
 
-heroku config:set HEROKU_SITEURL=https://geoconnect-dev.herokuapp.com
-heroku config:set HEROKU_SERVER_NAME=geoconnect-dev.herokuapp.com
+
+# Deploy and Initialize the App
+
+## First time
+
+  1. Disable collectstatic:
+    - ```heroku config:set DISABLE_COLLECTSTATIC=1```
+  1. Push the branch
+    - Run: ```git push heroku master```
+    - To push a specific branch:
+      - ```git push heroku [your branch name]:master```
+      - Example: ```git push heroku 3024-heroku:master```
+  1. Run collectstatic manually:
+    - ```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```      
+  1. Create/sync the database:
+    - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
+    - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
+  1.  Add initial data:
+    - ```heroku run 'python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json --settings=geoconnect.settings.heroku''```
+    - ```heroku run 'python manage.py loaddata --app layer_classification initial_data.json --settings=geoconnect.settings.heroku'```
+  1. Enable collectstatic for future deployments:
+      - ```heroku config:set DISABLE_COLLECTSTATIC=0```
 
 
 # Add scheduler task
 
-# Stale data remover: python manage.py remove_stale_data --really-delete --email-notice --settings=geoconnect.settings.heroku
+  - Stale data remover:
+    - ```python manage.py remove_stale_data --really-delete --email-notice --settings=geoconnect.settings.heroku```

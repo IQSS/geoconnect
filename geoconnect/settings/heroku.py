@@ -123,7 +123,7 @@ LOGIN_URL = "admin:index"
 
 ########## DATAVERSE_SERVER_URL
 # Used to make API calls
-# e.g.  http://dvn-build.hmdc.harvard.edu/
+# e.g.  http://dvn-build.hmdc.harvard.edu
 #
 DATAVERSE_SERVER_URL = os.environ['DATAVERSE_SERVER_URL']
 DATAVERSE_METADATA_UPDATE_API_PATH = '/api/worldmap/update-layer-metadata/'
