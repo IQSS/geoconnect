@@ -13,11 +13,14 @@ from gc_apps.gis_tabular.models import TabularFileInfo,\
                                        WorldMapJoinLayerInfo,\
                                        WorldMapLatLngInfo
 from gc_apps.geo_utils.msg_util import msg, msgt
+from gc_apps.worldmap_connect.models import JoinTargetInformation
 
-DV_DATA_OBJECTS_TO_CHECK = [ShapefileInfo,
-                            TabularFileInfo]
-MAP_INFO_OBJECTS_TO_CHECK = [WorldMapShapefileLayerInfo,
-                             WorldMapJoinLayerInfo, WorldMapLatLngInfo]
+GEOCONNECT_OBJECTS_TO_CHECK = [\
+                            ShapefileInfo,
+                            TabularFileInfo,
+                            WorldMapShapefileLayerInfo,
+                            WorldMapJoinLayerInfo,
+                            WorldMapLatLngInfo]
 
 class StaleDataRemover(object):
     """
@@ -94,11 +97,46 @@ class StaleDataRemover(object):
 
         # Remove Geoconnect objects
         self.remove_geoconnect_objects(stale_age_in_seconds)
-        self.remove_s3_data(stale_age_in_seconds)
+        self.remove_s3_data(stale_age_in_seconds, len(GEOCONNECT_OBJECTS_TO_CHECK)+1)
 
-        self.add_message_title_line('Final counts')
+        # Remove older JoinTarget information retrieved from the WorldMap
+        self.remove_old_join_target_information(len(GEOCONNECT_OBJECTS_TO_CHECK)+2)
+
+        # Add message notes
+        self.add_message_title_line(' -- Final counts  --')
         self.add_message_line("Count of objects Checked: %s" % self.num_objects_checked)
         self.add_message_line("Count of objects Removed: %s" % self.num_objects_removed)
+
+
+    def remove_old_join_target_information(self, msg_cnt=''):
+        """Delete all JoinTargetInformation objects, except for the latest one.
+        (These objects contain target layer information from the WorldMap)"""
+        self.add_message_title_line(\
+            '(%s) %s' %  (msg_cnt, self.remove_old_join_target_information.__doc__))
+
+        jtarget_list = JoinTargetInformation.objects.all()
+
+        target_cnt = jtarget_list.count()
+        self.add_message_line("  > Number of JoinTargetInformation objects found: %s" % target_cnt)
+        self.num_objects_checked += target_cnt
+        if target_cnt < 2:
+            if target_cnt == 1:
+                self.add_message_line("  > No JoinTargetInformation objects to delete. (Keep the latest one)")
+            else:
+                self.add_message_line("  > No JoinTargetInformation objects to delete.")
+            return
+
+        self.add_message_line('  > Prepare to delete %s object(s)' % (target_cnt-1))
+        if self.really_delete:
+            del_result = JoinTargetInformation.objects.exclude(id=jtarget_list[0].id).delete()
+
+            self.num_objects_removed += del_result[0]
+            self.add_message_line("  > Old objects deleted: %s" % del_result[0])
+        else:
+            self.add_message_line('    > (test, not really deleting)')
+
+
+
 
 
     def get_existing_file_names_for_s3_check(self):
@@ -119,10 +157,11 @@ class StaleDataRemover(object):
         return ok_names
 
 
-    def remove_s3_data(self, stale_age_in_seconds):
+    def remove_s3_data(self, stale_age_in_seconds, msg_cnt=''):
         """Check for old S3 objects that no longer have
         associated Geoconnect objects.
         Assumes that "remove_geoconnect_objects()" has already been run."""
+        self.add_message_title_line('(%s) Check S3 files' % (msg_cnt))
 
         if self.using_s3_file_storage() is False:
             self.add_message_title_line('Note: Skip S3 check (not using S3)')
@@ -148,7 +187,6 @@ class StaleDataRemover(object):
         # ------------------------
         bucket = s3_resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
 
-        self.add_message_title_line('Check S3 files')
         for obj in bucket.objects.all():
             self.num_objects_checked += 1
 
@@ -170,7 +208,7 @@ class StaleDataRemover(object):
         """Iterate through Model classes and delete stale objects.
         Related FileField objects will also be removed"""
 
-        objects_to_check = MAP_INFO_OBJECTS_TO_CHECK + DV_DATA_OBJECTS_TO_CHECK
+        objects_to_check = GEOCONNECT_OBJECTS_TO_CHECK
 
         cnt = 0
         for model_type in objects_to_check:

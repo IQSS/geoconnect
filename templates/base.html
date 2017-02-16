@@ -50,7 +50,7 @@
           {% elif tabular_info and tabular_info.return_to_dataverse_url %}
           <a href="{{ tabular_info.return_to_dataverse_url }}">
             {% else %}
-            <a href="{{ DATAVERSE_SERVER_URL }}">
+            <a href="{% url 'view_home' %}">
               {% endif %}
               <span class="navbar-brand">Geoconnect: Map Data Set Up</span></a>
               <!--a href="{% if tabular_info and tabular_info.return_to_dataverse_url %}{{ tabular_info.return_to_dataverse_url }}{% else %}{{ DATAVERSE_SERVER_URL }}{% endif %}"><span class="navbar-brand">Geoconnect: Map Data Set Up</span></a-->

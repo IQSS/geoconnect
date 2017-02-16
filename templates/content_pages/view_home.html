@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block main_container %}
+<br />
 <div class="row">
     <div class="col-md-6">
         <div class="panel panel-default xs">
@@ -17,6 +18,9 @@
                <a href="http://dataverse.org"><img src="{% static "images/dataverse_project_logo.png" %}" alt="The Dataverse Project" width="150" /></a>
                   &nbsp;&nbsp;
                   <a  href="http://worldmap.harvard.edu/"><img src="{% static "images/WorldMap-Logo_26px.png" %}" /></a>
+
+              <hr />
+              <a href="{% url 'show_jointarget_info' %}">(WorldMap Join Targets)</a>
           </div>
         </div>
     </div>
