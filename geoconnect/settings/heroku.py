@@ -31,7 +31,7 @@ STATICFILES_DIRS = (
     join(SITE_ROOT, 'static'),
 )
 
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 #MEDIA_ROOT = '/var/www/geoconnect/media/'   #' join(GEOCONNECT_FILES_DIR, 'media' )
 
@@ -112,7 +112,13 @@ SESSION_COOKIE_NAME = 'geoconnect_h1'
 # -----------------------------------
 # ALLOWED_HOSTS
 # -----------------------------------
-ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
+#ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
 #'52.86.18.14',  # via Heroku quotaguard add-on
 
 ########## LOGIN_URL
