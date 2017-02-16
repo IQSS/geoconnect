@@ -48,7 +48,7 @@ From the Heroku dashboard, go to the "Resources" section.
   - Config variable added:
     1. ```SENDGRID_USERNAME```
     1. ```SENDGRID_PASSWORD```
-  -  **Setup**    
+  -  **Setup for SendGrid API Key**    
     1. Log into https://app.sendgrid.com using the config variables above
     1. Bottom left: Click "Settings -> API Keys"
     1. Top right: Click "Create API Key -> Generate API Key"
