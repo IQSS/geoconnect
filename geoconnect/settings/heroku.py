@@ -116,9 +116,9 @@ SESSION_COOKIE_NAME = 'geoconnect_h1'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = ['52.6.13.167', '52.5.238.209'] #'*',
+#ALLOWED_HOSTS = ['52.6.13.167', '52.5.238.209'] #'*',
 
-#ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
+ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
 #'52.86.18.14',  # via Heroku quotaguard add-on
 
 ########## LOGIN_URL
