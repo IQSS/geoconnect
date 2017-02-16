@@ -48,9 +48,9 @@ class StaleDataRemover(object):
         if not mline:
             return
 
-        self.add_message_line('-' * 40, prepend)
+        self.add_message_line(' ', prepend)
         self.add_message_line(mline, prepend)
-        self.add_message_line('-' * 40, prepend)
+        self.add_message_line(' ', prepend)
 
 
     def add_message_line(self, mline, prepend=False):
