@@ -1,4 +1,5 @@
 """Convenience method for deleting JoinTargetInformation objects"""
+import json
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -30,6 +31,21 @@ def clear_jointarget_info(request):
 def show_jointarget_info(request):
     """Display the latest Join Targets retrieved from the WorldMap"""
 
-    info_dict = dict(jt_info=JoinTargetInformation.objects.first())
+    target_info_list = None
+    target_info_pretty = None
+
+    jt_info = JoinTargetInformation.objects.first()
+    if jt_info:
+        target_info_list = jt_info.target_info.get('data')
+
+        # sort the info by type
+        target_info_list_sorted = sorted(\
+                        target_info_list,
+                        key=lambda k: k['geocode_type'])
+
+        target_info_pretty = json.dumps(target_info_list_sorted, indent=4)
+
+    info_dict = dict(target_info_list=target_info_list_sorted,
+                     target_info_pretty=target_info_pretty)
 
     return render(request, 'show_jointarget_info.html', info_dict)

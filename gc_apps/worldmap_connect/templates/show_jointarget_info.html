@@ -5,11 +5,53 @@
 {% block main_container %}
 <br />
 <div class="row">
-    <div class="col-md-6">
-        <div class="panel panel-default xs">
-          <div class="panel-heading">Geoconnect</div>
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">List of Target Layers from WorldMap</div>
           <div class="panel-body">
-              {{ jt_info }}
+              <p>There are currently <b>{{ target_info_list|length }} target layer{{ target_info_list|length|pluralize }}</b> available from the WorldMap.
+              (see <a href="#raw-data">raw data</a>)
+              </p>
+
+              <table class="table table-bordered table-condensed table-striped table-hover">
+                <tr>
+                    <th>#</th>
+                    <th>Geocode Type</th>
+                    <th>Name (in dropdown)<br />WorldMap layer name</th>
+                    <th>Year</th>
+                    <th>Join Attribute<br>(type)</th>
+                    <th>Is Zero Padded</th>
+                    <th>Description</th>
+                </tr>
+              {% for target_info in target_info_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ target_info.geocode_type }}</td>
+                    <td>{{ target_info.name }}
+                        <br /><a href="https://worldmap.harvard.edu/data/{{ target_info.layer }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span>&nbsp;{{ target_info.layer }}</a>
+                    </td>
+                    <td>{{ target_info.year }}</td>
+                    <td>{{ target_info.attribute.attribute }}
+                        <br>({{ target_info.attribute.type }})
+                    </td>
+                    <td>{{ target_info.expected_format.is_zero_padded }}</td>
+                    <td>{{ target_info.expected_format.description }}</td>
+                </tr>
+              {% empty %}
+
+                <tr>
+                    <td colspan="6">
+                        There is no JoinTargetInformation in the database
+                    </td>
+                </tr>
+              {% endfor %}
+             </table>
+
+             <a name="raw-data"></a>
+             <br /><br />
+             <h2>Raw JSON Data from WorldMap</h2>
+             <pre>{{ target_info_pretty }}</pre>
+
           </div>
         </div>
     </div>
