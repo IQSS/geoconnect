@@ -22,7 +22,7 @@ SITEURL = os.environ['HEROKU_SITEURL'] # e.g. "https://geoconnect-dev.herokuapp.
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 #
-STATIC_ROOT = '/app/staticfiles' #join(SITE_ROOT, 'staticfiles')
+STATIC_ROOT = join(SITE_ROOT, 'staticfiles') #join(SITE_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
@@ -31,7 +31,7 @@ STATICFILES_DIRS = (
     join(SITE_ROOT, 'static'),
 )
 
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 #MEDIA_ROOT = '/var/www/geoconnect/media/'   #' join(GEOCONNECT_FILES_DIR, 'media' )
 
