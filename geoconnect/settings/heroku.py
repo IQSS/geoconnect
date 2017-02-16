@@ -174,43 +174,18 @@ MIDDLEWARE = [
 ]
 
 ########## LOGGING
-
-"""
-xLOGGING = {
+LOGGING = {
     'version': 1,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': join(GEOCONNECT_LOGS_DIR, 'geolog.log'),
-            'formatter': 'verbose'
-            },
-        },
     'loggers': {
-
         'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': False,
-            },
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
-        'geoconnect': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'gc_apps': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-            },
-    }
-"""
+    },
+}
