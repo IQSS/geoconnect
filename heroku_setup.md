@@ -186,7 +186,7 @@ Initially, this should run every 24 hours via the Heroku Scheduler.
   1. Add the following command to the input box:
     - ```python manage.py remove_stale_data --really-delete --email-notice --settings=geoconnect.settings.heroku```
   1. This command will run a script to remove stale data.  The extra parameters work as follows:
-    - ```-really-delete``` - actually delete stale objects and files.  Omitting this parameter will run the full script to check for files to delete--but not actually delete them.
+    - ```--really-delete``` - actually delete stale objects and files.  Omitting this parameter will run the full script to check for files to delete--but not actually delete them.
     - ```--email-notice``` - email the results of the stale data check to the ADMINS in the Django settings file.  This works regardless of whether ```really-delete``` is used
 
 - To test it from the command line:
