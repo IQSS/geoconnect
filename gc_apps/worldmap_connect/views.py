@@ -36,16 +36,16 @@ def show_jointarget_info(request):
 
     jt_info = JoinTargetInformation.objects.first()
     if jt_info:
-        target_info_list = jt_info.target_info.get('data')
+        target_info_list_unsorted = jt_info.target_info.get('data')
 
         # sort the info by type
-        target_info_list_sorted = sorted(\
-                        target_info_list,
+        target_info_list = sorted(\
+                        target_info_list_unsorted,
                         key=lambda k: k['geocode_type'])
 
-        target_info_pretty = json.dumps(target_info_list_sorted, indent=4)
+        target_info_pretty = json.dumps(target_info_list, indent=4)
 
-    info_dict = dict(target_info_list=target_info_list_sorted,
+    info_dict = dict(target_info_list=target_info_list,
                      target_info_pretty=target_info_pretty)
 
     return render(request, 'show_jointarget_info.html', info_dict)
