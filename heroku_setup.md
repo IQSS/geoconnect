@@ -9,6 +9,7 @@ The steps assume that:
 # Dashboard set-up
 
 1. Install the Heroku CLI from https://devcenter.heroku.com/articles/heroku-cli
+1. Log into the Heroku website
 1. Create a new Heroku application
     - e.g. ```geoconnect-test```
 1. Scroll down and look for "Existing Git repository"
