@@ -50,14 +50,16 @@ From the Heroku dashboard, go to the "Resources" section.
     1. ```SENDGRID_PASSWORD```
   -  **Setup for SendGrid API Key**    
     1. Log into https://app.sendgrid.com using the config variables above
-    1. Bottom left: Click "Settings -> API Keys"
+      - To see the config variable values, on your **Heroku site**, go to:
+        - "Settings -> Reveal Config Vars"
+    1. On the **SendGrid site**: Bottom left: Click "Settings -> API Keys"
     1. Top right: Click "Create API Key -> Generate API Key"
       - Name the key: "geoconnect_send"
       - Set full access for: "Mail Send -> Mail Send "
     1. Click "Save"
     1. Add the new key value to Heroku settings under ```SENDGRID_API_KEY```.
-      - Use the web interface to add the key/value or
-      - Use the Terminal to run:
+      - Use the web interface to add the key/value
+      - Or use the Terminal to run:
         - ```heroku config:set SENDGRID_API_KEY=(key from sendgrid website)```
 
 # Configure additional settings
@@ -121,6 +123,8 @@ Using the Heroku web interface or command line, set the following variables.
 
 ## First time
 
+For these steps use your local Terminal within the geoconnect directory--e.g. cd into the cloned repository.
+
   1. Disable collectstatic:
     - ```heroku config:set DISABLE_COLLECTSTATIC=1```
   1. Push the branch
@@ -139,10 +143,9 @@ Using the Heroku web interface or command line, set the following variables.
   1. ~~Enable collectstatic for future deployments:~~
       ~~- ```heroku config:set DISABLE_COLLECTSTATIC=0```~~
 
-
 ## Create a superuser and login to the Admin page
 
-  1. Create a superuser:
+  1. From your Terminal, create a superuser:
     - ```heroku run 'python manage.py createsuperuser --settings=geoconnect.settings.heroku'```
   2. Open the admin web page:
     - ```heroku open /geo-connect-admin```
@@ -150,7 +153,7 @@ Using the Heroku web interface or command line, set the following variables.
 
 ## Register your Dataverse
 
-Once your are on the admin page in the previous step, register the Dataverse or Dataverses you would like to use for mapping.
+Once your are logged into the admin page from the previous step, register the Dataverse or Dataverses you would like to use for mapping.
 
   1. From the Admin page: scroll down, click on "Registered Dataverses"
   1. Top right: click "Add Registered Dataverse"
@@ -175,7 +178,7 @@ The django command "remove_stale_data" deletes old objects and their associated 
 
 Initially, this should run every 24 hours via the Heroku Scheduler.
 
-To set it up:
+- To set it up:
 
   1. Go to the Heroku Resources web page for your app
   1. Click on the "Heroku Scheduler"
@@ -186,7 +189,7 @@ To set it up:
     - ```-really-delete``` - actually delete stale objects and files.  Omitting this parameter will run the full script to check for files to delete--but not actually delete them.
     - ```--email-notice``` - email the results of the stale data check to the ADMINS in the Django settings file.  This works regardless of whether ```really-delete``` is used
 
-To test it from the command line:
+- To test it from the command line:
 
   - Testing from the command line:
   - without delete:
