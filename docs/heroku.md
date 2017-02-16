@@ -29,4 +29,4 @@ heroku run "python manage.py shell --settings=geoconnect.settings.heroku"
 
 from django.core.mail import send_mail
 
-send_mail('test msg', 'from geoconnect on heroku', 'iqss.contact@gmail.com', ['raman_prasad@harvard.edu','raprasad@gmail.com'], fail_silently=False)
+heroku run 'python manage.py test --settings=geoconnect.settings.heroku'
