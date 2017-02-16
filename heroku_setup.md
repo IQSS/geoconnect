@@ -2,6 +2,10 @@
 These notes describe setting up Geoconnect on a Heroku server using the Django settings in
 "geoconnect.settings.heroku"
 
+The steps assume that:
+  1. You already have a Heroku account and that 
+  1. The Geoconnect repository has been cloned to a local machine.
+
 # Dashboard set-up
 
 1. Install the Heroku CLI from https://devcenter.heroku.com/articles/heroku-cli
