@@ -12,12 +12,12 @@ The steps assume that:
 1. Log into the Heroku website
 1. Create a new Heroku application
     - e.g. ```geoconnect-test```
-1. Scroll down and look for "Existing Git repository"
-    - Open a Terminal
+1. Connect the Heroku application to your local repository
+    - Open a local Terminal
     - cd into the top of the geoconnect repository
-    - run ```heroku git:remote -a geoconnect-test```
-      - replace ```geoconnect-test``` with the name of your Heroku app
-
+    - run ```heroku git:remote -a (Heroku app name)```
+      - Example: ```heroku git:remote -a geoconnect-test```
+    
 # Install "Add-Ons"
 
 Install the following Add-Ons.  Most of the Add-Ons will create environment settings used "geoconnect.settings.heroku".
