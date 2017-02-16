@@ -20,7 +20,7 @@ The steps assume that:
     
 # Install "Add-Ons"
 
-Install the following Add-Ons.  Most of the Add-Ons will create environment settings used "geoconnect.settings.heroku".
+Install the following Add-Ons.  Several of the Add-Ons will create config variables used by "geoconnect.settings.heroku".
 
 From the Heroku dashboard, go to the "Resources" section.
 
