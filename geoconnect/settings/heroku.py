@@ -31,7 +31,7 @@ STATICFILES_DIRS = (
     join(SITE_ROOT, 'static'),
 )
 
-#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 #MEDIA_ROOT = '/var/www/geoconnect/media/'   #' join(GEOCONNECT_FILES_DIR, 'media' )
 
@@ -51,18 +51,6 @@ ADMINS = [('Raman', 'raman_prasad@harvard.edu'),]
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', None)
 
-"""
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_PORT = 587
-EMAIL_SUBJECT_PREFIX = '[%s] ' % SITE_NAME
-EMAIL_USE_TLS = True
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#server-email
-SERVER_EMAIL = EMAIL_HOST_USER
-"""
 ########## END EMAIL CONFIGURATION
 
 # -----------------------------------
@@ -116,10 +104,7 @@ SESSION_COOKIE_NAME = 'geoconnect_h1'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-#ALLOWED_HOSTS = ['52.6.13.167', '52.5.238.209'] #'*',
-
 ALLOWED_HOSTS = [ os.environ['HEROKU_SERVER_NAME']] # e.g. 'geoconnect-dev.herokuapp.com'
-#'52.86.18.14',  # via Heroku quotaguard add-on
 
 ########## LOGIN_URL
 # To use with decorator @login_required
