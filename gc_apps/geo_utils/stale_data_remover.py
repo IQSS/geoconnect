@@ -49,7 +49,7 @@ class StaleDataRemover(object):
             return
 
         self.add_message_line('-' * 40, prepend)
-        self.add_message_line(mline)
+        self.add_message_line(mline, prepend)
         self.add_message_line('-' * 40, prepend)
 
 
@@ -226,7 +226,7 @@ class StaleDataRemover(object):
 
         subject = 'GeoConnect: Clear stale data (%s)' % timezone.now()
 
-        self.add_message_title_line('This is an email notice from Geoconnect',\
+        self.add_message_line('This is an email notice from Geoconnect',\
                 prepend=True)
         self.add_message_title_line('(end of message)')
 
