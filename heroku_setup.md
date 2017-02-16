@@ -3,7 +3,7 @@ These notes describe setting up Geoconnect on a Heroku server using the Django s
 "geoconnect.settings.heroku"
 
 The steps assume that:
-  1. You already have a Heroku account and that 
+  1. You already have a Heroku account and that
   1. The Geoconnect repository has been cloned to a local machine.
 
 # Dashboard set-up
@@ -17,7 +17,7 @@ The steps assume that:
     - cd into the top of the geoconnect repository
     - run ```heroku git:remote -a (Heroku app name)```
       - Example: ```heroku git:remote -a geoconnect-test```
-    
+
 # Install "Add-Ons"
 
 Install the following Add-Ons.  Several of the Add-Ons will create config variables used by "geoconnect.settings.heroku".
@@ -65,6 +65,10 @@ From the Heroku dashboard, go to the "Resources" section.
 # Configure additional settings
 
 Using the Heroku web interface or command line, set the following variables.
+  1. *DJANGO_SETTINGS_MODULE*
+    - key: ```DJANGO_SETTINGS_MODULE```
+    - value: ```geoconnect.settings.heroku```
+    - command line: ```heroku config:set DJANGO_SETTINGS_MODULE=geoconnect.settings.heroku```
   1. *SECRET_KEY*
     - key: ```SECRET_KEY```
     - value: ```large random string```
@@ -125,23 +129,19 @@ Using the Heroku web interface or command line, set the following variables.
 
 For these steps use your local Terminal within the geoconnect directory--e.g. cd into the cloned repository.
 
-  1. Disable collectstatic:
-    - ```heroku config:set DISABLE_COLLECTSTATIC=1```
   1. Push the branch
     - Run: ```git push heroku master```
     - To push a specific branch:
       - ```git push heroku [your branch name]:master```
       - Example: ```git push heroku 3024-heroku:master```
-  1. Run collectstatic manually:
-    - ```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```      
+  ~~1. Run collectstatic manually:~~
+    - ~~```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```~~      
   1. Create/sync the database:
     - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
     - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
   1.  Add initial data:
     - ```heroku run 'python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json --settings=geoconnect.settings.heroku'```
     - ```heroku run 'python manage.py loaddata --app layer_classification initial_data.json --settings=geoconnect.settings.heroku'```
-  1. ~~Enable collectstatic for future deployments:~~
-      ~~- ```heroku config:set DISABLE_COLLECTSTATIC=0```~~
 
 ## Create a superuser and login to the Admin page
 
@@ -207,8 +207,8 @@ Once the app has been set up, including the configuration variables and the data
     - ```git push heroku [your branch name]:master```
     - Example: ```git push heroku 3024-heroku:master```
 
-## Add new static files (if needed)
-  - ```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```      
+## ~~Add new static files (if needed)~~
+  - ~~```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```~~      
 
 ## Migrate database changes (if needed)
 

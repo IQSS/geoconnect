@@ -30,3 +30,5 @@ heroku run "python manage.py shell --settings=geoconnect.settings.heroku"
 from django.core.mail import send_mail
 
 heroku run 'python manage.py test --settings=geoconnect.settings.heroku'
+
+git commit --allow-empty -m "empty commit"
