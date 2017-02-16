@@ -97,8 +97,8 @@ class StaleDataRemover(object):
         self.remove_s3_data(stale_age_in_seconds)
 
         self.add_message_title_line('Final counts')
-        self.add_message_line("# of objects Checked: %s" % self.num_objects_checked)
-        self.add_message_line("# of objects Removed: %s" % self.num_objects_removed)
+        self.add_message_line("Count of objects Checked: %s" % self.num_objects_checked)
+        self.add_message_line("Count of objects Removed: %s" % self.num_objects_removed)
 
 
     def get_existing_file_names_for_s3_check(self):
@@ -226,7 +226,8 @@ class StaleDataRemover(object):
 
         subject = 'GeoConnect: Clear stale data (%s)' % timezone.now()
 
-        self.add_message_line('This is an email notice from Geoconnect',\
+        self.add_message_line(\
+                'This is an email notice from Geoconnect',
                 prepend=True)
         self.add_message_title_line('(end of message)')
 
