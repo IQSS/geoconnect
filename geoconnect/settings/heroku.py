@@ -174,6 +174,10 @@ LOGGING = {
         },
     },
     'loggers': {
+        'gc_apps': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
+        },
         'django': {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),

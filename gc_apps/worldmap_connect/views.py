@@ -6,6 +6,21 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from gc_apps.worldmap_connect.models import JoinTargetInformation
+from gc_apps.worldmap_connect.test_quotes import get_random_quote
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
+@login_required
+def view_test_err_log(request):
+    """To debug the log handling--e.g. ".error" events should be emailed"""
+
+    movie_quote = get_random_quote()
+    #print '%s, %s' % (__name__, LOGGER)
+    LOGGER.error(movie_quote)
+
+    return HttpResponse(movie_quote)
 
 
 @login_required

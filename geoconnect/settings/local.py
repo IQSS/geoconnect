@@ -182,11 +182,6 @@ LOGGING = {
                'level': 'ERROR',
                'propagate': True
            },
-"""        'gc_apps': {
-               'handlers': ['console'],
-               'level': 'DEBUG',
-               'propagate': True
-           },"""
         'django': {
             'handlers': ['file'],
             'level': 'DEBUG',
