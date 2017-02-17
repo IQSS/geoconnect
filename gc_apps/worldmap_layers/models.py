@@ -18,10 +18,6 @@ from shared_dataverse_information.map_layer_metadata.forms import\
 
 from .download_link_formatter import DownloadLinkFormatter
 
-from gc_apps.layer_types.static_vals import TYPE_JOIN_LAYER,\
-        DV_MAP_TYPE_SHAPEFILE,\
-        TYPE_LAT_LNG_LAYER
-
 from gc_apps.core.models import TimeStampedModel
 from gc_apps.geo_utils.json_field_reader import JSONHelper
 
@@ -45,6 +41,7 @@ class WorldMapLayerInfo(TimeStampedModel):
                     help_text='auto-filled on save')
 
     class Meta:
+        """model meta info"""
         abstract = True
         ordering = ('-modified', '-created')
         verbose_name = 'WorldMapLayerInfo'
@@ -98,9 +95,9 @@ class WorldMapLayerInfo(TimeStampedModel):
             core_data, attribute_data, download_links
         """
         return dict(worldmap_layerinfo=self,
-                core_data=self.core_data,
-                attribute_data=self.attribute_data,
-                download_links=self.get_formatted_download_links())
+                    core_data=self.core_data,
+                    attribute_data=self.attribute_data,
+                    download_links=self.get_formatted_download_links())
 
     def get_dict_for_classify_form(self):
         """
@@ -149,7 +146,9 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         attribute_data = JSONHelper.to_python_or_none(core_data['attribute_info'])
         if attribute_data is None:
-            LOGGER.error('Failed to convert core_data "attribute_info" from string to python object (list)')
+            LOGGER.error(('Failed to convert core_data'
+                          ' "attribute_info" from string'
+                          ' to python object (list)'))
             return None
 
         # -----------------------------------------
@@ -157,10 +156,11 @@ class WorldMapLayerInfo(TimeStampedModel):
         # Note: Currently this is an escaped string within core data...
         # -----------------------------------------
         if 'download_links' in core_data:
-            download_links =  JSONHelper.to_python_or_none(core_data['download_links'])
+            download_links = JSONHelper.to_python_or_none(core_data['download_links'])
 
             if download_links is None:
-                LOGGER.error('Failed to convert core_data "download_links" from string to python object (list)')
+                LOGGER.error(('Failed to convert core_data "download_links"'
+                              ' from string to python object (list)'))
                 download_links = ''
         else:
             download_links = ''
@@ -176,7 +176,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
 
     @staticmethod
-    def clear_duplicate_worldmap_info_objects(worldmap_info):
+    def clear_duplicate_worldmapinfo(worldmap_info):
         """
         Remove any duplicate objects of the same subclass.
         Subclass objects include:
@@ -192,7 +192,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         assert isinstance(worldmap_info, WorldMapLayerInfo),\
             ("worldmap_info must be an instance/subclass of"
-            " WorldMapJoinLayerInfo")
+             " WorldMapJoinLayerInfo")
 
         WorldMapLayerInfoType = worldmap_info.__class__
 
@@ -264,7 +264,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         return f.format_for_dataverse_api()
 
 
-    def get_legend_img_url(self):
+    def get_legend_img_url(self, force_https=True):
         """
         Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
         """
@@ -278,15 +278,23 @@ class WorldMapLayerInfo(TimeStampedModel):
                    , ('layer', self.layer_name)\
                    , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
                 )
-        print ('params:', params)
         param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
-        print ('\n\nparam_str:', param_str)
 
-        return '%s/geoserver/wms?%s' % (self.get_layer_url_base(), param_str)
+        legend_img_url = '%s/geoserver/wms?%s' %\
+                                (self.get_layer_url_base(),
+                                 param_str)
+        if force_https:
+            return legend_img_url.replace('http://', 'https://', 1)
+        else:
+            return legend_img_url
 
         """
         Example of how an image tag is formed:
-        <img src="{{ worldmap_layerinfo.get_layer_url_base }}/geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer={{ worldmap_layerinfo.layer_name }}&legend_options=fontAntiAliasing:true;fontSize:12;&trefresh={% now "U" %}" id="legend_img" alt="legend" />
+        <img src="{{ worldmap_layerinfo.get_layer_url_base }}
+        /geoserver/wms?request=GetLegendGraphic&format=image/png&width=20&height=20
+        &layer={{ worldmap_layerinfo.layer_name }}
+        &legend_options=fontAntiAliasing:true;fontSize:12;
+        &trefresh={% now "U" %}" id="legend_img" alt="legend" />
         """
 
     def get_dataverse_server_url(self):
@@ -332,7 +340,8 @@ class WorldMapLayerInfo(TimeStampedModel):
 
         gis_data_info = self.get_gis_data_info()
         if gis_data_info is None:
-            raise forms.ValidationError('Serious error!  Could not find gis_data_info: %s' % f.errors)
+            raise forms.ValidationError(\
+                'Serious error!  Could not find gis_data_info: %s' % f.errors)
 
         return f.format_data_for_dataverse_api(gis_data_info.dv_session_token,\
                         join_description=self.get_description_for_core_data())
@@ -379,7 +388,8 @@ class WorldMapLayerInfo(TimeStampedModel):
         if layer_link and layer_link.startswith('/'):
             full_link = self.core_data.get('embed_link', None)
             if not full_link:
-                full_link = self.core_data.get('map_image_link',  None)
+                full_link = self.core_data.get('map_image_link', None)
+
             # Does the embed link a full url
             if full_link and full_link.lower().startswith('http'):
                 # Parse the embed link and use it to reformat the layer_link
@@ -387,7 +397,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
                 # Full layer link
                 layer_link = '%s://%s%s' % (url_parts.scheme,
-                                url_parts.netloc,
-                                layer_link)
+                                            url_parts.netloc,
+                                            layer_link)
                 self.core_data['layer_link'] = layer_link
                 self.save()

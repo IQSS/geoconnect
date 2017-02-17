@@ -173,6 +173,6 @@ class WorldMapShapefileLayerInfo(WorldMapLayerInfo):
         wm_info.save()
 
         # Clear dupe layers, if any
-        WorldMapLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
+        WorldMapLayerInfo.clear_duplicate_worldmapinfo(wm_info)
 
         return wm_info
