@@ -134,8 +134,6 @@ For these steps use your local Terminal within the geoconnect directory--e.g. cd
     - To push a specific branch:
       - ```git push heroku [your branch name]:master```
       - Example: ```git push heroku 3024-heroku:master```
-  ~~1. Run collectstatic manually:~~
-    - ~~```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```~~      
   1. Create/sync the database:
     - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
     - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
@@ -206,9 +204,6 @@ Once the app has been set up, including the configuration variables and the data
   - To push a specific branch:
     - ```git push heroku [your branch name]:master```
     - Example: ```git push heroku 3024-heroku:master```
-
-## ~~Add new static files (if needed)~~
-  - ~~```heroku run 'python manage.py collectstatic --no-input --settings=geoconnect.settings.heroku'```~~      
 
 ## Migrate database changes (if needed)
 
