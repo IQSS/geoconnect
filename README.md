@@ -1,4 +1,6 @@
-## _Note: These instructions need updating and should not be used if setting up a Dataverse installation_
+## _Note: To use Geoconnect, please email support@dataverse.org with the URL to your Dataverse installation._
+
+These instructions need to be updated and should not be used if setting up a Dataverse installation because you would also need to install WorldMap, which is being rewritten. You should wait until the WorldMap rewrite is complete before considering installing Geoconnect.
 
 ## geoconnect
 
