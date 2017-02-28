@@ -5,6 +5,7 @@ These notes describe setting up Geoconnect on a Heroku server using the Django s
 The steps assume that:
   1. You already have a Heroku account and that
   1. The Geoconnect repository has been cloned to a local machine.
+     - to clone the repository: ```git clone https://github.com/IQSS/geoconnect.git```
 
 # Dashboard set-up
 
@@ -20,9 +21,10 @@ The steps assume that:
 
 # Install "Add-Ons"
 
+Go to the dashboard for the Heroku application that you just created. For example: ```https://dashboard.heroku.com/apps/geoconnect-test``` 
+
 Install the following Add-Ons.  Several of the Add-Ons will create config variables used by "geoconnect.settings.heroku".
 
-From the Heroku dashboard, go to the "Resources" section.
 
 ## Install "Bucketeer"
 
@@ -45,13 +47,13 @@ From the Heroku dashboard, go to the "Resources" section.
 
 ## Install "SendGrid"
   - SendGrid is used for sending email messages to administrators
-  - Config variable added:
+  - Config variables added:
     1. ```SENDGRID_USERNAME```
     1. ```SENDGRID_PASSWORD```
-  -  **Setup for SendGrid API Key**    
+    
+    The config values above are generated automatically. To see them, go to "Settings -> Reveal Config Vars" on your Heroku application dashboard (for example: ```https://dashboard.heroku.com/apps/geoconnect-test```)
+  - **Setup for SendGrid API Key**    
     1. Log into https://app.sendgrid.com using the config variables above
-      - To see the config variable values, on your **Heroku site**, go to:
-        - "Settings -> Reveal Config Vars"
     1. On the **SendGrid site**: Bottom left: Click "Settings -> API Keys"
     1. Top right: Click "Create API Key -> Generate API Key"
       - Name the key: "geoconnect_send"
@@ -134,6 +136,9 @@ For these steps use your local Terminal within the geoconnect directory--e.g. cd
     - To push a specific branch:
       - ```git push heroku [your branch name]:master```
       - Example: ```git push heroku 3024-heroku:master```
+      
+      Important: the first time you do this, git will ask you for the username. Use your Heroku username (```sername@hmdc.harvard.edu```). It will then ask you for the password. Do NOT use password that you use to log onto Heroku website here! Instead, use your Heroku API key: Go to 'Account settings' (top right corner), then click "Reveal" next to the "API Key".
+      
   1. Create/sync the database:
     - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
     - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
