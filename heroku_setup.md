@@ -137,7 +137,7 @@ For these steps use your local Terminal within the geoconnect directory--e.g. cd
       - ```git push heroku [your branch name]:master```
       - Example: ```git push heroku 3024-heroku:master```
       
-      Important: the first time you do this, git will ask you for the username. Use your Heroku username (```sername@hmdc.harvard.edu```). It will then ask you for the password. Do NOT use password that you use to log onto Heroku website here! Instead, use your Heroku API key: Go to 'Account settings' (top right corner), then click "Reveal" next to the "API Key".
+      Important: the first time you do this, git will ask you for the username. Use your Heroku username (```username@hmdc.harvard.edu```). It will then ask you for the password. Do NOT use password that you use to log onto Heroku website here! Instead, use your Heroku API key: Go to 'Account settings' (top right corner), then click "Reveal" next to the "API Key".
       
   1. Create/sync the database:
     - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
