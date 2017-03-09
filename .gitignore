@@ -104,8 +104,4 @@ scripts/tabular_test_data/files/nhcrime_2014_08.tab
 
 geoconnect/settings/local_aws_creds.py
 
-gc_apps/slackbot/__init__.py
-
-gc_apps/slackbot/urls.py
-
-gc_apps/slackbot/views.py
+gc_apps/slackbot
