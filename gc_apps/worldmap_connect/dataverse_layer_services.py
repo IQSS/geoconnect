@@ -89,11 +89,13 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as exception_obj:
 
-        err_msg =  ('Failed to retrieve data from the WorldMap.'
-                    '<p><b>Details for administrator:</b>'
-                    ' Could not contact the WorldMap'
-                    ' server: {0}</p>').format(DELETE_LAYER_API_PATH)
+        err_msg = ('Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the WorldMap'
+                   ' server: {0}</p>').format(DELETE_LAYER_API_PATH)
+
         LOGGER.error(err_msg + '\nConnectionError:' + exception_obj.message)
+
         return (False, err_msg)
 
     print (r.text)
@@ -221,7 +223,7 @@ def get_layer_info_using_dv_info(params_dict):
                     WorldMap server: %s</p>"""\
                     % (GET_LAYER_INFO_BY_DATAVERSE_INSTALLATION_AND_FILE_API_PATH)
         LOGGER.error(err_msg)
-        LOGGER.error('ConnectionError: %s', exception_obj.error)
+        LOGGER.error('ConnectionError: %s', exception_obj)
         return False, err_msg
     except:
         # Error with request

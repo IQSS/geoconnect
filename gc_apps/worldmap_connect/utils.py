@@ -25,8 +25,8 @@ def get_latest_jointarget_information():
     # ---------------------------------
     recent_time_window = timezone.now() + timedelta(seconds=(-1 * JOIN_TARGET_UPDATE_TIME))
 
-    join_target = JoinTargetInformation.objects.filter(created__gte=recent_time_window\
-                    ).first()
+    join_target = JoinTargetInformation.objects.filter(\
+                    created__gte=recent_time_window).first()
     if join_target is not None:
         return join_target
 
@@ -79,4 +79,7 @@ python manage.py shell
 from gc_apps.worldmap_connect.utils import get_latest_jointarget_information
 jt = get_latest_jointarget_information()
 jt.get_geocode_types()
+
+from gc_apps.worldmap_connect.dataverse_layer_services import get_join_targets
+print get_join_targets()
 """
