@@ -170,7 +170,7 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
         wm_info.save()
 
         # Clear dupe layers, if any
-        WorldMapLayerInfo.clear_duplicate_worldmap_info_objects(wm_info)
+        WorldMapLayerInfo.clear_duplicate_worldmapinfo(wm_info)
 
         return wm_info
 
@@ -227,8 +227,6 @@ class WorldMapJoinLayerInfo(WorldMapTabularLayerInfo):
             return None
 
         return unmatched_row_helper.get_failed_rows_as_list()
-
-
 
     def is_join_layer(self):
         return True

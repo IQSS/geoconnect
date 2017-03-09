@@ -12,7 +12,16 @@ reportlab==3.0
 # Django JSON-field
 jsonfield==1.0.3
 
-# Folium related
-#pygdal>=1.11.0.0
-#folium==0.1.2
+# Delete files if related object is deleted
+django-cleanup>=0.4.2
+
+
+# for tabular files
 pandas>=0.17.0
+
+# for S3
+boto3==1.4.4
+django-storages==1.5.2
+
+# heroku
+whitenoise==3.3.0

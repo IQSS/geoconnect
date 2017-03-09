@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.core import management
 
 from gc_apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
-from gc_apps.gis_tabular.tabular_helper import TabFileStats
+from gc_apps.gis_tabular.tab_file_stats import TabFileStats
 from gc_apps.geo_utils.msg_util import msgt, msg
 from django.core.files import File
 
@@ -94,7 +94,7 @@ class WorldMapTabularInfoTestCase(TestCase):
         tab_file_info.save()
 
         # re-run column info
-        tab_file_stats = TabFileStats.create_tab_stats_from_tabular_info(tab_file_info)
+        tab_file_stats = TabFileStats.create_from_tabular_info(tab_file_info)
         self.assertTrue(not tab_file_stats.has_error())
 
         # Make sure num_rows and num_columns are the same

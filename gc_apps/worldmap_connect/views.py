@@ -1,38 +1,27 @@
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import Http404
-from django.core.urlresolvers import reverse
+"""Convenience method for deleting JoinTargetInformation objects"""
+import json
+
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
 from gc_apps.worldmap_connect.models import JoinTargetInformation
-from gc_apps.worldmap_connect.send_shapefile_service import SendShapefileService
+from gc_apps.worldmap_connect.test_quotes import get_random_quote
 
 import logging
-logger = logging.getLogger(__name__)
 
+LOGGER = logging.getLogger(__name__)
 
-#@login_required
-def view_send_shapefile_to_worldmap(request, shp_md5):
-    """
-    Send shapefile to WorldMap.
+@login_required
+def view_test_err_log(request):
+    """To debug the log handling--e.g. ".error" events should be emailed"""
 
-    Async the SendShapefileService.send_shapefile_to_worldmap process
+    movie_quote = get_random_quote()
+    #print '%s, %s' % (__name__, LOGGER)
+    LOGGER.error(movie_quote)
 
-    For now, it follows the process and then redirects back to the shapefile page with success (and map) or fail messages
-    """
-    if not shp_md5:
-        raise Http404('No shapefile indicated')
+    return HttpResponse(movie_quote)
 
-    shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
-    shp_service.send_shapefile_to_worldmap()
-
-    if shp_service.has_err:
-        # Do something more here!
-        print ('-' * 40)
-        print ('-- IMPORT TROUBLE --')
-        print('\n'.join(shp_service.err_msgs))
-        print ('-' * 40)
-
-    return HttpResponseRedirect(reverse('view_shapefile_visualize_attempt', kwargs={'shp_md5': shp_md5 }))
 
 @login_required
 def clear_jointarget_info(request):
@@ -43,12 +32,35 @@ def clear_jointarget_info(request):
     if not request.user.is_superuser:
         return HttpResponse('must be a superuser')
 
-    l = JoinTargetInformation.objects.all()
+    jtarget_list = JoinTargetInformation.objects.all()
 
-    cnt = l.count()
+    cnt = jtarget_list.count()
     if cnt == 0:
         return HttpResponse('no JoinTargetInformation objects found')
 
-    l.delete()
+    jtarget_list.delete()
 
     return HttpResponse('%s JoinTargetInformation object(s) deleted' % cnt)
+
+
+def show_jointarget_info(request):
+    """Display the latest Join Targets retrieved from the WorldMap"""
+
+    target_info_list = None
+    target_info_pretty = None
+
+    jt_info = JoinTargetInformation.objects.first()
+    if jt_info:
+        target_info_list_unsorted = jt_info.target_info.get('data')
+
+        # sort the info by type
+        target_info_list = sorted(\
+                        target_info_list_unsorted,
+                        key=lambda k: k['geocode_type'])
+
+        target_info_pretty = json.dumps(target_info_list, indent=4)
+
+    info_dict = dict(target_info_list=target_info_list,
+                     target_info_pretty=target_info_pretty)
+
+    return render(request, 'show_jointarget_info.html', info_dict)

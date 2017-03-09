@@ -88,9 +88,9 @@
             {#<a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>#}
         {% if failed_records_list %}
             {% if worldmap_layerinfo.is_lat_lng_layer %}
-                <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download {{ num_failed_download_records }} Unmapped Records (.csv)</a>
+                <a href="{% url 'download_unmatched_lat_lng_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download {{ num_failed_download_records|intcomma }} Unmapped Records (.csv)</a>
             {% elif worldmap_layerinfo.is_join_layer %}
-                <a href="{% url 'download_unmatched_join_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download {{ num_failed_download_records }} Unmapped Records (.csv)</a>
+                <a href="{% url 'download_unmatched_join_rows' worldmap_layerinfo.md5 %}" class="btn btn-default">Download {{ num_failed_download_records|intcomma }} Unmapped Records (.csv)</a>
             {% endif %}
         {% endif %}
             <button type="button" class="btn btn-default" data-dismiss="modal">Done</button>

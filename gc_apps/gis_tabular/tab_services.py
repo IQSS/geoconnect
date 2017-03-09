@@ -4,7 +4,6 @@
     return a TabularFileInfo object, if available
 """
 from __future__ import print_function
-import json
 
 import urllib2
 
@@ -16,12 +15,11 @@ from gc_apps.registered_dataverse.registered_dataverse_helper import find_regist
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.gis_tabular.models import WorldMapTabularLayerInfo
 
-from gc_apps.geo_utils.msg_util import *
+from gc_apps.geo_utils.msg_util import msg, msgt
 from gc_apps.geo_utils.error_result_msg import ErrResultMsg, FAILED_NOT_A_REGISTERED_DATAVERSE
 
 from gc_apps.worldmap_connect.dataverse_layer_services import get_layer_info_using_dv_info
-from shared_dataverse_information.dataverse_info.forms_existing_layer import\
-        CheckForExistingLayerForm
+
 
 import logging
 LOGGER = logging.getLogger(__name__)

@@ -5,6 +5,7 @@ import shapefile
 import zipfile
 import cStringIO
 
+from gc_apps.geo_utils.msg_util import msg, msgt
 from gc_apps.gis_shapefiles.models import WORLDMAP_MANDATORY_IMPORT_EXTENSIONS, SHAPEFILE_EXTENSION_SHP
 from gc_apps.geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
         ZIPCHECK_MULTIPLE_SHAPEFILES,\
@@ -43,12 +44,15 @@ class ZipToStringIOConverter(object):
             print 'class name: ', django_field_file_obj.__class__.__name__
             return None
 
+        #return django_field_file_obj.read()
+
         return cStringIO.StringIO(django_field_file_obj.read())
 
 
 class ShapefileZipCheck(object):
-    """Check to see if a file or buffer (StringIO) is a valid zipefile that contains at least one shapefile set
-
+    """
+    Check to see if a file or buffer (StringIO) is a valid zipefile
+    that contains at least one shapefile set
     """
 
     ERR_MSG_NOT_ZIP_ARCHIVE = 'Not a zip archive'
@@ -112,7 +116,8 @@ class ShapefileZipCheck(object):
                 err_msg = 'Failed to find data in Django FileField'
                 self.add_error(err_msg)
                 raise Exception(err_msg)    # Just blow up if this happens
-
+            else:
+                msgt("Loaded from AWS!")
         return True
 
     def add_error(self, err_msg, err_type=None):
@@ -298,9 +303,9 @@ class ShapefileZipCheck(object):
         # ---------------------------
         # Is it a file?
         # ---------------------------
-        if not isfile(self.zip_input):
-            self.add_error('File not found for zip_input: %s' % self.zip_input)
-            return False
+        #if not isfile(self.zip_input):
+        #    self.add_error('File not found for zip_input: %s' % self.zip_input)
+        #    return False
 
         # ---------------------------
         # Is it a zip file?

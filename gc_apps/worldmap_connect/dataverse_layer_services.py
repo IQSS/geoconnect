@@ -156,6 +156,9 @@ def delete_worldmap_tablejoin(worldmap_layer_info):
     if r.status_code == 200:
         #response_dict = r.json()
         return (True, None)
+    elif r.status_code == 404:
+        # TableJoin no longer exists
+        return (True, None)
 
     #--------------------------------------
     # Response doesn't look good

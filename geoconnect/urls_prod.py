@@ -26,3 +26,5 @@ urlpatterns = [
     url(r'^%sgeo-connect-admin/' % URL_PREFIX, include(admin.site.urls)),
 
 ]
+
+admin.site.site_header = 'Geoconnect (Dataverse <--> WorldMap)'

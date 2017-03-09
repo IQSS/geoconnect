@@ -1,5 +1,10 @@
 -r base.txt
 
-#psycopg2==2.5.3
+# heroku
+gunicorn>=19.6.0
+psycopg2>=2.6
+dj-database-url==0.4.2
 
-#uWSGI=2.0.6
+# sendgrid email
+sendgrid==3.6.3
+sendgrid-django==4.0.4

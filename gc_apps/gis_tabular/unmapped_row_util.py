@@ -10,6 +10,7 @@ import pandas as pd
 
 
 from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo
+from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 
 from gc_apps.geo_utils.tabular_util import get_orig_column_name,\
         get_worldmap_colname_format,\
@@ -17,7 +18,7 @@ from gc_apps.geo_utils.tabular_util import get_orig_column_name,\
 from gc_apps.geo_utils.msg_util import msgt, msg
 
 
-MAX_FAILED_ROWS_TO_BUILD = 1000
+MAX_FAILED_ROWS_TO_BUILD = 5000
 MAX_FAILED_ROWS_TO_DISPLAY = 20
 
 class UnmatchedRowHelper(object):
@@ -29,9 +30,13 @@ class UnmatchedRowHelper(object):
         assert isinstance(worldmap_info, WorldMapJoinLayerInfo),\
             "worldmap_info must be a WorldMapJoinLayerInfo object"
 
-        self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False )
-        self.max_failed_rows_to_build = kwargs.get('max_failed_rows_to_build', MAX_FAILED_ROWS_TO_BUILD)
-        self.max_failed_rows_to_display = kwargs.get('max_failed_rows_to_display', MAX_FAILED_ROWS_TO_DISPLAY)
+        self.show_all_failed_rows = kwargs.get('show_all_failed_rows', False)
+        self.max_failed_rows_to_build =\
+            kwargs.get('max_failed_rows_to_build', MAX_FAILED_ROWS_TO_BUILD)
+
+        self.max_failed_rows_to_display =\
+            kwargs.get('max_failed_rows_to_display', MAX_FAILED_ROWS_TO_DISPLAY)
+
         self.include_header_row = kwargs.get('include_header_row', True)
 
         self.worldmap_info = worldmap_info
@@ -54,13 +59,16 @@ class UnmatchedRowHelper(object):
         self.run_check()
 
     def add_error_msg(self, err_msg):
+        """Set error message"""
         self.has_error = True
         self.error_message = err_msg
 
     def run_check(self):
+        """Check for unmatched rows"""
         self.check_for_unmatched_rows()
 
     def get_failed_rows_as_list(self):
+        """Return the failed rows as a python list"""
         assert self.has_unmatched_rows,\
             'Before calling this, check that "has_unmatched_rows" is True'
 
@@ -70,6 +78,7 @@ class UnmatchedRowHelper(object):
         return self.build_failed_rows()
 
     def get_failed_rows_as_csv(self):
+        """Return failed rows as a CSV"""
         assert self.has_unmatched_rows,\
             'Before calling this, check that "has_unmatched_rows" is True'
 
@@ -81,6 +90,7 @@ class UnmatchedRowHelper(object):
 
 
     def check_for_unmatched_rows(self):
+        """Check for unmatched rows"""
 
         # Are there any unmatched records?
         if self.worldmap_info.get_unmapped_record_count() < 1:
@@ -93,7 +103,8 @@ class UnmatchedRowHelper(object):
         #
         if self.worldmap_info.core_data and\
             'unmatched_records_list' in self.worldmap_info.core_data:
-            self.unmatched_record_values = self.worldmap_info.core_data.get('unmatched_records_list', '')
+            self.unmatched_record_values = self.worldmap_info.core_data.get(\
+                                            'unmatched_records_list', '')
             self.unmatched_record_values = self.unmatched_record_values.split(',')
         else:
             self.add_error_msg('unmatched record list not found')
@@ -108,7 +119,8 @@ class UnmatchedRowHelper(object):
 
         # Was a join column created?
         #
-        self.was_formatted_column_created = self.worldmap_info.core_data.get('was_formatted_column_created', False)
+        self.was_formatted_column_created = self.worldmap_info.core_data.get(\
+                                'was_formatted_column_created', False)
 
         self.zero_pad_length = self.worldmap_info.core_data.get('zero_pad_length', None)
         if not (self.zero_pad_length and self.zero_pad_length > 0):
@@ -129,13 +141,12 @@ class UnmatchedRowHelper(object):
         tabular_info = self.worldmap_info.tabular_info
 
         try:
-            df = pd.read_csv(tabular_info.dv_file.path,\
-                        sep=tabular_info.delimiter,\
-                        )
-        except pd.parser.CParserError as e:
-            err_msg = ('Could not process the file. '
-                        'At least one row had too many values. '
-                        '(error: %s)' % e.message)
+            df = pd.read_csv(get_file_path_or_url(tabular_info.dv_file),
+                             sep=tabular_info.delimiter)
+        except pd.parser.CParserError as ex_obj:
+            err_msg = ('Could not process the file.'
+                       ' At least one row had too many values.'
+                       ' (error: %s)' % ex_obj.message)
             self.add_error(err_msg)
             return None
 
@@ -207,6 +218,7 @@ class UnmatchedRowHelper(object):
 
 
     def convert_values_to_numeric(self, val_list):
+        """If appropriate, convert values to numeric"""
         assert val_list is not None, 'val_list cannot be None'
 
         updated_list = []

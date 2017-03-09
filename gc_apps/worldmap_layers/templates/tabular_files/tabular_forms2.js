@@ -17,6 +17,13 @@
  *  Action:
  *      init: only geo type dropdown shows
  */
+ function logit2(m){
+     {% if DEBUG_MODE %}
+        console.log(m);
+     {% else %}
+        // Write to console when Django DEBUG=True
+     {% endif %}
+ }
 
     var SUBMIT_BUTTON_TEXT = 'Submit Data to WorldMap'
     var INITIAL_SELECT_CHOICE = 'Select...';
@@ -27,7 +34,7 @@
         Submit the latitude/longitude form
     ------------------------------------------ */
     function submit_lat_lng_form(){
-        logit('submit_lat_lng_form');
+        logit2('submit_lat_lng_form');
 
         // url for ajax  call
         check_lat_lng_url = '{% url 'view_process_lat_lng_form' %}';
@@ -39,7 +46,7 @@
         // Submit form
         var jqxhr = $.post(check_lat_lng_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
             // don't need a response for user
-            logit(json_resp);
+            logit2(json_resp);
         })
         .done(function(json_resp) {
             if (json_resp.success){
@@ -49,7 +56,7 @@
                 hide_setup_form_submit_buttons();
                 window.scrollTo(0, 0);
             }else{
-                logit(json_resp.message);
+                logit2(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
                 $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
@@ -75,7 +82,7 @@
     */
     function update_target_layers_based_on_geotype(selected_geocode_type){
 
-        logit('update_target_layers_based_on_geotype');
+        logit2('update_target_layers_based_on_geotype');
         if (selected_geocode_type.length == 0){
             clear_layer_description();
             return;
@@ -91,12 +98,12 @@
         // Submit form
         var jqxhr = $.get(target_layers_by_type_url, function(json_resp) {
             // don't need a response for user
-            logit(json_resp);
+            logit2(json_resp);
         })
         .done(function(json_resp) {
             if (json_resp.success && json_resp.data){
 
-                logit('success!!' + json_resp.data);
+                logit2('success!!' + json_resp.data);
                 // {"message": "success", "data": [[9, "US Census Tract (2000) Boston Census Blocks"]], "success": true}
                 // Update the dropdown box
 
@@ -121,7 +128,7 @@
                 clear_layer_description();
 
             }else{
-                logit(json_resp.message);
+                logit2(json_resp.message);
                 // form error, display message
                 //$('#msg_form_lat_lng').html(json_resp.message);
                 $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
@@ -153,12 +160,12 @@
      * Called after successful mapping of a tabular file
      */
     function hide_setup_form_submit_buttons(){
-        logit('hide_setup_form_submit_buttons');
+        logit2('hide_setup_form_submit_buttons');
         $('#id_setup_form_buttons').hide();
     }
 
     function submit_single_column_form(){
-        logit('submit_single_column_form');
+        logit2('submit_single_column_form');
 
         // url for ajax  call
         map_tabular_file_url = '{% url 'view_map_tabular_file_form' %}';
@@ -170,7 +177,7 @@
         // Submit form
         var jqxhr = $.post(map_tabular_file_url, $('#form_map_tabular_file').serialize(), function(json_resp) {
             // don't need a response for user
-            logit(json_resp);
+            logit2(json_resp);
         })
         .done(function(json_resp) {
             if (json_resp.success){
@@ -180,7 +187,7 @@
                 window.scrollTo(0, 0);
             }else{
 
-                logit(json_resp.message);
+                logit2(json_resp.message);
                 $('#id_alert_container').show().empty().append(get_alert('danger', json_resp.message));
 
             }
@@ -197,7 +204,7 @@
     }
 
     function bind_form_submit_buttons(){
-        //logit('bind_submit_lat_lng_form');
+        logit2('bind_submit_lat_lng_form');
         $("#id_frm_lat_lng_submit").on( "click", submit_lat_lng_form );
         $("#id_frm_single_column_submit").on( "click", submit_single_column_form );
     }
@@ -206,12 +213,12 @@
      *  show cancel button without form submit buttons
      */
     function show_cancel_only_button(){
-        logit('show cancel button');
+        logit2('show cancel button');
         $('#div_btn_cancel').show();
     }
 
     function hide_cancel_only_button(){
-        logit('HIDE cancel button');
+        logit2('HIDE cancel button');
         $('#div_btn_cancel').hide();
     }
 
@@ -238,7 +245,7 @@
         hide_form_worldmap_layer_row();
 
         var geocode_type_val = $( "#id_geocode_type" ).val()
-        logit('type: '+ geocode_type_val);
+        logit2('type: '+ geocode_type_val);
         if (geocode_type_val == '{{ GEO_TYPE_LATITUDE_LONGITUDE }}'){
             // show latitude-longitude form
             $('.form_lat_lng_fields').show();
@@ -322,7 +329,7 @@
         if (typeof LAYER_DESCRIPTIONS != 'undefined'){
             $.each(LAYER_DESCRIPTIONS, function (index, item) {
                 if (chosen_layer_id==item.join_target_id){
-                    logit('found a description: ' + item.description);
+                    logit2('found a description: ' + item.description);
                     // found a description
                     $("#id_layer_description").html(item.description);
                     $('#id_layer_description').removeClass('text-muted');
@@ -394,7 +401,7 @@
         // Click on the header column
         $(".geo_col_select").on('click', function() {
             var selectedHeaderText = $(this).html();
-            logit('clicked...:' + selectedHeaderText);
+            logit2('clicked...:' + selectedHeaderText);
             setNewSelectedCol(selectedHeaderText);
         })
 

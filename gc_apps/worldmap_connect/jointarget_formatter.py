@@ -74,7 +74,7 @@ class JoinTargetFormatter(object):
                 self.target_info = json.loads(self.target_info)
             except ValueError:
                 self.add_error("target_info should always be a JSON string or python dict")
-                return false
+                return False
 
         # Is there a 'success' attribute?
         if not 'success' in self.target_info:
@@ -197,7 +197,7 @@ class JoinTargetFormatter(object):
                     info_dict['join_target_id'] = info['id']
                     info_dict['name'] = info_line
                     info_dict['description'] = description
-                                
+
                     join_targets.append(info_dict)
 
                 else:

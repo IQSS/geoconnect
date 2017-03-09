@@ -18,7 +18,7 @@ from gc_apps.gis_tabular.unmapped_row_util import UnmatchedRowHelper
 
 from gc_apps.gis_tabular.forms import LatLngColumnsForm, ChooseSingleColumnForm,\
     SELECT_LABEL, INITIAL_SELECT_CHOICE
-from gc_apps.gis_tabular.tabular_helper import TabFileStats, NUM_PREVIEW_ROWS
+from gc_apps.gis_tabular.tab_file_stats import TabFileStats, NUM_PREVIEW_ROWS
 from gc_apps.gis_tabular.forms_delete import DeleteMapForm
 
 from gc_apps.worldmap_layers.models import WorldMapLayerInfo
@@ -331,7 +331,7 @@ def view_tabular_file(request, tab_md5):
     # ----------------------------------
     # Open the file and get the stats
     # ----------------------------------
-    tab_file_stats = TabFileStats.create_tab_stats_from_tabular_info(tabular_info)
+    tab_file_stats = TabFileStats.create_from_tabular_info(tabular_info)
     if tab_file_stats.has_error():
         raise Http404(tab_file_stats.error_message)
 

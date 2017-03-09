@@ -13,7 +13,7 @@ DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 SITE_ROOT = dirname(DJANGO_ROOT)
 
 # Site name:
-SITE_NAME = basename(DJANGO_ROOT)
+SITE_NAME = 'geoconnect'    #basename(DJANGO_ROOT)
 
 # Project test files
 # Absolute filesystem path to the Django project directory:
@@ -36,7 +36,7 @@ path.append(DJANGO_ROOT)
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = False
+DEBUG = True
 
 
 
@@ -47,9 +47,7 @@ DEBUG = False
 
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (
-    ('Raman Prasad', 'raman_prasad@harvard.edu'),
-)
+ADMINS = (('Raman Prasad', 'raman_prasad@harvard.edu'),)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
@@ -165,18 +163,6 @@ TEMPLATES = [
 ########## END TEMPLATE CONFIGURATION
 
 
-########## MIDDLEWARE CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE_CLASSES = (
-    # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
-########## END MIDDLEWARE CONFIGURATION
 
 
 ########## URL CONFIGURATION
@@ -205,6 +191,8 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'django_cleanup',   # delete files linked by FileField objects
+
     'shared_dataverse_information.layer_classification',
     'shared_dataverse_information.shapefile_import',
     #'dataverse_info',
@@ -224,6 +212,7 @@ LOCAL_APPS = (
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -265,15 +254,33 @@ LOGGING = {
 WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 ########## END WSGI CONFIGURATION
 
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
 
 ########## SESSION_COOKIE_NAME
-SESSION_COOKIE_NAME = 'geoconnect'
+SESSION_COOKIE_NAME = 'geoconnect_local'
 ########## END SESSION_COOKIE_NAME
 
 ########## GISFILE_SCRATCH_WORK_DIRECTORY
 # Used for opening up files for processing, etc
 GISFILE_SCRATCH_WORK_DIRECTORY = None
 ########## END GISFILE_SCRATCH_WORK_DIRECTORY
+
+# Time used by scripts to remove stale data objects
+#   e.g. Objects removed if they were created more
+#   than 'x' minutes ago--where 'x' is the variable below
+#
+STALE_DATA_SECONDS_TO_EXPIRATION = 60 #* 60 * 24 * 2     # 2 DAYS
 
 
 ########## LOGIN_URL
@@ -303,8 +310,8 @@ WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'
 WORLDMAP_ACCOUNT_USERNAME = None
 WORLDMAP_ACCOUNT_PASSWORD = None
 
-WORLDMAP_DEFAULT_TIMEOUT = 8*60 # seconds
-WORLDMAP_SHORT_TIMEOUT = 2*60 # seconds, for non-layer making requests
+WORLDMAP_DEFAULT_TIMEOUT = 8 * 60 # seconds
+WORLDMAP_SHORT_TIMEOUT = 2 * 60 # seconds, for non-layer making requests
 
 # Go and get info from WorldMap instead of using saved info
 WORLDMAP_LAYER_EXPIRATION = 15 * 60 # 15 minutes
