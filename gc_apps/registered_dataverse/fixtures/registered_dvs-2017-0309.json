@@ -1,0 +1,242 @@
+[
+{
+    "pk": 1,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dvn-build.hmdc.harvard.edu:443",
+        "name": "dvn-build server 1",
+        "created": "2015-02-24T20:45:12.246Z",
+        "notes": "",
+        "modified": "2015-05-22T14:33:04.281Z",
+        "active": true
+    }
+},
+{
+    "pk": 2,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse.harvard.edu:443",
+        "name": "Production: dataverse.harvard.edu:443",
+        "created": "2015-02-24T20:45:24.348Z",
+        "notes": "",
+        "modified": "2015-11-13T19:53:35.847Z",
+        "active": true
+    }
+},
+{
+    "pk": 3,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse.harvard.edu",
+        "name": "PRODUCTION https://dataverse.harvard.edu",
+        "created": "2015-04-10T18:55:07.513Z",
+        "notes": "",
+        "modified": "2015-04-10T18:55:07.513Z",
+        "active": true
+    }
+},
+{
+    "pk": 5,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://demo.dataverse.org:443",
+        "name": "dataverse-demo",
+        "created": "2015-06-09T16:03:44.230Z",
+        "notes": "",
+        "modified": "2016-05-24T19:36:18.496Z",
+        "active": true
+    }
+},
+{
+    "pk": 6,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse-internal.iq.harvard.edu:443",
+        "name": "dataverse-internal",
+        "created": "2015-09-25T14:47:41.347Z",
+        "notes": "",
+        "modified": "2015-09-25T14:47:58.050Z",
+        "active": true
+    }
+},
+{
+    "pk": 7,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse.exchange.isb.edu:443",
+        "name": "India: (HTTPS) https://dataverse.exchange.isb.edu:443",
+        "created": "2015-11-13T19:54:01.240Z",
+        "notes": "",
+        "modified": "2015-12-15T16:41:02.074Z",
+        "active": true
+    }
+},
+{
+    "pk": 8,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "http://dataverse.exchange.isb.edu",
+        "name": "India (HTTP) dataverse.exchange.isb.edu",
+        "created": "2015-11-13T19:54:29.750Z",
+        "notes": "",
+        "modified": "2015-11-13T19:54:29.750Z",
+        "active": true
+    }
+},
+{
+    "pk": 9,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse-internal.iq.harvard.edu",
+        "name": "dataverse internal",
+        "created": "2015-12-14T15:32:06.923Z",
+        "notes": "",
+        "modified": "2015-12-14T15:32:06.923Z",
+        "active": true
+    }
+},
+{
+    "pk": 10,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse-dev.tdl.org:443",
+        "name": "Texas Digital Library (https://dataverse-dev.tdl.org)",
+        "created": "2015-12-15T20:36:29.817Z",
+        "notes": "See RT: https://help.hmdc.harvard.edu/Ticket/Display.html?id=230464",
+        "modified": "2016-11-30T21:43:46.230Z",
+        "active": true
+    }
+},
+{
+    "pk": 11,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse-prod.tdl.org:443",
+        "name": "Texas Digital Library (dataverse-prod.tdl.org)",
+        "created": "2016-01-04T17:32:34.596Z",
+        "notes": "See RT: https://help.hmdc.harvard.edu/Ticket/Display.html?id=230464",
+        "modified": "2016-11-30T21:43:26.786Z",
+        "active": true
+    }
+},
+{
+    "pk": 12,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://staging.dataverse.org:443",
+        "name": "IQSS Staging Dataverse",
+        "created": "2016-01-07T23:28:19.243Z",
+        "notes": "",
+        "modified": "2016-01-08T15:35:49.186Z",
+        "active": true
+    }
+},
+{
+    "pk": 13,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://data.cifor.org",
+        "name": "International Forestry (Usman)",
+        "created": "2016-02-24T16:39:22.600Z",
+        "notes": "See RT ticket https://help.hmdc.harvard.edu/Ticket/Display.html?id=232956",
+        "modified": "2016-03-08T21:15:43.023Z",
+        "active": true
+    }
+},
+{
+    "pk": 14,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://data.cifor.org:443",
+        "name": "International Forestry 443 (Usman) ",
+        "created": "2016-02-24T16:39:48.090Z",
+        "notes": "See RT ticket https://help.hmdc.harvard.edu/Ticket/Display.html?id=232956",
+        "modified": "2016-02-24T17:48:47.105Z",
+        "active": true
+    }
+},
+{
+    "pk": 15,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://beta.dataverse.org:443",
+        "name": "dataverse beta",
+        "created": "2016-02-29T22:43:45.780Z",
+        "notes": "",
+        "modified": "2016-02-29T22:43:45.780Z",
+        "active": true
+    }
+},
+{
+    "pk": 16,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://apitest.dataverse.org:443",
+        "name": "https://apitest.dataverse.org:443",
+        "created": "2016-11-01T15:26:48.868Z",
+        "notes": "",
+        "modified": "2016-11-01T15:26:48.868Z",
+        "active": true
+    }
+},
+{
+    "pk": 17,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://apitest.dataverse.org",
+        "name": "https://apitest.dataverse.org",
+        "created": "2016-11-01T15:27:02.973Z",
+        "notes": "",
+        "modified": "2016-11-01T15:27:02.973Z",
+        "active": true
+    }
+},
+{
+    "pk": 18,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse.tdl.org:443",
+        "name": "Texas Digital Library Dataverse (dataverse.tdl.org)",
+        "created": "2016-11-30T21:42:20.371Z",
+        "notes": "See ticket: https://help.hmdc.harvard.edu/Ticket/Display.html?id=243544",
+        "modified": "2016-11-30T21:42:20.372Z",
+        "active": true
+    }
+},
+{
+    "pk": 19,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://dataverse-training.tdl.org:443",
+        "name": "Texas Digital Library Dataverse (dataverse-training.tdl.org)",
+        "created": "2016-11-30T21:42:42.471Z",
+        "notes": "See ticket: https://help.hmdc.harvard.edu/Ticket/Display.html?id=243544",
+        "modified": "2016-11-30T21:42:42.471Z",
+        "active": true
+    }
+},
+{
+    "pk": 20,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://data-test.jouy.inra.fr",
+        "name": "Michel Fr Dataverse",
+        "created": "2017-03-01T18:16:15.625Z",
+        "notes": "See https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/dataverse-community/KgiMIHhuH18/TGeyWQpFAQAJ",
+        "modified": "2017-03-01T18:19:16.000Z",
+        "active": true
+    }
+},
+{
+    "pk": 21,
+    "model": "registered_dataverse.registereddataverse",
+    "fields": {
+        "dataverse_url": "https://data-test.jouy.inra.fr:443",
+        "name": "Michel Fr Dataverse 2",
+        "created": "2017-03-01T18:16:45.453Z",
+        "notes": "See https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/dataverse-community/KgiMIHhuH18/TGeyWQpFAQAJ",
+        "modified": "2017-03-01T18:16:45.453Z",
+        "active": true
+    }
+}
+]

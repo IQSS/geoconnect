@@ -49,6 +49,7 @@ Install the following Add-Ons.  Several of the Add-Ons will create config variab
   - No config variables are added
 
 ## Install "SendGrid"
+  - The free "Starter" version is fine
   - SendGrid is used for sending email messages to administrators
   - Config variables added:
     1. ```SENDGRID_USERNAME```
