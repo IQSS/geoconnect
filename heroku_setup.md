@@ -10,6 +10,9 @@ The steps assume that:
 # Dashboard set-up
 
 1. Install the Heroku CLI from https://devcenter.heroku.com/articles/heroku-cli
+  - Homebrew note from user:
+    - "With homebrew, the installation worked without a problem. BUT, to actually use heroku, I had to modify my PATH, like this: PATH=/usr/local/bin:$PATH; export PATH"
+
 1. Log into the Heroku website
 1. Create a new Heroku application
     - e.g. ```geoconnect-test```
@@ -21,7 +24,7 @@ The steps assume that:
 
 # Install "Add-Ons"
 
-Go to the dashboard for the Heroku application that you just created. For example: ```https://dashboard.heroku.com/apps/geoconnect-test``` 
+Go to the dashboard for the Heroku application that you just created. For example: ```https://dashboard.heroku.com/apps/geoconnect-test```
 
 Install the following Add-Ons.  Several of the Add-Ons will create config variables used by "geoconnect.settings.heroku".
 
@@ -50,7 +53,7 @@ Install the following Add-Ons.  Several of the Add-Ons will create config variab
   - Config variables added:
     1. ```SENDGRID_USERNAME```
     1. ```SENDGRID_PASSWORD```
-    
+
     The config values above are generated automatically. To see them, go to "Settings -> Reveal Config Vars" on your Heroku application dashboard (for example: ```https://dashboard.heroku.com/apps/geoconnect-test```)
   - **Setup for SendGrid API Key**    
     1. Log into https://app.sendgrid.com using the config variables above
@@ -76,8 +79,16 @@ Using the Heroku web interface or command line, set the following variables.
     - value: ```large random string```
       - See: https://docs.djangoproject.com/en/1.10/ref/settings/#secret-key
       - Methods for creating a key include:
-        - code snippet: https://gist.github.com/mattseymour/9205591
         - online (not recommended): http://www.miniwebtool.com/django-secret-key-generator/
+        - python code snippet:
+
+            ```python
+from __future__ import print_function
+import random
+secret_key = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+print (secret_key)
+            ```
+
     - command line: ```heroku config:set SECRET_KEY=(secret key value)```
   1. *DJANGO_DEBUG*
     - Turn Django debug off.  Note: You may want to turn it on for troubleshooting.
@@ -136,9 +147,9 @@ For these steps use your local Terminal within the geoconnect directory--e.g. cd
     - To push a specific branch:
       - ```git push heroku [your branch name]:master```
       - Example: ```git push heroku 3024-heroku:master```
-      
+
       Important: the first time you do this, git will ask you for the username. Use your Heroku username (```username@hmdc.harvard.edu```). It will then ask you for the password. Do NOT use password that you use to log onto Heroku website here! Instead, use your Heroku API key: Go to 'Account settings' (top right corner), then click "Reveal" next to the "API Key".
-      
+
   1. Create/sync the database:
     - ```heroku run 'python manage.py migrate --settings=geoconnect.settings.heroku'```
     - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
