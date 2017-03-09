@@ -178,6 +178,12 @@ Once your are logged into the admin page from the previous step, register the Da
       - Dataverse URL: https://beta.dataverse.org:443
    1.  Save the registered Dataverse
 
+  - Alternative.  Load a fixtures file:
+
+      ```python
+heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-2017-0309.json --settings=geoconnect.settings.heroku'
+```
+
 ## Update the Geoconnect URL on your Dataverse Database
 
   1.  Go to the Postgres command line for your Dataverse
