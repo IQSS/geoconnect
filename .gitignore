@@ -90,8 +90,8 @@ scripts/tab_read/test_dv_files/Boston_MHHI1999_kP4.csv
 scripts/tab_read/test_dv_files/*
 geoconnect/settings/geoconnect_secrets_prod.json
 geoconnect/settings/worldmap_secrets_prod2.json
-geoconnect/settings/worldmap_secrets_local.json
-geoconnect/settings/geoconnect_secrets_dev.json
+#geoconnect/settings/worldmap_secrets_local.json
+#geoconnect/settings/geoconnect_secrets_dev.json
 geoconnect/settings/worldmap_secrets_dev.json
 geoconnect/settings/worldmap_secrets_dev2.json
 geoconnect/settings/worldmap_secrets_prod.json
