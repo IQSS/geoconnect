@@ -176,11 +176,10 @@ Once your are logged into the admin page from the previous step, register the Da
     - Example:
       - Name: beta.dataverse.org
       - Dataverse URL: https://beta.dataverse.org:443
-   1.  Save the registered Dataverse
-
-  - Alternative.  Load a fixtures file:
-
-      ```python
+  1.  Save the registered Dataverse
+ 
+- Alternative.  Load a fixtures file:
+```python
 heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-2017-0309.json --settings=geoconnect.settings.heroku'
 ```
 
