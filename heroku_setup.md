@@ -234,3 +234,26 @@ Once the app has been set up, including the configuration variables and the data
 - If the tables don't have migrations:
 
   - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
+
+# Add SSL to Heroku
+
+- Instructions for adding SSL to Heroku
+  - https://devcenter.heroku.com/articles/ssl-endpoint#overview
+  - Notes:
+    - Creating the request:
+      - https://github.com/IQSS/dataverse/blob/v4.6/scripts/deploy/phoenix.dataverse.org/cert.md
+- Repointing the DNS
+  - For SSL:
+    1. Use Heroku command: ```heroku certs```
+    1. Use the "Endpoint" in the from the output.
+    1. Example:
+    
+        ```
+        heroku certs
+Name             Endpoint                       Common Name(s)                         Expires               Trusted  Type
+───────────────  ─────────────────────────────  ─────────────────────────────────────  ────────────────────  ───────  ────────
+tokushima-96974  tokushima-96974.herokussl.com  geoconnect.datascience.iq.harvard.edu  2020-03-14 23:59 UTC  True     Endpoint
+        ```
+        
+    1. From the example above, the endpoint for repointing the CNAME would be ```tokushima-96974.herokussl.com```
+
