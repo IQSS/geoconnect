@@ -235,7 +235,7 @@ Once the app has been set up, including the configuration variables and the data
 
   - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
 
-# Add SSL to Heroku
+# Adding SSL to Heroku
 
 ## Instructions for adding SSL to Heroku
 
@@ -256,7 +256,7 @@ Name             Endpoint                       Common Name(s)                  
 tokushima-96974  tokushima-96974.herokussl.com  geoconnect.datascience.iq.harvard.edu  2020-03-14 23:59 UTC  True     Endpoint
 ```
 
-- From the example above, the endpoint for repointing the CNAME would be:
+- From the example above, the endpoint for setting the CNAME would be:
   - ```tokushima-96974.herokussl.com```
 
 ## Repointing the DNS when NOT using SSL:
@@ -275,6 +275,6 @@ Domain Name                            DNS Target
 geoconnect.datascience.iq.harvard.edu  geoconnect.datascience.iq.harvard.edu.herokudns.com
 ```
 
-- From the example above, the endpoint for repointing the CNAME would be:
+- From the example above, the endpoint for setting the CNAME would be:
   - ```geoconnect.datascience.iq.harvard.edu.herokudns.com```
 
