@@ -243,7 +243,12 @@ Once the app has been set up, including the configuration variables and the data
 - Notes:
   - Creating the request:
     - https://github.com/IQSS/dataverse/blob/v4.6/scripts/deploy/phoenix.dataverse.org/cert.md
-
+  - If intermediate certificates are used, concatenate all the certs to add them to Heroku
+    - See: http://stackoverflow.com/questions/38447944/heroku-ssl-install-intermediate-cert
+      - Concat Example: ```cat ssl.crt middle.crt root.crt > all.crt```
+      - Add to Heroku example: ```heroku certs:update --app $APP_NAME --confirm $APP_NAME all.crt private.key```
+      
+      
 ## Repointing the DNS For SSL:
 
 - Use Heroku command: ```heroku certs```
