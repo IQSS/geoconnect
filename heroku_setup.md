@@ -256,5 +256,25 @@ Name             Endpoint                       Common Name(s)                  
 tokushima-96974  tokushima-96974.herokussl.com  geoconnect.datascience.iq.harvard.edu  2020-03-14 23:59 UTC  True     Endpoint
 ```
 
-- From the example above, the endpoint for repointing the CNAME would be ```tokushima-96974.herokussl.com```
+- From the example above, the endpoint for repointing the CNAME would be:
+  - ```tokushima-96974.herokussl.com```
+
+## Repointing the DNS when NOT using SSL:
+
+- Use Heroku command: ```heroku domains```
+  - Use the "DNS Target" shown in the output.
+- Example output from ```heroku domains```
+
+```
+=== geoconnect-prod Heroku Domain
+geoconnect-prod.herokuapp.com
+
+=== geoconnect-prod Custom Domains
+Domain Name                            DNS Target
+─────────────────────────────────────  ───────────────────────────────────────────────────
+geoconnect.datascience.iq.harvard.edu  geoconnect.datascience.iq.harvard.edu.herokudns.com
+```
+
+- From the example above, the endpoint for repointing the CNAME would be:
+  - ```geoconnect.datascience.iq.harvard.edu.herokudns.com```
 
