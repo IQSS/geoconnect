@@ -164,7 +164,7 @@ python manage.py runserver 8070
 
 Once your are logged into the admin page from the previous step, register the Dataverse or Dataverses you would like to use for mapping.
 
-  1. From the Admin page: scroll down, click on "Registered Dataverses"
+  1. From the Admin page: scroll down, click on ["Registered Dataverses"](http://127.0.0.1:8070/geo-connect-admin/registered_dataverse/registereddataverse/)
   1. Top right: click "Add Registered Dataverse"
   1. Add a name and a url:
     - Localhost example:
