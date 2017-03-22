@@ -35,6 +35,6 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
 
   - If you're using windows, [this](http://stackoverflow.com/questions/2615968/installing-virtualenvwrapper-on-windows) might be helpful.
 
-### Access to github
+### Make sure git is installed locally with access to github
 
 - Recommended: [Install Github Desktop](https://desktop.github.com/)
