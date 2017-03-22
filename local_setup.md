@@ -181,6 +181,8 @@ Once your are logged into the admin page from the previous step, register the Da
 
 ### Add WorldMap credentials
 
+These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
+
   - Go to the directory: ```geoconnect/geoconnect/settings```
     1. Create a file named ```worldmap_secrets_local.json```
     1. Copy in the contents from ```template_worldmap_secrets.json```
