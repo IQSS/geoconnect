@@ -42,6 +42,10 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 - Or, if you choose, use the command line to access github
 
+### Install [ATOM editor](https://atom.io/) (recommended)
+
+- This is Github's text editor
+
 ## Local Setup
 
 ### Get the repository
@@ -54,8 +58,8 @@ git clone git@github.com:IQSS/geoconnect.git
 
 ### Make a virtualenv and install requirements
 
-- Open a Terminal and cd into the geoconnect repository.
-- Run the following commands:
+- Open a Terminal and ```cd``` into the geoconnect repository.
+- Run the following commands (May take a couple of minutes)
 
     ```
     mkvirtualenv geoconnect  
@@ -68,16 +72,16 @@ git clone git@github.com:IQSS/geoconnect.git
 ### Configure local settings
 
 * Edit the [postactivate script for the virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html#postactivate).
-  - Note: 'vim' may be any text editor
+  - Note: 'atom' may be any text editor
 
       ```
-      vim $VIRTUAL_ENV/bin/postactivate
+      atom $VIRTUAL_ENV/bin/postactivate
       ```
 
 * On windows:
 
     ```
-    vim %VIRTUAL_ENV%\Scripts\activate.bat
+    atom %VIRTUAL_ENV%\Scripts\activate.bat
     ```
 
 * Add these lines to the postactivate file and save the file
@@ -110,3 +114,9 @@ git clone git@github.com:IQSS/geoconnect.git
       ```
 
   - You should see ```geoconnect.settings.local```
+
+### Create/sync the database (still in ~\geoconnect)
+
+- Run this command (with your virtualenv activated):
+
+```python manage.py migrate```

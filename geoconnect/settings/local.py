@@ -74,13 +74,13 @@ INSTALLED_APPS += (
 )
 
 ########## Amazon S3 file storages
-#DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+"""
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 from . import local_aws_creds
-
 AWS_STORAGE_BUCKET_NAME = local_aws_creds.AWS_STORAGE_BUCKET_NAME
 AWS_ACCESS_KEY_ID = local_aws_creds.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = local_aws_creds.AWS_SECRET_ACCESS_KEY
-
+"""
 ########## END Amazon S3 file storages
 
 
