@@ -2,22 +2,24 @@
 
 GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
+*caveat*: Directions not too windows friendly...
+
 ## Prerequisites
 
 ### Install [pip](http://pip.readthedocs.org/en/latest/installing.html)
 
-* use sudo if needed
+* use sudo if needed  (mac users, use sudo)
 * if on Windows, make sure [python](https://www.python.org/downloads/) is installed.
 
 ### Install [virtualenvwrapper](http://virtualenvwrapper.readthedocs.io/en/latest/install.html#basic-installation)
 
-* depends on pip:
+* The virtualenvwrapper may be installed via pip:
 
     ```
     pip install virtualenvwrapper
     ```
 
-  * if on windows, either install [virtualenvwrapper-win-1.1.5](https://pypi.python.org/pypi/virtualenvwrapper-win) or [cygwin](https://www.cygwin.com/).
+  * On windows, either install [virtualenvwrapper-win-1.1.5](https://pypi.python.org/pypi/virtualenvwrapper-win) or [cygwin](https://www.cygwin.com/).
 
 * Set the shell to use virtualenvwrapper. (shell startup file)[http://virtualenvwrapper.readthedocs.org/en/latest/install.html#shell-startup-file]
   - For Mac users:
