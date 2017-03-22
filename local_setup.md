@@ -189,6 +189,7 @@ Once your are logged into the admin page from the previous step, register the Da
     - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
     - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
 
+*Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
 
 ### Update your local Dataverse db to point to the local Geoconnect
 
