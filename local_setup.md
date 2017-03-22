@@ -123,39 +123,41 @@ Create a local sqlite database to store geoconnect information.
 
 - Run this command (with your virtualenv activated):
 
-```python manage.py migrate```
+    ```python manage.py migrate```
 
 - To make the classification tables, run this (ignore any errors):
 
-```python manage.py migrate --run-syncdb```
+    ```python manage.py migrate --run-syncdb```
 
 ### Add initial data
 
 - Add supported file types:
-```
-python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
-```
+
+    ```
+    python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
+    ```
 
 - Add layer classification colors
-```
-python manage.py loaddata --app layer_classification initial_data.json
-```
+
+    ```
+    python manage.py loaddata --app layer_classification initial_data.json
+    ```
 
 ### Create a superuser
 
 - Use a username and password you'll use for local testing
 
-```
-python manage.py createsuperuser
-```
+    ```
+    python manage.py createsuperuser
+    ```
 
 ### Run the local server and login to the admin screenshot
 
 - Run the local server.  Use port 8070 so as not to overlap with Dataverse
 
-```
-python manage.py runserver 8070
-```
+    ```
+    python manage.py runserver 8070
+    ```
 
 - Got to the admin screen and login using your superuser credentials from the previous step:
   - http://127.0.0.1:8070/geo-connect-admin
@@ -192,13 +194,13 @@ Once your are logged into the admin page from the previous step, register the Da
 
 - If you haven't used mapping yet, run this SQL query against Postgres:
 
-```sql
-INSERT INTO worldmapauth_tokentype (contactemail, hostname, ipaddress, mapitlink, name, timelimitminutes, timelimitseconds, md5, created, modified)
-VALUES ('support@dataverse.org', '127.0.0.1:8070', '127.0.0.1:8070', 'http://127.0.0.1:8070/shapefile/map-it', 'GEOCONNECT', 30, 1800, '38c0a931b2d582a5c43fc79405b30c22', NOW(), NOW())
-```
+    ```sql
+    INSERT INTO worldmapauth_tokentype (contactemail, hostname, ipaddress, mapitlink, name, timelimitminutes, timelimitseconds, md5, created, modified)
+    VALUES ('support@dataverse.org', '127.0.0.1:8070', '127.0.0.1:8070', 'http://127.0.0.1:8070/shapefile/map-it', 'GEOCONNECT', 30, 1800, '38c0a931b2d582a5c43fc79405b30c22', NOW(), NOW())
+    ```
 
 - If a ```GEOCONNECT``` entry already exists, use:
 
-```sql
-UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
-```
+    ```sql
+    UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
+    ```
