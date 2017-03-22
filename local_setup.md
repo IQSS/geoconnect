@@ -169,13 +169,13 @@ Once your are logged into the admin page from the previous step, register the Da
   1. From the Admin page: scroll down, click on ["Registered Dataverses"](http://127.0.0.1:8070/geo-connect-admin/registered_dataverse/registereddataverse/)
   1. Top right: click "Add Registered Dataverse"
   1. Add a name and a url:
-    - Localhost example:
-      - Name: ```local dataverse```
-      - Dataverse URL: ```http://localhost:8080```
+     - Localhost example:
+       -  Name: ```local dataverse```
+       - Dataverse URL: ```http://localhost:8080```
     - HTTPS Example:
-      - Name: ```beta.dataverse.org```
-      - Dataverse URL: ```https://beta.dataverse.org:443```
-      - Note: Follow the example above and add (```:443```) to the url
+       - Name: ```beta.dataverse.org```
+       - Dataverse URL: ```https://beta.dataverse.org:443```
+       - Note: Follow the example above and add (```:443```) to the url
   1.  Save the registered Dataverse
 
 
