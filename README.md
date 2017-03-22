@@ -27,7 +27,7 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
 * use sudo if needed
 * if on Windows, make sure [python](https://www.python.org/downloads/) is installed.
 
-#### Install [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html)
+#### Install [virtualenvwrapper](http://virtualenvwrapper.readthedocs.io/en/latest/install.html#basic-installation)
 
 * depends on pip
 * if on windows, either install [virtualenvwrapper-win-1.1.5](https://pypi.python.org/pypi/virtualenvwrapper-win) or [cygwin](https://www.cygwin.com/).
