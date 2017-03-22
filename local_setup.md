@@ -52,9 +52,10 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 - Use Github Desktop to pull down the [geoconnect repository](https://github.com/IQSS/geoconnect)
 - Alternately, use the command line:
-```
-git clone git@github.com:IQSS/geoconnect.git
-```
+
+    ```
+    git clone git@github.com:IQSS/geoconnect.git
+    ```
 
 ### Make a virtualenv and install requirements
 
