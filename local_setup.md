@@ -6,6 +6,8 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
 
 ## Prerequisites
 
+Note: use python 2.7+.  Not yet upgraded for 3.5+
+
 ### Install [pip](http://pip.readthedocs.org/en/latest/installing.html)
 
 * use sudo if needed  (mac users, use sudo)
