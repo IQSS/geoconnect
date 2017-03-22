@@ -18,17 +18,21 @@ GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.h
     ```
 
   * if on windows, either install [virtualenvwrapper-win-1.1.5](https://pypi.python.org/pypi/virtualenvwrapper-win) or [cygwin](https://www.cygwin.com/).
-* remember to set the (shell startup file)[http://virtualenvwrapper.readthedocs.org/en/latest/install.html#shell-startup-file]
-  - If you're on a Mac open a new terminal and add the lintes below to your ```.bash_profile```
 
-      ```
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Devel
-source /usr/local/bin/virtualenvwrapper.sh
-      ```
+* Set the shell to use virtualenvwrapper. (shell startup file)[http://virtualenvwrapper.readthedocs.org/en/latest/install.html#shell-startup-file]
+  - For Mac users:
+    1. Open a new terminal
+    2. Open your ```.bash_profile``` for editing
+    3. Add these lines
+      
+        ```
+        export WORKON_HOME=$HOME/.virtualenvs
+        export PROJECT_HOME=$HOME/Devel
+        source /usr/local/bin/virtualenvwrapper.sh
+        ```
 
   - If you're using windows, [this](http://stackoverflow.com/questions/2615968/installing-virtualenvwrapper-on-windows) might be helpful.
 
 ### Access to github
 
-- Recommended: (Install Github Desktop)[https://desktop.github.com/]
+- Recommended: [Install Github Desktop](https://desktop.github.com/)
