@@ -72,7 +72,7 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 ### Configure your virtualenv
 
-* Edit the [postactivate script for the virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html#postactivate).
+* Edit the [```postactivate``` script for the virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html#postactivate).
   - Note: 'atom' may be any text editor
 
       ```
@@ -85,7 +85,7 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
     atom %VIRTUAL_ENV%\Scripts\activate.bat
     ```
 
-* Add these lines to the postactivate file and save the file
+* Add these lines to the ```postactivate``` file and save the file
   - Mac:
 
       ```
@@ -99,7 +99,7 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
       set "DJANGO_SETTINGS_MODULE=geoconnect.settings.local"
       ```
 
-* Test the 'postactivate' script from the command line
+* Test the ```postactivate``` script from the command line
   - Mac:
 
       ```
