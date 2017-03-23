@@ -184,7 +184,7 @@ Once your are logged into the admin page from the previous step, register the Da
 These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
 
   - Go to the directory: ```geoconnect/geoconnect/settings```
-    1. Create a file named ```worldmap_secrets_local.json```
+    1. Create a file named ```worldmap_secrets_local2.json```
     1. Copy in the contents from ```template_worldmap_secrets.json```
   - Within the new file, add the information for a WorldMap account:
     - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
@@ -207,6 +207,13 @@ These credentials are for a WorldMap "service" account.  From the WorldMap persp
     ```sql
     UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
     ```
+
+### Trying test files
+
+There are several test files available in the Google drive:
+
+- https://drive.google.com/drive/u/1/folders/0B4VvItDJwfehU05xQUxkRFFCMlU
+
 
 ## Running the Local Environment after Setup
 
