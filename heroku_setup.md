@@ -177,7 +177,7 @@ Once your are logged into the admin page from the previous step, register the Da
       - Name: beta.dataverse.org
       - Dataverse URL: https://beta.dataverse.org:443
   1.  Save the registered Dataverse
- 
+
 - Alternative.  Load a fixtures file:
 ```python
 heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-2017-0309.json --settings=geoconnect.settings.heroku'
@@ -247,8 +247,8 @@ Once the app has been set up, including the configuration variables and the data
     - See: http://stackoverflow.com/questions/38447944/heroku-ssl-install-intermediate-cert
       - Concat Example: ```cat ssl.crt middle.crt root.crt > all.crt```
       - Add to Heroku example: ```heroku certs:update --app $APP_NAME --confirm $APP_NAME all.crt private.key```
-      
-      
+
+
 ## Repointing the DNS For SSL:
 
 - Use Heroku command: ```heroku certs```
@@ -282,4 +282,3 @@ geoconnect.datascience.iq.harvard.edu  geoconnect.datascience.iq.harvard.edu.her
 
 - From the example above, the endpoint for setting the CNAME would be:
   - ```geoconnect.datascience.iq.harvard.edu.herokudns.com```
-

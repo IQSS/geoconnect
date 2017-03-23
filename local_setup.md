@@ -52,9 +52,10 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 - Use Github Desktop to pull down the [geoconnect repository](https://github.com/IQSS/geoconnect)
 - Alternately, use the command line:
-```
-git clone git@github.com:IQSS/geoconnect.git
-```
+
+    ```
+    git clone git@github.com:IQSS/geoconnect.git
+    ```
 
 ### Make a virtualenv and install requirements
 
@@ -69,9 +70,9 @@ git clone git@github.com:IQSS/geoconnect.git
 - Mac note: If you run into Xcode (or other errors) when running the install, google it.  
   - Sometimes the [Xcode license agreement hasn't been accepted](http://stackoverflow.com/questions/26197347/agreeing-to-the-xcode-ios-license-requires-admin-privileges-please-re-run-as-r/26197363#26197363)
 
-### Configure local settings
+### Configure your virtualenv
 
-* Edit the [postactivate script for the virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html#postactivate).
+* Edit the [```postactivate``` script for the virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html#postactivate).
   - Note: 'atom' may be any text editor
 
       ```
@@ -84,7 +85,7 @@ git clone git@github.com:IQSS/geoconnect.git
     atom %VIRTUAL_ENV%\Scripts\activate.bat
     ```
 
-* Add these lines to the postactivate file and save the file
+* Add these lines to the ```postactivate``` file and save the file
   - Mac:
 
       ```
@@ -98,7 +99,7 @@ git clone git@github.com:IQSS/geoconnect.git
       set "DJANGO_SETTINGS_MODULE=geoconnect.settings.local"
       ```
 
-* Test the 'postactivate' script from the command line
+* Test the ```postactivate``` script from the command line
   - Mac:
 
       ```
@@ -115,8 +116,94 @@ git clone git@github.com:IQSS/geoconnect.git
 
   - You should see ```geoconnect.settings.local```
 
+
 ### Create/sync the database (still in ~\geoconnect)
+
+Create a local sqlite database to store geoconnect information.
 
 - Run this command (with your virtualenv activated):
 
-```python manage.py migrate```
+    ```python manage.py migrate```
+
+- To make the classification tables, run this (ignore any errors):
+
+    ```python manage.py migrate --run-syncdb```
+
+### Add initial data
+
+- Add supported file types:
+
+    ```
+    python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
+    ```
+
+- Add layer classification colors
+
+    ```
+    python manage.py loaddata --app layer_classification initial_data.json
+    ```
+
+### Create a superuser
+
+- Use a username and password you'll use for local testing
+
+    ```
+    python manage.py createsuperuser
+    ```
+
+### Run the local server and login to the admin screenshot
+
+- Run the local server.  Use port 8070 so as not to overlap with Dataverse
+
+    ```
+    python manage.py runserver 8070
+    ```
+
+- Got to the admin screen and login using your superuser credentials from the previous step:
+  - http://127.0.0.1:8070/geo-connect-admin
+
+### Register your local Dataverse
+
+Once your are logged into the admin page from the previous step, register the Dataverse or Dataverses you would like to use for mapping.
+
+  1. From the Admin page: scroll down, click on ["Registered Dataverses"](http://127.0.0.1:8070/geo-connect-admin/registered_dataverse/registereddataverse/)
+  1. Top right: click "Add Registered Dataverse"
+  1. Add a name and a url:
+     - Localhost example:
+       - Name: ```local dataverse```
+       - Dataverse URL: ```http://localhost:8080```
+     - HTTPS Example:
+       - Name: ```beta.dataverse.org```
+       - Dataverse URL: ```https://beta.dataverse.org:443```
+       - Note: Follow the example above and add (```:443```) to the url
+  4.  Save the registered Dataverse
+
+
+### Add WorldMap credentials
+
+These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
+
+  - Go to the directory: ```geoconnect/geoconnect/settings```
+    1. Create a file named ```worldmap_secrets_local.json```
+    1. Copy in the contents from ```template_worldmap_secrets.json```
+  - Within the new file, add the information for a WorldMap account:
+    - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
+    - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
+    - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
+
+*Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
+
+### Update your local Dataverse db to point to the local Geoconnect
+
+- If you haven't used mapping yet, run this SQL query against Postgres:
+
+    ```sql
+    INSERT INTO worldmapauth_tokentype (contactemail, hostname, ipaddress, mapitlink, name, timelimitminutes, timelimitseconds, md5, created, modified)
+    VALUES ('support@dataverse.org', '127.0.0.1:8070', '127.0.0.1:8070', 'http://127.0.0.1:8070/shapefile/map-it', 'GEOCONNECT', 30, 1800, '38c0a931b2d582a5c43fc79405b30c22', NOW(), NOW())
+    ```
+
+- If a ```GEOCONNECT``` entry already exists, use:
+
+    ```sql
+    UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
+    ```
