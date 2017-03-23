@@ -1,6 +1,8 @@
-# Local Installation Instructions
-
 [(I already have the geoconnect installed, I just need to run it)](#running-the-local-environment-after-setup)
+
+---
+
+# Local Installation Instructions
 
 GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
