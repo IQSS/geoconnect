@@ -120,19 +120,20 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
   - You should see ```geoconnect.settings.local```
 
-  ### Add WorldMap credentials for Geoconnect settings
+### Add WorldMap credentials for Geoconnect settings
 
-  These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
+These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
 
-    - Go to the directory: ```geoconnect/geoconnect/settings```
-      1. Duplicate the file ```template_worldmap_secrets.json```
-      1. Rename the file to ```worldmap_secrets_local2.json```
-    - Within the new file, add the information for a WorldMap account:
-      - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
-      - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
-      - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
+- Go to the directory: ```geoconnect/geoconnect/settings```
+  1. Duplicate the file ```template_worldmap_secrets.json```
+  1. Rename the file to ```worldmap_secrets_local2.json```
+- Within the new file, add the information for a WorldMap account:
+  - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
+  - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
+  - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
 
-  *Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
+*Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
+
 
 ### Create/sync the database (still in ~\geoconnect)
 
