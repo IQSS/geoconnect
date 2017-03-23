@@ -117,7 +117,8 @@ class ShapefileZipCheck(object):
                 self.add_error(err_msg)
                 raise Exception(err_msg)    # Just blow up if this happens
             else:
-                msgt("Loaded from AWS!")
+                pass
+                #msgt("Loaded from AWS!")
         return True
 
     def add_error(self, err_msg, err_type=None):
