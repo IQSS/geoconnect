@@ -266,6 +266,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Only use for running locally
+# Makes dataverse installation name unique
+# to avoid name clashes on WorldMap
+FORCE_UNIQUE_DEV_INSTALLATION_NAME = False
 
 ########## SESSION_COOKIE_NAME
 SESSION_COOKIE_NAME = 'geoconnect_local'

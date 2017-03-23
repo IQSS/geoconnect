@@ -1,5 +1,6 @@
 """Model for GISDataFile"""
 from hashlib import md5
+import socket
 
 from django.template.loader import render_to_string
 
@@ -122,6 +123,13 @@ class GISDataFile(DataverseInfo):
         """Save with md5 hash"""
         if not self.id:
             super(GISDataFile, self).save(*args, **kwargs)
+
+        # Only used for running locally!
+        # Makes dataverse installation name unique
+        # to avoid name clashes on WorldMap
+        if settings.FORCE_UNIQUE_DEV_INSTALLATION_NAME:
+            if socket.gethostname():
+                self.dataverse_installation_name = socket.gethostname()
 
 
         string_to_hash = '%s%s%s' % (\

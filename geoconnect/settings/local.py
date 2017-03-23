@@ -139,6 +139,13 @@ WORLDMAP_ACCOUNT_PASSWORD = WORLDMAP_SECRETS_JSON['WORLDMAP_ACCOUNT_PASSWORD']
 WORLDMAP_ACCOUNT_AUTH = (WORLDMAP_ACCOUNT_USERNAME, WORLDMAP_ACCOUNT_PASSWORD)
 ##########  END WORLDMAP TOKEN / SERVER
 
+
+# Only use for running locally
+# Makes dataverse installation name unique
+# to avoid name clashes on WorldMap
+FORCE_UNIQUE_DEV_INSTALLATION_NAME = True
+
+
 ########## DATAVERSE_SERVER_URL
 # Used to make API calls
 # e.g.  http://dvn-build.hmdc.harvard.edu/

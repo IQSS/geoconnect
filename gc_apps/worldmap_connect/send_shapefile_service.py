@@ -175,7 +175,7 @@ class SendShapefileService:
             return False
 
         if not self.shapefile_info.has_shapefile:
-            self.add_err_msg('verify_shapefile: This .zip does not contain a valid shapefile')
+            #self.add_err_msg('verify_shapefile: This .zip does not contain a valid shapefile')
             return False
 
         if not self.shapefile_info.is_dv_file_available():
