@@ -207,3 +207,35 @@ These credentials are for a WorldMap "service" account.  From the WorldMap persp
     ```sql
     UPDATE worldmapauth_tokentype SET mapitlink = 'http://127.0.0.1:8070/shapefile/map-it' WHERE name = 'GEOCONNECT';
     ```
+
+## Running the Local Environment after Setup
+
+### Run the server
+
+1.  ```cd``` into your geoconnect directory
+2. activate the virtual environment and run the server
+
+```
+workon geoconnect
+python manage.py runserver 8070
+```
+
+### Run the python shell (if needed)
+
+1.  ```cd``` into your geoconnect directory
+2. activate the virtual environment and run the server
+
+```
+workon geoconnect
+python manage.py shell
+```
+
+### Access the database via command line
+
+1.  ```cd``` into your geoconnect directory
+2. activate the virtual environment and run the server
+
+```
+workon geoconnect
+python manage.py dbshell
+```
