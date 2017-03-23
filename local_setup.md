@@ -1,5 +1,7 @@
 # Local Installation Instructions
 
+[(I already have the geoconnect installed, I just need to run it)](#running-the-local-environment-after-setup)
+
 GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
 *caveat*: Directions not too windows friendly...
@@ -116,6 +118,19 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
   - You should see ```geoconnect.settings.local```
 
+  ### Add WorldMap credentials for Geoconnect settings
+
+  These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
+
+    - Go to the directory: ```geoconnect/geoconnect/settings```
+      1. Duplicate the file ```template_worldmap_secrets.json```
+      1. Rename the file to ```worldmap_secrets_local2.json```
+    - Within the new file, add the information for a WorldMap account:
+      - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
+      - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
+      - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
+
+  *Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
 
 ### Create/sync the database (still in ~\geoconnect)
 
@@ -179,21 +194,16 @@ Once your are logged into the admin page from the previous step, register the Da
   4.  Save the registered Dataverse
 
 
-### Add WorldMap credentials
+### Update your local Dataverse Postgres database
 
-These credentials are for a WorldMap "service" account.  From the WorldMap perspective, all maps created via Dataverse and your local Geooconnect will be owned by this user.
+#### (1) Update the settings table to activate geoconnect
 
-  - Go to the directory: ```geoconnect/geoconnect/settings```
-    1. Create a file named ```worldmap_secrets_local2.json```
-    1. Copy in the contents from ```template_worldmap_secrets.json```
-  - Within the new file, add the information for a WorldMap account:
-    - WORLDMAP_SERVER_URL: ```http://worldmap.harvard.edu```
-    - WORLDMAP_ACCOUNT_USERNAME: ```(to be given in meeting)```
-    - WORLDMAP_ACCOUNT_PASSWORD: ```(to be given in meeting)```
+```sql
+INSERT into setting VALUES (':GeoconnectCreateEditMaps', 'true');
+INSERT into setting VALUES (':GeoconnectViewMaps', 'true');
+```
 
-*Note:* The WorldMap service account must belong to the group "dataverse".  This can only be done by a WorldMap administrator.
-
-### Update your local Dataverse db to point to the local Geoconnect
+#### (2) Point Dataverse at the local Geoconnect
 
 - If you haven't used mapping yet, run this SQL query against Postgres:
 
