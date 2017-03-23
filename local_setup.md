@@ -1,4 +1,4 @@
-[(I already have the geoconnect installed, I just need to run it)](#running-the-local-environment-after-setup)
+[(I already have Geoconnect installed, I just need to run it)](#running-the-local-environment-after-setup)
 
 ---
 
