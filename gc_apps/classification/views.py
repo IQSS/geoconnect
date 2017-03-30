@@ -46,7 +46,7 @@ def format_minor_error_message(err_msg):
 
 def view_classify_layer_form(request, import_success_md5):
     """
-    (note: This should be refactored)
+    (note: This should be refactored into a class...)
     Given a ClassifyLayerForm submission, return a JSON response
 
     :param import_success_md5: str, md5 identifying a WorldMapLayerInfo object
@@ -179,7 +179,7 @@ def view_classify_layer_form(request, import_success_md5):
                     data=classify_params,\
                     auth=settings.WORLDMAP_ACCOUNT_AUTH,\
                     timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
-                    
+
     except requests.exceptions.ConnectionError as exception_obj:
         err_msg = ('<b>Details for administrator:</b>'
                    'Could not contact the Dataverse server: %s')\
