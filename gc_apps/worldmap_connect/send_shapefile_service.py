@@ -365,16 +365,12 @@ class SendShapefileService:
             LOGGER.warn("Attempted to send Worldmap info to Dataverse when 'worldmap_layerinfo_object' was None")
             return False
 
-        print('update_dataverse_with_worldmap_info 2')
         MetadataUpdater.run_update_via_popen(self.worldmap_layerinfo)
-        print('update_dataverse_with_worldmap_info 3')
-        try:
-            pass
-            #MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo)
-            #MetadataUpdater.run_update_via_popen(self.worldmap_layerinfo)
-        except:
-            LOGGER.warn('Error.  Layer created and saved BUT update to dataverse failed')
-            return False
+        #try:
+
+        #except:
+        #    LOGGER.warn('Error.  Layer created and saved BUT update to dataverse failed')
+        #    return False
 
         return True
 
