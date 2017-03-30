@@ -294,7 +294,7 @@ def view_classify_layer_form(request, import_success_md5):
 
     # Is all this needed, or should there be a
     # Dataverse API call to only update the image?
-    MetadataUpdater.update_dataverse_with_metadata(worldmap_layerinfo)
+    MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
 
     msg_params = classify_form.get_params_for_display()
 
