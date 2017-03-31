@@ -280,7 +280,7 @@ class TableJoinMapMaker(object):
         # (2b) set new join column name
         # ----------------------------------
         self.table_attribute_for_join = new_column_name
-
+        print 'new_column_name', new_column_name
         # ----------------------------------
         # (3) Save  new file
         # ----------------------------------
@@ -289,14 +289,14 @@ class TableJoinMapMaker(object):
         # Write the DataFrame to a ContentFile
         #
         sep_char = str(self.datatable_obj.delimiter)
-        #print 'DELIM: (%s) %d' % (sep_char, len(sep_char))
-        #if sep_char == '\\t':
-        #    sep_char = sep_char[1:]
+        print 'DELIM: (%s) %d' % (sep_char, len(sep_char))
+        if sep_char == '\\t':
+            sep_char = sep_char[1:]
         csv_parms = dict(sep=sep_char,
                          quoting=QUOTE_NONNUMERIC,
                          index=False,
                          columns=df.columns)
-
+        print 'df.columns', df.columns
         fh_csv = df.to_csv(**csv_parms)
         content_file = ContentFile(fh_csv)#df.to_csv(**csv_parms))
 
