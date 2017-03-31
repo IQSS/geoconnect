@@ -369,7 +369,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
 
 
-    def get_embed_map_link(self, force_https=False):
+    def get_embed_map_link(self, force_https=True):
         """
         Return the WorldMap embed link.
         By default, make the link 'https'
