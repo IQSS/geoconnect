@@ -314,7 +314,7 @@ WORLDMAP_SERVER_URL = None  # e.g. 'http://107.22.231.227'
 WORLDMAP_ACCOUNT_USERNAME = None
 WORLDMAP_ACCOUNT_PASSWORD = None
 
-WORLDMAP_DEFAULT_TIMEOUT = 8 * 60 # seconds
+WORLDMAP_DEFAULT_TIMEOUT = 4 * 60 # seconds
 WORLDMAP_SHORT_TIMEOUT = 2 * 60 # seconds, for non-layer making requests
 
 # Go and get info from WorldMap instead of using saved info
