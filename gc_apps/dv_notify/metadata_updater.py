@@ -187,30 +187,6 @@ class MetadataUpdater(object):
         return True
 
 
-
-    @staticmethod
-    def make_wms_thumbnail_check_by_md5(worldmap_info_md5, layer_type):
-        """
-        Via the Dataverse API, update metadata for this Map
-        custom_dataverse_url = Optional. Dataverse server url.
-            - Usually this info taken from the worldmap_layerinfo object
-        """
-        if worldmap_info_md5 is None:
-            return False, "worldmap_info_md5 cannot be None"
-
-        if layer_type is None:
-            return False, "layer_type cannot be None"
-
-        worldmap_layerinfo = get_worldmap_info_object(\
-                                    layer_type,
-                                    worldmap_info_md5)
-        if worldmap_layerinfo is None:
-            return False, "worldmap_layerinfo not found"
-
-        return MetadataUpdater.make_wms_thumbnail_check(worldmap_layerinfo)
-
-
-
     @staticmethod
     def make_wms_thumbnail_check(worldmap_layerinfo):
         """
@@ -362,30 +338,6 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def update_dataverse_with_metadata_by_md5(worldmap_info_md5, layer_type):
-        """
-        Via the Dataverse API, update metadata for this Map
-        custom_dataverse_url = Optional. Dataverse server url.
-            - Usually this info taken from the worldmap_layerinfo object
-        """
-        if worldmap_info_md5 is None:
-            return False, "worldmap_info_md5 cannot be None"
-
-        if layer_type is None:
-            return False, "layer_type cannot be None"
-
-
-        worldmap_layerinfo = get_worldmap_info_object(\
-                                    layer_type,
-                                    worldmap_info_md5)
-        if worldmap_layerinfo is None:
-            return False, "worldmap_layerinfo not found"
-
-        return MetadataUpdater.update_dataverse_with_metadata(worldmap_layerinfo)
-
-
-
-    @staticmethod
     def update_dataverse_with_metadata(worldmap_layer_info, custom_dataverse_url=None):
         """
         Via the Dataverse API, update metadata for this Map
@@ -410,18 +362,31 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def run_metadata_update_with_thumbnail_check(worldmap_info_md5, file_type):
+    def run_metadata_update_with_thumbnail_check(worldmap_info_md5, layer_type):
         print('run_metadata_update_with_thumbnail_check')
 
-        success, err_or_None = MetadataUpdater.make_wms_thumbnail_check_by_md5(\
-                            worldmap_info_md5, file_type)
+        if worldmap_info_md5 is None:
+            return False, "worldmap_info_md5 cannot be None"
+
+        if layer_type is None:
+            return False, "layer_type cannot be None"
+
+        worldmap_layerinfo = get_worldmap_info_object(\
+                                    layer_type,
+                                    worldmap_info_md5)
+        if worldmap_layerinfo is None:
+            return False, "worldmap_layerinfo not found"
+
+
+        success, err_or_None = MetadataUpdater.make_wms_thumbnail_check(\
+                                worldmap_layerinfo)
         if not success:
             return False, err_or_None
 
         LOGGER.info('wms thumbnail check ok.')
 
-        success, resp_dict = MetadataUpdater.update_dataverse_with_metadata_by_md5(\
-                worldmap_info_md5, file_type)
+        success, resp_dict = MetadataUpdater.update_dataverse_with_metadata(\
+                                worldmap_layerinfo)
 
         if not success:
             return False, resp_dict
@@ -430,7 +395,7 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def run_update_via_popen(worldmap_layer_info, seconds_delay=3):
+    def run_update_via_popen(worldmap_layer_info, num_attempts=3, seconds_delay=3):
         """
         Run the Dataverse update as a separate process
         (Cheap way of not using a queue)
@@ -441,11 +406,13 @@ class MetadataUpdater(object):
         dj_settings_mod = os.environ.get('DJANGO_SETTINGS_MODULE', 'geoconnect.settings')
 
         cmd_name = ('python manage.py update_dv_metadata'
-                    ' --md5={0} --type={1} --delay={2}'
-                    ' --settings={3}').format(\
+                    ' --md5={0} --type={1}'
+                    ' --delay={2} --num_attempts={3}'
+                    ' --settings={4}').format(\
                      worldmap_layer_info.md5,
                      worldmap_layer_info.get_layer_type(),
                      seconds_delay,
+                     num_attempts,
                      dj_settings_mod)
 
         print ('cmd_name: %s' % cmd_name)
