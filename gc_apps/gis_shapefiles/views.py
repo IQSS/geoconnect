@@ -26,8 +26,6 @@ from gc_apps.gis_tabular.forms_delete import DeleteMapForm
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.gis_tabular.forms import SELECT_LABEL
 
-from gc_apps.dv_notify.metadata_updater import MetadataUpdater
-
 
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     STEP1_EXAMINE, STEP2_STYLE,\
@@ -142,7 +140,6 @@ def view_shapefile(request, shp_md5, **kwargs):
         if worldmap_layerinfo is None:
             return HttpResponse('<br />'.join(shp_service.err_msgs))
         else:
-            MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
             return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
 
 

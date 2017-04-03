@@ -118,7 +118,7 @@ def view_map_tabular_file_form(request):
     # -----------------------------------------
     # Notify Dataverse of the new map
     # -----------------------------------------
-    MetadataUpdater.run_update_via_popen(worldmap_tabular_info)
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_tabular_info)
 
     # -----------------------------------------
     # Build the Map HTML chunk to replace the form
@@ -212,7 +212,7 @@ def view_process_lat_lng_form(request):
     # -----------------------------------------
     # Notify Dataverse of the new map
     # -----------------------------------------
-    MetadataUpdater.run_update_via_popen(worldmap_latlng_info)
+    MetadataUpdater.update_dataverse_with_metadata(worldmap_latlng_info)
 
     # -----------------------------------------
     # Possible that this failed?

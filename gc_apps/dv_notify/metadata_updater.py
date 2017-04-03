@@ -10,7 +10,7 @@ Objects passed in for worldmap_layer_info include:
 from __future__ import print_function
 
 import os
-import shlex, subprocess
+import subprocess
 import json
 import requests # for POST
 
@@ -445,11 +445,10 @@ class MetadataUpdater(object):
 
         print ('cmd_name: %s' % cmd_name)
         LOGGER.info('run command %s' % cmd_name)
-        cmd_args = shlex.split(cmd_name)
-        #subprocess.Popen([sys.executable, cmd_name],
-        subprocess.Popen(cmd_args,
-                         stdout=subprocess.PIPE)
-                         #stderr=subprocess.STDOUT)
+        subprocess.Popen([sys.executable, cmd_name],
+                             stdout=subprocess.PIPE,
+                             shell=True)
+                             #stderr=subprocess.STDOUT)
 
         print('let it go...')
 
