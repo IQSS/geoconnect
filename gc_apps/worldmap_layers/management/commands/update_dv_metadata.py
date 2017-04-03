@@ -42,35 +42,64 @@ class Command(BaseCommand):
             default=3,
             help='Specify the seconds to wait between update attempts. (Default is 3)')
 
+        parser.add_argument(
+            '--num_attempts',
+            type=int,
+            dest='num_attempts',
+            default=3,
+            help='Specify the number of update attempts to try. (Default is 3)')
+
     def handle(self, *args, **options):
+
         print (options)
 
+        # For Retrieving the WorldMap Layer Info stored in Geoconnect
+        #
         worldmap_info_md5 = options.get('worldmap_info_md5', None)
         if worldmap_info_md5 is None:
             error_note = "Please specify the md5 of the WorldMapLayerInfo object"
             msg(error_note)
             return
 
+        # File type, to differntiate which WorldMap Layer Info is stored in Geoconnect
+        #
         file_type = options.get('file_type', None)
         if file_type is None:
             error_note = "Please specify the file type. e.g. --type=tabular"
             msg(error_note)
             return
 
-        delay_seconds = options.get('delay_seconds', 3)
+        delay_seconds = options.get('delay_seconds')
         try:
             delay_seconds = int(delay_seconds)
         except ValueError:
             error_note = "Please use an integer for 'delay_seconds'"
             msg(error_note)
             return
+        except TypeError:
+            error_note = "Please use an integer for 'delay_seconds'"
+            msg(error_note)
+            return
 
-        for attempt_num in range(1, 3):    # 2 attempts
+        num_attempts = options.get('num_attempts')
+        try:
+            num_attempts = int(num_attempts)
+        except ValueError:
+            error_note = "Please use an integer for 'num_attempts'"
+            msg(error_note)
+            return
+        except TypeError:
+            error_note = "Please use an integer for 'num_attempts'"
+            msg(error_note)
+            return
+
+
+        for attempt_num in range(1, num_attempts+1):
 
             msg('(Attempt %s) Pausing for %s second(s)' % (attempt_num, delay_seconds))
             time.sleep(delay_seconds)
 
-            success, err_info = MetadataUpdater.run_metadata_update_with_check(\
+            success, err_info = MetadataUpdater.run_metadata_update_with_thumbnail_check(\
                                 worldmap_info_md5, file_type)
             msg('success: %s' % success)
             msg('err_info: %s' % err_info)

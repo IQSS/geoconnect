@@ -189,7 +189,7 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def make_wms_check_by_md5(worldmap_info_md5, layer_type):
+    def make_wms_thumbnail_check_by_md5(worldmap_info_md5, layer_type):
         """
         Via the Dataverse API, update metadata for this Map
         custom_dataverse_url = Optional. Dataverse server url.
@@ -207,14 +207,17 @@ class MetadataUpdater(object):
         if worldmap_layerinfo is None:
             return False, "worldmap_layerinfo not found"
 
-        return MetadataUpdater.make_wms_check(worldmap_layerinfo)
+        return MetadataUpdater.make_wms_thumbnail_check(worldmap_layerinfo)
 
 
 
     @staticmethod
-    def make_wms_check(worldmap_layerinfo):
+    def make_wms_thumbnail_check(worldmap_layerinfo):
         """
         Check that the WorldMap WMS server can return the PNG of the new layer
+
+        success: returns (True, None)
+        failure: returns (False, "error message")
         """
         if worldmap_layerinfo is None:
             return (False, "worldmap_layerinfo cannot be None")
@@ -238,11 +241,11 @@ class MetadataUpdater(object):
             LOGGER.error(err_msg)
             return (False, err_msg)
 
-        if resp.status_code == 200:
-            return (True, None)
-
-        return (False, ("Error retrieving png.  Status code: %s"
+        if resp.status_code != 200:
+            return (False, ("Error retrieving png.  Status code: %s"
                         "\npng url: %s") % (resp.status_code, url_to_check))
+
+        return (True, None)
 
 
     def send_info_to_dataverse(self, worldmap_layer_info):
@@ -407,22 +410,24 @@ class MetadataUpdater(object):
 
 
     @staticmethod
-    def run_metadata_update_with_check(worldmap_info_md5, file_type):
-        print('run_metadata_update_with_check')
+    def run_metadata_update_with_thumbnail_check(worldmap_info_md5, file_type):
+        print('run_metadata_update_with_thumbnail_check')
 
-        success, err_or_None = MetadataUpdater.make_wms_check_by_md5(\
+        success, err_or_None = MetadataUpdater.make_wms_thumbnail_check_by_md5(\
                             worldmap_info_md5, file_type)
         if not success:
             return False, err_or_None
 
-        LOGGER.info('wms check ok.')
+        LOGGER.info('wms thumbnail check ok.')
 
         success, resp_dict = MetadataUpdater.update_dataverse_with_metadata_by_md5(\
                 worldmap_info_md5, file_type)
+
         if not success:
             return False, resp_dict
 
         return True, None
+
 
     @staticmethod
     def run_update_via_popen(worldmap_layer_info, seconds_delay=3):
