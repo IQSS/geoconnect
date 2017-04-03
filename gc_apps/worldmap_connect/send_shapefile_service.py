@@ -49,7 +49,6 @@ class SendShapefileService:
             LOGGER.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
 
-
     #def check_for_existing_map(self):
 
     def flow1_does_map_already_exist(self):

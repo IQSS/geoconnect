@@ -127,9 +127,9 @@ class GISDataFile(DataverseInfo):
         # Only used for running locally!
         # Makes dataverse installation name unique
         # to avoid name clashes on WorldMap
-        if settings.FORCE_UNIQUE_DEV_INSTALLATION_NAME:
-            if socket.gethostname():
-                self.dataverse_installation_name = socket.gethostname()
+        #if settings.FORCE_UNIQUE_DEV_INSTALLATION_NAME:
+        #    if socket.gethostname():
+        #        self.dataverse_installation_name = socket.gethostname()
 
 
         string_to_hash = '%s%s%s' % (\

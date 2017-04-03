@@ -166,6 +166,9 @@ LOGGING = {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
+        'simple2': {
+            'format': '%(levelname)s %(module)s %(message)s'
+        },
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
@@ -174,7 +177,7 @@ LOGGING = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple2'
             },
         'file': {
             'level': 'DEBUG',
@@ -186,7 +189,7 @@ LOGGING = {
     'loggers': {
         'gc_apps': {
                'handlers': ['console', 'file'],
-               'level': 'ERROR',
+               'level': 'DEBUG',
                'propagate': True
            },
         'django': {
