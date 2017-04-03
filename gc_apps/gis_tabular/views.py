@@ -312,12 +312,14 @@ def view_tabular_file(request, tab_md5):
 
 
     # ----------------------------------
-    # Does the file already have an associated layer
+    # SKIP THIS -> LOOK FOR LAYER IN WORLDMAP EACH TIME
+    # Does the file already have an associated WorldMap layer
     # ----------------------------------
-    worldmap_tabularinfo = tabular_info.get_worldmap_info()
-    if worldmap_tabularinfo is not None:
-        # A map exists: show it!
-        return view_existing_map(request, worldmap_tabularinfo)
+    # Getting rid of this -> Fetch new info each time
+    #worldmap_tabularinfo = tabular_info.get_worldmap_info()
+    #if worldmap_tabularinfo is not None:
+    #    # A map exists: show it!
+    #    return view_existing_map(request, worldmap_tabularinfo)
 
     #
     # Is there a WorldMap layer but Geoconnect doesn't know about it?

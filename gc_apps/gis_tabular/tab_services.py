@@ -170,7 +170,7 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
             add_worldmap_layerinfo_if_exists(tabular_info)
             return True, tabular_info.md5
         else:
-            # But the file isn't there!!  Delete ShapefileInfo and make a new one
+            # But the file isn't there!!  Delete TabularFileInfo and make a new one
             tabular_info.delete()
 
     except TabularFileInfo.DoesNotExist:
