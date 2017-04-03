@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import logging
 
 from datetime import timedelta
@@ -359,19 +357,14 @@ class SendShapefileService:
         """
         Send WorldMap JSON data back to the Dataverse
         """
-        print('update_dataverse_with_worldmap_info 1')
         LOGGER.debug("update_dataverse_with_worldmap_info: %s" % self.worldmap_layerinfo  )
         if self.worldmap_layerinfo is None:
             LOGGER.warn("Attempted to send Worldmap info to Dataverse when 'worldmap_layerinfo_object' was None")
             return False
 
-        print('update_dataverse_with_worldmap_info 2')
-        MetadataUpdater.run_update_via_popen(self.worldmap_layerinfo)
-        print('update_dataverse_with_worldmap_info 3')
+
         try:
-            pass
-            #MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo)
-            #MetadataUpdater.run_update_via_popen(self.worldmap_layerinfo)
+            MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo)
         except:
             LOGGER.warn('Error.  Layer created and saved BUT update to dataverse failed')
             return False

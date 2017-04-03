@@ -39,7 +39,7 @@ def get_tablejoin_info(tablejoin_id):
     except RequestsConnectionError as e:
         print 'err', e
         err_msg = 'Error connecting to WorldMap server: %s' % e.message
-        LOGGER.error('Error trying to retrieve TableJoin with id: %s', tablejoin_id)
+        LOGGER.error('Error trying to retrive TableJoin with id: %s', tablejoin_id)
         LOGGER.error(err_msg)
         return (False, err_msg)
     except:
