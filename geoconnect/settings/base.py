@@ -199,7 +199,7 @@ LOCAL_APPS = (
     #'gc_apps.classification',       # used for styling WorldMap layers
     'gc_apps.content_pages',
     'gc_apps.registered_dataverse',    # relies on gis_basic_file
-    #'gc_apps.style_layer_information',
+    'gc_apps.style_layer_information',
 
     'gc_apps.worldmap_layers', # abstract model
     'gc_apps.gis_basic_file',

@@ -109,17 +109,6 @@ class WorldMapLayerInfo(TimeStampedModel):
                 raw_attribute_info=self.attribute_data)
 
 
-    def get_download_link(self, link_type='png'):
-        """
-        See download_link_formatter.DownloadLinkFormatter
-        for different format types
-        """
-        if not self.download_links:
-            return None
-
-        return self.download_links.get('png', None)
-
-
     @staticmethod
     def build_dict_from_worldmap_json(json_dict):
         """Given json_dict containing WorldMap layer information,
