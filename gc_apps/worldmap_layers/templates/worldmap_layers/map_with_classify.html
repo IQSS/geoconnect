@@ -8,7 +8,8 @@
       {% include "metadata/button_view_map_metadata.html" %}
 
       <div class="btn-group pull-right" role="group">
-        <a class="btn btn-default" href="{{ core_data.layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
+
+        <a class="btn btn-default" href="{{ worldmap_layerinfo.get_layer_link }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> View on WorldMap</a>
 
         {% include "worldmap_layers/button_download_links.html" %}
 

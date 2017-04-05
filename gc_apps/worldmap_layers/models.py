@@ -3,6 +3,7 @@ from abc import abstractmethod
 from urlparse import urlparse
 import logging
 
+from django.conf import settings
 from django.db import models
 from django import forms
 
@@ -335,6 +336,21 @@ class WorldMapLayerInfo(TimeStampedModel):
             return json.dumps(f.cleaned_data)
         except:
             raise ValueError('Failed to convert data to json\ndata: %s' % f.cleaned_data)
+
+
+    def get_layer_link(self):
+
+        if not self.core_data:
+            return None
+
+        layer_link = self.core_data.get('layer_link', None)
+        if not layer_link:
+            return None
+
+        if layer_link.startswith('/'):
+            return settings.WORLDMAP_SERVER_URL + layer_link
+
+        return layer_link
 
     def get_params_for_dv_update(self):
         """
