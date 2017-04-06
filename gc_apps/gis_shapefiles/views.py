@@ -26,6 +26,8 @@ from gc_apps.gis_tabular.forms_delete import DeleteMapForm
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.gis_tabular.forms import SELECT_LABEL
 
+from gc_apps.dv_notify.metadata_updater import MetadataUpdater
+
 
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
     STEP1_EXAMINE, STEP2_STYLE,\
@@ -33,7 +35,7 @@ from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY,\
 
 from gc_apps.geo_utils.view_util import get_common_lookup
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @login_required
@@ -124,33 +126,31 @@ def view_shapefile(request, shp_md5, **kwargs):
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
     :template:`shapefiles/main_outline_shp.html`
     """
-    logger.debug('-' * 40)
-    logger.debug('view_shapefile')
+    LOGGER.debug('-' * 40)
+    LOGGER.debug('views.view_shapefile')
     # -------------------------------------------
     # Flags for template - Is this the first time the file is being visualized?
     # -------------------------------------------
     first_time_notify = kwargs.get('first_time_notify', False)
 
-
-    # (1) and (2) - Does a layer already exist
-    #
-    shp_service = SendShapefileService(**dict(shp_md5=shp_md5))
-    if shp_service.flow1_does_map_already_exist():
-        worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
-        if worldmap_layerinfo is None:
-            return HttpResponse('<br />'.join(shp_service.err_msgs))
-        else:
-            return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
-
-
-    # -------------------------------------------
     # Attempt to retrieve the shapefile information
     # -------------------------------------------
     try:
         shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
     except ShapefileInfo.DoesNotExist:
-        logger.error('Shapefile not found for hash: %s' % shp_md5)
         raise Http404('Shapefile not found.')
+
+    # -------------------------------------------------------------------
+    # Does a fully checked shapefile exist with a worldmap layer?
+    # -------------------------------------------------------------------
+    shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
+    if shp_service.flow1_does_map_already_exist():
+        worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
+        if worldmap_layerinfo is None:
+            return HttpResponse('<br />'.join(shp_service.err_msgs))
+        else:
+            MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
+            return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
 
     # -------------------------------------------
     # Gather common parameters for the template
@@ -170,9 +170,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     #    - Also, no need to move the file if viz already exists
     # -------------------------------------------
     if not shapefile_info.zipfile_checked:
-        logger.debug('zipfile_checked NOT checked')
-
-        logger.debug('fname: %s' % shapefile_info.get_dv_file_fullpath())
+        LOGGER.debug('zipfile_checked NOT checked')
 
         zip_checker = ShapefileZipCheck(shapefile_info.dv_file, **{'is_django_file_field': True})
         #zip_checker = ShapefileZipCheck(shapefile_info.get_dv_file_fullpath())
@@ -188,7 +186,6 @@ def view_shapefile(request, shp_md5, **kwargs):
         # -----------------------------
         # Load the single shapefile
         # -----------------------------
-        logger.debug('Load the single shapefile')
 
         shapefile_info.has_shapefile = True
         shapefile_info.zipfile_checked = True
@@ -196,6 +193,7 @@ def view_shapefile(request, shp_md5, **kwargs):
 
         list_of_shapefile_set_names = zip_checker.get_shapefile_setnames()
         success = zip_checker.load_shapefile_from_open_zip(list_of_shapefile_set_names[0], shapefile_info)
+
         if not success:
             d['Err_Found'] = True
             if zip_checker.err_type == ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE:
@@ -206,7 +204,7 @@ def view_shapefile(request, shp_md5, **kwargs):
 
             shapefile_info.has_shapefile = False
             shapefile_info.save()
-            logger.error('Shapefile not loaded. (%s)' % shp_md5)
+            LOGGER.error('Shapefile not loaded. (%s)' % shp_md5)
             zip_checker.close_zip()
             return render(request, 'shapefiles/main_outline_shp.html', d)
 
@@ -215,12 +213,24 @@ def view_shapefile(request, shp_md5, **kwargs):
     # No shapefile was found in this .zip
     # -------------------------------------------
     if not shapefile_info.has_shapefile:
-        logger.debug('No shapefile found in .zip')
+        LOGGER.debug('No shapefile found in .zip')
 
         d['Err_Found'] = True
         d['Err_No_Shapefiles_Found'] = True
         d['WORLDMAP_MANDATORY_IMPORT_EXTENSIONS'] = WORLDMAP_MANDATORY_IMPORT_EXTENSIONS
         return render(request, 'shapefiles/main_outline_shp.html', d)
+
+    # -------------------------------------------------------------------
+    # Shapefile fully checked, is there a worldmap layer? 
+    # -------------------------------------------------------------------
+    shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
+    if shp_service.flow1_does_map_already_exist():
+        worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
+        if worldmap_layerinfo is None:
+            return HttpResponse('<br />'.join(shp_service.err_msgs))
+        else:
+            MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
+            return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
 
 
     return render(request, 'shapefiles/main_outline_shp.html', d)

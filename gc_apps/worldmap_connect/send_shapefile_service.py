@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 
 from datetime import timedelta
@@ -46,7 +48,6 @@ class SendShapefileService:
         else:
             LOGGER.debug('SendShapefileService Constructor. shapefile_info or shp_md5 is required')
             raise Exception('shapefile. shapefile_info or shp_md5 is required.')
-
 
     #def check_for_existing_map(self):
 
@@ -357,17 +358,18 @@ class SendShapefileService:
         """
         Send WorldMap JSON data back to the Dataverse
         """
+        print('update_dataverse_with_worldmap_info 1')
         LOGGER.debug("update_dataverse_with_worldmap_info: %s" % self.worldmap_layerinfo  )
         if self.worldmap_layerinfo is None:
             LOGGER.warn("Attempted to send Worldmap info to Dataverse when 'worldmap_layerinfo_object' was None")
             return False
 
+        MetadataUpdater.run_update_via_popen(self.worldmap_layerinfo)
+        #try:
 
-        try:
-            MetadataUpdater.update_dataverse_with_metadata(self.worldmap_layerinfo)
-        except:
-            LOGGER.warn('Error.  Layer created and saved BUT update to dataverse failed')
-            return False
+        #except:
+        #    LOGGER.warn('Error.  Layer created and saved BUT update to dataverse failed')
+        #    return False
 
         return True
 

@@ -35,7 +35,6 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     assert dv_session_token is not None, "dv_session_token cannot be None"
     assert type(dv_info_dict) is dict, "dv_info_dict must be type 'dict'"
 
-
     #------------------------------
     # (1) Validate the data (DataverseInfoValidationForm)
     #------------------------------
@@ -61,6 +60,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     #    ShapefileInfo objects are routinely deleted, but if file is already here, use it
     #       * todo: check for staleness, if the data is old delete it
     #-------------------------------------------------
+    LOGGER.debug('(3) Look for existing ShapefileInfo objects in the database')
     params_for_existing_check = dict(datafile_id=dv_info_dict.get('datafile_id', -1),\
         dataverse_installation_name=dv_info_dict.get('dataverse_installation_name', -1),\
         )
@@ -70,7 +70,6 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
                                 ).order_by('created')
 
     existing_shapefile_info_ids = list(existing_sets)
-    msgt('existing_shapefile_info_ids: %s' % existing_shapefile_info_ids)
 
     #-------------------------------------------------
     # add dv_session_token and registered_dataverse to dv_info_dict
@@ -97,7 +96,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     #------------------------------
     # (5) Get or create a new ShapefileInfo object
     #------------------------------
-    msgt('(5) Get or create a new ShapefileInfo object')
+    LOGGER.debug('(5) Get or create a new ShapefileInfo object')
     try:
         # Existing ShapefileInfo:
         #   (1) Assume file is already saved
@@ -110,7 +109,8 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
 
         # Save
         shapefile_info.save()
-        msg('shapefile info saved')
+        LOGGER.debug('shapefile info updated')
+        LOGGER.debug('shapefile_info: %s' % shapefile_info.id)
 
         # If the file is still available, return it
         if shapefile_info.is_dv_file_available():
@@ -125,7 +125,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     #    msg('Failed to retrieve an existing ShapefileInfo object -- so create a new one')
     #    #return False, ErrResultMsg(None, 'Failed to retrieve an existing ShapefileInfo object')
 
-    msg('new file')
+    LOGGER.debug('Create a new file')
 
     #------------------------------
     # New shapefile info, create object and attach file
@@ -143,7 +143,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     #   - http://localhost:8080/api/access/datafile/FILEID?key=YOURAPIKEY
     #
     datafile_download_url = '%s?key=%s' % (datafile_download_url, dv_session_token)
-    msg('datafile_download_url: %s' % datafile_download_url)
+    LOGGER.debug('datafile_download_url: %s' % datafile_download_url)
     datafile_filename = dv_info_dict.get('datafile_label', '')
 
     tmp_shapefile = NamedTemporaryFile(delete=True)

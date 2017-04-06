@@ -11,7 +11,7 @@ class GISDataFileAdmin(DataverseInfoAdmin):
     """
     search_fields =  DataverseInfoAdmin.search_fields + ['dv_file']
     readonly_fields = DataverseInfoAdmin.readonly_fields + ['md5']#, 'dv_session_token']
-    list_display = DataverseInfoAdmin.list_display + ['dv_file']
+    list_display = DataverseInfoAdmin.list_display + ['md5', 'dv_file']
 
     # fieldsets: Use DataverseInfoAdmin fieldsets and add a GeoConnect specific row
     #
