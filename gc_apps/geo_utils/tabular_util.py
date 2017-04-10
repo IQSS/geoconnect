@@ -1,5 +1,11 @@
+# -*- coding: utf-8 -*-
 from django.template.defaultfilters import slugify
 from string import digits
+import sys
+reload(sys)
+# http://stackoverflow.com/questions/10589620/syntaxerror-non-ascii-character-xa3-in-file-when-function-returns-%C2%A3
+# http://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
+sys.setdefaultencoding('utf8')
 
 
 FORMATTED_COLUMN_EXTENSION = '_formatted'
