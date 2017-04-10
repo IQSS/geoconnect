@@ -38,6 +38,7 @@ class TabFileStats(object):
 
         self.stats_collected = False
 
+        self.rename_columns()
         self.collect_stats()
         self.update_tabular_info_object()
 
@@ -66,10 +67,41 @@ class TabFileStats(object):
                             delim=tabular_info.delimiter,
                             tabular_info=tabular_info)
 
+    def rename_columns(self):
+        if self.has_error():
+            return
+        try:
+            df = pd.read_csv(get_file_path_or_url(self.file_object),
+                             sep=self.delimiter)
+        except pd.parser.CParserError as ex_obj:
+            err_msg = ('Could not process the file. '
+                       'At least one row had too many values. '
+                       '(error: %s)') % ex_obj.message
+            self.add_error(err_msg)
+            return
+        count = 0
+        columns_renamed = {}
+        for column in df.columns.values.tolist():
+            #print column
+            normalized = normalize_colname(colname=column, position=count)
+            #print "BEFORE:", column
+            #print "AFTER: ", normalized
+            if column != normalized:
+                columns_renamed[column] = normalized
+            count += 1
+        # write the CSV/TSV back out with safe column names
+        #print "columns changed:", columns_renamed
+        if len(columns_renamed) > 0:
+            df.rename(columns=columns_renamed, inplace=True)
+            # http://stackoverflow.com/questions/36519086/pandas-how-to-get-rid-of-unnamed-column-in-a-dataframe
+            df.to_csv(get_file_path_or_url(self.file_object), sep=self.delimiter, index=False)
+
     def collect_stats(self):
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
+        if self.has_error():
+            return
         try:
             df = pd.read_csv(get_file_path_or_url(self.file_object),
                              sep=self.delimiter)
@@ -80,17 +112,6 @@ class TabFileStats(object):
             self.add_error(err_msg)
             return
 
-        #print "In collect_stats, df.columns.values.tolist():", df.columns.values.tolist()
-        count = 0
-        for column in df.columns.values.tolist():
-            normalized = normalize_colname(colname=column, position=count)
-            #print "BEFORE:", column
-            #print "AFTER: ", normalized
-            df.columns.values[count] = normalized
-            count += 1
-        # write the CSV/TSV back out with safe column names
-        df.to_csv(get_file_path_or_url(self.file_object),
-                         sep=self.delimiter)
         self.special_case_col_formatting(df)
 
         self.column_names = df.columns.values.tolist()
