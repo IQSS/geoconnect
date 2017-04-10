@@ -5,6 +5,7 @@ import pandas as pd
 
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
+from gc_apps.geo_utils.tabular_util import normalize_colname
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -79,6 +80,17 @@ class TabFileStats(object):
             self.add_error(err_msg)
             return
 
+        #print "In collect_stats, df.columns.values.tolist():", df.columns.values.tolist()
+        count = 0
+        for column in df.columns.values.tolist():
+            normalized = normalize_colname(colname=column, position=count)
+            #print "BEFORE:", column
+            #print "AFTER: ", normalized
+            df.columns.values[count] = normalized
+            count += 1
+        # write the CSV/TSV back out with safe column names
+        df.to_csv(get_file_path_or_url(self.file_object),
+                         sep=self.delimiter)
         self.special_case_col_formatting(df)
 
         self.column_names = df.columns.values.tolist()
