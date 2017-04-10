@@ -83,7 +83,7 @@ class TabFileStats(object):
         columns_renamed = {}
         for column in df.columns.values.tolist():
             #print column
-            normalized = normalize_colname(colname=column, position=count)
+            normalized = normalize_colname(colname=column, position=count + 1)
             #print "BEFORE:", column
             #print "AFTER: ", normalized
             if column != normalized:
