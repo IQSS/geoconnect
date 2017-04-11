@@ -21,11 +21,12 @@ def get_orig_column_name(colname):
 
     return ''.join(split_str)
 
+# FIXME: This method is deprecated and should be replaced with calls to normalize_colname
 def get_worldmap_colname_format(colname):
     """Format the column in the same method as Worldmap"""
     assert colname is not None, "colname cannot be None"
 
-    return slugify(unicode(colname)).replace('-', '_')
+    return slugify(colname).replace('-', '_')
 
 def get_pandas_numeric_dtypes():
     """helpful list when working with pandas"""
@@ -48,7 +49,7 @@ def normalize_colname(colname, position):
     # The string returned must be a valid column name in PostgreSQL.
     # From https://www.postgresql.org/docs/9.6/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
     # "SQL identifiers and key words must begin with a letter (a-z, but also letters with diacritical marks and non-Latin letters) or an underscore (_). Subsequent characters in an identifier or key word can be letters, underscores, digits (0-9), or dollar signs ($). Note that dollar signs are not allowed in identifiers according to the letter of the SQL standard, so their use might render applications less portable. The SQL standard will not define a key word that contains digits or starts or ends with an underscore, so identifiers of this form are safe against possible conflict with future extensions of the standard."
-    normalized = slugify(unicode(colname)).replace('-', '_').lstrip(digits)
+    normalized = slugify(colname).replace('-', '_').lstrip(digits)
     if (normalized == ''):
         # 7 becomes 007
         return 'column_' + '%03d' % position
