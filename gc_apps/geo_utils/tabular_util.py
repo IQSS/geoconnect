@@ -21,13 +21,6 @@ def get_orig_column_name(colname):
 
     return ''.join(split_str)
 
-# FIXME: This method is deprecated and should be replaced with calls to normalize_colname
-def get_worldmap_colname_format(colname):
-    """Format the column in the same method as Worldmap"""
-    assert colname is not None, "colname cannot be None"
-
-    return slugify(colname).replace('-', '_')
-
 def get_pandas_numeric_dtypes():
     """helpful list when working with pandas"""
 
