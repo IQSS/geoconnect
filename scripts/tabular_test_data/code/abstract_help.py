@@ -1,11 +1,13 @@
 """
 Way to reproduce the uploading of shapefiles used for target layers
 """
+import logging
 import sys
 from os.path import dirname, realpath, isdir, isfile, join
 
 from abstract_data import abstract_info_list
 
+LOGGER = logging.getLogger(__name__)
 
 
 class AbstractHelp(object):
@@ -55,13 +57,13 @@ http://worldmap.harvard.edu/data/geonode:LAYER_NAME
         CURRENT_DIR = dirname(realpath(__file__))
         DESC_DIRECTORY = join(CURRENT_DIR , 'descriptions')
         if not isdir(DESC_DIRECTORY):
-            print 'Directory does not exist', DESC_DIRECTORY
-            sys.exit(0)
+            LOGGER.error('Directory does not exist %s' % DESC_DIRECTORY)
+            return ''
 
         desc_file = join(DESC_DIRECTORY, self.desc_filename)
         if not isfile(desc_file):
-            print 'Description file not found', desc_file
-            sys.exit(0)
+            LOGGER.error('Directory file not found %s' % desc_file)
+            return ''
 
         return open(desc_file, 'r').read()
 
