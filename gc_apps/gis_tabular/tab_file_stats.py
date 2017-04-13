@@ -1,6 +1,8 @@
 """
 Gather tabular file information: number of rows, column names, etc
 """
+from csv import QUOTE_NONNUMERIC
+
 import pandas as pd
 from django.core.files.base import ContentFile
 
@@ -95,13 +97,9 @@ class TabFileStats(object):
         if len(columns_renamed) > 0:
             df.rename(columns=columns_renamed, inplace=True)
 
-            #df.to_csv(get_file_path_or_url(self.file_object),
-            #                   sep=self.delimiter,
-            #                   index=False)
-
             # http://stackoverflow.com/questions/36519086/pandas-how-to-get-rid-of-unnamed-column-in-a-dataframe
 
-            fh_csv = df.to_csv(get_file_path_or_url(self.file_object),
+            fh_csv = df.to_csv(quoting=QUOTE_NONNUMERIC,
                                sep=self.delimiter,
                                index=False)
 
@@ -111,7 +109,7 @@ class TabFileStats(object):
             # ----------------------------------
             self.tabular_info.dv_file.save(self.tabular_info.datafile_label,
                                            content_file)
-            
+
 
 
     def collect_stats(self):
