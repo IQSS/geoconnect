@@ -2,6 +2,7 @@
 Gather tabular file information: number of rows, column names, etc
 """
 import pandas as pd
+from django.core.files.base import ContentFile
 
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
@@ -93,8 +94,25 @@ class TabFileStats(object):
         #print "columns changed:", columns_renamed
         if len(columns_renamed) > 0:
             df.rename(columns=columns_renamed, inplace=True)
+
+            df.to_csv(get_file_path_or_url(self.file_object),
+                               sep=self.delimiter,
+                               index=False)
+
             # http://stackoverflow.com/questions/36519086/pandas-how-to-get-rid-of-unnamed-column-in-a-dataframe
-            df.to_csv(get_file_path_or_url(self.file_object), sep=self.delimiter, index=False)
+            """
+            fh_csv = df.to_csv(get_file_path_or_url(self.file_object),
+                               sep=self.delimiter,
+                               index=False)
+
+            content_file = ContentFile(fh_csv)#df.to_csv(**csv_parms))
+
+            # Save the ContentFile in the tabular_info object
+            # ----------------------------------
+            self.tabular_info.dv_file.save(self.tabular_info.datafile_label,
+                                           content_file)
+            """
+
 
     def collect_stats(self):
         """
