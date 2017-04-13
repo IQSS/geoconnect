@@ -98,12 +98,11 @@ class TabFileStats(object):
             df.rename(columns=columns_renamed, inplace=True)
 
             # http://stackoverflow.com/questions/36519086/pandas-how-to-get-rid-of-unnamed-column-in-a-dataframe
-
             fh_csv = df.to_csv(quoting=QUOTE_NONNUMERIC,
                                sep=self.delimiter,
                                index=False)
 
-            content_file = ContentFile(fh_csv)#df.to_csv(**csv_parms))
+            content_file = ContentFile(fh_csv)
 
             # Save the ContentFile in the tabular_info object
             # ----------------------------------
