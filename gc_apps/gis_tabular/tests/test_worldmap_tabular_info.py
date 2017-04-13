@@ -1,3 +1,4 @@
+from __future__ import print_function
 from os.path import abspath, dirname, isfile, join, isdir
 import json
 from unittest import skip
@@ -104,8 +105,28 @@ class WorldMapTabularInfoTestCase(TestCase):
         # Is column_names a python list?
         self.assertEqual(type(tab_file_info.column_names), list)
 
+        msgt('colnames')
+        msgt (tab_file_info.column_names)
+        #import sys;sys.exit()
         # Are the column_names correct?
-        expected_colnames = ['BG_ID_10', 'DisSens_2010', 'PublicDenigration_2010', 'PrivateNeglect_2010', 'Housing_2010', 'UncivilUse_2010', 'BigBuild_2010', 'Trash_2010', 'Graffiti_2010', 'DisSens_2011', 'PublicDenigration_2011', 'PrivateNeglect_2011', 'Housing_2011', 'UncivilUse_2011', 'BigBuild_2011', 'Trash_2011', 'Graffiti_2011', 'DisSens_2012', 'PublicDenigration_2012', 'PrivateNeglect_2012', 'Housing_2012', 'UncivilUse_2012', 'BigBuild_2012', 'Trash_2012', 'Graffiti_2012', 'DisSens_2013', 'PublicDenigration_2013', 'PrivateNeglect_2013', 'Housing_2013', 'UncivilUse_2013', 'BigBuild_2013', 'Trash_2013', 'Graffiti_2013', 'DisSens_2014', 'PublicDenigration_2014', 'PrivateNeglect_2014', 'Housing_2014', 'UncivilUse_2014', 'BigBuild_2014', 'Trash_2014', 'Graffiti_2014', 'DisSens_long', 'PublicDenigration_long', 'PrivateNeglect_long', 'Housing_long', 'UncivilUse_long', 'BigBuild_long', 'Trash_long', 'Graffiti_long']
+        expected_colnames = [\
+            'bg_id_10', 'dissens_2010', 'publicdenigration_2010',
+            'privateneglect_2010', 'housing_2010', 'unciviluse_2010',
+            'bigbuild_2010', 'trash_2010', 'graffiti_2010', 'dissens_2011',
+            'publicdenigration_2011', 'privateneglect_2011', 'housing_2011',
+            'unciviluse_2011', 'bigbuild_2011', 'trash_2011', 'graffiti_2011',
+            'dissens_2012', 'publicdenigration_2012', 'privateneglect_2012',
+            'housing_2012', 'unciviluse_2012', 'bigbuild_2012', 'trash_2012',
+            'graffiti_2012', 'dissens_2013', 'publicdenigration_2013',
+            'privateneglect_2013', 'housing_2013', 'unciviluse_2013',
+            'bigbuild_2013', 'trash_2013', 'graffiti_2013', 'dissens_2014',
+            'publicdenigration_2014', 'privateneglect_2014', 'housing_2014',
+            'unciviluse_2014', 'bigbuild_2014', 'trash_2014', 'graffiti_2014',
+            'dissens_long', 'publicdenigration_long', 'privateneglect_long',
+            'housing_long', 'unciviluse_long', 'bigbuild_long', 'trash_long',
+            'graffiti_long']
+
+        """['BG_ID_10', 'DisSens_2010', 'PublicDenigration_2010', 'PrivateNeglect_2010', 'Housing_2010', 'UncivilUse_2010', 'BigBuild_2010', 'Trash_2010', 'Graffiti_2010', 'DisSens_2011', 'PublicDenigration_2011', 'PrivateNeglect_2011', 'Housing_2011', 'UncivilUse_2011', 'BigBuild_2011', 'Trash_2011', 'Graffiti_2011', 'DisSens_2012', 'PublicDenigration_2012', 'PrivateNeglect_2012', 'Housing_2012', 'UncivilUse_2012', 'BigBuild_2012', 'Trash_2012', 'Graffiti_2012', 'DisSens_2013', 'PublicDenigration_2013', 'PrivateNeglect_2013', 'Housing_2013', 'UncivilUse_2013', 'BigBuild_2013', 'Trash_2013', 'Graffiti_2013', 'DisSens_2014', 'PublicDenigration_2014', 'PrivateNeglect_2014', 'Housing_2014', 'UncivilUse_2014', 'BigBuild_2014', 'Trash_2014', 'Graffiti_2014', 'DisSens_long', 'PublicDenigration_long', 'PrivateNeglect_long', 'Housing_long', 'UncivilUse_long', 'BigBuild_long', 'Trash_long', 'Graffiti_long']"""
         self.assertEqual(tab_file_info.column_names, expected_colnames)
 
     def test_03_test_static_method(self):
