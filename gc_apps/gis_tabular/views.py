@@ -310,7 +310,6 @@ def view_tabular_file(request, tab_md5):
     except TabularFileInfo.DoesNotExist:
         raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
 
-
     # ----------------------------------
     # SKIP THIS -> LOOK FOR LAYER IN WORLDMAP EACH TIME
     # Does the file already have an associated WorldMap layer
@@ -325,6 +324,16 @@ def view_tabular_file(request, tab_md5):
     # Is there a WorldMap layer but Geoconnect doesn't know about it?
     #
     if add_worldmap_layerinfo_if_exists(tabular_info):
+        # A WorldMap layer already exists!
+        if not tabular_info.column_names:
+            # Make sure the tabular file has been read and we have
+            # data on it (e.g. may be re-mapping now and tabular info is
+            # freshly retrieved, columns not yet formatted, etc)
+            #
+            tab_file_stats = TabFileStats.create_from_tabular_info(tabular_info)
+            if tab_file_stats.has_error():
+                raise Http404(tab_file_stats.error_message)
+
         worldmap_tabularinfo = tabular_info.get_worldmap_info()
         if worldmap_tabularinfo:
             return view_existing_map(request, worldmap_tabularinfo)
