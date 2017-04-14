@@ -113,9 +113,9 @@
                    {% now "F jS, Y H:i:s" %} <br />
                    {% if git_active_branch %}
                    <span class="version">
-                       <a href="https://github.com/IQSS/geoconnect/tree/{{ git_active_branch }}">{{ git_active_branch }}</a>
-                       |                
-                       <a href="https://github.com/IQSS/geoconnect/commit/{{ git_hexsha }}">{{ git_hexsha_short }}</a></span>
+                       <a href="https://github.com/IQSS/geoconnect/tree/{{ git_active_branch }}" target="_blank">{{ git_active_branch }}</a>
+                       |
+                       <a href="https://github.com/IQSS/geoconnect/commit/{{ git_hexsha }}" target="_blank">{{ git_hexsha_short }}</a></span>
                        {% endif %}
            </div>
 
