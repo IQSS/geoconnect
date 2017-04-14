@@ -48,7 +48,7 @@ LOGGER = logging.getLogger(__name__)
 
 def view_existing_map(request, worldmap_info=None):
     """
-    Test view a WorldMapTabularLayerInfo object
+    View a WorldMapTabularLayerInfo object
     """
     if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
         isinstance(worldmap_info, WorldMapLatLngInfo)):
