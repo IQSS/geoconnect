@@ -1,10 +1,17 @@
 """
 Set attributes used for nearly all views
 """
+from __future__ import print_function
+
 from django.conf import settings
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEPS,\
     STEP1_EXAMINE, STEP2_STYLE
+from gc_apps.geo_utils.git_info import get_branch_info
+
+CACHE_KEY_BRANCH_INFO = 'CACHE_KEY_BRANCH_INFO'
 
 def get_common_lookup(request, **kwargs):
     """
@@ -39,7 +46,25 @@ def get_common_lookup(request, **kwargs):
             is_staff=is_staff,\
             is_superuser=is_superuser)
 
+    branch_info_dict = get_git_branch_info_dict(request)
+
+    if branch_info_dict is not None:
+        common_dict.update(branch_info_dict)
+
     if kwargs:
         common_dict.update(kwargs)
 
     return common_dict
+
+
+def get_git_branch_info_dict(request):
+    """Return a dict containing git branch info--if available
+    If not, returns an empty dict
+    """
+    branch_info = cache.get(CACHE_KEY_BRANCH_INFO)
+
+    if branch_info is None:
+        branch_info = get_branch_info()
+        cache.set(CACHE_KEY_BRANCH_INFO, branch_info, 7200) # 2 hour cache
+
+    return branch_info

@@ -7,6 +7,7 @@ from django.shortcuts import render
 
 from gc_apps.worldmap_connect.models import JoinTargetInformation
 from gc_apps.worldmap_connect.test_quotes import get_random_quote
+from gc_apps.geo_utils.view_util import get_common_lookup
 
 import logging
 
@@ -60,7 +61,8 @@ def show_jointarget_info(request):
 
         target_info_pretty = json.dumps(target_info_list, indent=4)
 
-    info_dict = dict(target_info_list=target_info_list,
-                     target_info_pretty=target_info_pretty)
+    info_dict = get_common_lookup(request)
+    info_dict['target_info_list'] = target_info_list
+    info_dict['target_info_pretty'] = target_info_pretty
 
     return render(request, 'show_jointarget_info.html', info_dict)

@@ -25,3 +25,6 @@ django-storages==1.5.2
 
 # heroku
 whitenoise==3.3.0
+
+# show current git branch--if available
+GitPython==2.1.3

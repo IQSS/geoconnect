@@ -72,6 +72,7 @@ DATABASES['default'].update(db_from_env)
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'geo-heroku-snowflake',
     }
 }
 ########## END CACHE CONFIGURATION
