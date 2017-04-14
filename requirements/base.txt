@@ -1,5 +1,5 @@
 shared-dataverse-information==0.5.7
-Django==1.10.7
+Django==1.10.7  # overwrite django from shared-dataverse-information
 pyshp==1.2.0
 requests==2.3.0
 django-braces==1.2.2
