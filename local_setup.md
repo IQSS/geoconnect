@@ -243,7 +243,7 @@ python manage.py runserver 8070
 ### Run the python shell (if needed)
 
 1.  ```cd``` into your geoconnect directory
-2. activate the virtual environment and run the server
+2. Activate the virtual environment and run the server
 
 ```
 workon geoconnect
