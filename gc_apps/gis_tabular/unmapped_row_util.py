@@ -189,6 +189,14 @@ class UnmatchedRowHelper(object):
         # ----------------------------------
         orig_column_name = get_orig_column_name(self.table_join_attribute)
 
+        # make sure the column name exists
+        if not orig_column_name in df.columns:
+            error_msg = ('Attempted to build failed rows but'
+                         ' original column name not found: [%s]')\
+                         % orig_column_name
+            LOGGER.error(error_msg)
+            return None
+
         df[self.table_join_attribute] = df[orig_column_name].apply(\
                             lambda x: func_col_fmt(x))
 

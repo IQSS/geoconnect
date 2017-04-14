@@ -2,13 +2,14 @@
 Gather tabular file information: number of rows, column names, etc
 """
 from csv import QUOTE_NONNUMERIC
-
 import pandas as pd
+
 from django.core.files.base import ContentFile
 
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 from gc_apps.geo_utils.tabular_util import normalize_colname
+from gc_apps.geo_utils.msg_util import msg
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -85,15 +86,22 @@ class TabFileStats(object):
         count = 0
         columns_renamed = {}
         for column in df.columns.values.tolist():
-            #print column
-            normalized = normalize_colname(colname=column, position=count + 1)
-            #print "BEFORE:", column
-            #print "AFTER: ", normalized
-            if column != normalized:
+
+            normalized = normalize_colname(colname=column,
+                                           position=count + 1)
+
+            # Note, normalize_colname returns unicode
+            # For comparison, get a unicode version of the
+            # pandas column.
+            # We don't care that column_uni is imperfect/may
+            # remove characters.  Only used for the comparison
+            # (this is not pretty)
+            column_uni = column.decode('utf8', 'ignore')
+
+            if column_uni != normalized:
                 columns_renamed[column] = normalized
             count += 1
-        # write the CSV/TSV back out with safe column names
-        #print "columns changed:", columns_renamed
+
         if len(columns_renamed) > 0:
             df.rename(columns=columns_renamed, inplace=True)
 
