@@ -48,7 +48,7 @@ LOGGER = logging.getLogger(__name__)
 
 def view_existing_map(request, worldmap_info=None):
     """
-    Test view a WorldMapTabularLayerInfo object
+    View a WorldMapTabularLayerInfo object
     """
     if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
         isinstance(worldmap_info, WorldMapLatLngInfo)):
@@ -66,14 +66,14 @@ def view_existing_map(request, worldmap_info=None):
         return HttpResponse(user_msg)
 
 
-    template_dict = dict(worldmap_layerinfo=worldmap_info,
+    template_dict.update(\
+        dict(worldmap_layerinfo=worldmap_info,
         attribute_data=worldmap_info.attribute_data,
         tabular_map_div=map_html,
         user_message_html=user_message_html,    # not used for existing maps
         gis_data_info=worldmap_info.get_gis_data_info(),
         test_files=TabularFileInfo.objects.all(),
-        page_title=PANEL_TITLE_STYLE_MAP,
-        )
+        page_title=PANEL_TITLE_STYLE_MAP))
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS

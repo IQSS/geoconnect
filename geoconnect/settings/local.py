@@ -63,6 +63,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'geo-local-snowflake',
     }
 }
 ########## END CACHE CONFIGURATION
