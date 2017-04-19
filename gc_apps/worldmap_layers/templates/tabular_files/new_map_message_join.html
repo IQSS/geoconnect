@@ -7,7 +7,7 @@ The map below was created from your tabular file.
     <li>Rows Matched: <b>{{ core_data.matched_record_count|intcomma }}</b></li>
     {% if core_data.unmatched_record_count > 0 %}
     <li>Rows NOT Matched: <b>{{ core_data.unmatched_record_count|intcomma }}</b>
-        (<a data-toggle="modal" data-target="#view_map_metadata">View Map Metadata</a> to see the unmatched rows)
+        (<a data-toggle="modal" data-target="#view_map_metadata">View Map Metadata</a> to see the unmatched row{{ core_data.unmatched_record_count|pluralize }})
     </li>
     {% endif %}
     {% comment %}
