@@ -261,7 +261,7 @@ MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
-    
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -323,7 +323,5 @@ WORLDMAP_SHORT_TIMEOUT = 2 * 60 # seconds, for non-layer making requests
 # Go and get info from WorldMap instead of using saved info
 WORLDMAP_LAYER_EXPIRATION = 15 * 60 # 15 minutes
 
-# Old WorldMap connection info - leaving as placeholder 2/3 until
-# updated geoconnect fully ready
-WORLDMAP_TOKEN_NAME_FOR_DV = 'geoconnect_token'
-WORLDMAP_TOKEN_FOR_DATAVERSE = ''
+# Make sure links to the embedded map and legend use https
+WORLDMAP_EMBED_FORCE_HTTPS = True

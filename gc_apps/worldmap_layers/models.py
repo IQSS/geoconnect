@@ -276,7 +276,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         return f.format_for_dataverse_api()
 
 
-    def get_legend_img_url(self, force_https=True):
+    def get_legend_img_url(self):
         """
         Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
         """
@@ -295,7 +295,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         legend_img_url = '%s/geoserver/wms?%s' %\
                                 (self.get_layer_url_base(),
                                  param_str)
-        if force_https:
+        if settings.WORLDMAP_EMBED_FORCE_HTTPS:
             return legend_img_url.replace('http://', 'https://', 1)
         else:
             return legend_img_url
@@ -385,7 +385,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
 
 
-    def get_embed_map_link(self, force_https=True):
+    def get_embed_map_link(self):
         """
         Return the WorldMap embed link.
         By default, make the link 'https'
@@ -397,7 +397,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         if not embed_link:
             return None
 
-        if force_https and embed_link.startswith('http://'):
+        if settings.WORLDMAP_EMBED_FORCE_HTTPS and embed_link.startswith('http://'):
             return embed_link.replace('http://', 'https://', 1)
 
         return embed_link
