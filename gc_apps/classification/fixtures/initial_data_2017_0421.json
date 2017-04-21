@@ -55,7 +55,7 @@
     "pk": 1,
     "model": "layer_classification.colorramp",
     "fields": {
-        "value_name": "Blue",
+        "value_name": "Custom",
         "display_name": "Blue",
         "created": "2014-07-18T13:03:05.794",
         "modified": "2014-07-18T13:03:05.794",
@@ -69,7 +69,7 @@
     "pk": 2,
     "model": "layer_classification.colorramp",
     "fields": {
-        "value_name": "Red",
+        "value_name": "Custom",
         "display_name": "Red",
         "created": "2014-07-18T13:03:05.795",
         "modified": "2014-07-18T13:03:05.795",
