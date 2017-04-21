@@ -276,7 +276,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         return f.format_for_dataverse_api()
 
 
-    def get_legend_img_url(self, force_https=False):
+    def get_legend_img_url(self, force_https=True):
         """
         Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
         """
@@ -385,7 +385,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
 
 
-    def get_embed_map_link(self, force_https=False):
+    def get_embed_map_link(self, force_https=True):
         """
         Return the WorldMap embed link.
         By default, make the link 'https'
