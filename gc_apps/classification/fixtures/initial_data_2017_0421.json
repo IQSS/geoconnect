@@ -1,0 +1,152 @@
+[
+{
+    "model": "layer_classification.classificationmethod",
+    "pk": 1,
+    "fields": {
+        "display_name": "Unique Values",
+        "value_name": "uniqueInterval",
+        "is_string_usable": true,
+        "sort_order": 150,
+        "active": true,
+        "created": "2014-07-18T17:00:41.827Z",
+        "modified": "2014-07-18T17:00:41.827Z"
+    }
+},
+{
+    "model": "layer_classification.classificationmethod",
+    "pk": 2,
+    "fields": {
+        "display_name": "Equal Interval",
+        "value_name": "equalInterval",
+        "is_string_usable": true,
+        "sort_order": 20,
+        "active": true,
+        "created": "2014-07-18T17:00:51.752Z",
+        "modified": "2017-03-30T18:32:26.396Z"
+    }
+},
+{
+    "model": "layer_classification.classificationmethod",
+    "pk": 3,
+    "fields": {
+        "display_name": "Quantile",
+        "value_name": "quantile",
+        "is_string_usable": false,
+        "sort_order": 30,
+        "active": true,
+        "created": "2014-07-18T17:01:03.860Z",
+        "modified": "2014-07-18T17:01:03.860Z"
+    }
+},
+{
+    "model": "layer_classification.classificationmethod",
+    "pk": 4,
+    "fields": {
+        "display_name": "Jenks Natural Breaks",
+        "value_name": "jenks",
+        "is_string_usable": false,
+        "sort_order": 40,
+        "active": true,
+        "created": "2014-07-18T17:01:11.838Z",
+        "modified": "2014-07-18T17:01:11.838Z"
+    }
+},
+{
+    "pk": 1,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Blue",
+        "display_name": "Blue",
+        "created": "2014-07-18T13:03:05.794",
+        "modified": "2014-07-18T13:03:05.794",
+        "active": true,
+        "start_color": "#f7fcf0",
+        "end_color": "#084081",
+        "sort_order": 10
+    }
+},
+{
+    "pk": 2,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Red",
+        "display_name": "Red",
+        "created": "2014-07-18T13:03:05.795",
+        "modified": "2014-07-18T13:03:05.795",
+        "active": true,
+        "start_color": "#fff5f0",
+        "end_color": "#cb181d",
+        "sort_order": 20
+    }
+},
+{
+    "pk": 3,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Custom",
+        "display_name": "Orange",
+        "created": "2014-07-18T13:03:05.796",
+        "modified": "2014-07-18T13:03:05.797",
+        "active": true,
+        "start_color": "#fff5eb",
+        "end_color": "#f16913",
+        "sort_order": 30
+    }
+},
+{
+    "pk": 4,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Jet",
+        "display_name": "Red-Blue",
+        "created": "2014-07-18T13:03:05.797",
+        "modified": "2014-07-18T13:03:05.797",
+        "active": true,
+        "start_color": "#f7fbff",
+        "end_color": "#08306b",
+        "sort_order": 40
+    }
+},
+{
+    "pk": 5,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Gray",
+        "display_name": "Gray",
+        "created": "2014-07-18T13:03:05.798",
+        "modified": "2014-07-18T13:03:05.798",
+        "active": true,
+        "start_color": "#fff5eb",
+        "end_color": "#f16913",
+        "sort_order": 50
+    }
+},
+{
+    "pk": 6,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Random",
+        "display_name": "Random",
+        "created": "2014-07-18T13:03:05.799",
+        "modified": "2014-07-18T13:03:05.799",
+        "active": true,
+        "start_color": "#f7fbff",
+        "end_color": "#08306b",
+        "sort_order": 60
+    }
+},
+{
+    "pk": 7,
+    "model": "layer_classification.colorramp",
+    "fields": {
+        "value_name": "Custom",
+        "display_name": "Custom",
+        "created": "2014-07-18T13:03:05.800",
+        "modified": "2014-07-18T13:03:05.800",
+        "active": false,
+        "start_color": "#ffcc00",
+        "end_color": "#006699",
+        "sort_order": 70
+    }
+}
+]

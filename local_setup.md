@@ -155,10 +155,10 @@ Create a local sqlite database to store geoconnect information.
     python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
     ```
 
-- Add layer classification colors
+- Add colors/classification methods
 
     ```
-    python manage.py loaddata --app layer_classification initial_data.json
+    python manage.py loaddata gc_apps/classification/fixtures/initial_data_2017_0421.json
     ```
 
 ### Create a superuser
