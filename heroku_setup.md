@@ -156,7 +156,7 @@ For these steps use your local Terminal within the geoconnect directory--e.g. cd
     - ```heroku run 'python manage.py migrate --run-syncdb --settings=geoconnect.settings.heroku'```
   1.  Add initial data:
     - ```heroku run 'python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json --settings=geoconnect.settings.heroku'```
-    - ```heroku run 'python manage.py loaddata --app layer_classification initial_data.json --settings=geoconnect.settings.heroku'```
+    - ```heroku run 'python manage.py loaddata gc_apps/classification/fixtures/initial_data_2017_0421.json --settings=geoconnect.settings.heroku'```
 
 ## Create a superuser and login to the Admin page
 

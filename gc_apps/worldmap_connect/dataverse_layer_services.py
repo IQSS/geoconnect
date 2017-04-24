@@ -79,7 +79,6 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
     #
     data_params = existing_layer_form.cleaned_data
 
-    #data_params[settings.WORLDMAP_TOKEN_NAME_FOR_DV] = settings.WORLDMAP_TOKEN_FOR_DATAVERSE
     print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
     print ("data_params: %s" % data_params)
     try:
