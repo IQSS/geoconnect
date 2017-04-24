@@ -4,7 +4,7 @@
 
 # Local Installation Instructions
 
-GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
+Geoconnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
 *caveat*: Directions not too windows friendly...
 
@@ -44,7 +44,7 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 ### Install [Github Desktop](https://desktop.github.com/)
 
-- Or, if you choose, use the command line to access github
+- Or, if you choose, use the command line to access Github
 
 ### Install [ATOM editor](https://atom.io/) (recommended)
 
