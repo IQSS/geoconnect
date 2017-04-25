@@ -262,7 +262,8 @@ python manage.py dbshell
 
 ## Subsequent updates
 
-If you run a ```git pull``` to update your branch, please run the commands below.
+If you run a ```git pull``` to update your repo, please run the commands below to include possible requirments and database changes.  
+
 These commands will:
   1. Update/add packages specified in updated requirements files.
   1. Apply updates to the database structure.  (New tables, columns, updated fields, etc)
