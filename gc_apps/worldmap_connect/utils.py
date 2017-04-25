@@ -2,14 +2,13 @@
 Convenience methods for using the WorldMap API
 """
 from django.utils import timezone
+from django.conf import settings
 from gc_apps.worldmap_connect.models import JoinTargetInformation
 from gc_apps.worldmap_connect.dataverse_layer_services import get_join_targets
 from datetime import timedelta
 import logging
 
 LOGGER = logging.getLogger('gc_apps.worldmap_connect.utils')
-
-JOIN_TARGET_UPDATE_TIME = 1 * 60 # 10 minutes
 
 
 
@@ -23,7 +22,7 @@ def get_latest_jointarget_information():
     # ---------------------------------
     # (1) Is available JoinTarget info from db
     # ---------------------------------
-    recent_time_window = timezone.now() + timedelta(seconds=(-1 * JOIN_TARGET_UPDATE_TIME))
+    recent_time_window = timezone.now() + timedelta(seconds=(-1 * settings.JOIN_TARGET_UPDATE_TIME))
 
     join_target = JoinTargetInformation.objects.filter(\
                     created__gte=recent_time_window).first()
