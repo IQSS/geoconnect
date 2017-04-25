@@ -271,7 +271,7 @@ These commands will:
 ### Preliminaries
 
   1. Open a Terminal and ```cd``` into your geoconnect directory
-  2. activate the virtual environment ```workon geoconnect```
+  2. Activate the virtual environment ```workon geoconnect```
 
 ### Commands
 
