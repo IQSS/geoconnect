@@ -259,3 +259,28 @@ python manage.py shell
 workon geoconnect
 python manage.py dbshell
 ```
+
+## Subsequent updates
+
+If you run a ```git pull``` to update your branch, please run the commands below.
+These commands will:
+  1. Update/add packages specified in updated requirements files.
+  1. Apply updates to the database structure.  (New tables, columns, updated fields, etc)
+
+- Preliminaries
+
+  1. Open a Terminal ```cd``` into your geoconnect directory
+  2. activate the virtual environment ```workon geoconnect```
+
+- Commands
+
+```
+# *(1) Update requirements
+pip install -r requirements/local.txt
+
+# (2a) Migrate database changes (if needed)
+python manage.py migrate
+
+# (2b) For db models in the shared_dataverse_information package
+python manage.py syncdb 
+```
