@@ -267,12 +267,12 @@ These commands will:
   1. Update/add packages specified in updated requirements files.
   1. Apply updates to the database structure.  (New tables, columns, updated fields, etc)
 
-- Preliminaries
+### Preliminaries
 
-  1. Open a Terminal ```cd``` into your geoconnect directory
+  1. Open a Terminal and ```cd``` into your geoconnect directory
   2. activate the virtual environment ```workon geoconnect```
 
-- Commands
+### Commands
 
 ```
 # *(1) Update requirements
