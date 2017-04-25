@@ -275,7 +275,7 @@ These commands will:
 ### Commands
 
 ```
-# *(1) Update requirements
+# (1) Update requirements
 pip install -r requirements/local.txt
 
 # (2a) Migrate database changes (if needed)
