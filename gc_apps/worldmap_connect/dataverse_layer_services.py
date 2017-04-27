@@ -287,10 +287,12 @@ def get_join_targets():
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as exception_obj:
 
-        err_msg = """Sorry! Failed to retrieve data from the WorldMap.
-                    <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p>"""\
-                                % (GET_JOIN_TARGETS)
+        err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the'
+                   ' WorldMap server: %s</p>(err-id: 1))' %\
+                   (GET_JOIN_TARGETS)
+
         LOGGER.error(err_msg)
         LOGGER.error('ConnectionError: %s', exception_obj.message)
         return (False, err_msg)
@@ -298,7 +300,14 @@ def get_join_targets():
     except:
         # Error with request
         #
-        err_msg = "Unexpected error: %s" % sys.exc_info()[0]
+        err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the'
+                   ' WorldMap server: %s</p>(err-id: 2))' %\
+                   (GET_JOIN_TARGETS)
+        LOGGER.error(err_msg)
+        LOGGER.error(sys.exc_info()[0])
+
         return (False, err_msg)
 
     #--------------------------------------

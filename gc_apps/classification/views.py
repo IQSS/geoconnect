@@ -100,7 +100,9 @@ def view_classify_layer_form(request, import_success_md5):
 
     if worldmap_layerinfo is None:
         err_note = ('Sorry! The layer could not be identified.'
-                    '\n\nThe Styling option is not available. (id:ds3)')
+                    '\n\nThe Styling option is not available.'
+                    ' (id:ds3) %s' % request.POST['data_source_type'])
+
         json_msg = MessageHelperJSON.get_json_msg(\
                     success=False,
                     msg=err_note,

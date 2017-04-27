@@ -118,12 +118,14 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
     success, tab_md5_or_err_msg = get_tabular_file_from_dv_api_info(dataverse_token, data_dict)
 
     if not success:
-        return view_formatted_error_page(request\
-                                         , tab_md5_or_err_msg.err_type\
-                                         , tab_md5_or_err_msg.err_msg)
+        return view_formatted_error_page(\
+                        request,
+                        tab_md5_or_err_msg.err_type,
+                        tab_md5_or_err_msg.err_msg)
 
-    view_tab_file_first_time_url = reverse('view_tabular_file'\
-                                    , kwargs=dict(tab_md5=tab_md5_or_err_msg))
+    view_tab_file_first_time_url = reverse(\
+                    'view_tabular_file',
+                    kwargs=dict(tab_md5=tab_md5_or_err_msg))
 
     return HttpResponseRedirect(view_tab_file_first_time_url)
 
