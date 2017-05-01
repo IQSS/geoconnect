@@ -135,49 +135,43 @@ def delete_worldmap_tablejoin(worldmap_layer_info):
     print ('delete_api_path: %s' % delete_api_path)
 
     try:
-        r = requests.post(delete_api_path\
-                        , auth=settings.WORLDMAP_ACCOUNT_AUTH\
-                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
+        resp = requests.post(delete_api_path,
+                             auth=settings.WORLDMAP_ACCOUNT_AUTH,
+                             timeout=settings.WORLDMAP_SHORT_TIMEOUT)
+
     except requests.exceptions.ConnectionError as exception_obj:
 
-        err_msg = """Failed to delete the map.
-                    <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p>"""\
-                                % (delete_api_pat)
+        err_msg = ('Failed to delete the map.'
+                   '<p><b>Details for administrator:</b>'
+                   'Could not contact the WorldMap server: %s</p>') %\
+                    (delete_api_path)
+
         LOGGER.error('ConnectionError during delete: %s', exception_obj.message)
         LOGGER.error('delete_api_path: %s', delete_api_path)
         return (False, err_msg)
 
-    print (r.text)
-    print (r.status_code)
+    print (resp.text)
+    print (resp.status_code)
 
     #--------------------------------------
     # Check Response
     #--------------------------------------
-    if r.status_code == 200:
+    if resp.status_code == 200:
         #response_dict = r.json()
         return (True, None)
-    elif r.status_code == 404:
+    elif resp.status_code == 404:
         # TableJoin no longer exists
         return (True, None)
 
     #--------------------------------------
     # Response doesn't look good
     #--------------------------------------
-    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+    err_msg = "Status code: %s\nError: %s" % (resp.status_code, resp.text)
     LOGGER.error(err_msg)
 
     return (False, err_msg)
 
 
-def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, datafile_id):
-    assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
-    assert isinstance(datafile_id, int), "dv_file_id must be an integer"
-
-    params = dict(dataverse_installation_name=dataverse_installation_name,\
-                datafile_id=datafile_id)
-
-    return get_layer_info_from_dv_dict(params)
 
 """
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
@@ -354,7 +348,5 @@ python manage.py shell
 
 from gc_apps.worldmap_connect.dataverse_layer_services import *
 
-get_layer_info_by_dv_installation_and_file('https://RAD-rprasad', 4)
-get_layer_info_by_dv_installation_and_file('Harvard Dataverse', 9)
 
 """
