@@ -94,6 +94,7 @@ def build_map_html(request, worldmap_info):
         2 - user_message_html
             - User message about join
     """
+    LOGGER.debug('build_map_html 1')
     if not isinstance(worldmap_info, WorldMapLayerInfo):
         err_msg = ('worldmap_info needs to be a WorldMapLayerInfo'
                    ' object. Not type: %s')\
@@ -101,6 +102,7 @@ def build_map_html(request, worldmap_info):
         LOGGER.error(err_msg)
         return None, None
 
+    LOGGER.debug('build_map_html 2')
     delete_form = DeleteMapForm.get_form_with_initial_vals(worldmap_info)
 
     template_dict = get_common_lookup(request)
@@ -108,6 +110,8 @@ def build_map_html(request, worldmap_info):
     failed_records_list = worldmap_info.get_failed_rows()
     num_failed_download_records = min(MAX_FAILED_ROWS_TO_BUILD,\
                             worldmap_info.get_unmapped_record_count())
+
+    LOGGER.debug('build_map_html 3')
 
     template_dict.update(dict(worldmap_layerinfo=worldmap_info,
             INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,

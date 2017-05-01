@@ -10,6 +10,7 @@ from django.core.cache.utils import make_template_fragment_key
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEPS,\
     STEP1_EXAMINE, STEP2_STYLE
 from gc_apps.geo_utils.git_info import get_branch_info
+from gc_apps.geo_utils.time_util import get_last_microsecond
 
 CACHE_KEY_BRANCH_INFO = 'CACHE_KEY_BRANCH_INFO'
 
@@ -36,15 +37,17 @@ def get_common_lookup(request, **kwargs):
 
     current_url = '{0}{1}'.format(request.get_host(), request.get_full_path())
 
-    common_dict = dict(DATAVERSE_SERVER_URL=settings.DATAVERSE_SERVER_URL,\
-            current_url=current_url,\
-            DEBUG_MODE=settings.DEBUG,\
-            GEOCONNECT_STEPS=GEOCONNECT_STEPS,\
-            STEP1_EXAMINE=STEP1_EXAMINE,\
-            STEP2_STYLE=STEP2_STYLE,\
-            is_logged_in=is_logged_in,\
-            is_staff=is_staff,\
-            is_superuser=is_superuser)
+    common_dict = dict(\
+            DATAVERSE_SERVER_URL=settings.DATAVERSE_SERVER_URL,
+            current_url=current_url,
+            DEBUG_MODE=settings.DEBUG,
+            GEOCONNECT_STEPS=GEOCONNECT_STEPS,
+            STEP1_EXAMINE=STEP1_EXAMINE,
+            STEP2_STYLE=STEP2_STYLE,
+            is_logged_in=is_logged_in,
+            is_staff=is_staff,
+            is_superuser=is_superuser,
+            last_microsecond=get_last_microsecond())
 
     branch_info_dict = get_git_branch_info_dict(request)
 

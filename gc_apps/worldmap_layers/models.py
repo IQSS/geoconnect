@@ -283,13 +283,13 @@ class WorldMapLayerInfo(TimeStampedModel):
         if not self.core_data:
             return None
 
-        params = (('request', 'GetLegendGraphic')\
-                   , ('format', 'image/png')\
-                   , ('width', 20)\
-                   , ('height', 20)\
-                   , ('layer', self.layer_name)\
-                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
-                )
+        params = (('request', 'GetLegendGraphic'),
+                  ('format', 'image/png'),
+                  ('width', 20),
+                  ('height', 20),
+                  ('layer', self.layer_name),
+                  ('legend_options', 'fontAntiAliasing:true;fontSize:11;'))
+
         param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
 
         legend_img_url = '%s/geoserver/wms?%s' %\
