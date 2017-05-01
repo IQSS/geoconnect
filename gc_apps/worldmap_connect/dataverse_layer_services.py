@@ -290,7 +290,7 @@ def get_join_targets():
         err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
                    '<p><b>Details for administrator:</b>'
                    ' Could not contact the'
-                   ' WorldMap server: %s</p>(err-id: 1))' %\
+                   ' WorldMap server: %s</p>(err-id: 1))') %\
                    (GET_JOIN_TARGETS)
 
         LOGGER.error(err_msg)
@@ -303,7 +303,7 @@ def get_join_targets():
         err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
                    '<p><b>Details for administrator:</b>'
                    ' Could not contact the'
-                   ' WorldMap server: %s</p>(err-id: 2))' %\
+                   ' WorldMap server: %s</p>(err-id: 2))') %\
                    (GET_JOIN_TARGETS)
         LOGGER.error(err_msg)
         LOGGER.error(sys.exc_info()[0])
