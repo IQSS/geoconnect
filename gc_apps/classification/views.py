@@ -174,7 +174,9 @@ def view_classify_layer_form(request, import_success_md5):
     classify_params = api_form.cleaned_data
 
     classify_url = classify_form.get_worldmap_classify_api_url()
-    #print ('classify_params', classify_params)
+
+    LOGGER.debug('classify_params', classify_params)
+
     resp = None
     try:
         resp = requests.post(classify_url,\
@@ -279,9 +281,9 @@ def view_classify_layer_form(request, import_success_md5):
 
         worldmap_layerinfo.save()
     else:
-        print (dir(worldmap_layerinfo))
-        print (type(worldmap_layerinfo))
-        print ('nada?')
+        LOGGER.error(dir(worldmap_layerinfo))
+        LOGGER.error(type(worldmap_layerinfo))
+        LOGGER.error('nada?')
 
     # --------------------------------------------------------------
     # Refresh the classify form with the latest WorldMap parameter information

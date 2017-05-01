@@ -80,7 +80,8 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
     data_params = existing_layer_form.cleaned_data
 
     print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
-    print ("data_params: %s" % data_params)
+    #LOGGER.info("data_params: %s" % data_params)
+
     try:
         r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\

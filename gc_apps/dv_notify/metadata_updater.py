@@ -92,14 +92,10 @@ class MetadataUpdater(object):
         params = worldmap_layer_info.get_params_for_dv_delete_layer_metadata()
         api_delete_metadata_url = get_api_url_delete_metadata(self.dataverse_server_url)
 
-        """
-        print ('params to send: %s' % params)
-        print ('-' * 40)
-        print ('update url: %s' % api_delete_metadata_url)
-        print ('-' * 40)
-        print ('payload: %s' % json.dumps(params))
-        print ('-' * 40)
-        """
+
+        LOGGER.debug('params to send: %s', params)
+        LOGGER.debug('update url: %s', api_delete_metadata_url)
+        LOGGER.debug('payload: %s', json.dumps(params))
 
         req = None
         try:

@@ -280,6 +280,7 @@ class TableJoinMapMaker(object):
         # (2b) set new join column name
         # ----------------------------------
         self.table_attribute_for_join = new_column_name
+
         print 'new_column_name', new_column_name
         # ----------------------------------
         # (3) Save  new file
@@ -296,7 +297,7 @@ class TableJoinMapMaker(object):
                          quoting=QUOTE_NONNUMERIC,
                          index=False,
                          columns=df.columns)
-        print 'df.columns', df.columns
+        LOGGER.debug('df.columns: %s', df.columns)
         fh_csv = df.to_csv(**csv_parms)
         content_file = ContentFile(fh_csv)#df.to_csv(**csv_parms))
 

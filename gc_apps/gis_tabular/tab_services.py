@@ -93,7 +93,7 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
     validation_form = DataverseInfoValidationForm(dataverse_info_dict)
     if not validation_form.is_valid():
         errs = ['%s: %s' % (k, v) for k,v in validation_form.errors.items()]
-        print (errs)
+        LOGGER.debug('errors: %s', errs)
         form_errs = '\n'.join(errs)
         return False, ErrResultMsg(None, form_errs)
 

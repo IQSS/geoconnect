@@ -66,8 +66,6 @@ def view_examine_dataset(request):
                                     )
         else:
             d['Form_Err_Found'] = True
-            #print shp_form.errors
-            #return HttpResponse('blah - not valid')
     else:
         shp_form = ShapefileInfoForm
 
@@ -126,7 +124,6 @@ def view_shapefile(request, shp_md5, **kwargs):
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
     :template:`shapefiles/main_outline_shp.html`
     """
-    LOGGER.debug('-' * 40)
     LOGGER.debug('view_shapefile 1')
     # -------------------------------------------
     # Flags for template - Is this the first time the file is being visualized?
@@ -145,6 +142,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     # Does a fully checked shapefile exist with a worldmap layer?
     # -------------------------------------------------------------------
     LOGGER.debug('view_shapefile 3 - Does a shapefile exist with a worldmap layer?')
+
     shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
     if shp_service.flow1_does_map_already_exist():
         LOGGER.debug('view_shapefile 3a - Map already exists')
@@ -241,8 +239,6 @@ def view_shapefile(request, shp_md5, **kwargs):
         else:
             MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
             return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
-
-    print (d)
 
     return render(request, 'shapefiles/main_outline_shp.html', d)
 

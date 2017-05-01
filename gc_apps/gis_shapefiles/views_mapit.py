@@ -123,11 +123,16 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
                         tab_md5_or_err_msg.err_type,
                         tab_md5_or_err_msg.err_msg)
 
-    view_tab_file_first_time_url = reverse(\
+    tab_file_url = reverse(\
                     'view_tabular_file',
                     kwargs=dict(tab_md5=tab_md5_or_err_msg))
 
-    return HttpResponseRedirect(view_tab_file_first_time_url)
+    # avoid browser cache
+    tab_file_url = '%s?%s' % (tab_file_url,
+                              get_last_microsecond_url_param())
+
+
+    return HttpResponseRedirect(tab_file_url)
 
 
 def process_shapefile_info(request, dataverse_token, data_dict):
@@ -137,18 +142,20 @@ def process_shapefile_info(request, dataverse_token, data_dict):
         #   (2) Create a ShapefileInfo object
         #   (3) Download the dataverse file
     """
-    success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
+    success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(\
+                                                dataverse_token,
+                                                data_dict)
 
     if not success:
         return view_formatted_error_page(request,
                                          shp_md5_or_err_msg.err_type,
                                          shp_md5_or_err_msg.err_msg)
 
-    shapefile_first_time_url = reverse(\
-                                'view_shapefile_first_time',
-                                kwargs=dict(shp_md5=shp_md5_or_err_msg))
+    shapefile_url = reverse('view_shapefile_first_time',
+                            kwargs=dict(shp_md5=shp_md5_or_err_msg))
 
-    shapefile_first_time_url = '%s?%s' % (shapefile_first_time_url,
-                                          get_last_microsecond_url_param())
+    # avoid browser cache
+    shapefile_url = '%s?%s' % (shapefile_url,
+                               get_last_microsecond_url_param())
 
-    return HttpResponseRedirect(shapefile_first_time_url)
+    return HttpResponseRedirect(shapefile_url)
