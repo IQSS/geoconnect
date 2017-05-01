@@ -47,4 +47,6 @@ urlpatterns = [
 
     url(r'^delete-map/$', views_delete.view_delete_tabular_map, name="view_delete_tabular_map"),
 
+    url(r'^delete-map-no-ui/(?P<dataverse_token>\w{64})/$', views_delete.view_delete_tabular_map_no_ui, name="view_delete_tabular_map_no_ui"),
+
 ]
