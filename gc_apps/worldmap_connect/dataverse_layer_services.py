@@ -60,12 +60,6 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
         LOGGER.error(err_msg)
         return (False, err_msg)
 
-    #   For join layers, remove the TableJoin object
-    #
-    if worldmap_layer_info.is_join_layer():
-        return delete_worldmap_tablejoin(worldmap_layer_info)
-
-
     #--------------------------------------
     # Prepare params for WorldMAP API call
     #--------------------------------------
@@ -115,63 +109,6 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
     LOGGER.error(err_msg)
 
     return (False, err_msg)
-
-
-def delete_worldmap_tablejoin(worldmap_layer_info):
-    """
-    Use the WorldMap API to delete a TableJoin object
-    """
-    if not (hasattr(worldmap_layer_info, 'is_join_layer') and\
-        worldmap_layer_info.is_join_layer()):
-        return (False, 'Expected a WorldMapJoinLayerInfo object')
-
-    if not worldmap_layer_info.core_data:
-        return (False, 'Could not find core join layer data')
-
-    tablejoin_id = worldmap_layer_info.core_data.get('tablejoin_id', None)
-    if tablejoin_id is None:
-        return (False, 'Failed to find the TableJoin id.')
-
-    delete_api_path = '%s%s' % (DELETE_TABLEJOIN, tablejoin_id)
-    print ('delete_api_path: %s' % delete_api_path)
-
-    try:
-        resp = requests.post(delete_api_path,
-                             auth=settings.WORLDMAP_ACCOUNT_AUTH,
-                             timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-
-    except requests.exceptions.ConnectionError as exception_obj:
-
-        err_msg = ('Failed to delete the map.'
-                   '<p><b>Details for administrator:</b>'
-                   'Could not contact the WorldMap server: %s</p>') %\
-                    (delete_api_path)
-
-        LOGGER.error('ConnectionError during delete: %s', exception_obj.message)
-        LOGGER.error('delete_api_path: %s', delete_api_path)
-        return (False, err_msg)
-
-    print (resp.text)
-    print (resp.status_code)
-
-    #--------------------------------------
-    # Check Response
-    #--------------------------------------
-    if resp.status_code == 200:
-        #response_dict = r.json()
-        return (True, None)
-    elif resp.status_code == 404:
-        # TableJoin no longer exists
-        return (True, None)
-
-    #--------------------------------------
-    # Response doesn't look good
-    #--------------------------------------
-    err_msg = "Status code: %s\nError: %s" % (resp.status_code, resp.text)
-    LOGGER.error(err_msg)
-
-    return (False, err_msg)
-
 
 
 """
