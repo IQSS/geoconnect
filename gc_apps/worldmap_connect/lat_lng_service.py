@@ -15,7 +15,7 @@ def create_map_from_datatable_lat_lng(tabular_info, lat_col, lng_col):
     """
     Use the WorldMap API to uplodat a datatable and join it to an existing layer
     """
-    print 'create_map_from_datatable_lat_lng 1'
+    LOGGER.debug('create_map_from_datatable_lat_lng 1')
     if tabular_info is None:
         return (False, 'The Tabular File object was not specified.')
 
