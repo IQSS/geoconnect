@@ -49,7 +49,7 @@ def get_common_lookup(request, **kwargs):
             is_superuser=is_superuser,
             last_microsecond=get_last_microsecond())
 
-    branch_info_dict = get_git_branch_info_dict(request)
+    branch_info_dict = None     #get_git_branch_info_dict(request)
 
     if branch_info_dict is not None:
         common_dict.update(branch_info_dict)
