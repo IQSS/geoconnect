@@ -184,11 +184,11 @@ LOGGING = {
     'loggers': {
         'gc_apps': {
             'handlers': ['console', 'mail_admins'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
         'django': {
             'handlers': ['console', 'mail_admins'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
     },
 }
