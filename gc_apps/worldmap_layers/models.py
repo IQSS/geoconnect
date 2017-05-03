@@ -1,4 +1,5 @@
 """Abstract model describing WorldMap Layers"""
+from __future__ import print_function
 from abc import abstractmethod
 from urlparse import urlparse
 import logging
@@ -209,11 +210,9 @@ class WorldMapLayerInfo(TimeStampedModel):
         WorldMapLayerInfoType = worldmap_info.__class__
 
         if worldmap_info.is_shapefile_layer():
-            filters = dict(shapefile_info=worldmap_info.get_gis_data_info(),\
-                layer_name=worldmap_info.layer_name)
+            filters = dict(shapefile_info=worldmap_info.get_gis_data_info())
         else:
-            filters = dict(tabular_info=worldmap_info.get_gis_data_info(),\
-                        layer_name=worldmap_info.layer_name)
+            filters = dict(tabular_info=worldmap_info.get_gis_data_info())
 
         # Pull objects except the current "worldmap_info"
         #

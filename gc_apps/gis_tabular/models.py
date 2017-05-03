@@ -152,9 +152,9 @@ class WorldMapTabularLayerInfo(WorldMapLayerInfo):
         # -----------------------------------------
         # Is this a tabular join or lat/lng map?
         # -----------------------------------------
-        attrs_indicating_a_join = ('tablejoin_id',\
-                'join_layer_id',\
-                'join_layer_typename')
+        attrs_indicating_a_join = ('tablejoin_id',
+                                   'join_layer_id',
+                                   'join_layer_typename')
 
         if all(k in init_data.get('core_data', []) for k in attrs_indicating_a_join):
             # Looks like a TableJoin
