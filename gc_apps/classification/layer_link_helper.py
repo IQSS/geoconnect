@@ -2,9 +2,12 @@
 Used for development to create WorldMap-related links from a layer name
 """
 from __future__ import print_function
+import logging
 import re
 import requests
 from django.conf import settings
+
+LOGGER = logging.getLogger(__name__)
 
 GEONODE_PREFIX = 'geonode:'
 
@@ -77,7 +80,7 @@ class LayerLinkHelper(object):
         # add to dict
         self.links_dict[name] = layer_link_obj
 
-        print('links count: %s' % len(self.links_list))
+        LOGGER.debug('links count: %s', len(self.links_list))
 
     def get_geoserver(self):
         """Retrieve the geoserver url"""
@@ -125,13 +128,12 @@ class LayerLinkHelper(object):
 
         sld_url = self.links_dict['sld_name'].link
 
-        print ('Attempt to retrieve SLD sld_url: %s' % sld_url)
+        #print ('Attempt to retrieve SLD sld_url: %s' % sld_url)
 
         resp = requests.get(sld_url, auth=settings.WORLDMAP_ACCOUNT_AUTH)
 
-        print (resp.status_code)
         if not resp.status_code == 200:
-            print ('Failed to retrieve SLD')
+            LOGGER.error('Failed to retrieve SLD: %s', sld_url)
             return False
 
         # Parse out the SLD Name
@@ -139,7 +141,7 @@ class LayerLinkHelper(object):
                         resp.text, re.IGNORECASE)
 
         if sld_search is None:
-            print ('Failed to retrieve SLD')
+            LOGGER.error('Failed to retrieve SLD')
             return False
 
         sld_name = sld_search.group(1)

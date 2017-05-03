@@ -112,7 +112,7 @@ class InitialRequestHelper(object):
             err_msg = ('<p><b>Details for administrator:</b>'
                       ' Could not contact the Dataverse server:'
                       ' {0}</p>').format(self.callback_url)
-                      
+
             self.add_err_msg(err_msg, FAILED_TO_RETRIEVE_DATAVERSE_FILE)
 
             log_connect_error_message(err_msg, LOGGER, exception_obj)
@@ -142,9 +142,6 @@ class InitialRequestHelper(object):
             self.add_err_msg(err_msg1, FAILED_TO_CONVERT_RESPONSE_TO_JSON)
             return False
 
-
-        #print json.dumps(jresp, indent=4)
-
         # ------------------------------
         # Examine response
         #
@@ -162,6 +159,7 @@ class InitialRequestHelper(object):
         # Contains "data" key (good use JSON schema in future)
         #
         self.dv_data_dict = jresp.get('data', None)
+        #import ipdb; ipdb.set_trace()
         if self.dv_data_dict is None:
             self.add_err_msg('Dataverse data did not contain key: "data"')
             return False

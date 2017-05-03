@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import re
 from django.test import TestCase
 from gc_apps.geo_utils.tabular_util import normalize_colname
@@ -40,5 +41,5 @@ class ColnameTest(TestCase):
             with open ("/tmp/name.txt") as f:
             # with open ("/tmp/label.txt") as f:
                 for line in f:
-                    print "Testing line:", line
+                    print ("Testing line:", line)
                     self.assertTrue(pattern.match(normalize_colname(line, 1)))

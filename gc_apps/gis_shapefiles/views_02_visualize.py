@@ -1,3 +1,4 @@
+from __future__ import print_function
 import logging
 
 from django.http import HttpResponse
@@ -68,12 +69,16 @@ class ViewAjaxVisualizeShapefile(View):
         #
         success = send_shp_service.send_shapefile_to_worldmap()
 
+
         # -----------------------------------
         # Did it work? NOPE!  Failed along the way!
         # -----------------------------------
         if not success:
-            err_note = "Sorry! The shapefile mapping did not work.<br /><span class='small'>%s</span>" % '<br />'.join(send_shp_service.err_msgs)
+            err_note = ('Sorry! The shapefile mapping did not work.'
+                        '<br /><span class="small">{0}</span>').format(\
+                            '<br />'.join(send_shp_service.err_msgs))
             LOGGER.error(err_note)
+
             err_note_html = render_ajax_basic_err_msg(err_note,\
                                             send_shp_service.shapefile_info)
 
@@ -107,10 +112,11 @@ class ViewAjaxVisualizeShapefile(View):
         # Looks good.  In the JSON response, send
         #   back the map HTML
         # -----------------------------------------
-        data_dict = dict(map_html=map_html,
+        data_dict = dict(\
+                    map_html=map_html,
                     user_message_html=user_message_html,
                     id_main_panel_title=PANEL_TITLE_STYLE_MAP,
-                    message='Success!  The shapefile was successfully mapped!')
+                    message='Success! The shapefile was successfully mapped!')
 
         json_msg = MessageHelperJSON.get_json_success_msg("great job", data_dict=data_dict)
 

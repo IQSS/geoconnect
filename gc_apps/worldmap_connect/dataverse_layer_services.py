@@ -60,12 +60,6 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
         LOGGER.error(err_msg)
         return (False, err_msg)
 
-    #   For join layers, remove the TableJoin object
-    #
-    if worldmap_layer_info.is_join_layer():
-        return delete_worldmap_tablejoin(worldmap_layer_info)
-
-
     #--------------------------------------
     # Prepare params for WorldMAP API call
     #--------------------------------------
@@ -80,7 +74,8 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
     data_params = existing_layer_form.cleaned_data
 
     print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
-    print ("data_params: %s" % data_params)
+    #LOGGER.info("data_params: %s" % data_params)
+
     try:
         r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\
@@ -115,69 +110,6 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
 
     return (False, err_msg)
 
-
-def delete_worldmap_tablejoin(worldmap_layer_info):
-    """
-    Use the WorldMap API to delete a TableJoin object
-    """
-    if not (hasattr(worldmap_layer_info, 'is_join_layer') and\
-        worldmap_layer_info.is_join_layer()):
-        return (False, 'Expected a WorldMapJoinLayerInfo object')
-
-    if not worldmap_layer_info.core_data:
-        return (False, 'Could not find core join layer data')
-
-    tablejoin_id = worldmap_layer_info.core_data.get('tablejoin_id', None)
-    if tablejoin_id is None:
-        return (False, 'Failed to find the TableJoin id.')
-
-    delete_api_path = '%s%s' % (DELETE_TABLEJOIN, tablejoin_id)
-    print ('delete_api_path: %s' % delete_api_path)
-
-    try:
-        r = requests.post(delete_api_path\
-                        , auth=settings.WORLDMAP_ACCOUNT_AUTH\
-                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
-    except requests.exceptions.ConnectionError as exception_obj:
-
-        err_msg = """Failed to delete the map.
-                    <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p>"""\
-                                % (delete_api_pat)
-        LOGGER.error('ConnectionError during delete: %s', exception_obj.message)
-        LOGGER.error('delete_api_path: %s', delete_api_path)
-        return (False, err_msg)
-
-    print (r.text)
-    print (r.status_code)
-
-    #--------------------------------------
-    # Check Response
-    #--------------------------------------
-    if r.status_code == 200:
-        #response_dict = r.json()
-        return (True, None)
-    elif r.status_code == 404:
-        # TableJoin no longer exists
-        return (True, None)
-
-    #--------------------------------------
-    # Response doesn't look good
-    #--------------------------------------
-    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
-    LOGGER.error(err_msg)
-
-    return (False, err_msg)
-
-
-def get_layer_info_by_dv_installation_and_file(dataverse_installation_name, datafile_id):
-    assert dataverse_installation_name is not None, "dataverse_installation_name cannot be None"
-    assert isinstance(datafile_id, int), "dv_file_id must be an integer"
-
-    params = dict(dataverse_installation_name=dataverse_installation_name,\
-                datafile_id=datafile_id)
-
-    return get_layer_info_from_dv_dict(params)
 
 """
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
@@ -287,10 +219,12 @@ def get_join_targets():
                         , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
     except requests.exceptions.ConnectionError as exception_obj:
 
-        err_msg = """Sorry! Failed to retrieve data from the WorldMap.
-                    <p><b>Details for administrator:</b> Could not contact the
-                    WorldMap server: %s</p>"""\
-                                % (GET_JOIN_TARGETS)
+        err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the'
+                   ' WorldMap server: %s</p>(err-id: 1))') %\
+                   (GET_JOIN_TARGETS)
+
         LOGGER.error(err_msg)
         LOGGER.error('ConnectionError: %s', exception_obj.message)
         return (False, err_msg)
@@ -298,7 +232,14 @@ def get_join_targets():
     except:
         # Error with request
         #
-        err_msg = "Unexpected error: %s" % sys.exc_info()[0]
+        err_msg = ('Sorry! Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the'
+                   ' WorldMap server: %s</p>(err-id: 2))') %\
+                   (GET_JOIN_TARGETS)
+        LOGGER.error(err_msg)
+        LOGGER.error(sys.exc_info()[0])
+
         return (False, err_msg)
 
     #--------------------------------------
@@ -345,7 +286,5 @@ python manage.py shell
 
 from gc_apps.worldmap_connect.dataverse_layer_services import *
 
-get_layer_info_by_dv_installation_and_file('https://RAD-rprasad', 4)
-get_layer_info_by_dv_installation_and_file('Harvard Dataverse', 9)
 
 """
