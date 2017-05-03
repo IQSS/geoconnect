@@ -243,7 +243,7 @@ def view_classify_layer_form(request, import_success_md5):
     #   Classification Failed
     # --------------------------------------------------------------
     if not json_resp.get("success") is True:
-        LOGGER.error('Worldmap response did not have success==true: %s', resp.text)
+        LOGGER.info('Worldmap response did not have success==true: %s', resp.text)
         user_msg = 'Sorry!  The classification failed.<br /><br />%s' %\
                     json_resp.get('message', 'nada')
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
