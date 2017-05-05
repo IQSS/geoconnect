@@ -23,7 +23,7 @@ from gc_apps.worldmap_connect.dataverse_layer_services import delete_map_layer,\
 from gc_apps.geo_utils.message_helper_json import MessageHelperJSON
 from gc_apps.gis_shapefiles.initial_request_helper import InitialRequestHelper
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 def view_delete_tabular_map(request):
     """
@@ -69,7 +69,7 @@ def view_delete_tabular_map(request):
 
     (success, err_msg_or_None) = delete_map_layer(gis_data_info, worldmap_layer_info)
     if success is False:
-        logger.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
+        LOGGER.error("Failed to delete WORLDMAP layer: %s", err_msg_or_None)
 
         if err_msg_or_None and err_msg_or_None.find('"Existing layer not found."') > -1:
             pass
@@ -97,7 +97,7 @@ def view_delete_tabular_map(request):
         worldmap_layer_info.delete()
 
     if success2 is False:
-        logger.error("Failed to delete Map Metadata from Dataverse: %s", err_msg_or_None)
+        LOGGER.error("Failed to delete Map Metadata from Dataverse: %s", err_msg_or_None)
 
         d['ERROR_FOUND'] = True
         d['DATAVERSE_DATA_DELETE_FAILURE'] = True
@@ -134,13 +134,15 @@ def view_delete_tabular_map_no_ui(request, dataverse_token):
     (6) And if that worked too, delete it locally, in GeoConnect.
     (7) Return 200 and a success message.
     """
-
     # Process the incoming url for a callback key 'cb'
     # and use the callback url to retrieve the DataverseInfo via a POST
     # (this is copied directly from the workflow of the "map-it" method)
+    LOGGER.info('view_delete_tabular_map_no_ui 1')
     request_helper = InitialRequestHelper(request, dataverse_token)
     if request_helper.has_err:
         return HttpResponse(MessageHelperJSON.get_json_fail_msg("Failed to obtain datafile metadata from the Dataverse. Error: " + request_helper.err_msg), status=412)
+
+    LOGGER.info('view_delete_tabular_map_no_ui 2')
 
     # check that it's a tabular file:
     if not request_helper.mapping_type == DV_MAP_TYPE_TABULAR:
@@ -148,6 +150,9 @@ def view_delete_tabular_map_no_ui(request, dataverse_token):
                 MessageHelperJSON.get_json_fail_msg(\
                     "Precondition failed: Not a tabular file"),
                 status=412)
+
+    print (json.dumps(dv_data_dict))
+    LOGGER.info('view_delete_tabular_map_no_ui 3')
 
     # check if the file is actually restricted (this is the use case - we are deleting this layer, because
     # the user on the Dataverse side has made the file restricted)
@@ -184,9 +189,11 @@ def view_delete_tabular_map_no_ui(request, dataverse_token):
 
     # (5) ok, let's try and delete it on the worldmap side:
     #(success, err_msg) = delete_map_layer(gis_data_info, worldmap_layer_info)
+    LOGGER.info('view_delete_tabular_map_no_ui 4')
+
     (success, err_msg) = delete_map_layer_by_cb_dict(request_helper.dv_data_dict)
     if success is False:
-        logger.error("Failed to delete WORLDMAP layer: %s", err_msg)
+        LOGGER.error("Failed to delete WORLDMAP layer: %s", err_msg)
         return HttpResponse(\
             MessageHelperJSON.get_json_fail_msg(\
                 "Failed to delete WorldMap layer: "+err_msg),

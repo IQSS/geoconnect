@@ -77,6 +77,7 @@ class InitialRequestHelper(object):
 
         http://127.0.0.1:8070/shapefile/map-it/fe1b5f64adcbf2c2c4742fe5eaa0dd6887f410d02317361d9c999c2d4cdaa63e/?cb=http%3A%2F%2Flocalhost%3A8010%2Fapi%2Fworldmap%2Fdatafile%2F
         """
+        import ipdb; ipdb.set_trace()
 
         if self.has_err:
             return False
@@ -112,7 +113,7 @@ class InitialRequestHelper(object):
             err_msg = ('<p><b>Details for administrator:</b>'
                       ' Could not contact the Dataverse server:'
                       ' {0}</p>').format(self.callback_url)
-                      
+
             self.add_err_msg(err_msg, FAILED_TO_RETRIEVE_DATAVERSE_FILE)
 
             log_connect_error_message(err_msg, LOGGER, exception_obj)
