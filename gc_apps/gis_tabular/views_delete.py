@@ -12,10 +12,12 @@ from django.conf import settings
 
 from gc_apps.geo_utils.msg_util import msg, msgt
 from gc_apps.geo_utils.view_util import get_common_lookup
-from gc_apps.layer_types.static_vals import DV_MAP_TYPE_TABULAR
 from gc_apps.geo_utils.geoconnect_step_names import PANEL_TITLE_DELETE_MAP,\
     PANEL_TITLE_REMAP
+
 from gc_apps.gis_tabular.forms_delete import DeleteMapForm
+from gc_apps.gis_basic_file.models import GISDataFile
+
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater
 from gc_apps.worldmap_connect.dataverse_layer_services import delete_map_layer,\
     delete_map_layer_by_cb_dict
@@ -123,87 +125,66 @@ def view_delete_tabular_map_no_ui(request, dataverse_token):
         make a WorldMap API delete layer call *by the datafile_id and the
         dataverse installation name*. And we already have these in the dict
         that we received from following the callback URL.
-    (2) [SKIP] If the Datafile info looks good, download and process the datafile
-        (yes, we do have to actually download the file, even if we are merely deleting a map layer...
-        unless I'm missing something)
-    (3) [SKIP] If that worked, look up TabularInfo for this file, using the md5 produced in step (2)
-    (4) [SKIP] Look up MapLayerInfo by the TabularInfo produced in step (3)
-    (5) Try deleting the map layer on the WorldMap side
+    (2) Try deleting the map layer and associated data on the WorldMap side
         (a new call has been added to the layer_services, that takes a dict, containing
         the datafile_id and dataverse_installation_name
-    (6) And if that worked too, delete it locally, in GeoConnect.
-    (7) Return 200 and a success message.
+    (3) And if that worked too, delete it locally, in GeoConnect.
+    (4) Return 200 and a success message.
     """
-    # Process the incoming url for a callback key 'cb'
+    # ----------------------------------------------------
+    # (1) Process the incoming url for a callback key 'cb'
     # and use the callback url to retrieve the DataverseInfo via a POST
     # (this is copied directly from the workflow of the "map-it" method)
-    LOGGER.info('view_delete_tabular_map_no_ui 1')
+    # ----------------------------------------------------
     request_helper = InitialRequestHelper(request, dataverse_token)
     if request_helper.has_err:
-        return HttpResponse(MessageHelperJSON.get_json_fail_msg("Failed to obtain datafile metadata from the Dataverse. Error: " + request_helper.err_msg), status=412)
-
-    LOGGER.info('view_delete_tabular_map_no_ui 2')
-
-    # check that it's a tabular file:
-    if not request_helper.mapping_type == DV_MAP_TYPE_TABULAR:
+        user_err_msg = ('Failed to obtain datafile metadata'
+                        ' from the Dataverse.'
+                        ' Error: %s') % request_helper.err_msg
         return HttpResponse(\
-                MessageHelperJSON.get_json_fail_msg(\
-                    "Precondition failed: Not a tabular file"),
-                status=412)
+                    MessageHelperJSON.get_json_fail_msg(user_err_msg),
+                    status=412)
 
-    print (json.dumps(dv_data_dict))
-    LOGGER.info('view_delete_tabular_map_no_ui 3')
+    dv_data_dict = request_helper.dv_data_dict
 
-    # check if the file is actually restricted (this is the use case - we are deleting this layer, because
-    # the user on the Dataverse side has made the file restricted)
-    if request_helper.dv_data_dict.pop('datafile_is_restricted', None):
-        return HttpResponse(\
-                MessageHelperJSON.get_json_fail_msg(\
-                    "Precondition failed: Tabular file is not restricted"),
-                status=412)
-
-    # (2) If the Datafile info looks good, download and process the datafile
-    #success, response_msg = get_tabular_file_from_dv_api_info(dataverse_token, request_helper.dv_data_dict)
-
-    #if not success:
-    #    return HttpResponse(MessageHelperJSON.get_json_fail_msg("Failed to download and process the tabular file from the Dataverse. Error:" + response_msg.err_msg), status=412)
-
-    #tab_file_md5 = response_msg
-
-    # (3) retrieve tabular file info, by md5:
-
-    #try:
-    #    tabular_info = TabularFileInfo.objects.get(md5=tab_file_md5)
-    #except TabularFileInfo.DoesNotExist:
-    #    raise Http404('No TabularFileInfo for md5: %s' % tab_file_md5)
-
-    # (4) Is there a WorldMap layer associated with this tabular_info?
-    #if not add_worldmap_layerinfo_if_exists(tabular_info):
-    #    raise Http404('No WorldMap layer info found for this TabularFileInfo (md5: %s)' % tab_file_md5)
-
-    #worldmap_layer_info = tabular_info.get_worldmap_info()
-    #if not worldmap_layer_info:
-    #    return HttpResponse(MessageHelperJSON.get_json_fail_msg("Failed to retrieve worldmap info for this md5 (" + tab_file_md5+")"), status=412)
-
-    #gis_data_info = worldmap_layer_info.get_gis_data_info()
-
-    # (5) ok, let's try and delete it on the worldmap side:
-    #(success, err_msg) = delete_map_layer(gis_data_info, worldmap_layer_info)
-    LOGGER.info('view_delete_tabular_map_no_ui 4')
-
+    # ----------------------------------------------------
+    # (2) Try deleting the map layer and associated data on the WorldMap side
+    # Note:
+    # We dropped the "dv_data_dict['datafile_is_restricted'] is True" requirement
+    # ----------------------------------------------------
     (success, err_msg) = delete_map_layer_by_cb_dict(request_helper.dv_data_dict)
     if success is False:
         LOGGER.error("Failed to delete WORLDMAP layer: %s", err_msg)
         return HttpResponse(\
-            MessageHelperJSON.get_json_fail_msg(\
-                "Failed to delete WorldMap layer: "+err_msg),
-                status=503)
+                    MessageHelperJSON.get_json_fail_msg(\
+                        "Failed to delete WorldMap layer: "+err_msg),
+                    status=503)
 
-    # (6) and delete it locally (in geoconnect):
-    worldmap_layer_info.delete()
+    # ----------------------------------------------------
+    # (3) Retrieve local GISDataFile objects and delete them.
+    # This essentially clears all info about the layer and underlying datafile_id
+    # e.g. GISDataFile is the superclass to ShapefileInfo, TabularInfo, etc
+    #
+    # Note: datafile_id and dataverse_installation_name have to be there--blow
+    #       up if there's a key error
+    # ----------------------------------------------------
+    gis_data_kwargs = dict(\
+        datafile_id=dv_data_dict['datafile_id'],
+        dataverse_installation_name=dv_data_dict['dataverse_installation_name'])
 
+    gis_data_objects = GISDataFile.objects.filter(**gis_data_kwargs)
+    LOGGER.debug('gis_data_objects found: %s', gis_data_objects)
 
-    # (7) Success!
-    json_msg = MessageHelperJSON.get_json_msg(success=True, msg="Success! Successfully deleted WorldMap layer for the " + request_helper.mapping_type + " file, (md5: " + tab_file_md5 + ")")
-    msg('message: %s' % json_msg)
+    if gis_data_objects.count() > 0:
+        gis_data_objects.delete()
+
+    # ----------------------------------------------------
+    # (4) Success!
+    # ----------------------------------------------------
+    json_msg = MessageHelperJSON.get_json_success_msg(\
+                    msg=('Successfully deleted WorldMap layer for the %s'
+                         ' file, (datafile_id: %s)') %\
+                            (request_helper.mapping_type,
+                             dv_data_dict['datafile_id']))
+
     return HttpResponse(json_msg, content_type="application/json", status=200)
