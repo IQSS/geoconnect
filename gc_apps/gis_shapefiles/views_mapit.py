@@ -9,8 +9,10 @@ from django.conf import settings
 
 from gc_apps.geo_utils.msg_util import msg, msgt
 from gc_apps.geo_utils.time_util import get_last_microsecond_url_param
-
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
+
+from gc_apps.content_pages.views import get_maintenance_snippet
+
 from gc_apps.layer_types.static_vals import is_valid_dv_type,\
                 is_dv_type_shapefile,\
                 is_dv_type_tabular,\
@@ -56,6 +58,14 @@ def view_mapit_incoming_token64(request, dataverse_token):
         and use the callback url to retrieve the DataverseInfo via a POST
     (2) Route the request depending on the type of data returned
     """
+    maintenance_notice = get_maintenance_snippet()
+    if maintenance_notice is not None:
+        info_dict = get_common_lookup(request)
+        info_dict['maintenance_notice'] = maintenance_notice
+        return render(request,
+                      'content_pages/view_home.html',
+                      info_dict)
+
     # (1) Check incoming url for a callback url
     # and use the url to retrieve the DataverseInfo via a POST
     #

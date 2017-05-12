@@ -1,0 +1,16 @@
+<div class="panel panel-danger">
+  <div class="panel-heading">Maintenance / Unavailable</div>
+  <div class="panel-body">
+      <p>Geoconnect is currently undergoing maintenance.</p>
+
+      <p>We apologize for any inconvenience.</p>
+
+      {% if maint_mode.end_datetime %}
+      <p>The system will be available again on
+         <b>{{ maint_mode.end_datetime|date:"l, M d, Y" }}
+          at approximately {{ maint_mode.end_datetime|time:"P e" }}</b>
+      </p>
+      {% endif %}
+      <p>(<a href="javascript:history.go(-1);">Return to the previous page</a>)</p>
+  </div>
+</div>
