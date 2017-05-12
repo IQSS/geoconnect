@@ -6,9 +6,19 @@
 {% endblock %}
 
 {% block main_container %}
+
 <br />
+{% if maintenance_notice %}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-8">
+        {{ maintenance_notice|safe }}
+    </div>
+</div>
+<br />
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
         <div class="panel panel-default xs">
           <div class="panel-heading">Geoconnect</div>
           <div class="panel-body">
