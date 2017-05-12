@@ -8,7 +8,7 @@
       {% if maint_mode.end_datetime %}
       <p>The system will be available again on
          <b>{{ maint_mode.end_datetime|date:"l, M d, Y" }}
-          at approximately {{ maint_mode.end_datetime|time:"P" }}</b>
+          at approximately {{ maint_mode.end_datetime|time:"P e" }}</b>
       </p>
       {% endif %}
 
