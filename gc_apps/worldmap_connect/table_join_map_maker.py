@@ -280,7 +280,8 @@ class TableJoinMapMaker(object):
         # (2b) set new join column name
         # ----------------------------------
         self.table_attribute_for_join = new_column_name
-        print 'new_column_name', new_column_name
+
+        LOGGER.debug('new_column_name: %s', new_column_name)
         # ----------------------------------
         # (3) Save  new file
         # ----------------------------------
@@ -296,7 +297,7 @@ class TableJoinMapMaker(object):
                          quoting=QUOTE_NONNUMERIC,
                          index=False,
                          columns=df.columns)
-        print 'df.columns', df.columns
+        LOGGER.debug('df.columns: %s', df.columns)
         fh_csv = df.to_csv(**csv_parms)
         content_file = ContentFile(fh_csv)#df.to_csv(**csv_parms))
 
@@ -401,8 +402,7 @@ class TableJoinMapMaker(object):
         if file_params is None:
             return False
 
-        print 'make request to', UPLOAD_JOIN_DATATABLE_API_PATH
-        print '-' * 40
+        LOGGER.info('make request to: %s', UPLOAD_JOIN_DATATABLE_API_PATH)
 
         try:
             resp = requests.post(\
@@ -412,7 +412,6 @@ class TableJoinMapMaker(object):
                             auth=settings.WORLDMAP_ACCOUNT_AUTH,
                             timeout=settings.WORLDMAP_DEFAULT_TIMEOUT)
         except RequestsConnectionError as ex_obj:
-            print 'err', ex_obj
             err_msg = 'Error connecting to WorldMap server: %s' % ex_obj.message
             LOGGER.error('Error trying to join to datatable with id: %s',\
                          self.datatable_obj.id)

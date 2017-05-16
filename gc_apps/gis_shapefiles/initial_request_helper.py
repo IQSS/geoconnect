@@ -141,9 +141,6 @@ class InitialRequestHelper(object):
             self.add_err_msg(err_msg1, FAILED_TO_CONVERT_RESPONSE_TO_JSON)
             return False
 
-
-        #print json.dumps(jresp, indent=4)
-
         # ------------------------------
         # Examine response
         #
@@ -161,6 +158,7 @@ class InitialRequestHelper(object):
         # Contains "data" key (good use JSON schema in future)
         #
         self.dv_data_dict = jresp.get('data', None)
+        #import ipdb; ipdb.set_trace()
         if self.dv_data_dict is None:
             self.add_err_msg('Dataverse data did not contain key: "data"')
             return False

@@ -37,7 +37,6 @@ def get_tablejoin_info(tablejoin_id):
                         timeout=settings.WORLDMAP_SHORT_TIMEOUT
                         )
     except RequestsConnectionError as e:
-        print 'err', e
         err_msg = 'Error connecting to WorldMap server: %s' % e.message
         LOGGER.error('Error trying to retrieve TableJoin with id: %s', tablejoin_id)
         LOGGER.error(err_msg)

@@ -26,6 +26,8 @@
   <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}"><!-- 3.1.1 -->
   <link rel="stylesheet" href="{% static "css/bootstrap-theme.min.css" %}">
   <link rel="stylesheet" href="{% static "css/structure.css" %}">
+  <link rel="stylesheet" href="{% static "css/geoconnect.css" %}">
+  <link rel="stylesheet" href="{% static "socicon/style.css" %}">
   <link rel="stylesheet" type="text/css" href="{% static 'datatables/css/jquery.dataTables.min.css' %}">
   <!-- Latest compiled and minified JavaScript -->
   <script src="{% static "js/jquery-1.10.1.min.js" %}"></script>
@@ -92,6 +94,33 @@
       {% block main_container %}
       base.html: block main_container
       {% endblock %}
+
+    </div>
+
+    <div id="footer" class="container">
+      <div class="row">
+          <div class="col-sm-8 small">
+              <p>Developed at the <a href="http://www.iq.harvard.edu/" title="Institute for Quantitative Social Science" target="_blank">Institute for Quantitative Social Science</a>
+            |
+               Dataverse Project on <a href="https://twitter.com/dataverseorg" target="_blank" title="Dataverse Project on Twitter"><span class="socicon socicon-twitter" title="Dataverse Project on Twitter"></span></a>
+            |
+                Code available at <a href="https://github.com/IQSS/dataverse" target="_blank" title="Dataverse On GitHub"><span class="socicon socicon-github" title="Dataverse On GitHub"></span></a>
+               </p>
+               <p>Copyright &#169;  {% now "Y" %}, The President &#38; Fellows of Harvard College
+                   {#|  <a href="http://best-practices.dataverse.org/harvard-policies/harvard-privacy-policy.html" target="_blank">Privacy Policy</a>#}
+               </p></div>
+           <div class="col-sm-4 text-right small">
+                   {% now "F jS, Y H:i:s" %} <br />
+                   {% if git_active_branch %}
+                   <span class="version">
+                       <a href="https://github.com/IQSS/geoconnect/tree/{{ git_active_branch }}" target="_blank">{{ git_active_branch }}</a>
+                       |
+                       <a href="https://github.com/IQSS/geoconnect/commit/{{ git_hexsha }}" target="_blank">{{ git_hexsha_short }}</a></span>
+                       {% endif %}
+           </div>
+
+          </div>
+      </div>
     </div>
   </body>
   </html>

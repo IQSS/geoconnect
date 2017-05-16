@@ -1,4 +1,5 @@
 """Abstract model describing WorldMap Layers"""
+from __future__ import print_function
 from abc import abstractmethod
 from urlparse import urlparse
 import logging
@@ -209,11 +210,9 @@ class WorldMapLayerInfo(TimeStampedModel):
         WorldMapLayerInfoType = worldmap_info.__class__
 
         if worldmap_info.is_shapefile_layer():
-            filters = dict(shapefile_info=worldmap_info.get_gis_data_info(),\
-                layer_name=worldmap_info.layer_name)
+            filters = dict(shapefile_info=worldmap_info.get_gis_data_info())
         else:
-            filters = dict(tabular_info=worldmap_info.get_gis_data_info(),\
-                        layer_name=worldmap_info.layer_name)
+            filters = dict(tabular_info=worldmap_info.get_gis_data_info())
 
         # Pull objects except the current "worldmap_info"
         #
@@ -276,26 +275,26 @@ class WorldMapLayerInfo(TimeStampedModel):
         return f.format_for_dataverse_api()
 
 
-    def get_legend_img_url(self, force_https=True):
+    def get_legend_img_url(self):
         """
         Construct a url that returns a Legend for a Worldmap layer in the form of PNG file
         """
         if not self.core_data:
             return None
 
-        params = (('request', 'GetLegendGraphic')\
-                   , ('format', 'image/png')\
-                   , ('width', 20)\
-                   , ('height', 20)\
-                   , ('layer', self.layer_name)\
-                   , ('legend_options', 'fontAntiAliasing:true;fontSize:11;')\
-                )
+        params = (('request', 'GetLegendGraphic'),
+                  ('format', 'image/png'),
+                  ('width', 20),
+                  ('height', 20),
+                  ('layer', self.layer_name),
+                  ('legend_options', 'fontAntiAliasing:true;fontSize:11;'))
+
         param_str = '&'.join(['%s=%s' % (k, v) for k, v in params])
 
         legend_img_url = '%s/geoserver/wms?%s' %\
                                 (self.get_layer_url_base(),
                                  param_str)
-        if force_https:
+        if settings.WORLDMAP_EMBED_FORCE_HTTPS:
             return legend_img_url.replace('http://', 'https://', 1)
         else:
             return legend_img_url
@@ -385,7 +384,7 @@ class WorldMapLayerInfo(TimeStampedModel):
 
 
 
-    def get_embed_map_link(self, force_https=True):
+    def get_embed_map_link(self):
         """
         Return the WorldMap embed link.
         By default, make the link 'https'
@@ -397,7 +396,7 @@ class WorldMapLayerInfo(TimeStampedModel):
         if not embed_link:
             return None
 
-        if force_https and embed_link.startswith('http://'):
+        if settings.WORLDMAP_EMBED_FORCE_HTTPS and embed_link.startswith('http://'):
             return embed_link.replace('http://', 'https://', 1)
 
         return embed_link

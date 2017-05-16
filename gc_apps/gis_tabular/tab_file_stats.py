@@ -1,10 +1,15 @@
 """
 Gather tabular file information: number of rows, column names, etc
 """
+from csv import QUOTE_NONNUMERIC
 import pandas as pd
+
+from django.core.files.base import ContentFile
 
 from gc_apps.gis_tabular.models import TabularFileInfo
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
+from gc_apps.geo_utils.tabular_util import normalize_colname
+from gc_apps.geo_utils.msg_util import msg
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -37,6 +42,7 @@ class TabFileStats(object):
 
         self.stats_collected = False
 
+        self.rename_columns()
         self.collect_stats()
         self.update_tabular_info_object()
 
@@ -65,10 +71,60 @@ class TabFileStats(object):
                             delim=tabular_info.delimiter,
                             tabular_info=tabular_info)
 
+    def rename_columns(self):
+        if self.has_error():
+            return
+        try:
+            df = pd.read_csv(get_file_path_or_url(self.file_object),
+                             sep=self.delimiter)
+        except pd.parser.CParserError as ex_obj:
+            err_msg = ('Could not process the file. '
+                       'At least one row had too many values. '
+                       '(error: %s)') % ex_obj.message
+            self.add_error(err_msg)
+            return
+        count = 0
+        columns_renamed = {}
+        for column in df.columns.values.tolist():
+
+            normalized = normalize_colname(colname=column,
+                                           position=count + 1)
+
+            # Note, normalize_colname returns unicode
+            # For comparison, get a unicode version of the
+            # pandas column.
+            # We don't care that column_uni is imperfect/may
+            # remove characters.  Only used for the comparison
+            # (this is not pretty)
+            column_uni = column.decode('utf8', 'ignore')
+
+            if column_uni != normalized:
+                columns_renamed[column] = normalized
+            count += 1
+
+        if len(columns_renamed) > 0:
+            df.rename(columns=columns_renamed, inplace=True)
+
+            # http://stackoverflow.com/questions/36519086/pandas-how-to-get-rid-of-unnamed-column-in-a-dataframe
+            fh_csv = df.to_csv(quoting=QUOTE_NONNUMERIC,
+                               sep=self.delimiter,
+                               index=False)
+
+            content_file = ContentFile(fh_csv)
+
+            # Save the ContentFile in the tabular_info object
+            # ----------------------------------
+            self.tabular_info.dv_file.save(self.tabular_info.datafile_label,
+                                           content_file)
+
+
+
     def collect_stats(self):
         """
         Open the file: collect num_rows, num_cols and preview_row data
         """
+        if self.has_error():
+            return
         try:
             df = pd.read_csv(get_file_path_or_url(self.file_object),
                              sep=self.delimiter)

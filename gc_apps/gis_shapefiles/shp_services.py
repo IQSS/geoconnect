@@ -41,7 +41,7 @@ def get_shapefile_from_dv_api_info(dv_session_token, dv_info_dict):
     validation_form = DataverseInfoValidationForm(dv_info_dict)
     if not validation_form.is_valid():
         errs = [ '%s: %s' % (k, v) for k,v in validation_form.errors.items()]
-        print (errs)
+        LOGGER.debug(errs)
         form_errs = '\n'.join(errs)
         return False, ErrResultMsg(None, form_errs)
 

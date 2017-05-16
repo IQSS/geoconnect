@@ -48,7 +48,7 @@ LOGGER = logging.getLogger(__name__)
 
 def view_existing_map(request, worldmap_info=None):
     """
-    Test view a WorldMapTabularLayerInfo object
+    View a WorldMapTabularLayerInfo object
     """
     if not (isinstance(worldmap_info, WorldMapJoinLayerInfo) or\
         isinstance(worldmap_info, WorldMapLatLngInfo)):
@@ -66,14 +66,14 @@ def view_existing_map(request, worldmap_info=None):
         return HttpResponse(user_msg)
 
 
-    template_dict = dict(worldmap_layerinfo=worldmap_info,
+    template_dict.update(\
+        dict(worldmap_layerinfo=worldmap_info,
         attribute_data=worldmap_info.attribute_data,
         tabular_map_div=map_html,
         user_message_html=user_message_html,    # not used for existing maps
         gis_data_info=worldmap_info.get_gis_data_info(),
         test_files=TabularFileInfo.objects.all(),
-        page_title=PANEL_TITLE_STYLE_MAP,
-        )
+        page_title=PANEL_TITLE_STYLE_MAP))
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP2_STYLE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
@@ -109,7 +109,9 @@ def build_map_html(request, worldmap_info):
     num_failed_download_records = min(MAX_FAILED_ROWS_TO_BUILD,\
                             worldmap_info.get_unmapped_record_count())
 
-    template_dict.update(dict(worldmap_layerinfo=worldmap_info,
+
+    template_dict.update(dict(\
+            worldmap_layerinfo=worldmap_info,
             INITIAL_SELECT_CHOICE=INITIAL_SELECT_CHOICE,
             SELECT_LABEL=SELECT_LABEL,
             core_data=worldmap_info.core_data,
@@ -135,12 +137,12 @@ def build_map_html(request, worldmap_info):
     template_dict.update(classify_params)
 
     map_html = render_to_string('worldmap_layers/map_with_classify.html',
-                            template_dict,
-                            request)
+                                template_dict,
+                                request)
 
     user_message_html = render_to_string('worldmap_layers/new_map_message.html',
-                            template_dict,
-                            request)
+                                         template_dict,
+                                         request)
 
     return (map_html, user_message_html)
 
@@ -169,12 +171,15 @@ def view_unmatched_join_rows_json(request, tab_md5):
             request)
 
         return HttpResponse(unmatched_rows_html)
-        json_msg = MessageHelperJSON.get_json_msg(success=True,\
-                        msg="Records found",\
+
+        json_msg = MessageHelperJSON.get_json_msg(\
+                        success=True,
+                        msg="Records found",
                         data_dict=worldmap_info.core_data['unmatched_rows'])
     else:
         # No unmatched records exist
-        json_msg = MessageHelperJSON.get_json_msg(success=False,\
+        json_msg = MessageHelperJSON.get_json_msg(\
+                        success=False,
                         msg="No unmatched records found.")
 
     return HttpResponse(json_msg, content_type="application/json")
@@ -310,7 +315,6 @@ def view_tabular_file(request, tab_md5):
     except TabularFileInfo.DoesNotExist:
         raise Http404('No TabularFileInfo for md5: %s' % tab_md5)
 
-
     # ----------------------------------
     # SKIP THIS -> LOOK FOR LAYER IN WORLDMAP EACH TIME
     # Does the file already have an associated WorldMap layer
@@ -325,6 +329,16 @@ def view_tabular_file(request, tab_md5):
     # Is there a WorldMap layer but Geoconnect doesn't know about it?
     #
     if add_worldmap_layerinfo_if_exists(tabular_info):
+        # A WorldMap layer already exists!
+        if not tabular_info.column_names:
+            # Make sure the tabular file has been read and we have
+            # data on it (e.g. may be re-mapping now and tabular info is
+            # freshly retrieved, columns not yet formatted, etc)
+            #
+            tab_file_stats = TabFileStats.create_from_tabular_info(tabular_info)
+            if tab_file_stats.has_error():
+                raise Http404(tab_file_stats.error_message)
+
         worldmap_tabularinfo = tabular_info.get_worldmap_info()
         if worldmap_tabularinfo:
             return view_existing_map(request, worldmap_tabularinfo)
@@ -361,10 +375,10 @@ def view_tabular_file(request, tab_md5):
     #print 'tab_file_stats.column_names', type(tab_file_stats.column_names)
 
     if available_layers_list and len(available_layers_list) > 0:
-        form_single_column = ChooseSingleColumnForm(
-                    tabular_file_info_id=tabular_info.id,
-                    layer_choices=available_layers_list,
-                    column_names=tab_file_stats.column_names)
+        form_single_column = ChooseSingleColumnForm(\
+                                    tabular_file_info_id=tabular_info.id,
+                                    layer_choices=available_layers_list,
+                                    column_names=tab_file_stats.column_names)
     else:
         form_single_column = None
 
@@ -372,24 +386,26 @@ def view_tabular_file(request, tab_md5):
     # Create a form for Lat/Lng column selection
     # ----------------------------------
     if tab_file_stats:
-        form_lat_lng = LatLngColumnsForm(tabular_file_info_id=tabular_info.id,\
-                    column_names=tab_file_stats.column_names)
+        form_lat_lng = LatLngColumnsForm(\
+                            tabular_file_info_id=tabular_info.id,\
+                            column_names=tab_file_stats.column_names)
     else:
         form_lat_lng = None
 
     template_dict = get_common_lookup(request)
 
-    template_dict.update(dict(tabular_id=tabular_info.id,
-            tabular_md5=tabular_info.md5,
-            gis_data_info=tabular_info,
-            tab_file_stats=tab_file_stats,
-            geocode_types=geocode_type_list,
-            NUM_PREVIEW_ROWS=num_preview_rows,
-            test_files=TabularFileInfo.objects.all(),
-            form_single_column=form_single_column,
-            form_lat_lng=form_lat_lng,
-            GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE,
-            page_title=PANEL_TITLE_MAP_DATA_FILE))
+    template_dict.update(dict(\
+                    tabular_id=tabular_info.id,
+                    tabular_md5=tabular_info.md5,
+                    gis_data_info=tabular_info,
+                    tab_file_stats=tab_file_stats,
+                    geocode_types=geocode_type_list,
+                    NUM_PREVIEW_ROWS=num_preview_rows,
+                    test_files=TabularFileInfo.objects.all(),
+                    form_single_column=form_single_column,
+                    form_lat_lng=form_lat_lng,
+                    GEO_TYPE_LATITUDE_LONGITUDE=GEO_TYPE_LATITUDE_LONGITUDE,
+                    page_title=PANEL_TITLE_MAP_DATA_FILE))
 
     template_dict[GEOCONNECT_STEP_KEY] = STEP1_EXAMINE
     template_dict['GEOCONNECT_STEPS'] = GEOCONNECT_STEPS
@@ -445,15 +461,19 @@ def ajax_get_join_targets(request, selected_geo_type):
 
     join_target_info = jt.get_available_layers_list_by_type(selected_geo_type)
     if join_target_info is None:
-        err_msg = "Sorry! No Join Targets found for Geospatial type: {0}".format(selected_geo_type)
-        json_msg = MessageHelperJSON.get_json_msg(success=False,\
-                                msg=err_msg)
-        return HttpResponse(status=400, content=json_msg, content_type="application/json")
+        err_msg = ("Sorry! No Join Targets found"
+                   " for Geospatial type: %s") % selected_geo_type
+
+        json_msg = MessageHelperJSON.get_json_msg(success=False,
+                                                  msg=err_msg)
+        return HttpResponse(status=400,
+                            content=json_msg,
+                            content_type="application/json")
 
 
-    json_msg = MessageHelperJSON.get_json_msg(success=True,\
-                                msg="success",\
-                                data_dict=join_target_info)
+    json_msg = MessageHelperJSON.get_json_msg(success=True,
+                                              msg="success",
+                                              data_dict=join_target_info)
 
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
 

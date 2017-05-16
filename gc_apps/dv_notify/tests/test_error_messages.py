@@ -1,5 +1,5 @@
 from __future__ import print_function
-from os.path import abspath, dirname, isfile, join, isdir
+from os.path import dirname, join
 import json
 from unittest import skip
 
@@ -8,8 +8,7 @@ from django.core import management
 from django.core.files import File
 
 from gc_apps.gis_tabular.models import TabularFileInfo, WorldMapTabularLayerInfo
-from gc_apps.gis_tabular.tabular_helper import TabFileStats
-from gc_apps.geo_utils.msg_util import msgt, msg
+from gc_apps.geo_utils.msg_util import msgt
 from gc_apps.dv_notify.metadata_updater import MetadataUpdater,\
         ERROR_DV_PAGE_NOT_FOUND,\
         ERROR_DV_NO_SERVER_RESPONSE,\

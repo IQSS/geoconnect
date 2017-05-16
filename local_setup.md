@@ -4,7 +4,7 @@
 
 # Local Installation Instructions
 
-GeoConnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
+Geoconnect works as a middle layer, allowing [Dataverse](http://datascience.iq.harvard.edu/dataverse) files to be visualized on the [Harvard WorldMap](http://worldmap.harvard.edu/).
 
 *caveat*: Directions not too windows friendly...
 
@@ -44,7 +44,7 @@ Note: use python 2.7+.  Not yet upgraded for 3.5+
 
 ### Install [Github Desktop](https://desktop.github.com/)
 
-- Or, if you choose, use the command line to access github
+- Or, if you choose, use the command line to access Github
 
 ### Install [ATOM editor](https://atom.io/) (recommended)
 
@@ -155,10 +155,10 @@ Create a local sqlite database to store geoconnect information.
     python manage.py loaddata --app registered_dataverse incoming_filetypes_initial_data.json
     ```
 
-- Add layer classification colors
+- Add colors/classification methods
 
     ```
-    python manage.py loaddata --app layer_classification initial_data.json
+    python manage.py loaddata gc_apps/classification/fixtures/initial_data_2017_0421.json
     ```
 
 ### Create a superuser
@@ -243,7 +243,7 @@ python manage.py runserver 8070
 ### Run the python shell (if needed)
 
 1.  ```cd``` into your geoconnect directory
-2. activate the virtual environment and run the server
+2. Activate the virtual environment and run the server
 
 ```
 workon geoconnect
@@ -258,4 +258,30 @@ python manage.py shell
 ```
 workon geoconnect
 python manage.py dbshell
+```
+
+## Subsequent updates
+
+If you run a ```git pull``` to update your repo, please run the commands below to include possible pip requirement and database changes.  
+
+These commands will:
+  1. Update/add packages specified in updated requirements files.
+  1. Apply updates to the database structure.  (New tables, columns, updated fields, etc)
+
+### Preliminaries
+
+  1. Open a Terminal and ```cd``` into your geoconnect directory
+  2. Activate the virtual environment ```workon geoconnect```
+
+### Commands
+
+```
+# (1) Update requirements
+pip install -r requirements/local.txt
+
+# (2a) Migrate database changes (if needed)
+python manage.py migrate
+
+# (2b) For db models in the shared_dataverse_information package
+python manage.py syncdb 
 ```

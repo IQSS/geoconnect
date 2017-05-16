@@ -1,3 +1,4 @@
+from __future__ import print_function
 from os.path import abspath, dirname, isfile, join, isdir
 from unittest import skip
 
@@ -38,8 +39,8 @@ class JSONFieldTester(TestCase):
         #
         tsaved = TestIt.objects.first()
 
-        print tsaved.column_names
-        print type(tsaved.column_names)
+        print (tsaved.column_names)
+        print (type(tsaved.column_names))
 
         self.assertEqual(tsaved.column_names, col_names_val)
         self.assertEqual(tsaved.name, tname)
@@ -70,8 +71,8 @@ class JSONFieldTester(TestCase):
         #
         tsaved = TestIt.objects.first()
 
-        print tsaved.column_names
-        print type(tsaved.column_names)
+        print (tsaved.column_names)
+        print (type(tsaved.column_names))
 
         self.assertEqual(tsaved.column_names, col_names_val)
         self.assertEqual(tsaved.name, tname)
@@ -99,8 +100,8 @@ class JSONFieldTester(TestCase):
         #
         tsaved = TestIt.objects.first()
 
-        print tsaved.column_names
-        print type(tsaved.column_names)
+        print (tsaved.column_names)
+        print (type(tsaved.column_names))
 
         self.assertEqual(tsaved.column_names, col_names_val)
         self.assertEqual(tsaved.name, tname)

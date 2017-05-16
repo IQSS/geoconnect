@@ -1,3 +1,6 @@
+from __future__ import print_function
+
+import json
 import logging
 
 from django.shortcuts import render
@@ -63,8 +66,6 @@ def view_examine_dataset(request):
                                     )
         else:
             d['Form_Err_Found'] = True
-            #print shp_form.errors
-            #return HttpResponse('blah - not valid')
     else:
         shp_form = ShapefileInfoForm
 
@@ -106,9 +107,6 @@ def view_classify_shapefile(request, worldmap_layerinfo, first_time_notify=False
 
 
 
-def view_shapefile_first_time(request, shp_md5):
-    return view_shapefile(request, shp_md5, first_time_notify=True)
-
 
 #@login_required
 def view_shapefile(request, shp_md5, **kwargs):
@@ -126,8 +124,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     :shp_md5: unique md5 hash for a :model:`gis_shapefiles.ShapefileInfo`
     :template:`shapefiles/main_outline_shp.html`
     """
-    LOGGER.debug('-' * 40)
-    LOGGER.debug('views.view_shapefile')
+    LOGGER.debug('view_shapefile 1')
     # -------------------------------------------
     # Flags for template - Is this the first time the file is being visualized?
     # -------------------------------------------
@@ -135,6 +132,7 @@ def view_shapefile(request, shp_md5, **kwargs):
 
     # Attempt to retrieve the shapefile information
     # -------------------------------------------
+    LOGGER.debug('view_shapefile 2 - Attempt to retrieve the shapefile information')
     try:
         shapefile_info = ShapefileInfo.objects.get(md5=shp_md5)
     except ShapefileInfo.DoesNotExist:
@@ -143,8 +141,12 @@ def view_shapefile(request, shp_md5, **kwargs):
     # -------------------------------------------------------------------
     # Does a fully checked shapefile exist with a worldmap layer?
     # -------------------------------------------------------------------
+    LOGGER.debug('view_shapefile 3 - Does a shapefile exist with a worldmap layer?')
+
     shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
     if shp_service.flow1_does_map_already_exist():
+        LOGGER.debug('view_shapefile 3a - Map already exists')
+
         worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
         if worldmap_layerinfo is None:
             return HttpResponse('<br />'.join(shp_service.err_msgs))
@@ -169,6 +171,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     #    - Should we move this out?  Check being done at Dataverse
     #    - Also, no need to move the file if viz already exists
     # -------------------------------------------
+    LOGGER.debug('view_shapefile 4 - Validate that .zip is a single shapefile')
     if not shapefile_info.zipfile_checked:
         LOGGER.debug('zipfile_checked NOT checked')
 
@@ -212,6 +215,7 @@ def view_shapefile(request, shp_md5, **kwargs):
     # The examination failed
     # No shapefile was found in this .zip
     # -------------------------------------------
+    LOGGER.debug('view_shapefile 5 - No shapefile was found in this .zip')
     if not shapefile_info.has_shapefile:
         LOGGER.debug('No shapefile found in .zip')
 
@@ -221,17 +225,20 @@ def view_shapefile(request, shp_md5, **kwargs):
         return render(request, 'shapefiles/main_outline_shp.html', d)
 
     # -------------------------------------------------------------------
-    # Shapefile fully checked, is there a worldmap layer? 
+    # Shapefile fully checked, is there a worldmap layer?
     # -------------------------------------------------------------------
+    LOGGER.debug('view_shapefile 6 - Shapefile fully checked, is there a worldmap layer? ')
     shp_service = SendShapefileService(**dict(shapefile_info=shapefile_info))
+
     if shp_service.flow1_does_map_already_exist():
+        LOGGER.debug('view_shapefile 6a - Worldmap layer exists')
+
         worldmap_layerinfo = shp_service.get_worldmap_layerinfo()
         if worldmap_layerinfo is None:
             return HttpResponse('<br />'.join(shp_service.err_msgs))
         else:
             MetadataUpdater.run_update_via_popen(worldmap_layerinfo)
             return view_classify_shapefile(request, worldmap_layerinfo, first_time_notify)
-
 
     return render(request, 'shapefiles/main_outline_shp.html', d)
 
@@ -301,3 +308,12 @@ def view_zip_checker_error(request, shapefile_info, zip_checker, template_params
 
     # Send error to user
     return render(request, 'shapefiles/main_outline_shp.html', d)
+
+
+
+def view_shapefile_first_time(request, shp_md5):
+    """Set a flag if this shapefile is being viewed for the first time"""
+
+    LOGGER.debug('view_shapefile_first_time')
+
+    return view_shapefile(request, shp_md5, first_time_notify=True)

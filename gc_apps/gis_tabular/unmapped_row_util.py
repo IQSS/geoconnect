@@ -13,7 +13,6 @@ from gc_apps.gis_tabular.models import WorldMapJoinLayerInfo
 from gc_apps.geo_utils.file_field_helper import get_file_path_or_url
 
 from gc_apps.geo_utils.tabular_util import get_orig_column_name,\
-        get_worldmap_colname_format,\
         is_pandas_dtype_numeric
 from gc_apps.geo_utils.msg_util import msgt, msg
 
@@ -150,9 +149,6 @@ class UnmatchedRowHelper(object):
             self.add_error(err_msg)
             return None
 
-        new_columns = [get_worldmap_colname_format(x) for x in df.columns]
-        df.columns = new_columns
-
         # ------------------------------------------------------
         # No formatted column created! Filter values and return
         # ------------------------------------------------------
@@ -192,6 +188,14 @@ class UnmatchedRowHelper(object):
         # make the column
         # ----------------------------------
         orig_column_name = get_orig_column_name(self.table_join_attribute)
+
+        # make sure the column name exists
+        if not orig_column_name in df.columns:
+            error_msg = ('Attempted to build failed rows but'
+                         ' original column name not found: [%s]')\
+                         % orig_column_name
+            LOGGER.error(error_msg)
+            return None
 
         df[self.table_join_attribute] = df[orig_column_name].apply(\
                             lambda x: func_col_fmt(x))

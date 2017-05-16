@@ -100,7 +100,9 @@ def view_classify_layer_form(request, import_success_md5):
 
     if worldmap_layerinfo is None:
         err_note = ('Sorry! The layer could not be identified.'
-                    '\n\nThe Styling option is not available. (id:ds3)')
+                    '\n\nThe Styling option is not available.'
+                    ' (id:ds3) %s' % request.POST['data_source_type'])
+
         json_msg = MessageHelperJSON.get_json_msg(\
                     success=False,
                     msg=err_note,
@@ -172,7 +174,9 @@ def view_classify_layer_form(request, import_success_md5):
     classify_params = api_form.cleaned_data
 
     classify_url = classify_form.get_worldmap_classify_api_url()
-    #print ('classify_params', classify_params)
+
+    LOGGER.debug('classify_params', classify_params)
+
     resp = None
     try:
         resp = requests.post(classify_url,\
@@ -212,7 +216,7 @@ def view_classify_layer_form(request, import_success_md5):
         if wm_err_msg is None:
             wm_err_msg = 'No message given.'
 
-        err_msg = 'Sorry!  The classification failed.<p>(%s)</p>' % wm_err_msg
+        err_msg = 'Sorry!  The classification failed.<p>%s</p>' % wm_err_msg
 
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=err_msg)
 
@@ -239,8 +243,8 @@ def view_classify_layer_form(request, import_success_md5):
     #   Classification Failed
     # --------------------------------------------------------------
     if not json_resp.get("success") is True:
-        LOGGER.error('Worldmap response did not have success==true: %s', resp.text)
-        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' %\
+        LOGGER.info('Worldmap response did not have success==true: %s', resp.text)
+        user_msg = 'Sorry!  The classification failed.<br /><br />%s' %\
                     json_resp.get('message', 'nada')
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -251,7 +255,7 @@ def view_classify_layer_form(request, import_success_md5):
     f_val = WorldMapToGeoconnectMapLayerMetadataValidationForm(json_resp.get('data', None))
     if not f_val.is_valid():
         LOGGER.error('Classify return data failed validation: %s', f_val.errors)
-        user_msg = 'Sorry!  The classification failed.<br /><br />(%s)' \
+        user_msg = 'Sorry!  The classification failed.<br /><br />%s' \
                         % json_resp.get('message', f_val.errors)
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg=user_msg)
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -277,9 +281,9 @@ def view_classify_layer_form(request, import_success_md5):
 
         worldmap_layerinfo.save()
     else:
-        print (dir(worldmap_layerinfo))
-        print (type(worldmap_layerinfo))
-        print ('nada?')
+        LOGGER.error(dir(worldmap_layerinfo))
+        LOGGER.error(type(worldmap_layerinfo))
+        LOGGER.error('nada?')
 
     # --------------------------------------------------------------
     # Refresh the classify form with the latest WorldMap parameter information

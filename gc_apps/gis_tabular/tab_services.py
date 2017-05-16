@@ -82,7 +82,8 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
                False,  ErrResultMsg
     """
     assert dv_session_token is not None, "dv_session_token cannot be None"
-    assert type(dataverse_info_dict) is dict, "dataverse_info_dict must be type 'dict'"
+    assert type(dataverse_info_dict) is dict,\
+        "dataverse_info_dict must be type 'dict'"
 
     msgt('dataverse_info_dict: {0}'.format(dataverse_info_dict))
     #------------------------------
@@ -92,7 +93,7 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
     validation_form = DataverseInfoValidationForm(dataverse_info_dict)
     if not validation_form.is_valid():
         errs = ['%s: %s' % (k, v) for k,v in validation_form.errors.items()]
-        print (errs)
+        LOGGER.debug('errors: %s', errs)
         form_errs = '\n'.join(errs)
         return False, ErrResultMsg(None, form_errs)
 
@@ -102,13 +103,15 @@ def get_tabular_file_from_dv_api_info(dv_session_token, dataverse_info_dict):
     #-------------------------------------------------
     registered_dataverse = find_registered_dataverse(dataverse_info_dict['return_to_dataverse_url'])
     if registered_dataverse is None:
-        return False, ErrResultMsg(FAILED_NOT_A_REGISTERED_DATAVERSE,
-                         "This dataverse url was not recognized: %s" % dataverse_info_dict['return_to_dataverse_url']\
-                    )
+        return False, ErrResultMsg(\
+                    FAILED_NOT_A_REGISTERED_DATAVERSE,
+                    "This dataverse url was not recognized: %s" %\
+                    dataverse_info_dict['return_to_dataverse_url'])
 
     #-------------------------------------------------
     # (3b) Look for existing Dataverse files in the database
-    #    ShapefileInfo and TabularFileInfo objects are routinely deleted, but if file is already here, use it
+    #    ShapefileInfo and TabularFileInfo objects are routinely
+    #    deleted, but if file is already here, use it
     #-------------------------------------------------
     params_for_existing_check = dict(datafile_id=dataverse_info_dict.get('datafile_id', -1)\
                                     , dataverse_installation_name=dataverse_info_dict.get('dataverse_installation_name', -1)\

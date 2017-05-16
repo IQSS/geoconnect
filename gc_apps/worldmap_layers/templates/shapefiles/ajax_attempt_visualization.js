@@ -8,7 +8,7 @@ function attempt_visualization(){
 //      return;
   $("#id_main_panel_content").html($("#id_div_attempt_visualization_msg").html());
 
-      var attempt_to_visualize_url = '{% url 'view_ajax_attempt_visualization' shapefile_info.md5 %}';
+      var attempt_to_visualize_url = '{% url "view_ajax_attempt_visualization" shapefile_info.md5 %}'{% if last_microsecond %} + '?t={{ last_microsecond }}'{% endif %};
       var jqxhr = $.get(attempt_to_visualize_url, function(json_resp){
 
             console.log(json_resp);

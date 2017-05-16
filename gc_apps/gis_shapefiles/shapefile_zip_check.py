@@ -13,8 +13,7 @@ from gc_apps.geo_utils.template_constants import ZIPCHECK_NO_SHAPEFILES_FOUND,\
         ZIPCHECK_FAILED_TO_PROCCESS_SHAPEFILE
 
 import logging
-#logger = logging.getLogger(__name__)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 """
 import zipfile
@@ -37,11 +36,11 @@ class ZipToStringIOConverter(object):
             ff_obj  FieldFile object with a pointer to a valid file
         """
         if django_field_file_obj is None:
-            print 'django_field_file_obj is None'
+            LOGGER.error('django_field_file_obj is None')
             return None
 
         if not django_field_file_obj.__class__.__name__ == 'FieldFile':
-            print 'class name: ', django_field_file_obj.__class__.__name__
+            LOGGER.debug('class name: %s', django_field_file_obj.__class__.__name__)
             return None
 
         #return django_field_file_obj.read()
@@ -185,7 +184,7 @@ class ShapefileZipCheck(object):
             return False
 
         shapefile_basename = os.path.basename(shapefile_basename)
-        logger.info('shapefile_basename: %s', shapefile_basename)
+        LOGGER.info('shapefile_basename: %s', shapefile_basename)
 
         # ------------------------------------
         #    Go through keys to match basename.  In this case, may

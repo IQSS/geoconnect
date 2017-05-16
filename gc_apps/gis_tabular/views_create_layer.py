@@ -77,7 +77,7 @@ def view_map_tabular_file_form(request):
                         format_errors_as_text(form_single_column, for_web=True))
         return HttpResponse(json_msg, content_type="application/json", status=200)
 
-    print 'cleaned_data', form_single_column.cleaned_data
+    #print 'cleaned_data', form_single_column.cleaned_data
 
     # -----------------------------------------
     # Get Dataverse info dict

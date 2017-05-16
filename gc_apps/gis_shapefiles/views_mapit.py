@@ -8,8 +8,11 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from gc_apps.geo_utils.msg_util import msg, msgt
-
+from gc_apps.geo_utils.time_util import get_last_microsecond_url_param
 from gc_apps.geo_utils.geoconnect_step_names import GEOCONNECT_STEP_KEY, STEP1_EXAMINE
+
+from gc_apps.content_pages.views import get_maintenance_snippet
+
 from gc_apps.layer_types.static_vals import is_valid_dv_type,\
                 is_dv_type_shapefile,\
                 is_dv_type_tabular,\
@@ -55,6 +58,13 @@ def view_mapit_incoming_token64(request, dataverse_token):
         and use the callback url to retrieve the DataverseInfo via a POST
     (2) Route the request depending on the type of data returned
     """
+    maintenance_notice = get_maintenance_snippet()
+    if maintenance_notice is not None:
+        info_dict = get_common_lookup(request)
+        info_dict['maintenance_notice'] = maintenance_notice
+        return render(request,
+                      'content_pages/view_home.html',
+                      info_dict)
 
     # (1) Check incoming url for a callback url
     # and use the url to retrieve the DataverseInfo via a POST
@@ -74,7 +84,6 @@ def view_mapit_incoming_token64(request, dataverse_token):
     #  Knowingly redundant, also checked in requestHelper
     #
     if not is_valid_dv_type(mapping_type):
-
         err_msg = 'The mapping_type for this metadata was not valid.  Found: %s' % mapping_type
 
         return view_formatted_error_page(request,\
@@ -89,6 +98,7 @@ def view_mapit_incoming_token64(request, dataverse_token):
     # Let's route it!
     #
     if is_dv_type_shapefile(mapping_type):
+
         return process_shapefile_info(request,\
                             request_helper.dataverse_token,\
                             request_helper.dv_data_dict)
@@ -118,14 +128,21 @@ def process_tabular_file_info(request, dataverse_token, data_dict):
     success, tab_md5_or_err_msg = get_tabular_file_from_dv_api_info(dataverse_token, data_dict)
 
     if not success:
-        return view_formatted_error_page(request\
-                                         , tab_md5_or_err_msg.err_type\
-                                         , tab_md5_or_err_msg.err_msg)
+        return view_formatted_error_page(\
+                        request,
+                        tab_md5_or_err_msg.err_type,
+                        tab_md5_or_err_msg.err_msg)
 
-    view_tab_file_first_time_url = reverse('view_tabular_file'\
-                                    , kwargs=dict(tab_md5=tab_md5_or_err_msg))
+    tab_file_url = reverse(\
+                    'view_tabular_file',
+                    kwargs=dict(tab_md5=tab_md5_or_err_msg))
 
-    return HttpResponseRedirect(view_tab_file_first_time_url)
+    # avoid browser cache
+    tab_file_url = '%s?%s' % (tab_file_url,
+                              get_last_microsecond_url_param())
+
+
+    return HttpResponseRedirect(tab_file_url)
 
 
 def process_shapefile_info(request, dataverse_token, data_dict):
@@ -135,15 +152,20 @@ def process_shapefile_info(request, dataverse_token, data_dict):
         #   (2) Create a ShapefileInfo object
         #   (3) Download the dataverse file
     """
-
-    success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(dataverse_token, data_dict)
+    success, shp_md5_or_err_msg = get_shapefile_from_dv_api_info(\
+                                                dataverse_token,
+                                                data_dict)
 
     if not success:
-        return view_formatted_error_page(request\
-                                         , shp_md5_or_err_msg.err_type\
-                                         , shp_md5_or_err_msg.err_msg)
+        return view_formatted_error_page(request,
+                                         shp_md5_or_err_msg.err_type,
+                                         shp_md5_or_err_msg.err_msg)
 
-    view_shapefile_first_time_url = reverse('view_shapefile_first_time'\
-                                    , kwargs=dict(shp_md5=shp_md5_or_err_msg))
+    shapefile_url = reverse('view_shapefile_first_time',
+                            kwargs=dict(shp_md5=shp_md5_or_err_msg))
 
-    return HttpResponseRedirect(view_shapefile_first_time_url)
+    # avoid browser cache
+    shapefile_url = '%s?%s' % (shapefile_url,
+                               get_last_microsecond_url_param())
+
+    return HttpResponseRedirect(shapefile_url)
