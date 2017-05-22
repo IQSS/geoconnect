@@ -73,9 +73,7 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
     #
     data_params = existing_layer_form.cleaned_data
 
-    print ('DELETE_LAYER_API_PATH: %s' % DELETE_LAYER_API_PATH)
-    #LOGGER.info("data_params: %s" % data_params)
-
+    LOGGER.info('make delete request: %s', DELETE_LAYER_API_PATH)
     try:
         r = requests.post(DELETE_LAYER_API_PATH\
                         , data=data_params\
@@ -92,8 +90,8 @@ def delete_map_layer(gis_data_info, worldmap_layer_info):
 
         return (False, err_msg)
 
-    print (r.text)
-    print (r.status_code)
+    LOGGER.debug(r.text)
+    LOGGER.debug(r.status_code)
 
     #--------------------------------------
     # Check Response
@@ -271,6 +269,46 @@ def get_join_targets():
     LOGGER.error(err_msg)
     return (False, err_msg)
 
+def delete_map_layer_by_cb_dict(dv_dict):
+    """
+    Delete a Layer from the WorldMap, using the WorldMap API
+    returns (True, None)
+        or (False, 'error message of some type')
+    """
+
+    try:
+        r = requests.post(DELETE_LAYER_API_PATH\
+                        , data=dv_dict\
+                        , auth=settings.WORLDMAP_ACCOUNT_AUTH\
+                        , timeout=settings.WORLDMAP_SHORT_TIMEOUT)
+    except requests.exceptions.ConnectionError as exception_obj:
+
+        err_msg = ('Failed to retrieve data from the WorldMap.'
+                   '<p><b>Details for administrator:</b>'
+                   ' Could not contact the WorldMap'
+                   ' server: {0}</p>').format(DELETE_LAYER_API_PATH)
+
+        LOGGER.error(err_msg + '\nConnectionError:' + exception_obj.message)
+
+        return (False, err_msg)
+
+    print (r.text)
+    print (r.status_code)
+
+    #--------------------------------------
+    # Check Response
+    #--------------------------------------
+    if r.status_code == 200:
+        #response_dict = r.json()
+        return (True, None)
+
+    #--------------------------------------
+    # Response doesn't look good
+    #--------------------------------------
+    err_msg = "Status code: %s\nError: %s" % (r.status_code, r.text)
+    LOGGER.error(err_msg)
+
+    return (False, err_msg)
 
 
 """

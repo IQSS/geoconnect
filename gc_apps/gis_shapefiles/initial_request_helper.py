@@ -77,7 +77,6 @@ class InitialRequestHelper(object):
 
         http://127.0.0.1:8070/shapefile/map-it/fe1b5f64adcbf2c2c4742fe5eaa0dd6887f410d02317361d9c999c2d4cdaa63e/?cb=http%3A%2F%2Flocalhost%3A8010%2Fapi%2Fworldmap%2Fdatafile%2F
         """
-
         if self.has_err:
             return False
 
