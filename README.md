@@ -47,3 +47,12 @@ This isn't recommended but is possible by using the installation instructions ab
       1. WORLDMAP_ACCOUNT_USERNAME
       1. WORLDMAP_ACCOUNT_PASSWORD
       - Preferably add the values above as environment variables or in another secure method. Example: https://docs.djangoproject.com/en/1.11/topics/settings/#on-the-server-mod-wsgi
+
+
+# Additional information
+
+- More, somewhat miscellaneous, information on may be found in the [README_ADMIN.md](README_ADMIN.md), including:
+    - Maintenance mode
+    - File types
+    - Updating colors
+    - Join Targets

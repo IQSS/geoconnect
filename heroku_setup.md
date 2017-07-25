@@ -5,7 +5,7 @@ These notes describe setting up Geoconnect on a Heroku server using the Django s
 The steps assume that:
   1. You already have a Heroku account and that
   1. The Geoconnect repository has been cloned to a local machine.
-     - to clone the repository: ```git clone https://github.com/IQSS/geoconnect.git```
+     - To clone the repository: ```git clone https://github.com/IQSS/geoconnect.git```
 
 # Dashboard set-up
 
