@@ -82,14 +82,14 @@ Using the Heroku web interface or command line, set the following variables.
               - online (not recommended): http://www.miniwebtool.com/django-secret-key-generator/
               - python code snippet:
 
-            ```python
-from __future__ import print_function
-import random
-secret_key = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
-print (secret_key)
-            ```
+                  ```python
+                  from __future__ import print_function
+                  import random
+                  secret_key = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+                  print (secret_key)
+                  ```
 
-      - command line: ```heroku config:set SECRET_KEY=(secret key value)```
+              - command line: ```heroku config:set SECRET_KEY=(secret key value)```
   1. *DJANGO_DEBUG*
       - Turn Django debug off.  Note: You may want to turn it on for troubleshooting.
       - key: ```DJANGO_DEBUG```
@@ -188,7 +188,7 @@ heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-
   1.  Update the ```worldmapauth_tokentype``` table as follows:
       - ```update worldmapauth_tokentype set mapitlink = '(url to heroku app)/shapefile/map-it', hostname='(heroku app server name)' where name = 'GEOCONNECT';```
       - Example using ```geoconnect-dev.herokuapp.com```:
-        - ```update worldmapauth_tokentype set mapitlink = 'https://geoconnect-dev.herokuapp.com/shapefile/map-it', hostname='geoconnect-dev.herokuapp.com' where name = 'GEOCONNECT';```
+          - ```update worldmapauth_tokentype set mapitlink = 'https://geoconnect-dev.herokuapp.com/shapefile/map-it', hostname='geoconnect-dev.herokuapp.com' where name = 'GEOCONNECT';```
 
 
 # Add scheduler task: Stale data removal
@@ -241,17 +241,17 @@ Once the app has been set up, including the configuration variables and the data
 - https://devcenter.heroku.com/articles/ssl-endpoint#overview
 - Notes:
   - Creating the request:
-    - https://github.com/IQSS/dataverse/blob/v4.6/scripts/deploy/phoenix.dataverse.org/cert.md
+      - https://github.com/IQSS/dataverse/blob/v4.6/scripts/deploy/phoenix.dataverse.org/cert.md
   - If intermediate certificates are used, concatenate all the certs to add them to Heroku
-    - See: http://stackoverflow.com/questions/38447944/heroku-ssl-install-intermediate-cert
-      - Concat Example: ```cat ssl.crt middle.crt root.crt > all.crt```
-      - Add to Heroku example: ```heroku certs:update --app $APP_NAME --confirm $APP_NAME all.crt private.key```
+      - See: http://stackoverflow.com/questions/38447944/heroku-ssl-install-intermediate-cert
+          - Concat Example: ```cat ssl.crt middle.crt root.crt > all.crt```
+          - Add to Heroku example: ```heroku certs:update --app $APP_NAME --confirm $APP_NAME all.crt private.key```
 
 
 ## Repointing the DNS For SSL:
 
 - Use Heroku command: ```heroku certs```
-  - Use the "Endpoint" shown in the output.
+    - Use the "Endpoint" shown in the output.
 - Example output from ```heroku certs```
 
 ```
@@ -261,7 +261,7 @@ tokushima-96974  tokushima-96974.herokussl.com  geoconnect.datascience.iq.harvar
 ```
 
 - From the example above, the endpoint for setting the CNAME would be:
-  - ```tokushima-96974.herokussl.com```
+    - ```tokushima-96974.herokussl.com```
 
 ## Repointing the DNS when NOT using SSL:
 
@@ -280,4 +280,4 @@ geoconnect.datascience.iq.harvard.edu  geoconnect.datascience.iq.harvard.edu.her
 ```
 
 - From the example above, the endpoint for setting the CNAME would be:
-  - ```geoconnect.datascience.iq.harvard.edu.herokudns.com```
+    - ```geoconnect.datascience.iq.harvard.edu.herokudns.com```
