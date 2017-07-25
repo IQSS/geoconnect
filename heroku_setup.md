@@ -70,6 +70,15 @@ Install the following Add-Ons.  Several of the Add-Ons will create config variab
 # Configure additional settings
 
 Using the Heroku web interface or command line, set the following variables.
+  1. *ADMIN_NAME*
+      - key: ```ADMIN_NAME```
+      - value: Name of the administrator, e.g. "DataverseAdmin"
+      - command line: ```heroku config:set ADMIN_NAME=DataverseAdmin```
+  1. *ADMIN_EMAIL*
+      - key: ```ADMIN_EMAIL```
+      - value: Email address of the administrator
+      - command line: ```heroku config:set ADMIN_EMAIL=support@dataverse.org```
+      - This email address will receive 500 errors from the appplication
   1. *DJANGO_SETTINGS_MODULE*
       - key: ```DJANGO_SETTINGS_MODULE```
       - value: ```geoconnect.settings.heroku```
@@ -100,7 +109,7 @@ Using the Heroku web interface or command line, set the following variables.
       - value: ```1```
       - command line: ```heroku config:set DEBUG_COLLECTSTATIC=1```
   1. *WORLDMAP_ACCOUNT_USERNAME*
-      - Username for a standard WorldMap account that belongs to the ```datavese``` group
+      - Username for a standard WorldMap account that belongs to the ```dataverse``` group
       - key: ```WORLDMAP_ACCOUNT_USERNAME```
       - value: ```(worldmap username)```
       - command line: ```heroku config:set WORLDMAP_ACCOUNT_USERNAME=(worldmap username)```
