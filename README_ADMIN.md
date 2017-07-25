@@ -4,7 +4,7 @@
 
 Geoconnect may be placed in maintenance mode via the administrative interface.  This is useful when either Dataverse or WorldMap is not available or undergoing maintenance.
 
-Admin url: https://geoconnect.datascience.iq.harvard.edu/geo-connect-admin/
+Go to the geoconnect administrative interface.
 
 ### Step 1: Click Maintenance Mode
 [admin page 1](readme_imgs/maint_mode_01.png?raw=true "admin page 1")
