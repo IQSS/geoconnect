@@ -2,7 +2,7 @@
 
 Geoconnect is an application that integrates [Dataverse](http://datascience.iq.harvard.edu/dataverse) and the [Harvard WorldMap](http://worldmap.harvard.edu/), allowing researchers to visualize their geospatial data. Geoconnect can be used to create maps of shapefiles or of tabular files containing geospatial information.
 
-The diagram below shows the relationship between Dataverse installations and the WorldMap:
+The diagram below shows the relationship between Dataverse installations, Geoconnect and the WorldMap:
 
 [![Geoconnect diagram](readme_imgs/geoconnect.png?raw=true "Geoconnect")](https://geoconnect.datascience.iq.harvard.edu/)
 
@@ -25,7 +25,7 @@ To use Geoconnect:
     - ```:GeoconnectCreateEditMaps```
     - ```:GeoconnectViewMaps```
     - See [Dataverse specific settings](http://guides.dataverse.org/en/latest/installation/config.html#geoconnectcreateeditmaps)
-1. Make sure your Dataverse is pointing the correct Geoconnect server.
+1. Make sure your Dataverse is pointing to the correct Geoconnect server.
     - [Pointing to the Geoconnect ](http://guides.dataverse.org/en/latest/admin/geoconnect-worldmap.html)
 
 
@@ -34,17 +34,16 @@ To use Geoconnect:
 _Note: We recommend that you use the current production version of Geoconnect by following the section above._
 
 Installation instructions are below:
-
-    - [Local installation](https://github.com/IQSS/geoconnect/blob/master/local_setup.md)
-    - [Heroku installation](https://github.com/IQSS/geoconnect/blob/master/heroku_setup.md)
+  - [Local installation](https://github.com/IQSS/geoconnect/blob/master/local_setup.md)
+  - [Heroku installation](https://github.com/IQSS/geoconnect/blob/master/heroku_setup.md)
 
 ### I would like to run Geoconnect myself but still use the Harvard WorldMap
 
-This isn't recommended but is possible by following one of the installation instructions above and then doing the following:
+This isn't recommended but is possible by using the installation instructions above and then doing the following:
 
   1. Create a Worldmap username/password: https://worldmap.harvard.edu/accounts/register/
   1. Contact WorldMap support (worldmap@harvard.edu) asking for the new username to be placed in the group ```dataverse```
-  1. In the Geoconnect settings, update the following variable values to your WorldMap username/password.  
-      - WORLDMAP_ACCOUNT_USERNAME
-      - WORLDMAP_ACCOUNT_PASSWORD
-    - Preferably add the values above as environment variables or in another secure method. Example: https://docs.djangoproject.com/en/1.11/topics/settings/#on-the-server-mod-wsgi
+  1. In your Geoconnect settings, update the following variable values to your new WorldMap username/password.  
+      1. WORLDMAP_ACCOUNT_USERNAME
+      1. WORLDMAP_ACCOUNT_PASSWORD
+      - Preferably add the values above as environment variables or in another secure method. Example: https://docs.djangoproject.com/en/1.11/topics/settings/#on-the-server-mod-wsgi
