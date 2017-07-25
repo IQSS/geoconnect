@@ -4,7 +4,7 @@ This README contains additional information on the following:
   - [Maintenance mode](#maintenance-mode)
   - [Mappable File Types](#mappable-file-types)
   - [WorldMap Join Targets](#worldmap-join-targets)
-  
+
 # Maintenance mode
 
 Geoconnect may be placed in maintenance mode via the administrative interface.  This is useful when either Dataverse or WorldMap is not available or undergoing maintenance.
@@ -47,6 +47,8 @@ The mappability of different Dataverse file types can be switched on and off.  F
 # WorldMap Join Targets
 
 The WorldMap supplies target layers--or **JoinTargets** that a tabular file may be mapped against.  
+
+- A list of current join targets may be found here: https://geoconnect.datascience.iq.harvard.edu/worldmap/show-jointarget-info/
 
 A JSON description of these CGA curated **JoinTargets** may be retrieved via API
 
