@@ -47,7 +47,7 @@ DEBUG = True
 
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = (('Raman Prasad', 'raman_prasad@harvard.edu'),)
+ADMINS = []
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS

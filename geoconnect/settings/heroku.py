@@ -12,7 +12,7 @@ from .base import *
 SECRET_KEY = os.environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
 
-DEBUG = bool(int(os.environ.get('DJANGO_DEBUG'), False))
+DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', False)))
 
 SITENAME = "geoconnect"
 
@@ -42,8 +42,12 @@ ROOT_URLCONF = 'geoconnect.urls_prod'
 
 ########## END URL CONFIGURATION
 
-ADMINS = [('Raman', 'raman_prasad@harvard.edu'),]
-
+ADMIN_NAME = os.environ.get('ADMIN_NAME', 'geoconnect admin')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', None)
+if ADMIN_EMAIL is not None:
+    ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
+else:
+    ADMINS = []
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
