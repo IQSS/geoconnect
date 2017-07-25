@@ -1,6 +1,11 @@
 
+This README contains additional information on the following:
 
-## Maintenance mode
+  - [Maintenance mode](#maintenance-mode)
+  - [Mappable File Types](#mappable-file-types)
+  - [WorldMap Join Targets](#worldmap-join-targets)
+  
+# Maintenance mode
 
 Geoconnect may be placed in maintenance mode via the administrative interface.  This is useful when either Dataverse or WorldMap is not available or undergoing maintenance.
 
@@ -18,7 +23,7 @@ Geoconnect may be placed in maintenance mode via the administrative interface.  
 ### Step 4: Users will now see a message similar to below when trying to view a map
 ![admin page 4](readme_imgs/maint_mode_04.png?raw=true "admin page 4")
 
-## Mappable file types
+# Mappable file types
 
 _Note: Currently an API endpoint exists on the WorldMap to visualize Geotiff files.  However, the requisite Dataverse and Geoconnect code is not in place._
 
@@ -37,3 +42,100 @@ The mappability of different Dataverse file types can be switched on and off.  F
 ### Step 4: Change the setting
   1. Check "active" to enable/disable the file type
   2. Click "Save" on the top right
+
+
+# WorldMap Join Targets
+
+The WorldMap supplies target layers--or **JoinTargets** that a tabular file may be mapped against.  
+
+A JSON description of these CGA curated **JoinTargets** may be retrieved via API
+
+- **WorldMap** API endpoint: http://worldmap.harvard.edu/datatables/api/jointargets/
+- **Note**: Login required (may be any WorldMap account credentials via HTTP Basic Auth)
+
+- Example of JoinTarget information returned via the API:
+
+```json
+{
+"data":[
+  {
+    "layer":"geonode:census_tracts_2010_boston_6f6",
+    "name":"Census Tracts, Boston (GEOID10: State+County+Tract)",
+    "geocode_type_slug":"us-census-tract",
+    "geocode_type":"US Census Tract",
+    "attribute":{
+      "attribute":"CT_ID_10",
+      "type":"xsd:string"
+    },
+    "abstract":"As of the 2010 census, Boston, MA contains 7,288 city blocks [truncated for example]",
+    "title":"Census Tracts 2010, Boston (BARI)",
+    "expected_format":{
+      "expected_zero_padded_length":-1,
+      "is_zero_padded":false,
+      "description":"Concatenation of state, county and tract for 2010 Census Tracts.  Reference: https://www.census.gov/geo/maps-data/data/tract_rel_layout.html\r\n\r\nNote:  Across the US, this can be a zero-padded \"string\" but the original Boston layer has this column as \"numeric\" ",
+      "name":"2010 Census Boston GEOID10 (State+County+Tract)"
+    },
+    "year":2010,
+    "id":28
+  },
+  {
+    "layer":"geonode:addresses_2014_boston_1wr",
+    "name":"Addresses, Boston",
+    "geocode_type_slug":"boston-administrative-geography",
+    "geocode_type":"Boston, Administrative Geography",
+    "attribute":{
+      "attribute":"LocationID",
+      "type":"xsd:int"
+    },
+    "abstract":"Unique addresses present in the parcels data set, which itself is derived from [truncated for example]",
+    "title":"Addresses 2015, Boston (BARI)",
+    "expected_format":{
+      "expected_zero_padded_length":-1,
+      "is_zero_padded":false,
+      "description":"Boston, Administrative Geography, Boston Address Location ID.  Example: 1, 2, 3...nearly 120000",
+      "name":"Boston Address Location ID (integer)"
+    },
+    "year":2015,
+    "id":18
+  },
+  {
+    "layer":"geonode:bra_neighborhood_statistical_areas_2012__ug9",
+    "name":"BRA Neighborhood Statistical Areas, Boston",
+    "geocode_type_slug":"boston-administrative-geography",
+    "geocode_type":"Boston, Administrative Geography",
+    "attribute":{
+      "attribute":"BOSNA_R_ID",
+      "type":"xsd:double"
+    },
+    "abstract":"BRA Neighborhood Statistical Areas 2015, Boston. Provided by [truncated for example]",
+    "title":"BRA Neighborhood Statistical Areas 2015, Boston (BARI)",
+    "expected_format":{
+      "expected_zero_padded_length":-1,
+      "is_zero_padded":false,
+      "description":"Boston, Administrative Geography, Boston BRA Neighborhood Statistical Area ID (integer).  Examples: 1, 2, 3, ... 68, 69",
+      "name":"Boston BRA Neighborhood Statistical Area ID (integer)"
+    },
+    "year":2015,
+    "id":17
+  }
+],
+"success":true
+}
+```
+
+## How Geoconnect utilizes this info
+
+When a user attempts to map a tabular file, the application looks in the Geoconnect database for JoinTargetInformation.  If this information is more than 10 minutes* old, the application will retrieve fresh information and save it to the db.  
+(* change the timing via the variable ```JOIN_TARGET_UPDATE_TIME```)
+
+This JoinTarget info is used to populate HTML forms used to match a tabular file column to a JoinTarget column.  Once a JoinTarget is chosen, the JoinTarget id is an essential piece of information used to make an API call to the WorldMap and attempt to map the file.
+
+### Geoconnect Code for calling the API endpoint
+
+- https://github.com/IQSS/geoconnect/blob/master/gc_apps/worldmap_connect/dataverse_layer_services.py#L275
+- If link above has wrong line, search for ```def get_join_targets()```
+
+### Geoconnect Code for saving the JoinTargetInformation
+
+ - https://github.com/IQSS/geoconnect/blob/master/gc_apps/worldmap_connect/utils.py#L16
+ - If link above has wrong line, search for ```def get_latest_jointarget_information()```
