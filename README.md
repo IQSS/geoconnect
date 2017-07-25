@@ -37,7 +37,7 @@ Installation instructions are below:
   - [Local installation](https://github.com/IQSS/geoconnect/blob/master/local_setup.md)
   - [Heroku installation](https://github.com/IQSS/geoconnect/blob/master/heroku_setup.md)
 
-### I would like to run Geoconnect myself but still use the Harvard WorldMap
+## I would like to run Geoconnect myself but still use the Harvard WorldMap
 
 This isn't recommended but is possible by using the installation instructions above and then doing the following:
 
