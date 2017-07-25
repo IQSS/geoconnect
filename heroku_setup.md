@@ -59,13 +59,13 @@ Install the following Add-Ons.  Several of the Add-Ons will create config variab
     1. Log into https://app.sendgrid.com using the config variables above
     1. On the **SendGrid site**: Bottom left: Click "Settings -> API Keys"
     1. Top right: Click "Create API Key -> Generate API Key"
-      - Name the key: "geoconnect_send"
-      - Set full access for: "Mail Send -> Mail Send "
+        - Name the key: "geoconnect_send"
+        - Set full access for: "Mail Send -> Mail Send "
     1. Click "Save"
     1. Add the new key value to Heroku settings under ```SENDGRID_API_KEY```.
-      - Use the web interface to add the key/value
-      - Or use the Terminal to run:
-        - ```heroku config:set SENDGRID_API_KEY=(key from sendgrid website)```
+        - Use the web interface to add the key/value
+        - Or use the Terminal to run:
+            - ```heroku config:set SENDGRID_API_KEY=(key from sendgrid website)```
 
 # Configure additional settings
 
@@ -178,9 +178,10 @@ Once your are logged into the admin page from the previous step, register the Da
   1.  Save the registered Dataverse
 
 - Alternative.  Load a fixtures file:
-```python
-heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-2017-0309.json --settings=geoconnect.settings.heroku'
-```
+
+    ```python
+    heroku run 'python manage.py loaddata --app registered_dataverse registered_dvs-2017-0309.json --settings=geoconnect.settings.heroku'
+    ```
 
 ## Update the Geoconnect URL on your Dataverse Database
 
