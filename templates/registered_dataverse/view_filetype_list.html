@@ -27,10 +27,14 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if ftype.inactive_display_note %}
-                                {{ ftype.inactive_display_note|linebreaks|safe }}
+                            {% if ftype.active %}
+                                Active!
                             {% else %}
-                                (no note)
+                                {% if ftype.inactive_display_note %}
+                                    {{ ftype.inactive_display_note|linebreaks|safe }}
+                                {% else %}
+                                    Not active
+                                {% endif %}
                             {% endif %}
                         </td>
                         <td><a href="{% url 'view_filetype_note' ftype.slug %}">{{ ftype.slug }}</a></td>
