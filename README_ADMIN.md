@@ -68,11 +68,11 @@ For the "Value name", always use `Custom` when specifying your own start color a
 
 ### How colors correspond to Geoserver's SLD Service
 Note: The value name, start color, and end color correspond to geoserver SLD service values described here: http://docs.geoserver.org/stable/en/user/community/sldservice/index.html#classify-vector-data
-  - Geoconnect *Value name* -> *ramp* parameter.  
+  - Geoconnect **Value name** -> **ramp** parameter.  
     - Possible values: `red`, `blue`, `gray`, `jet`, `random`, `custom`
     - Note: All of the values above _except_ `custom` will override the start and end color choices.
-  - Geoconnect *Start color* -> *startColor* parameter
-  - Geoconnect *End color* -> *endColor* parameter
+  - Geoconnect **Start color** -> **startColor** parameter
+  - Geoconnect **End color** -> **endColor** parameter
   - _Note: The current version of WorldMap's geoserver does not support a `midColor`._
 
 # WorldMap Join Targets
