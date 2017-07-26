@@ -3,7 +3,7 @@ This README contains additional information on the following:
 
   - [Maintenance mode](#maintenance-mode)
   - [Mappable File Types](#mappable-file-types)
-  - [Color Ramps](#color-ramps)
+  - [Colors for Layer Styling](#color-for-layer-styling)
   - [WorldMap Join Targets](#worldmap-join-targets)
   - [Tabular Column Formatting](#tabular-column-formatting)
 
@@ -45,11 +45,26 @@ The mappability of different Dataverse file types can be switched on and off.  F
   1. Check "active" to enable/disable the file type
   2. Click "Save" on the top right
 
-# Color Ramps
+# Colors for Layer Styling
 
-Color ramps used for layer classification/styling may be set through the administrative interface.
+Colors, known to WorldMap as "color ramps" used for layer classification/styling may be set through the administrative interface.
 
+To the user, the color choices appear in the dropdown shown below:
 
+![color ui](readme_imgs/color_ui.png?raw=true "color ui")
+
+To add to, update, or delete these choices, go to
+
+### Step 1: Go to the geoconnect administrative interface.
+### Step 2: Click "Color ramps"
+![color 1](readme_imgs/color_admin_01.png?raw=true "color 1")
+### Step 3: Click on an existing color or click "Add Color Ramp"
+![color 2](readme_imgs/color_admin_02.png?raw=true "color 2")
+### Step 4: Modifying values
+For the "Value name", always use `Custom` when specifying your own start color and end color.  
+  - Once your changes are saved, they should appear in the Geoconnect color dropdown after reloading the web page.
+  - Instead of deleting color choices, you can uncheck the "active" checkbox to hide color choices.
+![color 3](readme_imgs/color_admin_03.png?raw=true "color 3")
 
 
 # WorldMap Join Targets
