@@ -51,8 +51,4 @@ This isn't recommended but is possible by using the installation instructions ab
 
 # Additional information
 
-- More, somewhat miscellaneous, information on may be found in the [README_ADMIN.md](README_ADMIN.md), including:
-    - Maintenance mode
-    - File types
-    - Updating colors
-    - Join Targets
+- More, somewhat miscellaneous, information on may be found in the [README_ADMIN.md](README_ADMIN.md), including Maintenance mode, File types, Updating colors, Join Targets, etc
