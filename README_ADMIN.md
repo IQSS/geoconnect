@@ -73,7 +73,7 @@ Note: The value name, start color, and end color correspond to geoserver SLD ser
     - Note: All of the values above _except_ `custom` will override the start and end color choices.
   - Geoconnect **Start color** -> **startColor** parameter
   - Geoconnect **End color** -> **endColor** parameter
-  - _Note: The current version of WorldMap's geoserver does not support a `midColor`._
+  - _Note: The current version of WorldMap's geoserver does not support a **midColor**._
 
 # WorldMap Join Targets
 
