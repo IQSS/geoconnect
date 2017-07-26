@@ -3,7 +3,9 @@ This README contains additional information on the following:
 
   - [Maintenance mode](#maintenance-mode)
   - [Mappable File Types](#mappable-file-types)
+  - [Color Ramps](#color-ramps)
   - [WorldMap Join Targets](#worldmap-join-targets)
+  - [Tabular Column Formatting](#tabular-column-formatting)
 
 # Maintenance mode
 
@@ -42,6 +44,12 @@ The mappability of different Dataverse file types can be switched on and off.  F
 ### Step 4: Change the setting
   1. Check "active" to enable/disable the file type
   2. Click "Save" on the top right
+
+# Color Ramps
+
+Color ramps used for layer classification/styling may be set through the administrative interface.
+
+
 
 
 # WorldMap Join Targets
@@ -141,3 +149,49 @@ This JoinTarget info is used to populate HTML forms used to match a tabular file
 
  - https://github.com/IQSS/geoconnect/blob/master/gc_apps/worldmap_connect/utils.py#L16
  - If link above has wrong line, search for ```def get_latest_jointarget_information()```
+
+ # Tabular Column Formatting
+
+In several cases of mapping tabular data, Geoconnect will add a formatted column to the Dataverse file before sending it to the WorldMap for visualization.  In these cases:
+  - The file on Dataverse _is not changed_.  
+  - However, the WorldMap will have a copy of the Dataverse data _with the extra, formatted column_
+    - Within WorldMap, the tabular file is converted to a Postgres table.
+
+## Cases Where Geoconnect Adds a "Formatted" Column
+
+|#|DV Tabular File - Column Type|WorldMap layer - Column Type|Target Layer is Zero Padded?|Geoconnect Action|
+---|:---:|:---:|:---:|---|
+|1|Numeric|String|No|**Add formatted column**. Convert numeric to character--make it a string|
+|2|Numeric|String|**Yes**|**Add formatted column**. Convert numeric to character. Add leading zeros to JoinTarget specified length|
+|3|String|String|No|No Action|
+|4|String|String|**Yes**|**Add formatted column**. Add leading zeros to JoinTarget specified length|
+|5|String|Numeric|not applicable|No Action (currently)|
+|6|Numeric|Numeric|not applicable|No Action|
+
+## Background
+
+### When mapping a tabular file GeoConnect sends the following information to WorldMap:
+  1. DV Tabular File
+  1. DV Tabular File Column Name for join
+  1. JoinTarget id (JoinTarget objects in WorldMap include the join layer and the column to join on)
+  1. DataverseInfo - metadata about the Dataverse file including the Dataverse, Dataset, file, description, name, etc--over 20 pieces of info
+
+### Once the information is received, the WorldMap (roughly) takes the following actions:
+  1. Verifies that the JoinTarget exists
+  1. Checks if the join columns on the Tabular File and WorldMap layer are compatible  
+  1. Converts the tabular file into a new Postgres table.  (A Datatable object within WorldMap)
+  1. Attempts a SQL join between the new Postgres table and the existing Layer
+
+### In some cases, a Dataverse join column will need formatting
+
+Most often, this is in the case of the JoinTarget requiring leading zeros.
+
+For example:
+  - The Dataverse tabular file contains a 5-digit zip code column, but the leading leading zeros have been lost.  
+    - e.g. "2476" instead of "02476"
+  - The WorldMap JoinTarget specifies zero-padding and a length of 5--for a 5-digit zip code
+
+In the example above, before sending the file to WorldMap, Geoconnect will take the following actions:
+  - Create a new "formatted" column consisting of zero padded zip code values.  
+    - e.g. In the new column, "2476" is converted to "02476"
+  - Designate this new formatted column as the join column
