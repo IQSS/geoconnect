@@ -53,7 +53,7 @@ To the user, the color choices appear in the dropdown shown below:
 
 ![color ui](readme_imgs/color_ui.png?raw=true "color ui")
 
-To add to, update, or delete these choices, go to
+## Changing color choices:
 
 ### Step 1: Go to the geoconnect administrative interface.
 ### Step 2: Click "Color ramps"
@@ -66,6 +66,13 @@ For the "Value name", always use `Custom` when specifying your own start color a
   - Instead of deleting color choices, you can uncheck the "active" checkbox to hide color choices.
 ![color 3](readme_imgs/color_admin_03.png?raw=true "color 3")
 
+Note: The value name, start color, and end color correspond to geoserver SLD service values described here: http://docs.geoserver.org/stable/en/user/community/sldservice/index.html#classify-vector-data
+  - Geoconnect "Value name" -> `ramp` parameter.  
+    - Possible values: `red`, `blue`, `gray`, `jet`, `random`, `custom`
+    - Note: All of the values above _except `custom`_ will override the start and end color choices.
+  - Geoconnect "Start color" -> `startColor` parameter
+  - Geoconnect "End color" -> `endColor` parameter
+  - _Note: The current version of WorldMap's geoserver does not support a `midColor`._
 
 # WorldMap Join Targets
 
