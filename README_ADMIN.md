@@ -3,7 +3,7 @@ This README contains additional information on the following:
 
   - [Maintenance mode](#maintenance-mode)
   - [Mappable File Types](#mappable-file-types)
-  - [Colors for Layer Styling](#color-for-layer-styling)
+  - [Colors for Layer Styling](#colors-for-layer-styling)
   - [WorldMap Join Targets](#worldmap-join-targets)
   - [Tabular Column Formatting](#tabular-column-formatting)
 
