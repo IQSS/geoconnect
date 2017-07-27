@@ -218,3 +218,31 @@ In the example above, before sending the file to WorldMap, Geoconnect will take 
   - Create a new "formatted" column consisting of zero padded zip code values.  
     - e.g. In the new column, "2476" is converted to "02476"
   - Designate this new formatted column as the join column
+ 
+ # Shapefile Mapping Fails
+ 
+When mapping shapefiles, Geoconnect may display an error similar to:
+
+ ![failed_shape_01](readme_imgs/failed_shape_01.png?raw=true "failed_shape_01")
+
+In some instances, such as the error above, WorldMap is incapable of mapping a particular shapefile.  A way to test this is by downloading the user's file (which has been published) and trying to upload it directly to WorldMap. If that fails, then Geoconnect will also fail.
+
+### Explanation, the projection file
+
+The shapefile .zip consists of several files including a “projection file” (file ending with .prj).
+
+In the case of the shapefile producing the error, the “projection file” has a coordinate system which WorldMap doesn't recognize. 
+
+For help with the file, please have the user contact email:  worldmap@harvard.edu
+
+If the user wanted to update the file on his/her own, the instructions from the WorldMap documents are:
+    ```
+    HINT: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection space, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this space, the contents of your .prj file will look like this in a text editor:
+
+    GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Gr
+    eenwich",0.0],UNIT["Degree",0.0174532925199433]]
+
+    If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection space.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.  Check with us on how to do a reprojection if you need help.
+    ```
+    
+source: http://worldmap.harvard.edu/static/docs/WorldMap_Help.pdf - end of page 24 under “HINT” 
