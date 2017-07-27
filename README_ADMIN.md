@@ -238,11 +238,11 @@ For help with the file, please have the user contact email:  worldmap@harvard.ed
 
 If the user wanted to update the file on his/her own, the instructions from the WorldMap documents are:
     
-   HINT: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection space, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this space, the contents of your .prj file will look like this in a text editor:
-
-   GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]
-
-   If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection space.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.  Check with us on how to do a reprojection if you need help.
+> HINT: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection space, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this space, the contents of your .prj file will look like this in a text editor:
+>
+> GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]
+>
+> If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection space.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.  Check with us on how to do a reprojection if you need help.
     ```
     
 source: http://worldmap.harvard.edu/static/docs/WorldMap_Help.pdf - end of page 24 under “HINT” 
