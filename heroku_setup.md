@@ -180,10 +180,10 @@ Once your are logged into the admin page from the previous step, register the Da
 
   1. From the Admin page: scroll down, click on "Registered Dataverses"
   1. Top right: click "Add Registered Dataverse"
-  1. Add a name and a url.  Note the example below for https and the port added to the end (```:443```):
+  1. Add a name and a url.  Note the example below for https
       - Example:
           - Name: beta.dataverse.org
-          - Dataverse URL: https://beta.dataverse.org:443
+          - Dataverse URL: https://beta.dataverse.org
   1.  Save the registered Dataverse
 
 - Alternative.  Load a fixtures file:
